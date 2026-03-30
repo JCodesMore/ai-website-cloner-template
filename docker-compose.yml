@@ -32,7 +32,7 @@ services:
     container_name: ai-website-cloner-dev
     restart: unless-stopped
     ports:
-      - "${DEV_PORT:-3000}:3000"
+      - "${DEV_PORT:-3001}:3000"
     environment:
       - NODE_ENV=development
       - NEXT_TELEMETRY_DISABLED=1

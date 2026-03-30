@@ -116,8 +116,8 @@ npm run check  # Run lint + typecheck + build
 ### If using docker
 
 ```bash
-docker compose up add --build # build and run the app
-docker compose up dev # run the app in dev mode
+docker compose up app --build # build and run the app
+docker compose up dev --build # run the app in dev mode on port 3001
 ```
 
 ## Updating for Other Platforms
