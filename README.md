@@ -35,24 +35,23 @@ Point it at a URL, run `/clone-website`, and your AI agent will inspect the site
 
 > Using a different agent? Open `AGENTS.md` for project instructions — most agents pick it up automatically.
 
-
 ## Supported Platforms
 
-| Agent | Status |
-|-------|--------|
+| Agent                                                         | Status                     |
+| ------------------------------------------------------------- | -------------------------- |
 | [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | **Recommended** — Opus 4.6 |
-| [Codex CLI](https://github.com/openai/codex) | Supported |
-| [OpenCode](https://opencode.ai/) | Supported |
-| [GitHub Copilot](https://github.com/features/copilot) | Supported |
-| [Cursor](https://cursor.com/) | Supported |
-| [Windsurf](https://codeium.com/windsurf) | Supported |
-| [Gemini CLI](https://github.com/google-gemini/gemini-cli) | Supported |
-| [Cline](https://github.com/cline/cline) | Supported |
-| [Roo Code](https://github.com/RooCodeInc/Roo-Code) | Supported |
-| [Continue](https://continue.dev/) | Supported |
-| [Amazon Q](https://aws.amazon.com/q/developer/) | Supported |
-| [Augment Code](https://www.augmentcode.com/) | Supported |
-| [Aider](https://aider.chat/) | Supported |
+| [Codex CLI](https://github.com/openai/codex)                  | Supported                  |
+| [OpenCode](https://opencode.ai/)                              | Supported                  |
+| [GitHub Copilot](https://github.com/features/copilot)         | Supported                  |
+| [Cursor](https://cursor.com/)                                 | Supported                  |
+| [Windsurf](https://codeium.com/windsurf)                      | Supported                  |
+| [Gemini CLI](https://github.com/google-gemini/gemini-cli)     | Supported                  |
+| [Cline](https://github.com/cline/cline)                       | Supported                  |
+| [Roo Code](https://github.com/RooCodeInc/Roo-Code)            | Supported                  |
+| [Continue](https://continue.dev/)                             | Supported                  |
+| [Amazon Q](https://aws.amazon.com/q/developer/)               | Supported                  |
+| [Augment Code](https://www.augmentcode.com/)                  | Supported                  |
+| [Aider](https://aider.chat/)                                  | Supported                  |
 
 ## Prerequisites
 
@@ -114,14 +113,21 @@ npm run typecheck # TypeScript check
 npm run check  # Run lint + typecheck + build
 ```
 
+### If using docker
+
+```bash
+docker compose up add --build # build and run the app
+docker compose up dev # run the app in dev mode
+```
+
 ## Updating for Other Platforms
 
 Two source-of-truth files power all platform support. Edit the source, then run the sync script:
 
-| What | Source of truth | Sync command |
-|------|----------------|--------------|
-| Project instructions | `AGENTS.md` | `bash scripts/sync-agent-rules.sh` |
-| `/clone-website` skill | `.claude/skills/clone-website/SKILL.md` | `node scripts/sync-skills.mjs` |
+| What                   | Source of truth                         | Sync command                       |
+| ---------------------- | --------------------------------------- | ---------------------------------- |
+| Project instructions   | `AGENTS.md`                             | `bash scripts/sync-agent-rules.sh` |
+| `/clone-website` skill | `.claude/skills/clone-website/SKILL.md` | `node scripts/sync-skills.mjs`     |
 
 Each script regenerates the platform-specific copies automatically. Agents that read the source files natively need no regeneration.
 
