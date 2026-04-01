@@ -7,9 +7,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
-  --font-heading: var(--font-sans);
+  --font-sans: var(--font-montserrat), "Montserrat", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-red-hat-display), "Red Hat Display", ui-sans-serif, system-ui, sans-serif;
+  --font-gravesend: "gravesend-sans", sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -46,6 +46,11 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  /* SmartLuxe custom colors */
+  --color-gold: var(--sl-gold);
+  --color-dark: var(--sl-dark);
+  --color-muted-text: var(--sl-muted-text);
+  --color-footer-text: var(--sl-footer-text);
 }
 
 :root {
@@ -81,40 +86,12 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* SmartLuxe Design Tokens */
+  --sl-gold: #d19f46;         /* rgb(209, 159, 70) - primary accent/button color */
+  --sl-dark: #121212;         /* rgb(18, 18, 18) - header/footer/nav background */
+  --sl-muted-text: #5a5a5a;   /* rgb(90, 90, 90) - secondary text */
+  --sl-footer-text: #707070;  /* rgb(112, 112, 112) - footer contact text */
+  --sl-blue-badge: rgba(4, 90, 166, 0.35); /* Location badge background */
 }
 
 @layer base {
@@ -123,8 +100,45 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-montserrat), "Montserrat", sans-serif;
   }
   html {
-    @apply font-sans;
+    font-family: var(--font-montserrat), "Montserrat", sans-serif;
   }
+}
+
+/* SmartLuxe section title style */
+.sl-section-title {
+  font-family: var(--font-red-hat-display), "Red Hat Display", sans-serif;
+  font-size: 40px;
+  font-weight: 700;
+  color: #000;
+  text-align: center;
+}
+
+.sl-section-title-underline {
+  width: 80px;
+  height: 3px;
+  background-color: var(--sl-gold);
+  margin: 10px auto 0;
+}
+
+/* SmartLuxe button */
+.sl-button {
+  background-color: var(--sl-gold);
+  border: 1px solid var(--sl-gold);
+  border-radius: 23px;
+  color: #fff;
+  font-family: var(--font-montserrat), "Montserrat", sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  padding: 10px 30px;
+  cursor: pointer;
+  display: inline-block;
+  text-align: center;
+  transition: opacity 0.2s;
+}
+
+.sl-button:hover {
+  opacity: 0.85;
 }
