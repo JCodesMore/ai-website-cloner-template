@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import SplitType from "split-type";
 import { StarIcon } from "@/components/icons";
+import { NeuralNetworkCanvas } from "@/components/neural-network-canvas";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -123,15 +123,8 @@ export function BenefitsSection() {
         <div ref={(el) => { blobRefs.current[2] = el; }} className="absolute right-1/4 bottom-1/4 h-[800px] w-[600px] rounded-full opacity-30" style={{ background: "radial-gradient(circle, rgba(0,212,255,0.2) 0%, transparent 70%)", filter: "blur(60px)" }} aria-hidden="true" />
       </div>
 
-      {/* Decorative brain image */}
-      <Image
-        src="/images/dr-paruzzo-brain.webp"
-        alt=""
-        width={400}
-        height={400}
-        className="pointer-events-none absolute right-0 top-1/2 h-auto w-[400px] -translate-y-1/2 object-contain opacity-15"
-        aria-hidden="true"
-      />
+      {/* Neural network background */}
+      <NeuralNetworkCanvas nodeCount={60} pulseCount={12} opacity={0.12} />
 
       {/* Background ambient glow */}
       <div

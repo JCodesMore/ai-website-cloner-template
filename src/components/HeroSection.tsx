@@ -1,11 +1,19 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import SplitType from "split-type";
 import { StarIcon } from "@/components/icons";
+import { NeuralNetworkCanvas } from "@/components/neural-network-canvas";
+import { useDeviceCapability } from "@/hooks/use-device-capability";
+
+const BrainScene = dynamic(
+  () => import("@/components/3d/brain-scene").then((m) => m.BrainScene),
+  { ssr: false },
+);
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -15,6 +23,7 @@ export function HeroSection() {
   const heroContentRef = useRef<HTMLDivElement>(null);
   const heroTitleRef = useRef<HTMLHeadingElement>(null);
   const brainRef = useRef<HTMLDivElement>(null);
+  const { canRender3D } = useDeviceCapability();
   const blobBottomRef = useRef<HTMLDivElement>(null);
   const blobTopRef = useRef<HTMLDivElement>(null);
   const blobCenterRef = useRef<HTMLDivElement>(null);
@@ -71,37 +80,17 @@ export function HeroSection() {
         },
       });
 
-      /* ─── Brain image parallax + floating ─── */
+      /* ─── Brain container parallax (for both 3D and fallback) ─── */
       if (brainRef.current) {
-        // Scroll parallax
         gsap.to(brainRef.current, {
-          y: -250,
-          rotation: 12,
-          scale: 0.8,
+          y: -200,
+          scale: 0.85,
           scrollTrigger: {
             trigger: heroContentRef.current,
             start: "top top",
             end: "bottom top",
             scrub: true,
           },
-        });
-
-        // Floating animation (loop)
-        gsap.to(brainRef.current, {
-          y: "+=15",
-          duration: 3,
-          ease: "sine.inOut",
-          yoyo: true,
-          repeat: -1,
-        });
-
-        // Pulse glow (loop)
-        gsap.to(brainRef.current, {
-          filter: "drop-shadow(0 0 40px rgba(0,212,255,0.5))",
-          duration: 2,
-          ease: "sine.inOut",
-          yoyo: true,
-          repeat: -1,
         });
       }
 
@@ -185,7 +174,7 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section className="relative" style={{ height: "2755px" }}>
+    <section id="hero-trigger" className="relative" style={{ height: "2755px" }}>
       {/* ───── Part 1: Hero Content ───── */}
       <div ref={heroContentRef} className="relative h-screen overflow-hidden">
         {/* Hero background image */}
@@ -200,21 +189,33 @@ export function HeroSection() {
           <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/80" />
         </div>
 
-        {/* Brain neuro image — floating + glow */}
+        {/* 3D Brain scene (desktop) or static fallback (mobile) */}
         <div
           ref={brainRef}
-          className="absolute left-1/2 top-[55%] z-[5] w-[35vw] max-w-[500px] -translate-x-1/2 -translate-y-1/2"
-          style={{ mixBlendMode: "screen", filter: "drop-shadow(0 0 20px rgba(0,212,255,0.3))" }}
+          className="absolute left-1/2 top-[50%] z-[5] aspect-square w-[40vw] max-w-[550px] -translate-x-1/2 -translate-y-1/2"
         >
-          <Image
-            src="/images/dr-paruzzo-brain.webp"
-            alt="Neurociencia e Inteligencia Artificial"
-            width={500}
-            height={500}
-            className="h-auto w-full"
-            priority
-          />
+          {canRender3D ? (
+            <BrainScene scrollTrigger="#hero-trigger" />
+          ) : (
+            <div style={{ mixBlendMode: "screen", filter: "drop-shadow(0 0 20px rgba(0,212,255,0.3))" }}>
+              <Image
+                src="/images/dr-paruzzo-brain.webp"
+                alt="Neurociencia e Inteligencia Artificial"
+                width={500}
+                height={500}
+                className="h-auto w-full"
+                priority
+              />
+            </div>
+          )}
         </div>
+
+        {/* Neural network synapses background */}
+        <NeuralNetworkCanvas
+          nodeCount={canRender3D ? 100 : 60}
+          pulseCount={canRender3D ? 25 : 15}
+          opacity={0.25}
+        />
 
         {/* Heading: DR. PARUZZO — entrance animation via SplitType */}
         <div className="relative z-10 flex h-full flex-col items-center justify-center">

@@ -6,6 +6,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import SplitType from "split-type";
 import { StarIcon } from "@/components/icons";
+import { NeuralNetworkCanvas } from "@/components/neural-network-canvas";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -185,6 +186,9 @@ export function CapabilitiesSection() {
       <div ref={(el) => { blobRefs.current[1] = el; }} className="pointer-events-none absolute -right-40 top-[30%] h-[1600px] w-[1000px] rounded-full opacity-70" style={{ background: "radial-gradient(circle, rgba(200,149,62,0.25) 0%, transparent 70%)", filter: "blur(40px)" }} aria-hidden="true" />
       <div ref={(el) => { blobRefs.current[2] = el; }} className="pointer-events-none absolute bottom-[5%] left-1/4 h-[1600px] w-[1000px] rounded-full opacity-50" style={{ background: "radial-gradient(circle, rgba(0,212,255,0.25) 0%, transparent 70%)", filter: "blur(50px)" }} aria-hidden="true" />
       <div ref={(el) => { blobRefs.current[3] = el; }} className="pointer-events-none absolute right-1/4 top-[60%] h-[1200px] w-[800px] rounded-full opacity-40" style={{ background: "radial-gradient(circle, rgba(200,149,62,0.2) 0%, transparent 70%)", filter: "blur(60px)" }} aria-hidden="true" />
+
+      {/* Neural network background */}
+      <NeuralNetworkCanvas nodeCount={80} pulseCount={15} opacity={0.15} />
 
       {/* Background ambient glow */}
       <div

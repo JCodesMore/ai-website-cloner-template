@@ -25,17 +25,13 @@ export function LenisProvider({ children }: LenisProviderProps) {
 
     lenis.on("scroll", ScrollTrigger.update);
 
-    let rafId: number;
-
-    function raf(time: number) {
-      lenis.raf(time);
-      rafId = requestAnimationFrame(raf);
-    }
-
-    rafId = requestAnimationFrame(raf);
+    // Sync GSAP ticker with Lenis for R3F + ScrollTrigger compatibility
+    gsap.ticker.add((time) => {
+      lenis.raf(time * 1000);
+    });
+    gsap.ticker.lagSmoothing(0);
 
     return () => {
-      cancelAnimationFrame(rafId);
       lenis.destroy();
       lenisRef.current = null;
     };
