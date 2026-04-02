@@ -221,11 +221,11 @@ export function HeroSection() {
         <div className="relative z-10 flex h-full flex-col items-center justify-center">
           <h1
             ref={heroTitleRef}
-            className="text-center text-white"
+            className="font-display text-center text-white"
             style={{
-              fontSize: "clamp(7rem, 13vw, 180px)",
-              fontWeight: 200,
-              lineHeight: 0.82,
+              fontSize: "clamp(8rem, 13.5vw, 195px)",
+              fontWeight: 300,
+              lineHeight: 0.76,
               textTransform: "uppercase",
             }}
           >
@@ -297,53 +297,74 @@ export function HeroSection() {
           <source src="/videos/blur-bg.mp4" type="video/mp4" />
         </video>
 
-        {/* Teal glow blob — bottom right (strong) */}
+        {/* Blue blur blob — bottom right (strong) */}
         <div
           ref={blobBottomRef}
-          className="pointer-events-none absolute -bottom-20 -right-20 rounded-full opacity-90"
-          style={{ width: "900px", height: "900px", background: "radial-gradient(circle, rgba(0,212,255,0.3) 0%, transparent 70%)", filter: "blur(40px)" }}
-          aria-hidden="true"
-        />
+          className="absolute -bottom-20 -right-20 opacity-90"
+          style={{ width: "900px", height: "900px" }}
+        >
+          <Image
+            src="/images/blue-blur.webp"
+            alt=""
+            fill
+            className="object-contain blur-xl"
+            aria-hidden="true"
+          />
+        </div>
 
-        {/* Gold glow blob — top left */}
+        {/* Blue blob — top left */}
         <div
           ref={blobTopRef}
-          className="pointer-events-none absolute -left-40 top-[15%] rounded-full opacity-50"
-          style={{ width: "800px", height: "800px", background: "radial-gradient(circle, rgba(200,149,62,0.3) 0%, transparent 70%)", filter: "blur(40px)" }}
-          aria-hidden="true"
-        />
+          className="absolute -left-40 top-[15%] opacity-50"
+          style={{ width: "800px", height: "800px" }}
+        >
+          <Image
+            src="/images/blue-blur.webp"
+            alt=""
+            fill
+            className="object-contain blur-xl"
+            aria-hidden="true"
+          />
+        </div>
 
-        {/* Teal glow blob — center for text area */}
+        {/* Blue blob — center for text area glow */}
         <div
           ref={blobCenterRef}
-          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-25"
-          style={{ width: "1200px", height: "1200px", background: "radial-gradient(circle, rgba(0,212,255,0.25) 0%, transparent 70%)", filter: "blur(60px)" }}
-          aria-hidden="true"
-        />
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-25"
+          style={{ width: "1200px", height: "1200px" }}
+        >
+          <Image
+            src="/images/blue-blur.webp"
+            alt=""
+            fill
+            className="object-contain blur-2xl"
+            aria-hidden="true"
+          />
+        </div>
 
         {/* Sub-hero content */}
         <div className="relative z-10 flex h-full flex-col items-center justify-center px-4">
           {/* Large heading — SplitType blur reveal */}
           <h2
             ref={subHeroHeadingRef}
-            className="text-center"
+            className="text-center font-light"
             style={{
-              fontSize: "clamp(3.5rem, 12vw, 180px)",
-              lineHeight: 0.92,
+              fontSize: "clamp(4rem, 15vw, 220px)",
+              lineHeight: 0.88,
               textTransform: "uppercase",
               fontFamily: '"Helvetica Neue", Arial, sans-serif',
               fontWeight: 200,
-              color: "rgba(255,255,255,0.5)",
+              color: "rgba(255,255,255,0.45)",
               letterSpacing: "-0.03em",
             }}
           >
             DONDE CONVERGEN{" "}
-            <span style={{ fontWeight: 400, color: "rgba(255,255,255,1)" }}>CUERPO,</span>{" "}
-            <span style={{ fontWeight: 400, color: "rgba(255,255,255,1)" }}>MENTE</span>{" "}
+            <span style={{ fontWeight: 300, color: "rgba(255,255,255,1)" }}>CUERPO,</span>{" "}
+            <span style={{ fontWeight: 300, color: "rgba(255,255,255,1)" }}>MENTE</span>{" "}
             Y{" "}
-            <span style={{ fontWeight: 400, color: "rgba(255,255,255,1)" }}>
+            <span style={{ fontWeight: 300, color: "rgba(255,255,255,1)" }}>
               TECNOLOG
-              <span style={{ fontWeight: 700 }}>ÍA</span>
+              <span style={{ fontWeight: 600 }}>ÍA</span>
             </span>
           </h2>
 

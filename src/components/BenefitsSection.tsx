@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import SplitType from "split-type";
@@ -116,11 +117,17 @@ export function BenefitsSection() {
       id="benefits"
       className="relative w-full overflow-hidden px-6 py-32 md:px-12"
     >
-      {/* Background gradient blobs — teal + gold parallax */}
+      {/* Background blue blobs — intense + parallax */}
       <div className="pointer-events-none absolute inset-0">
-        <div ref={(el) => { blobRefs.current[0] = el; }} className="absolute -right-40 top-0 h-[1200px] w-[900px] rounded-full opacity-70" style={{ background: "radial-gradient(circle, rgba(0,212,255,0.3) 0%, transparent 70%)", filter: "blur(40px)" }} aria-hidden="true" />
-        <div ref={(el) => { blobRefs.current[1] = el; }} className="absolute -left-40 bottom-0 h-[1000px] w-[800px] rounded-full opacity-45" style={{ background: "radial-gradient(circle, rgba(200,149,62,0.25) 0%, transparent 70%)", filter: "blur(40px)" }} aria-hidden="true" />
-        <div ref={(el) => { blobRefs.current[2] = el; }} className="absolute right-1/4 bottom-1/4 h-[800px] w-[600px] rounded-full opacity-30" style={{ background: "radial-gradient(circle, rgba(0,212,255,0.2) 0%, transparent 70%)", filter: "blur(60px)" }} aria-hidden="true" />
+        <div ref={(el) => { blobRefs.current[0] = el; }} className="absolute -right-40 top-0 h-[1200px] w-[900px] opacity-70">
+          <Image src="/images/blue-blur.webp" alt="" fill className="object-contain blur-xl" aria-hidden="true" />
+        </div>
+        <div ref={(el) => { blobRefs.current[1] = el; }} className="absolute -left-40 bottom-0 h-[1000px] w-[800px] opacity-45">
+          <Image src="/images/blue-blur.webp" alt="" fill className="object-contain blur-xl" aria-hidden="true" />
+        </div>
+        <div ref={(el) => { blobRefs.current[2] = el; }} className="absolute right-1/4 bottom-1/4 h-[800px] w-[600px] opacity-30">
+          <Image src="/images/blue-blur.webp" alt="" fill className="object-contain blur-2xl" aria-hidden="true" />
+        </div>
       </div>
 
       {/* Neural network background */}

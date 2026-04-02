@@ -121,7 +121,7 @@ export function ReviewsSection() {
               <div className="flex flex-col md:flex-row gap-8 md:gap-16">
                 {/* Left column — Author */}
                 <div className="md:w-[40%] flex flex-col items-start gap-4">
-                  <h3 className="text-heading-small">
+                  <h3 className="text-heading-small font-display">
                     {testimonial.name}
                   </h3>
                   <span className="text-small opacity-50">

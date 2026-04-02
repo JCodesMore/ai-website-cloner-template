@@ -181,11 +181,19 @@ export function CapabilitiesSection() {
 
   return (
     <section ref={sectionRef} id="services" className="relative overflow-hidden bg-[#0a1628]">
-      {/* Background gradient blobs — teal + gold parallax */}
-      <div ref={(el) => { blobRefs.current[0] = el; }} className="pointer-events-none absolute -left-40 top-0 h-[1600px] w-[1000px] rounded-full opacity-80" style={{ background: "radial-gradient(circle, rgba(0,212,255,0.3) 0%, transparent 70%)", filter: "blur(40px)" }} aria-hidden="true" />
-      <div ref={(el) => { blobRefs.current[1] = el; }} className="pointer-events-none absolute -right-40 top-[30%] h-[1600px] w-[1000px] rounded-full opacity-70" style={{ background: "radial-gradient(circle, rgba(200,149,62,0.25) 0%, transparent 70%)", filter: "blur(40px)" }} aria-hidden="true" />
-      <div ref={(el) => { blobRefs.current[2] = el; }} className="pointer-events-none absolute bottom-[5%] left-1/4 h-[1600px] w-[1000px] rounded-full opacity-50" style={{ background: "radial-gradient(circle, rgba(0,212,255,0.25) 0%, transparent 70%)", filter: "blur(50px)" }} aria-hidden="true" />
-      <div ref={(el) => { blobRefs.current[3] = el; }} className="pointer-events-none absolute right-1/4 top-[60%] h-[1200px] w-[800px] rounded-full opacity-40" style={{ background: "radial-gradient(circle, rgba(200,149,62,0.2) 0%, transparent 70%)", filter: "blur(60px)" }} aria-hidden="true" />
+      {/* Background blue gradient blobs — intense + parallax */}
+      <div ref={(el) => { blobRefs.current[0] = el; }} className="pointer-events-none absolute -left-40 top-0 h-[1600px] w-[1000px] opacity-80">
+        <Image src="/images/blue-blur.webp" alt="" fill className="object-contain blur-xl" aria-hidden="true" />
+      </div>
+      <div ref={(el) => { blobRefs.current[1] = el; }} className="pointer-events-none absolute -right-40 top-[30%] h-[1600px] w-[1000px] opacity-70">
+        <Image src="/images/blue-blur.webp" alt="" fill className="object-contain blur-xl" aria-hidden="true" />
+      </div>
+      <div ref={(el) => { blobRefs.current[2] = el; }} className="pointer-events-none absolute bottom-[5%] left-1/4 h-[1600px] w-[1000px] opacity-50">
+        <Image src="/images/blue-blur.webp" alt="" fill className="object-contain blur-xl" aria-hidden="true" />
+      </div>
+      <div ref={(el) => { blobRefs.current[3] = el; }} className="pointer-events-none absolute right-1/4 top-[60%] h-[1200px] w-[800px] opacity-40">
+        <Image src="/images/blue-blur.webp" alt="" fill className="object-contain blur-2xl" aria-hidden="true" />
+      </div>
 
       {/* Neural network background */}
       <NeuralNetworkCanvas nodeCount={80} pulseCount={15} opacity={0.15} />
@@ -296,7 +304,7 @@ export function CapabilitiesSection() {
                     <span className="text-[11px] uppercase tracking-[0.08em] text-white/70">
                       {card.number}
                     </span>
-                    <h3 className="text-center text-[48px] font-extralight uppercase leading-[0.92] tracking-tight text-white">
+                    <h3 className="font-display text-center text-[56px] font-light uppercase leading-[0.88] text-white">
                       {card.title}
                     </h3>
                     <p className="max-w-[320px] text-center text-[11px] uppercase leading-[1.7] tracking-[0.06em] text-white/55">

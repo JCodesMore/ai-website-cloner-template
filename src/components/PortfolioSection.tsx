@@ -1,11 +1,16 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, FreeMode, EffectCoverflow } from "swiper/modules";
+import type { Swiper as SwiperClass } from "swiper/types";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import SplitType from "split-type";
-import { StarIcon } from "@/components/icons";
 import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  StarIcon,
   InstagramIcon,
   YouTubeIcon,
   TikTokIcon,
@@ -17,102 +22,29 @@ import {
   WhatsAppIcon,
 } from "@/components/icons";
 
+import "swiper/css";
+import "swiper/css/effect-coverflow";
+
 gsap.registerPlugin(ScrollTrigger);
 
 const socials = [
-  {
-    name: "Instagram",
-    handle: "@dr.paruzzo",
-    href: "https://instagram.com/dr.paruzzo",
-    icon: InstagramIcon,
-    color: "#E1306C",
-    description: "Contenido diario, reels, historias",
-  },
-  {
-    name: "YouTube",
-    handle: "@dr.paruzzo",
-    href: "https://youtube.com/@dr.paruzzo",
-    icon: YouTubeIcon,
-    color: "#FF0000",
-    description: "Videos largos, análisis profundos",
-  },
-  {
-    name: "TikTok",
-    handle: "@dr.paruzzo",
-    href: "https://tiktok.com/@dr.paruzzo",
-    icon: TikTokIcon,
-    color: "#ffffff",
-    description: "Clips cortos, tips rápidos",
-  },
-  {
-    name: "LinkedIn",
-    handle: "drparuzzo",
-    href: "https://linkedin.com/in/drparuzzo",
-    icon: LinkedInIcon,
-    color: "#0A66C2",
-    description: "Networking profesional, artículos",
-  },
-  {
-    name: "X / Twitter",
-    handle: "@DrParuzzo",
-    href: "https://x.com/DrParuzzo",
-    icon: XTwitterIcon,
-    color: "#ffffff",
-    description: "Opiniones, threads, debates",
-  },
-  {
-    name: "Facebook",
-    handle: "dr.paruzzo",
-    href: "https://facebook.com/dr.paruzzo",
-    icon: FacebookIcon,
-    color: "#1877F2",
-    description: "Comunidad, eventos, lives",
-  },
-  {
-    name: "IG Animaciones",
-    handle: "@dr.paruzzo_animaciones",
-    href: "https://instagram.com/dr.paruzzo_animaciones",
-    icon: InstagramIcon,
-    color: "#C13584",
-    description: "Animaciones 3D médicas",
-  },
-  {
-    name: "TikTok Animaciones",
-    handle: "@dr.paruzzo_animaciones",
-    href: "https://tiktok.com/@dr.paruzzo_animaciones",
-    icon: TikTokIcon,
-    color: "#69C9D0",
-    description: "Clips de animaciones virales",
-  },
-  {
-    name: "Reddit",
-    handle: "dr_paruzzo",
-    href: "https://reddit.com/user/dr_paruzzo",
-    icon: RedditIcon,
-    color: "#FF4500",
-    description: "Discusiones, AMAs",
-  },
-  {
-    name: "Threads",
-    handle: "@dr.paruzzo",
-    href: "https://threads.net/@dr.paruzzo",
-    icon: ThreadsIcon,
-    color: "#ffffff",
-    description: "Conversaciones casuales",
-  },
-  {
-    name: "WhatsApp",
-    handle: "+54 358 418 9267",
-    href: "https://wa.me/543584189267",
-    icon: WhatsAppIcon,
-    color: "#25D366",
-    description: "Mensajes directos",
-  },
+  { name: "Instagram", handle: "@dr.paruzzo", href: "https://instagram.com/dr.paruzzo", icon: InstagramIcon, color: "#E1306C", desc: "Contenido diario, reels, historias" },
+  { name: "YouTube", handle: "@dr.paruzzo", href: "https://youtube.com/@dr.paruzzo", icon: YouTubeIcon, color: "#FF0000", desc: "Videos largos, análisis profundos" },
+  { name: "TikTok", handle: "@dr.paruzzo", href: "https://tiktok.com/@dr.paruzzo", icon: TikTokIcon, color: "#00f2ea", desc: "Clips cortos, tips rápidos" },
+  { name: "LinkedIn", handle: "drparuzzo", href: "https://linkedin.com/in/drparuzzo", icon: LinkedInIcon, color: "#0A66C2", desc: "Networking profesional" },
+  { name: "X / Twitter", handle: "@DrParuzzo", href: "https://x.com/DrParuzzo", icon: XTwitterIcon, color: "#ffffff", desc: "Opiniones, threads, debates" },
+  { name: "Facebook", handle: "dr.paruzzo", href: "https://facebook.com/dr.paruzzo", icon: FacebookIcon, color: "#1877F2", desc: "Comunidad, eventos, lives" },
+  { name: "IG Animaciones", handle: "@dr.paruzzo_animaciones", href: "https://instagram.com/dr.paruzzo_animaciones", icon: InstagramIcon, color: "#C13584", desc: "Animaciones 3D médicas" },
+  { name: "TikTok Anim", handle: "@dr.paruzzo_animaciones", href: "https://tiktok.com/@dr.paruzzo_animaciones", icon: TikTokIcon, color: "#69C9D0", desc: "Clips de animaciones" },
+  { name: "Reddit", handle: "dr_paruzzo", href: "https://reddit.com/user/dr_paruzzo", icon: RedditIcon, color: "#FF4500", desc: "Discusiones, AMAs" },
+  { name: "Threads", handle: "@dr.paruzzo", href: "https://threads.net/@dr.paruzzo", icon: ThreadsIcon, color: "#ffffff", desc: "Conversaciones casuales" },
+  { name: "WhatsApp", handle: "+54 358 418 9267", href: "https://wa.me/543584189267", icon: WhatsAppIcon, color: "#25D366", desc: "Mensajes directos" },
 ];
 
 export function PortfolioSection() {
+  const swiperRef = useRef<SwiperClass | null>(null);
   const headingRef = useRef<HTMLDivElement>(null);
-  const gridRef = useRef<HTMLDivElement>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -145,21 +77,18 @@ export function PortfolioSection() {
         }
       }
 
-      /* ─── Grid cards stagger entrance ─── */
-      if (gridRef.current) {
-        const cards = gridRef.current.querySelectorAll(".social-card");
+      /* ─── Carousel entrance ─── */
+      if (carouselRef.current) {
         gsap.fromTo(
-          cards,
-          { opacity: 0, y: 40, scale: 0.95 },
+          carouselRef.current,
+          { opacity: 0, y: 80 },
           {
             opacity: 1,
             y: 0,
-            scale: 1,
-            duration: 0.6,
+            duration: 1.2,
             ease: "power2.out",
-            stagger: 0.08,
             scrollTrigger: {
-              trigger: gridRef.current,
+              trigger: carouselRef.current,
               start: "top 85%",
               toggleActions: "play none none none",
             },
@@ -187,10 +116,9 @@ export function PortfolioSection() {
           <h2
             style={{
               fontSize: "clamp(2.5rem, 7.3vw, 105px)",
-              fontWeight: 200,
+              fontWeight: 300,
               lineHeight: 0.85,
               textTransform: "uppercase",
-              letterSpacing: "-0.03em",
             }}
           >
             Encontrame en todos lados
@@ -198,51 +126,82 @@ export function PortfolioSection() {
         </div>
       </div>
 
-      {/* Social Media Grid */}
-      <div
-        ref={gridRef}
-        className="mx-auto grid max-w-[1200px] grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4"
-      >
-        {socials.map((social) => (
-          <a
-            key={social.name}
-            href={social.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="social-card group relative flex flex-col items-center gap-3 rounded-2xl border border-white/8 px-4 py-8 transition-all duration-500 hover:border-white/20 hover:bg-white/[0.03]"
-            style={{
-              background: "linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%)",
-            }}
+      {/* Swiper Carousel — 3D Coverflow effect */}
+      <div ref={carouselRef} className="relative" style={{ perspective: "1200px" }}>
+        <Swiper
+          modules={[Navigation, FreeMode, EffectCoverflow]}
+          effect="coverflow"
+          coverflowEffect={{
+            rotate: 8,
+            stretch: 0,
+            depth: 200,
+            modifier: 1,
+            slideShadows: false,
+          }}
+          slidesPerView={2.5}
+          spaceBetween={20}
+          freeMode
+          grabCursor
+          data-cursor-drag
+          onSwiper={(swiper) => {
+            swiperRef.current = swiper;
+          }}
+          className="w-full"
+        >
+          {socials.map((social) => (
+            <SwiperSlide key={social.name}>
+              <a
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex h-[500px] flex-col items-center justify-center gap-6 rounded-xl border border-white/8 transition-all duration-700 hover:border-white/20 hover:brightness-110"
+                style={{
+                  background: `linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(10,22,40,0.95) 60%, ${social.color}08 100%)`,
+                }}
+              >
+                {/* Icon */}
+                <div className="transition-transform duration-500 group-hover:scale-125">
+                  <social.icon className="h-16 w-16 text-white/60 transition-colors duration-500 group-hover:text-white" />
+                </div>
+
+                {/* Name */}
+                <span className="font-display text-[32px] font-light uppercase leading-tight text-white">
+                  {social.name}
+                </span>
+
+                {/* Handle */}
+                <span className="text-[11px] uppercase tracking-[0.08em] text-white/40">
+                  {social.handle}
+                </span>
+
+                {/* Description */}
+                <span className="max-w-[200px] text-center text-[10px] uppercase tracking-[0.05em] text-white/25 transition-colors duration-500 group-hover:text-white/50">
+                  {social.desc}
+                </span>
+              </a>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+
+        {/* Navigation Arrows */}
+        <div className="mt-8 flex items-center gap-6">
+          <button
+            type="button"
+            aria-label="Previous slide"
+            onClick={() => swiperRef.current?.slidePrev()}
+            className="transition-all duration-300 hover:opacity-60 hover:scale-110"
           >
-            {/* Hover glow */}
-            <div
-              className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-              style={{
-                background: `radial-gradient(circle at center, ${social.color}10 0%, transparent 70%)`,
-              }}
-            />
-
-            {/* Icon */}
-            <div className="relative z-10 transition-transform duration-300 group-hover:scale-110">
-              <social.icon className="h-8 w-8 text-white/70 transition-colors duration-300 group-hover:text-white" />
-            </div>
-
-            {/* Name */}
-            <span className="relative z-10 text-[13px] font-light tracking-wide text-white">
-              {social.name}
-            </span>
-
-            {/* Handle */}
-            <span className="relative z-10 text-[10px] uppercase tracking-[0.05em] text-white/40">
-              {social.handle}
-            </span>
-
-            {/* Description */}
-            <span className="relative z-10 text-center text-[9px] uppercase tracking-[0.04em] text-white/25 transition-colors duration-300 group-hover:text-white/50">
-              {social.description}
-            </span>
-          </a>
-        ))}
+            <ArrowLeftIcon className="h-5 w-3" />
+          </button>
+          <button
+            type="button"
+            aria-label="Next slide"
+            onClick={() => swiperRef.current?.slideNext()}
+            className="transition-all duration-300 hover:opacity-60 hover:scale-110"
+          >
+            <ArrowRightIcon className="h-5 w-3" />
+          </button>
+        </div>
       </div>
     </section>
   );
