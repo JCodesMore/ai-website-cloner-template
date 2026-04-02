@@ -3,13 +3,15 @@
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, FreeMode } from "swiper/modules";
+import { Navigation, FreeMode, EffectCoverflow } from "swiper/modules";
 import type { Swiper as SwiperClass } from "swiper/types";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import SplitType from "split-type";
 import { ArrowLeftIcon, ArrowRightIcon, StarIcon } from "@/components/icons";
 
 import "swiper/css";
+import "swiper/css/effect-coverflow";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -27,24 +29,53 @@ const projects = [
 export function PortfolioSection() {
   const swiperRef = useRef<SwiperClass | null>(null);
   const headingRef = useRef<HTMLDivElement>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      const words = headingRef.current?.querySelectorAll<HTMLSpanElement>(".blur-word");
-      if (words && words.length > 0) {
-        gsap.fromTo(
-          words,
-          { opacity: 0.1, filter: "blur(10px)", y: 20 },
-          {
+      /* ─── Heading: SplitType word blur reveal ─── */
+      if (headingRef.current) {
+        const split = new SplitType(headingRef.current, {
+          types: "words",
+          tagName: "span",
+        });
+        if (split.words) {
+          gsap.set(split.words, {
+            opacity: 0,
+            filter: "blur(0.8vw)",
+            scale: 0.95,
+          });
+          gsap.to(split.words, {
             opacity: 1,
             filter: "blur(0px)",
-            y: 0,
-            stagger: 0.06,
+            scale: 1,
+            duration: 1.8,
+            ease: "power1.inOut",
+            stagger: { each: 0.4 / split.words.length },
             scrollTrigger: {
               trigger: headingRef.current,
               start: "top 80%",
               end: "top 40%",
               scrub: true,
+            },
+          });
+        }
+      }
+
+      /* ─── Carousel entrance ─── */
+      if (carouselRef.current) {
+        gsap.fromTo(
+          carouselRef.current,
+          { opacity: 0, y: 80 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 1.2,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: carouselRef.current,
+              start: "top 85%",
+              toggleActions: "play none none none",
             },
           },
         );
@@ -75,24 +106,28 @@ export function PortfolioSection() {
               textTransform: "uppercase",
             }}
           >
-            <span className="blur-word inline-block">Our</span>{" "}
-            <span className="blur-word inline-block">Work,</span>
-            <br />
-            <span className="blur-word inline-block">in</span>{" "}
-            <span className="blur-word inline-block">full</span>{" "}
-            <span className="blur-word inline-block">bloom</span>
+            Our Work, in full bloom
           </h2>
         </div>
       </div>
 
-      {/* Swiper Carousel */}
-      <div className="relative">
+      {/* Swiper Carousel — 3D Coverflow effect */}
+      <div ref={carouselRef} className="relative" style={{ perspective: "1200px" }}>
         <Swiper
-          modules={[Navigation, FreeMode]}
-          slidesPerView={3.5}
-          spaceBetween={16}
+          modules={[Navigation, FreeMode, EffectCoverflow]}
+          effect="coverflow"
+          coverflowEffect={{
+            rotate: 8,
+            stretch: 0,
+            depth: 200,
+            modifier: 1,
+            slideShadows: false,
+          }}
+          slidesPerView={2.5}
+          spaceBetween={20}
           freeMode
           grabCursor
+          data-cursor-drag
           onSwiper={(swiper) => {
             swiperRef.current = swiper;
           }}
@@ -105,15 +140,16 @@ export function PortfolioSection() {
                   <Image
                     src={project.image}
                     alt={project.name}
-                    width={350}
-                    height={450}
-                    className="h-auto w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    width={500}
+                    height={650}
+                    className="h-auto w-full object-cover transition-all duration-700 group-hover:scale-105 group-hover:brightness-110"
+                    sizes="(max-width: 768px) 80vw, 35vw"
                   />
                 </div>
                 <div className="mt-4 flex items-center justify-between">
-                  <span className="text-small">{project.name}</span>
-                  <span className="text-small text-white/50">
-                    {project.year}
+                  <span className="text-small">{project.year}</span>
+                  <span className="text-small text-white/50 uppercase">
+                    {project.name}
                   </span>
                 </div>
               </div>
@@ -127,7 +163,7 @@ export function PortfolioSection() {
             type="button"
             aria-label="Previous slide"
             onClick={() => swiperRef.current?.slidePrev()}
-            className="transition-opacity hover:opacity-60"
+            className="transition-all duration-300 hover:opacity-60 hover:scale-110"
           >
             <ArrowLeftIcon className="h-5 w-3" />
           </button>
@@ -135,7 +171,7 @@ export function PortfolioSection() {
             type="button"
             aria-label="Next slide"
             onClick={() => swiperRef.current?.slideNext()}
-            className="transition-opacity hover:opacity-60"
+            className="transition-all duration-300 hover:opacity-60 hover:scale-110"
           >
             <ArrowRightIcon className="h-5 w-3" />
           </button>

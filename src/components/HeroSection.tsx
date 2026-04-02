@@ -4,7 +4,8 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { StarIcon, ArrowRightIcon } from "@/components/icons";
+import SplitType from "split-type";
+import { StarIcon } from "@/components/icons";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -12,14 +13,56 @@ export function HeroSection() {
   const subHeroRef = useRef<HTMLDivElement>(null);
   const subHeroHeadingRef = useRef<HTMLHeadingElement>(null);
   const heroContentRef = useRef<HTMLDivElement>(null);
+  const heroTitleRef = useRef<HTMLHeadingElement>(null);
   const rockVideoRef = useRef<HTMLVideoElement>(null);
+  const blobBottomRef = useRef<HTMLDivElement>(null);
+  const blobTopRef = useRef<HTMLDivElement>(null);
+  const blobCenterRef = useRef<HTMLDivElement>(null);
+  const descRef = useRef<HTMLParagraphElement>(null);
+  const scrollIndicatorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Hero parallax — image scales down and fades as you scroll
+      /* ─── Hero title entrance: "CUBE STUDIO" ─── */
+      if (heroTitleRef.current) {
+        const titleSplit = new SplitType(heroTitleRef.current, {
+          types: "chars",
+          tagName: "span",
+        });
+        if (titleSplit.chars) {
+          gsap.set(titleSplit.chars, {
+            opacity: 0,
+            filter: "blur(12px)",
+            y: 40,
+            scale: 0.9,
+          });
+          // Plays after preloader (≈2.8s delay)
+          gsap.to(titleSplit.chars, {
+            opacity: 1,
+            filter: "blur(0px)",
+            y: 0,
+            scale: 1,
+            duration: 1.4,
+            ease: "power2.out",
+            stagger: 0.04,
+            delay: 2.8,
+          });
+        }
+      }
+
+      /* ─── Scroll indicator fade in ─── */
+      if (scrollIndicatorRef.current) {
+        gsap.fromTo(
+          scrollIndicatorRef.current,
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 1, ease: "power2.out", delay: 3.8 },
+        );
+      }
+
+      /* ─── Hero parallax — image scales and fades ─── */
       gsap.to(".hero-bg-image", {
-        scale: 1.1,
-        opacity: 0.3,
+        scale: 1.15,
+        opacity: 0.2,
         scrollTrigger: {
           trigger: heroContentRef.current,
           start: "top top",
@@ -28,11 +71,12 @@ export function HeroSection() {
         },
       });
 
-      // Rock video parallax — moves up and rotates as you scroll
+      /* ─── Rock video parallax ─── */
       if (rockVideoRef.current) {
         gsap.to(rockVideoRef.current, {
-          y: -200,
-          rotation: 15,
+          y: -250,
+          rotation: 18,
+          scale: 0.8,
           scrollTrigger: {
             trigger: heroContentRef.current,
             start: "top top",
@@ -42,40 +86,84 @@ export function HeroSection() {
         });
       }
 
-      // Sub-hero heading: word-by-word blur reveal driven by scroll
-      const words =
-        subHeroHeadingRef.current?.querySelectorAll<HTMLSpanElement>(
-          ".blur-word",
-        );
-      if (words && words.length > 0) {
-        gsap.fromTo(
-          words,
-          { opacity: 0.15, filter: "blur(12px)", y: 20 },
-          {
-            opacity: 0.6,
+      /* ─── Sub-hero heading: SplitType word blur reveal ─── */
+      if (subHeroHeadingRef.current) {
+        const split = new SplitType(subHeroHeadingRef.current, {
+          types: "words",
+          tagName: "span",
+        });
+        if (split.words && split.words.length > 0) {
+          gsap.set(split.words, {
+            opacity: 0,
+            filter: "blur(0.8vw)",
+            scale: 0.95,
+            willChange: "opacity, filter, transform",
+          });
+          gsap.to(split.words, {
+            opacity: 1,
             filter: "blur(0px)",
-            y: 0,
-            stagger: 0.08,
+            scale: 1,
+            duration: 1.8,
+            ease: "power1.inOut",
+            stagger: { each: 0.4 / split.words.length },
             scrollTrigger: {
               trigger: subHeroHeadingRef.current,
-              start: "top 80%",
-              end: "top 30%",
+              start: "top 85%",
+              end: "top 25%",
               scrub: true,
             },
-          },
-        );
+          });
+        }
       }
+
+      /* ─── Description paragraph: line-by-line reveal ─── */
+      if (descRef.current) {
+        const descSplit = new SplitType(descRef.current, {
+          types: "lines",
+          tagName: "span",
+        });
+        if (descSplit.lines) {
+          gsap.fromTo(
+            descSplit.lines,
+            { opacity: 0, y: 15 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.8,
+              ease: "power1.in",
+              stagger: 0.15,
+              scrollTrigger: {
+                trigger: descRef.current,
+                start: "top 90%",
+                scrub: false,
+                toggleActions: "play none none none",
+              },
+            },
+          );
+        }
+      }
+
+      /* ─── Blue blob parallax ─── */
+      [
+        { el: blobBottomRef.current, y: -120 },
+        { el: blobTopRef.current, y: 100 },
+        { el: blobCenterRef.current, y: -60 },
+      ].forEach(({ el, y }) => {
+        if (!el) return;
+        gsap.to(el, {
+          y,
+          scrollTrigger: {
+            trigger: subHeroRef.current,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: true,
+          },
+        });
+      });
     });
 
     return () => ctx.revert();
   }, []);
-
-  const headingWords = [
-    { line: ["DESIGN"] },
-    { line: ["THAT", "BLOOMS"] },
-    { line: ["INTO"] },
-    { line: ["EMOTION"] },
-  ];
 
   return (
     <section className="relative" style={{ height: "2755px" }}>
@@ -106,9 +194,10 @@ export function HeroSection() {
           <source src="/videos/hero-rock.webm" type="video/webm" />
         </video>
 
-        {/* Heading: CUBE STUDIO */}
+        {/* Heading: CUBE STUDIO — entrance animation via SplitType */}
         <div className="relative z-10 flex h-full flex-col items-center justify-center">
           <h1
+            ref={heroTitleRef}
             className="font-display text-center text-white"
             style={{
               fontSize: "clamp(8rem, 13.5vw, 195px)",
@@ -123,8 +212,11 @@ export function HeroSection() {
         </div>
 
         {/* Circular scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-1">
-          {/* Circular arc */}
+        <div
+          ref={scrollIndicatorRef}
+          className="absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-1"
+          style={{ opacity: 0 }}
+        >
           <svg
             width="80"
             height="40"
@@ -182,66 +274,81 @@ export function HeroSection() {
           <source src="/videos/blur-bg.mp4" type="video/mp4" />
         </video>
 
-        {/* Blue blur blob */}
+        {/* Blue blur blob — bottom right (strong) */}
         <div
-          className="absolute bottom-0 right-0 opacity-60"
-          style={{ width: "700px", height: "700px" }}
+          ref={blobBottomRef}
+          className="absolute -bottom-20 -right-20 opacity-90"
+          style={{ width: "900px", height: "900px" }}
         >
           <Image
             src="/images/blue-blur.webp"
             alt=""
             fill
-            className="object-contain"
+            className="object-contain blur-xl"
             aria-hidden="true"
           />
         </div>
 
-        {/* Second blue blob — top left */}
+        {/* Blue blob — top left */}
         <div
-          className="absolute -left-40 top-1/4 opacity-30"
-          style={{ width: "600px", height: "600px" }}
+          ref={blobTopRef}
+          className="absolute -left-40 top-[15%] opacity-50"
+          style={{ width: "800px", height: "800px" }}
         >
           <Image
             src="/images/blue-blur.webp"
             alt=""
             fill
-            className="object-contain"
+            className="object-contain blur-xl"
+            aria-hidden="true"
+          />
+        </div>
+
+        {/* Blue blob — center for text area glow */}
+        <div
+          ref={blobCenterRef}
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-25"
+          style={{ width: "1200px", height: "1200px" }}
+        >
+          <Image
+            src="/images/blue-blur.webp"
+            alt=""
+            fill
+            className="object-contain blur-2xl"
             aria-hidden="true"
           />
         </div>
 
         {/* Sub-hero content */}
         <div className="relative z-10 flex h-full flex-col items-center justify-center px-4">
-          {/* Large heading — MASSIVE like the original */}
+          {/* Large heading — SplitType blur reveal */}
           <h2
             ref={subHeroHeadingRef}
             className="text-center font-light"
             style={{
-              fontSize: "clamp(3rem, 10vw, 150px)",
-              lineHeight: 0.85,
+              fontSize: "clamp(4rem, 15vw, 220px)",
+              lineHeight: 0.88,
               textTransform: "uppercase",
               fontFamily: '"Helvetica Neue", Arial, sans-serif',
               fontWeight: 200,
-              color: "rgba(255,255,255,0.5)",
-              letterSpacing: "-0.02em",
+              color: "rgba(255,255,255,1)",
+              letterSpacing: "-0.03em",
             }}
           >
-            {headingWords.map((lineObj, lineIdx) => (
-              <span key={lineIdx} className="block">
-                {lineObj.line.map((word, wordIdx) => (
-                  <span key={wordIdx}>
-                    <span className="blur-word inline-block">{word}</span>
-                    {wordIdx < lineObj.line.length - 1 ? " " : ""}
-                  </span>
-                ))}
-              </span>
-            ))}
+            DESIGN THAT BLOOMS INTO EMOTION
           </h2>
 
-          {/* Description paragraph */}
+          {/* Horizontal rule + star */}
+          <div className="relative mt-28 flex w-full items-center justify-center">
+            <div className="absolute inset-x-0 top-1/2 h-px bg-white/10" />
+            <StarIcon className="relative z-10 h-3 w-3 animate-[starSpin_8s_linear_infinite]" />
+          </div>
+
+          {/* Description paragraph — line-by-line reveal */}
           <p
-            className="text-small mx-auto mt-20 max-w-[520px] text-center text-white/60"
-            style={{ lineHeight: 1.8 }}
+            ref={descRef}
+            className="text-small mx-auto mt-10 max-w-[620px] text-center uppercase tracking-[0.05em] text-white/70"
+            style={{ lineHeight: 1.9, fontSize: "11px" }}
           >
             We create immersive floral design for weddings, brand events, and
             personal moments. Each project is shaped with intention to turn space
@@ -249,20 +356,16 @@ export function HeroSection() {
             forgotten.
           </p>
 
-          {/* Star decoration */}
-          <div className="my-8">
-            <StarIcon className="h-3 w-3 animate-[starSpin_8s_linear_infinite]" />
+          {/* Vertical line + CTA Button */}
+          <div className="mt-16 flex flex-col items-center gap-0">
+            <div className="h-24 w-px bg-white/15" />
+            <a
+              href="#services"
+              className="text-small mt-4 inline-flex items-center gap-3 rounded-full border border-white/20 px-7 py-3 text-[11px] uppercase tracking-[0.1em] text-white transition-all duration-300 hover:border-white/40 hover:bg-white/5 hover:shadow-[0_0_20px_rgba(100,150,255,0.1)]"
+            >
+              Our Services
+            </a>
           </div>
-
-          {/* CTA Button */}
-          <a
-            href="#contact"
-            className="text-small inline-flex items-center gap-3 rounded-full border border-white/20 px-6 py-3 text-white transition-all duration-300 hover:border-white/50 hover:bg-white/5"
-          >
-            <ArrowRightIcon className="h-3 w-2 rotate-180" />
-            <span>Plan Your Event</span>
-            <ArrowRightIcon className="h-3 w-2" />
-          </a>
         </div>
       </div>
     </section>

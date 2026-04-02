@@ -9,11 +9,13 @@ import { Footer } from "@/components/Footer";
 import { NoiseOverlay } from "@/components/NoiseOverlay";
 import { LenisProvider } from "@/components/LenisProvider";
 import { Preloader } from "@/components/Preloader";
+import { CustomCursor } from "@/components/CustomCursor";
 
 export default function Home() {
   return (
     <LenisProvider>
       <Preloader />
+      <CustomCursor />
       <div className="page-wrapper relative overflow-clip">
         <Navbar />
         <NoiseOverlay />

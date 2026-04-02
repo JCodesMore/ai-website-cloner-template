@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import SplitType from "split-type";
 import { StarIcon } from "@/components/icons";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -33,41 +34,53 @@ export function BenefitsSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
   const itemsRef = useRef<HTMLDivElement>(null);
+  const blobRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Heading blur reveal
-      const words = headingRef.current?.querySelectorAll<HTMLSpanElement>(".blur-word");
-      if (words && words.length > 0) {
-        gsap.fromTo(
-          words,
-          { opacity: 0.1, filter: "blur(10px)", y: 20 },
-          {
+      /* ─── Heading: SplitType word blur reveal ─── */
+      if (headingRef.current) {
+        const split = new SplitType(headingRef.current, {
+          types: "words",
+          tagName: "span",
+        });
+        if (split.words) {
+          gsap.set(split.words, {
+            opacity: 0,
+            filter: "blur(0.8vw)",
+            scale: 0.95,
+          });
+          gsap.to(split.words, {
             opacity: 1,
             filter: "blur(0px)",
-            y: 0,
-            stagger: 0.06,
+            scale: 1,
+            duration: 1.8,
+            ease: "power1.inOut",
+            stagger: { each: 0.4 / split.words.length },
             scrollTrigger: {
               trigger: headingRef.current,
               start: "top 80%",
               end: "top 30%",
               scrub: true,
             },
-          },
-        );
+          });
+        }
       }
 
-      // Benefit items stagger fade in
+      /* ─── Benefit items: stagger fade + slide ─── */
       const items = itemsRef.current?.querySelectorAll<HTMLDivElement>(".benefit-item");
       if (items) {
-        items.forEach((item, i) => {
+        items.forEach((item) => {
+          // Animate the border line drawing
           gsap.fromTo(
             item,
-            { opacity: 0.1, y: 40 },
+            { opacity: 0, y: 40, clipPath: "inset(0 100% 0 0)" },
             {
               opacity: 1,
               y: 0,
-              duration: 0.8,
+              clipPath: "inset(0 0% 0 0)",
+              duration: 1,
+              ease: "power2.out",
               scrollTrigger: {
                 trigger: item,
                 start: "top 85%",
@@ -78,6 +91,20 @@ export function BenefitsSection() {
           );
         });
       }
+
+      /* ─── Blue blob parallax ─── */
+      blobRefs.current.forEach((blob, i) => {
+        if (!blob) return;
+        gsap.to(blob, {
+          y: (i % 2 === 0 ? -1 : 1) * (70 + i * 25),
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: true,
+          },
+        });
+      });
     });
 
     return () => ctx.revert();
@@ -89,13 +116,16 @@ export function BenefitsSection() {
       id="benefits"
       className="relative w-full overflow-hidden px-6 py-32 md:px-12"
     >
-      {/* Background blue blobs */}
+      {/* Background blue blobs — intense + parallax */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -right-40 top-0 h-[1000px] w-[800px] opacity-40">
-          <Image src="/images/blue-blur.webp" alt="" fill className="object-contain" aria-hidden="true" />
+        <div ref={(el) => { blobRefs.current[0] = el; }} className="absolute -right-40 top-0 h-[1200px] w-[900px] opacity-70">
+          <Image src="/images/blue-blur.webp" alt="" fill className="object-contain blur-xl" aria-hidden="true" />
         </div>
-        <div className="absolute -left-40 bottom-0 h-[800px] w-[600px] opacity-25">
-          <Image src="/images/blue-blur.webp" alt="" fill className="object-contain" aria-hidden="true" />
+        <div ref={(el) => { blobRefs.current[1] = el; }} className="absolute -left-40 bottom-0 h-[1000px] w-[800px] opacity-45">
+          <Image src="/images/blue-blur.webp" alt="" fill className="object-contain blur-xl" aria-hidden="true" />
+        </div>
+        <div ref={(el) => { blobRefs.current[2] = el; }} className="absolute right-1/4 bottom-1/4 h-[800px] w-[600px] opacity-30">
+          <Image src="/images/blue-blur.webp" alt="" fill className="object-contain blur-2xl" aria-hidden="true" />
         </div>
       </div>
 
@@ -135,7 +165,7 @@ export function BenefitsSection() {
           </span>
         </div>
 
-        {/* Large Heading with blur words */}
+        {/* Large Heading — SplitType */}
         <div ref={headingRef} className="mb-24">
           <h2
             style={{
@@ -145,19 +175,7 @@ export function BenefitsSection() {
               textTransform: "uppercase",
             }}
           >
-            <span className="block">
-              <span className="blur-word inline-block">The</span>{" "}
-              <span className="blur-word inline-block">beauty</span>{" "}
-              <span className="blur-word inline-block">is</span>
-            </span>
-            <span className="block text-right">
-              <span className="blur-word inline-block">in</span>{" "}
-              <span className="blur-word inline-block">how</span>{" "}
-              <span className="blur-word inline-block">it&apos;s</span>
-            </span>
-            <span className="block text-right mr-[10%]">
-              <span className="blur-word inline-block">done</span>
-            </span>
+            The beauty is in how it&apos;s done
           </h2>
         </div>
 
