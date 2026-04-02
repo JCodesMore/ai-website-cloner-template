@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Montserrat, Red_Hat_Display } from "next/font/google";
 import "./globals.css";
+import Header from "@/components/Header";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -34,7 +35,10 @@ export default function RootLayout({
         {/* Adobe Fonts (Typekit) for gravesend-sans */}
         <link rel="stylesheet" href="https://use.typekit.net/llc7hpe.css" />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col" style={{ background: '#101010' }}>
+        <Header />
+        {children}
+      </body>
     </html>
   );
 }
