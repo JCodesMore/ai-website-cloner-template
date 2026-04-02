@@ -435,3 +435,20 @@
     outline: rgb(57, 190, 171) solid 1px;
     padding: clamp(1rem, 0.912rem + 0.3756vw, 1.25rem) 1.25rem;
 }
+
+.relative .relative-svg{
+  visibility: hidden; 
+  position: absolute;
+}
+
+.home-header_bg_shape{
+  background-color: #180425;
+}
+
+.relative .home-header_bg_shape{
+  --_gap-outer-width: 434px;
+  --_gap-inner-width: 299px;
+  --_gap-height: 56px;
+  border-radius: var(--_radius);
+  clip-path: polygon(0% 0%, calc(50% - (var(--_gap-outer-width) / 2)) 0%, calc(50% - (var(--_gap-inner-width) / 2)) var(--_gap-height), calc(50% + (var(--_gap-inner-width) / 2)) var(--_gap-height), calc(50% + (var(--_gap-outer-width) / 2)) 0%, 100% 0%, 100% 100%, 0% 100%)
+}

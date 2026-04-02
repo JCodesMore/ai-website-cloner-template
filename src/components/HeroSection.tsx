@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import "../app/globals.css";
 
 const cards = [
   { src: "/images/banking-card-1.svg", alt: "Banking Card 1" },
@@ -13,21 +14,39 @@ const cards = [
 export function HeroSection() {
   return (
     <header className="relative">
-      <div
-        className="relative overflow-hidden isolate"
-        style={{ borderRadius: "28px" }}
-      >
+      <div className="relative overflow-hidden isolate" style={{ borderRadius: "28px" }}>
         {/* Background */}
-        <div className="absolute inset-0 select-none -z-10">
-          <div
-            className="absolute inset-0 select-none -z-10"
-            style={{
-              backgroundColor: "#180425",
-              clipPath:
-                "polygon(0% 0%, calc(50% - 217px) 0%, calc(50% - 149.5px) 56px, calc(50% + 149.5px) 56px, calc(50% + 217px) 0%, 100% 0%, 100% 100%, 0% 100%)",
-            }}
-          />
+        <div className="absolute inset-0 select-none gooey-filter -z-10">
+          <svg xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+            width="0"
+            height="0"
+            version="1.1"
+            className="relative-svg"
+          >
+            <defs>
+              <filter id="gooey"><feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur"></feGaussianBlur><feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="gooey"></feColorMatrix><feComposite in="SourceGraphic" in2="gooey" operator="atop"></feComposite>
+              </filter>
+            </defs>
+          </svg>
+          <div className="absolute home-header_bg_shape inset-0 select-none -z-10" />
         </div>
+
+        <Image
+          src="/images/line-left.svg"
+          alt=""
+          width={107}
+          height={386}
+          className="absolute top-0 left-0 select-none pointer-events-none hidden xl:block"
+        />
+
+        <Image
+          src="/images/line-right.svg"
+          alt=""
+          width={107}
+          height={386}
+          className="absolute top-0 right-0 select-none pointer-events-none hidden xl:block"
+        />
 
         {/* Content */}
         <div
@@ -40,20 +59,6 @@ export function HeroSection() {
           {/* Heading Area */}
           <div className="grid justify-items-center text-center px-6 relative">
             {/* Decorative lines */}
-            <Image
-              src="/images/line-left.svg"
-              alt=""
-              width={200}
-              height={400}
-              className="absolute top-0 left-0 select-none pointer-events-none hidden xl:block"
-            />
-            <Image
-              src="/images/line-right.svg"
-              alt=""
-              width={200}
-              height={400}
-              className="absolute top-0 right-0 select-none pointer-events-none hidden xl:block"
-            />
 
             <h1
               className="font-bold text-white"

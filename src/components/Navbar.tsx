@@ -85,7 +85,7 @@ export function Navbar() {
         {/* Right: Auth Buttons + Language (desktop) / Hamburger (mobile) */}
         <div className="flex items-center justify-end gap-3">
 
-          
+
 
           {/* Language Dropdown */}
           <div ref={langRef} className="relative hidden xl:block">
@@ -133,7 +133,7 @@ export function Navbar() {
               </div>
             )}
           </div>
-          
+
           {/* Auth Buttons (desktop only) */}
           <div className="hidden xl:flex items-center gap-3">
             <button
@@ -246,7 +246,7 @@ export function Navbar() {
             </button>
           </div>
 
-          
+
         </div>
       )}
     </nav>
