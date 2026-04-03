@@ -1,3 +1,5 @@
+'use client';
+
 const partners = [
   { name: 'FSR', region: 'Argentina', desc: 'Desarrolladora líder en el mercado residencial premium de Buenos Aires.' },
   { name: 'Gesmar', region: 'Argentina', desc: 'Especialistas en comercialización y gestión de proyectos inmobiliarios.' },
