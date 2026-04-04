@@ -69,7 +69,7 @@ scripts/            # Asset download scripts
 
 ## How to Reverse-Engineer Any Website
 
-This guide outlines what to capture when inspecting a target website via Chrome MCP or browser DevTools.
+This guide outlines what to capture when inspecting a target website via agent-browser CLI or browser DevTools.
 
 ## Phase 1: Visual Audit
 
