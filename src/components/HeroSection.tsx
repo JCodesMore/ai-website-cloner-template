@@ -6,10 +6,15 @@ const words = ["workflow", "process", "lead", "task", "operation"];
 
 export function HeroSection() {
   const [currentIdx, setCurrentIdx] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentIdx((i) => (i + 1) % words.length);
+      setIsTransitioning(true);
+      setTimeout(() => {
+        setCurrentIdx((i) => (i + 1) % words.length);
+        setTimeout(() => setIsTransitioning(false), 80);
+      }, 200);
     }, 2400);
     return () => clearInterval(interval);
   }, []);
@@ -33,11 +38,14 @@ export function HeroSection() {
         Systems for every{" "}
         <span
           key={currentIdx}
-          className="animate-word-cycle inline-block"
           style={{
-            color: "oklch(0.95 0.15 108)",
+            color: isTransitioning ? "oklch(0.95 0.15 108 / 0.3)" : "oklch(0.95 0.15 108)",
+            display: "inline-block",
             minWidth: "10ch",
-            textAlign: "left",
+            textAlign: "center",
+            opacity: isTransitioning ? 0 : 1,
+            transform: isTransitioning ? "scale(0.97) translateY(3px)" : "scale(1)",
+            transition: "opacity 180ms ease, transform 180ms ease, color 80ms ease",
           }}
         >
           {words[currentIdx]}

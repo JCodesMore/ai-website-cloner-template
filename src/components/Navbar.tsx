@@ -103,7 +103,7 @@ export function Navbar() {
                 }}
               >
                 <Link
-                  href="/#products"
+                  href="/#hero"
                   onClick={() => setProductOpen(false)}
                   style={{ display: "block", padding: "10px 20px", textDecoration: "none" }}
                 >
@@ -112,7 +112,7 @@ export function Navbar() {
                 </Link>
                 <div style={{ height: "1px", background: "oklch(1 0 0 / 0.07)", margin: "4px 0" }} />
                 <Link
-                  href="/#products"
+                  href="/#flowstack"
                   onClick={() => setProductOpen(false)}
                   style={{ display: "block", padding: "10px 20px", textDecoration: "none" }}
                 >
@@ -120,12 +120,21 @@ export function Navbar() {
                   <p style={{ fontSize: "12px", color: "oklch(1 0 0 / 0.45)", margin: "2px 0 0" }}>Lead capture &amp; client ops</p>
                 </Link>
                 <Link
-                  href="/#products"
+                  href="/#flowops"
                   onClick={() => setProductOpen(false)}
                   style={{ display: "block", padding: "10px 20px", textDecoration: "none" }}
                 >
                   <p style={{ fontSize: "14px", fontWeight: 700, color: "oklch(1 0 0 / 0.9)", margin: 0 }}>FlowOps</p>
                   <p style={{ fontSize: "12px", color: "oklch(1 0 0 / 0.45)", margin: "2px 0 0" }}>Internal ops &amp; data sync</p>
+                </Link>
+                <div style={{ height: "1px", background: "oklch(1 0 0 / 0.07)", margin: "4px 0" }} />
+                <Link
+                  href="/#meet-flo"
+                  onClick={() => setProductOpen(false)}
+                  style={{ display: "block", padding: "10px 20px", textDecoration: "none" }}
+                >
+                  <p style={{ fontSize: "14px", fontWeight: 700, color: "oklch(1 0 0 / 0.9)", margin: 0 }}>Meet FLO</p>
+                  <p style={{ fontSize: "12px", color: "oklch(1 0 0 / 0.45)", margin: "2px 0 0" }}>How we work with you</p>
                 </Link>
               </div>
             )}

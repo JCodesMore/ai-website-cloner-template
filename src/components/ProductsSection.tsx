@@ -6,7 +6,7 @@ export function ProductsSection() {
     >
       <div className="flex flex-col gap-16 md:gap-24">
         {/* FlowStack */}
-        <div className="grid gap-8 md:grid-cols-2 md:items-center">
+        <div id="flowstack" className="grid gap-8 md:grid-cols-2 md:items-center">
           {/* Left: text */}
           <div className="flex flex-col gap-3">
             <h2
@@ -115,7 +115,7 @@ export function ProductsSection() {
         </div>
 
         {/* FlowOps */}
-        <div className="grid gap-8 md:grid-cols-2 md:items-center">
+        <div id="flowops" className="grid gap-8 md:grid-cols-2 md:items-center">
           {/* Feature card — left on desktop */}
           <div
             className="rounded-xl p-6 md:order-first md:p-8"
