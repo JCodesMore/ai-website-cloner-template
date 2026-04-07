@@ -1,0 +1,14 @@
+// Candid interface for KiloSite canister
+
+type Stats = record {
+  pageViews : nat;
+  waitlistCount : nat;
+};
+
+service : {
+  getStats : () -> (Stats) query;
+  getPageViews : () -> (nat) query;
+  getWaitlistCount : () -> (nat) query;
+  recordPageView : () -> ();
+  joinWaitlist : () -> (nat);
+}

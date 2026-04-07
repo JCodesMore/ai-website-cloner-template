@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "canisters": {
+    "kilo_backend": {
+      "type": "motoko",
+      "main": "src/backend/main.mo"
+    },
+    "kilo_frontend": {
+      "type": "assets",
+      "source": ["out"],
+      "dependencies": ["kilo_backend"]
+    }
+  },
+  "defaults": {
+    "build": {
+      "packtool": ""
+    }
+  },
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:8000",
+      "type": "ephemeral"
+    }
+  }
+}
