@@ -4,12 +4,53 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* HBO Max "Street 3" font (HandsetSansUI) */
+@font-face {
+  font-family: "Street 3";
+  src: url("/fonts/HandsetSansUI-Regular.woff2") format("woff2");
+  font-weight: 200 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Street 3";
+  src: url("/fonts/HandsetSansUI-Regular.woff2") format("woff2");
+  font-weight: 200 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Street 3";
+  src: url("/fonts/HandsetSansUI-Bold.woff2") format("woff2");
+  font-weight: 500 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Street 3";
+  src: url("/fonts/HandsetSansUI-Bold.woff2") format("woff2");
+  font-weight: 500 700;
+  font-style: italic;
+  font-display: swap;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
+  --font-sans: "Street 3", NotoSans, Arial, sans-serif;
+  --font-mono: ui-monospace, "Geist Mono", monospace;
   --font-heading: var(--font-sans);
+
+  /* HBO Max tokens */
+  --color-hbo-page: #f5f5f5;
+  --color-hbo-dark: #252525;
+  --color-hbo-alert-info: rgba(113, 184, 242, 0.1);
+  --color-hbo-heading: #0f0f0f;
+  --color-hbo-body: #545454;
+  --color-hbo-link: #116fbb;
+  --color-hbo-border: #d9d9d9;
+  --color-hbo-icon-circle: #000000;
+
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -49,8 +90,8 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --background: #f5f5f5;
+  --foreground: #545454;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
@@ -72,7 +113,7 @@
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
+  --radius: 0.5rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -84,8 +125,8 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
+  --background: #252525;
+  --foreground: #f5f5f5;
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
@@ -121,10 +162,44 @@
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
   html {
     @apply font-sans;
   }
+  body {
+    background: var(--color-hbo-page);
+    color: var(--color-hbo-body);
+    font-family: "Street 3", NotoSans, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 20px;
+    font-weight: 400;
+  }
+}
+
+/* HBO-specific helpers */
+.hbo-card-shadow {
+  box-shadow: 0 0 30px 0 rgba(223, 223, 223, 0.2);
+}
+
+/* Desktop side gutters replicate margin: 0 122px; collapse on smaller viewports */
+.hbo-gutter {
+  margin-left: 122px;
+  margin-right: 122px;
+}
+@media (max-width: 1200px) {
+  .hbo-gutter { margin-left: 48px; margin-right: 48px; }
+}
+@media (max-width: 768px) {
+  .hbo-gutter { margin-left: 20px; margin-right: 20px; }
+}
+
+/* Wrap behavior for topic card groups */
+@media (max-width: 1100px) {
+  .hbo-categories .hbo-cat-group { flex-basis: 100%; }
+}
+@media (max-width: 640px) {
+  .hbo-categories { flex-direction: column; gap: 16px; }
+  .hbo-categories .hbo-cat-group { flex-direction: column; gap: 16px; }
+}
+@media (max-width: 900px) {
+  .hbo-kb { flex-direction: column; }
 }
