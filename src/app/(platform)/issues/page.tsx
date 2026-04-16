@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState, useEffect, useRef, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import {
   CircleDot,
   Plus,
@@ -13,11 +13,17 @@ import {
   Loader2,
   XCircle,
   Bot,
+  MoreHorizontal,
+  Pencil,
+  Copy,
+  Archive,
+  Trash2,
+  ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NewIssueModal } from "@/components/platform/Modals";
 
-const ALL_ISSUES = [
+export const ALL_ISSUES = [
   {
     id: "ISS-145",
     title: "Implement OAuth2 PKCE flow for mobile clients",
@@ -166,7 +172,7 @@ function PriorityBadge({ priority }: { priority: string }) {
   return (
     <span
       className={cn(
-        "text-[10px] px-1.5 py-0.5 border font-medium uppercase tracking-wide",
+        "text-[10px] px-1.5 py-0.5 border font-medium uppercase tracking-wide rounded-full",
         map[priority]
       )}
     >
@@ -175,12 +181,73 @@ function PriorityBadge({ priority }: { priority: string }) {
   );
 }
 
+function RowDropdown({
+  issueId,
+  open,
+  onClose,
+}: {
+  issueId: string;
+  open: boolean;
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        onClose();
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [open, onClose]);
+
+  if (!open) return null;
+
+  const itemCls =
+    "flex items-center gap-2 px-3 py-2 text-sm hover:bg-accent/50 cursor-pointer transition-colors";
+
+  return (
+    <div
+      ref={ref}
+      className="absolute right-0 top-full mt-1 z-50 min-w-[160px] rounded-xl border border-border bg-popover shadow-xl slide-down"
+    >
+      <div className={itemCls}>
+        <Pencil className="w-3.5 h-3.5 text-muted-foreground" />
+        Edit
+      </div>
+      <div className={itemCls}>
+        <Copy className="w-3.5 h-3.5 text-muted-foreground" />
+        Duplicate
+      </div>
+      <div className={cn(itemCls, "justify-between")}>
+        <span className="flex items-center gap-2">
+          <CircleDot className="w-3.5 h-3.5 text-muted-foreground" />
+          Change Status
+        </span>
+        <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
+      </div>
+      <div className={itemCls}>
+        <Archive className="w-3.5 h-3.5 text-muted-foreground" />
+        Archive
+      </div>
+      <div className={cn(itemCls, "text-red-400")}>
+        <Trash2 className="w-3.5 h-3.5" />
+        Delete
+      </div>
+    </div>
+  );
+}
+
 function IssuesPageInner() {
   const [issues, setIssues] = useState(ALL_ISSUES);
   const [activeTab, setActiveTab] = useState<(typeof STATUS_TABS)[number]>("all");
   const [search, setSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
+  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   useEffect(() => {
     if (searchParams.get("new") === "1") {
@@ -240,13 +307,13 @@ function IssuesPageInner() {
         <div className="flex items-center gap-3">
           <CircleDot className="w-4 h-4 text-muted-foreground" />
           <h1 className="text-sm font-semibold">Issues</h1>
-          <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5">
+          <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">
             {issues.length}
           </span>
         </div>
         <button
           onClick={() => setModalOpen(true)}
-          className="flex items-center gap-1.5 text-xs bg-primary text-primary-foreground px-3 py-1.5 hover:bg-primary/90 transition-colors font-medium"
+          className="flex items-center gap-1.5 text-xs bg-primary text-primary-foreground px-3 py-1.5 hover:bg-primary/90 transition-colors font-medium rounded-full"
         >
           <Plus className="w-3.5 h-3.5" />
           New Issue
@@ -262,7 +329,7 @@ function IssuesPageInner() {
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 text-xs transition-colors",
+                "flex items-center gap-1.5 px-3 py-1.5 text-xs transition-colors rounded-full",
                 activeTab === tab
                   ? "bg-accent text-accent-foreground font-medium"
                   : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
@@ -289,11 +356,11 @@ function IssuesPageInner() {
             placeholder="Search issues..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-7 pr-3 py-1.5 text-xs bg-muted border border-border focus:outline-none focus:border-ring w-48 placeholder:text-muted-foreground"
+            className="pl-7 pr-3 py-1.5 text-xs bg-muted border border-border focus:outline-none focus:border-ring w-48 placeholder:text-muted-foreground rounded-xl"
           />
         </div>
 
-        <button className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground border border-border px-2.5 py-1.5 hover:bg-accent/50 transition-colors">
+        <button className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground border border-border px-2.5 py-1.5 hover:bg-accent/50 transition-colors rounded-xl">
           <SlidersHorizontal className="w-3.5 h-3.5" />
           Filters
           <ChevronDown className="w-3 h-3" />
@@ -301,13 +368,14 @@ function IssuesPageInner() {
       </div>
 
       {/* Table header */}
-      <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto] items-center gap-4 px-6 py-2 border-b border-border text-xs text-muted-foreground bg-muted/30 shrink-0">
+      <div className="grid items-center gap-4 px-6 py-2 border-b border-border text-xs text-muted-foreground bg-muted/30 shrink-0" style={{ gridTemplateColumns: "auto 1fr auto auto auto auto auto" }}>
         <span className="w-4" />
         <span>Title</span>
         <span className="w-20 text-center">Priority</span>
         <span className="w-24">Agent</span>
         <span className="w-28">Project</span>
         <span className="w-16 text-right">Updated</span>
+        <span className="w-6" />
       </div>
 
       {/* Issue rows */}
@@ -324,7 +392,9 @@ function IssuesPageInner() {
           filtered.map((issue) => (
             <div
               key={issue.id}
-              className="grid grid-cols-[auto_1fr_auto_auto_auto_auto] items-center gap-4 px-6 py-3 hover:bg-muted/30 transition-colors cursor-pointer group"
+              onClick={() => router.push(`/issues/${issue.id.toLowerCase()}`)}
+              className="grid items-center gap-4 px-6 py-3 hover:bg-muted/30 transition-colors cursor-pointer group"
+              style={{ gridTemplateColumns: "auto 1fr auto auto auto auto auto" }}
             >
               <StatusIcon status={issue.status} />
               <div className="min-w-0">
@@ -340,7 +410,7 @@ function IssuesPageInner() {
                   {issue.labels.map((l) => (
                     <span
                       key={l}
-                      className="text-[10px] text-muted-foreground/60 border border-border px-1 py-0.5"
+                      className="text-[10px] text-muted-foreground/60 border border-border px-1 py-0.5 rounded-full"
                     >
                       {l}
                     </span>
@@ -359,6 +429,26 @@ function IssuesPageInner() {
               </div>
               <div className="w-16 text-right">
                 <span className="text-xs text-muted-foreground/50">{issue.updated}</span>
+              </div>
+              {/* Three-dots menu */}
+              <div
+                className="w-6 flex justify-center relative"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setOpenDropdownId(openDropdownId === issue.id ? null : issue.id);
+                  }}
+                  className="opacity-0 group-hover:opacity-100 transition-all duration-200 p-1 rounded-lg hover:bg-accent/70 text-muted-foreground hover:text-foreground"
+                >
+                  <MoreHorizontal className="w-3.5 h-3.5" />
+                </button>
+                <RowDropdown
+                  issueId={issue.id}
+                  open={openDropdownId === issue.id}
+                  onClose={() => setOpenDropdownId(null)}
+                />
               </div>
             </div>
           ))

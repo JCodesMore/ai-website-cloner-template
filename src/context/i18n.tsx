@@ -1,20 +1,21 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback } from "react";
+import { createContext, useContext, useState, useCallback, useEffect } from "react";
 
-export type LangCode = "en" | "zh" | "hi" | "es" | "fr" | "ar" | "bn" | "ru" | "pt" | "id";
+export type LangCode = "en" | "zh" | "hi" | "es" | "fr" | "ar" | "bn" | "ru" | "pt" | "de" | "ja";
 
 export const LANGUAGES: { code: LangCode; name: string; nativeName: string; rtl?: boolean }[] = [
-  { code: "en", name: "English", nativeName: "English" },
-  { code: "zh", name: "Chinese", nativeName: "中文" },
-  { code: "hi", name: "Hindi", nativeName: "हिन्दी" },
-  { code: "es", name: "Spanish", nativeName: "Español" },
-  { code: "fr", name: "French", nativeName: "Français" },
-  { code: "ar", name: "Arabic", nativeName: "العربية", rtl: true },
-  { code: "bn", name: "Bengali", nativeName: "বাংলা" },
-  { code: "ru", name: "Russian", nativeName: "Русский" },
+  { code: "en", name: "English",    nativeName: "English" },
+  { code: "zh", name: "Chinese",    nativeName: "中文" },
+  { code: "hi", name: "Hindi",      nativeName: "हिन्दी" },
+  { code: "es", name: "Spanish",    nativeName: "Español" },
+  { code: "fr", name: "French",     nativeName: "Français" },
+  { code: "ar", name: "Arabic",     nativeName: "العربية", rtl: true },
+  { code: "bn", name: "Bengali",    nativeName: "বাংলা" },
+  { code: "ru", name: "Russian",    nativeName: "Русский" },
   { code: "pt", name: "Portuguese", nativeName: "Português" },
-  { code: "id", name: "Indonesian", nativeName: "Bahasa Indonesia" },
+  { code: "de", name: "German",     nativeName: "Deutsch" },
+  { code: "ja", name: "Japanese",   nativeName: "日本語" },
 ];
 
 type Translations = {
@@ -41,6 +42,8 @@ type Translations = {
   save: string;
   saved: string;
   cancel: string;
+  models: string;
+  apis: string;
 };
 
 const DICT: Record<LangCode, Translations> = {
@@ -52,6 +55,7 @@ const DICT: Record<LangCode, Translations> = {
     newGoal: "New Goal", newRoutine: "New Routine",
     work: "Work", company: "Company", projects: "Projects",
     save: "Save Changes", saved: "Saved ✓", cancel: "Cancel",
+    models: "Models", apis: "APIs",
   },
   zh: {
     dashboard: "仪表板", inbox: "收件箱", issues: "任务", routines: "例行程序",
@@ -61,6 +65,7 @@ const DICT: Record<LangCode, Translations> = {
     newGoal: "新目标", newRoutine: "新例行程序",
     work: "工作", company: "公司", projects: "项目",
     save: "保存更改", saved: "已保存 ✓", cancel: "取消",
+    models: "模型", apis: "API接口",
   },
   hi: {
     dashboard: "डैशबोर्ड", inbox: "इनबॉक्स", issues: "कार्य", routines: "रूटीन",
@@ -70,6 +75,7 @@ const DICT: Record<LangCode, Translations> = {
     newGoal: "नया लक्ष्य", newRoutine: "नई रूटीन",
     work: "कार्य", company: "कंपनी", projects: "प्रोजेक्ट",
     save: "परिवर्तन सहेजें", saved: "सहेजा गया ✓", cancel: "रद्द करें",
+    models: "मॉडल", apis: "एपीआई",
   },
   es: {
     dashboard: "Panel", inbox: "Bandeja de entrada", issues: "Tareas", routines: "Rutinas",
@@ -79,6 +85,7 @@ const DICT: Record<LangCode, Translations> = {
     newGoal: "Nuevo objetivo", newRoutine: "Nueva rutina",
     work: "Trabajo", company: "Empresa", projects: "Proyectos",
     save: "Guardar cambios", saved: "Guardado ✓", cancel: "Cancelar",
+    models: "Modelos", apis: "APIs",
   },
   fr: {
     dashboard: "Tableau de bord", inbox: "Boîte de réception", issues: "Tâches", routines: "Routines",
@@ -88,6 +95,7 @@ const DICT: Record<LangCode, Translations> = {
     newGoal: "Nouvel objectif", newRoutine: "Nouvelle routine",
     work: "Travail", company: "Entreprise", projects: "Projets",
     save: "Enregistrer", saved: "Enregistré ✓", cancel: "Annuler",
+    models: "Modèles", apis: "API",
   },
   ar: {
     dashboard: "لوحة التحكم", inbox: "صندوق الوارد", issues: "المهام", routines: "الروتين",
@@ -97,6 +105,7 @@ const DICT: Record<LangCode, Translations> = {
     newGoal: "هدف جديد", newRoutine: "روتين جديد",
     work: "عمل", company: "شركة", projects: "مشاريع",
     save: "حفظ التغييرات", saved: "تم الحفظ ✓", cancel: "إلغاء",
+    models: "النماذج", apis: "واجهات برمجية",
   },
   bn: {
     dashboard: "ড্যাশবোর্ড", inbox: "ইনবক্স", issues: "কাজ", routines: "রুটিন",
@@ -106,6 +115,7 @@ const DICT: Record<LangCode, Translations> = {
     newGoal: "নতুন লক্ষ্য", newRoutine: "নতুন রুটিন",
     work: "কাজ", company: "কোম্পানি", projects: "প্রকল্প",
     save: "পরিবর্তন সংরক্ষণ করুন", saved: "সংরক্ষিত ✓", cancel: "বাতিল",
+    models: "মডেল", apis: "API",
   },
   ru: {
     dashboard: "Панель", inbox: "Входящие", issues: "Задачи", routines: "Рутины",
@@ -115,6 +125,7 @@ const DICT: Record<LangCode, Translations> = {
     newGoal: "Новая цель", newRoutine: "Новая рутина",
     work: "Работа", company: "Компания", projects: "Проекты",
     save: "Сохранить", saved: "Сохранено ✓", cancel: "Отмена",
+    models: "Модели", apis: "API",
   },
   pt: {
     dashboard: "Painel", inbox: "Caixa de entrada", issues: "Tarefas", routines: "Rotinas",
@@ -124,15 +135,27 @@ const DICT: Record<LangCode, Translations> = {
     newGoal: "Novo objetivo", newRoutine: "Nova rotina",
     work: "Trabalho", company: "Empresa", projects: "Projetos",
     save: "Salvar alterações", saved: "Salvo ✓", cancel: "Cancelar",
+    models: "Modelos", apis: "APIs",
   },
-  id: {
-    dashboard: "Dasbor", inbox: "Kotak Masuk", issues: "Tugas", routines: "Rutinitas",
-    goals: "Tujuan", approvals: "Persetujuan", agents: "Agen", org: "Organisasi",
-    skills: "Keahlian", costs: "Biaya", activity: "Aktivitas", settings: "Pengaturan",
-    search: "Cari...", newIssue: "Tugas Baru", newAgent: "Agen Baru",
-    newGoal: "Tujuan Baru", newRoutine: "Rutinitas Baru",
-    work: "Pekerjaan", company: "Perusahaan", projects: "Proyek",
-    save: "Simpan Perubahan", saved: "Tersimpan ✓", cancel: "Batal",
+  de: {
+    dashboard: "Dashboard", inbox: "Posteingang", issues: "Aufgaben", routines: "Routinen",
+    goals: "Ziele", approvals: "Genehmigungen", agents: "Agenten", org: "Organisation",
+    skills: "Fähigkeiten", costs: "Kosten", activity: "Aktivität", settings: "Einstellungen",
+    search: "Suchen...", newIssue: "Neue Aufgabe", newAgent: "Neuer Agent",
+    newGoal: "Neues Ziel", newRoutine: "Neue Routine",
+    work: "Arbeit", company: "Unternehmen", projects: "Projekte",
+    save: "Speichern", saved: "Gespeichert ✓", cancel: "Abbrechen",
+    models: "Modelle", apis: "APIs",
+  },
+  ja: {
+    dashboard: "ダッシュボード", inbox: "受信箱", issues: "タスク", routines: "ルーティン",
+    goals: "目標", approvals: "承認", agents: "エージェント", org: "組織",
+    skills: "スキル", costs: "コスト", activity: "アクティビティ", settings: "設定",
+    search: "検索...", newIssue: "新しいタスク", newAgent: "新しいエージェント",
+    newGoal: "新しい目標", newRoutine: "新しいルーティン",
+    work: "作業", company: "会社", projects: "プロジェクト",
+    save: "変更を保存", saved: "保存済み ✓", cancel: "キャンセル",
+    models: "モデル", apis: "API",
   },
 };
 
@@ -153,9 +176,23 @@ export const useI18n = () => useContext(I18nContext);
 export function I18nProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLangState] = useState<LangCode>("en");
 
+  // Load persisted language on mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("lang") as LangCode | null;
+      if (stored && stored in DICT) {
+        setLangState(stored);
+        const rtl = LANGUAGES.find((x) => x.code === stored)?.rtl ?? false;
+        document.documentElement.dir = rtl ? "rtl" : "ltr";
+      }
+    }
+  }, []);
+
   const setLang = useCallback((l: LangCode) => {
     setLangState(l);
-    // Apply RTL for Arabic
+    if (typeof window !== "undefined") {
+      localStorage.setItem("lang", l);
+    }
     const rtl = LANGUAGES.find((x) => x.code === l)?.rtl ?? false;
     document.documentElement.dir = rtl ? "rtl" : "ltr";
   }, []);

@@ -36,12 +36,44 @@ const DEFAULT_PROJECTS: Project[] = [
   { name: "Marketing Site", color: "#10b981" },
 ];
 
+const SESSION_KEY = "activeProject";
+
+function readSessionProject(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return sessionStorage.getItem(SESSION_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function writeSessionProject(name: string | null): void {
+  if (typeof window === "undefined") return;
+  try {
+    if (name === null) {
+      sessionStorage.removeItem(SESSION_KEY);
+    } else {
+      sessionStorage.setItem(SESSION_KEY, name);
+    }
+  } catch {
+    // ignore
+  }
+}
+
 export function PlatformShell({ children }: { children: React.ReactNode }) {
   const [cmdOpen, setCmdOpen] = useState(false);
   const [newProjectOpen, setNewProjectOpen] = useState(false);
   const [newAgentOpen, setNewAgentOpen] = useState(false);
   const [projects, setProjects] = useState<Project[]>(DEFAULT_PROJECTS);
-  const [activeProject, setActiveProject] = useState<string | null>(null);
+  const [activeProject, setActiveProjectState] = useState<string | null>(null);
+
+  // Restore activeProject from sessionStorage on mount
+  useEffect(() => {
+    const stored = readSessionProject();
+    if (stored !== null) {
+      setActiveProjectState(stored);
+    }
+  }, []);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -52,6 +84,16 @@ export function PlatformShell({ children }: { children: React.ReactNode }) {
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
+  }, []);
+
+  const setActiveProject = useCallback((name: string | null) => {
+    setActiveProjectState(name);
+    writeSessionProject(name);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("project-changed", { detail: name })
+      );
+    }
   }, []);
 
   const addProject = useCallback((p: Project) => {
