@@ -2,7 +2,21 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Search, Plus, X, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  Search,
+  Plus,
+  X,
+  ChevronDown,
+  ChevronUp,
+  Boxes,
+  Download,
+  MoreHorizontal,
+  XCircle,
+  Loader2,
+  CheckCircle2,
+} from "lucide-react";
+
+// ─── Existing skill types & data ──────────────────────────────────────────────
 
 type Category = "code" | "test" | "write" | "deploy" | "analyze";
 
@@ -146,12 +160,369 @@ const EMPTY_FORM: NewSkillForm = {
   instructions: "",
 };
 
+// ─── Installed Skill types ────────────────────────────────────────────────────
+
+interface InstalledSkill {
+  id: string;
+  name: string;
+  description: string;
+  version: string;
+  status: "active" | "paused";
+  author: string;
+}
+
+const INITIAL_INSTALLED: InstalledSkill[] = [
+  { id: "i1", name: "Code Review",          description: "Reviews PRs and suggests improvements",               version: "1.2.0", status: "active", author: "MyaiCompany" },
+  { id: "i2", name: "Deployment",           description: "Manages CI/CD pipelines and deployments",            version: "0.9.1", status: "active", author: "community"   },
+  { id: "i3", name: "Test Generator",       description: "Generates unit and integration tests automatically", version: "2.1.0", status: "active", author: "MyaiCompany" },
+  { id: "i4", name: "Documentation Writer", description: "Generates technical docs from code",                 version: "1.0.3", status: "paused", author: "community"   },
+];
+
+type InstallState = "idle" | "loading" | "success" | "error";
+type InstallMethod = "url" | "folder";
+
+// ─── Installed skill card ─────────────────────────────────────────────────────
+
+function InstalledSkillCard({
+  skill,
+  onRemove,
+}: {
+  skill: InstalledSkill;
+  onRemove: (id: string) => void;
+}) {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  return (
+    <div className="rounded-2xl border border-border bg-card p-4 flex flex-col gap-2 relative">
+      {/* Top row: name + badges + three-dots */}
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex items-center gap-2 flex-wrap min-w-0">
+          <span className="font-semibold text-sm text-foreground">{skill.name}</span>
+          {/* Author badge */}
+          <span
+            className={cn(
+              "rounded-full px-2 py-0.5 text-[10px] font-medium border",
+              skill.author === "MyaiCompany"
+                ? "bg-violet-500/15 text-violet-400 border-violet-500/30"
+                : "bg-muted/50 text-muted-foreground border-border"
+            )}
+          >
+            {skill.author}
+          </span>
+          {/* Version pill */}
+          <span className="rounded-full bg-muted/50 border border-border px-2 py-0.5 text-[10px] text-muted-foreground font-mono">
+            v{skill.version}
+          </span>
+          {/* Status dot */}
+          <span className="flex items-center gap-1 text-[10px]">
+            <span
+              className={cn(
+                "w-1.5 h-1.5 rounded-full",
+                skill.status === "active" ? "bg-emerald-400" : "bg-yellow-400"
+              )}
+            />
+            <span className={skill.status === "active" ? "text-emerald-400" : "text-yellow-400"}>
+              {skill.status}
+            </span>
+          </span>
+        </div>
+
+        {/* Three-dots menu */}
+        <div className="relative shrink-0">
+          <button
+            onClick={() => setMenuOpen((v) => !v)}
+            className="p-1 text-muted-foreground hover:text-foreground transition-colors rounded"
+          >
+            <MoreHorizontal className="w-4 h-4" />
+          </button>
+          {menuOpen && (
+            <div
+              className="absolute right-0 top-full mt-1 z-10 w-36 rounded-xl border border-border bg-card shadow-lg py-1"
+              onMouseLeave={() => setMenuOpen(false)}
+            >
+              {[
+                { label: "Edit name" },
+                { label: "View logs" },
+                { label: "Disable" },
+                { label: "Uninstall", danger: true },
+              ].map((item) => (
+                <button
+                  key={item.label}
+                  className={cn(
+                    "w-full text-left px-3 py-1.5 text-xs hover:bg-muted/40 transition-colors",
+                    item.danger ? "text-red-400" : "text-foreground"
+                  )}
+                  onClick={() => {
+                    if (item.label === "Uninstall") onRemove(skill.id);
+                    setMenuOpen(false);
+                  }}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Description */}
+      <p className="text-xs text-muted-foreground mt-1">{skill.description}</p>
+
+      {/* Actions */}
+      <div className="flex items-center gap-2 mt-1">
+        <button className="rounded-full border border-border px-3 py-1 text-xs text-foreground hover:bg-muted/40 transition-colors">
+          Configure
+        </button>
+        <button
+          onClick={() => onRemove(skill.id)}
+          className="rounded-full px-3 py-1 text-xs text-red-400 hover:bg-red-500/10 transition-colors"
+        >
+          Remove
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Install Panel ────────────────────────────────────────────────────────────
+
+const DEMO_SKILL = {
+  name: "Web Scraper",
+  description: "Scrapes and summarizes web pages for agents",
+  version: "1.0.0",
+  author: "community",
+};
+
+function InstallPanel({ onInstall }: { onInstall: (skill: InstalledSkill) => void }) {
+  const [method, setMethod] = useState<InstallMethod>("url");
+
+  // URL method state
+  const [urlInput, setUrlInput] = useState("");
+  const [urlState, setUrlState] = useState<InstallState>("idle");
+
+  // Folder method state
+  const [folderInput, setFolderInput] = useState("");
+  const [folderState, setFolderState] = useState<InstallState>("idle");
+
+  function handleFetchUrl() {
+    if (!urlInput.startsWith("http")) {
+      setUrlState("error");
+      return;
+    }
+    setUrlState("loading");
+    setTimeout(() => setUrlState("success"), 2000);
+  }
+
+  function handleInstallFromUrl() {
+    onInstall({
+      id: `i-${Date.now()}`,
+      name: DEMO_SKILL.name,
+      description: DEMO_SKILL.description,
+      version: DEMO_SKILL.version,
+      status: "active",
+      author: DEMO_SKILL.author,
+    });
+    setUrlInput("");
+    setUrlState("idle");
+  }
+
+  function handleInstallFolder() {
+    if (!folderInput.startsWith("/") && !folderInput.startsWith("C:\\")) {
+      setFolderState("error");
+      return;
+    }
+    setFolderState("loading");
+    setTimeout(() => setFolderState("success"), 2000);
+  }
+
+  function handleConfirmFolder() {
+    onInstall({
+      id: `i-${Date.now()}`,
+      name: DEMO_SKILL.name,
+      description: DEMO_SKILL.description,
+      version: DEMO_SKILL.version,
+      status: "active",
+      author: DEMO_SKILL.author,
+    });
+    setFolderInput("");
+    setFolderState("idle");
+  }
+
+  return (
+    <div className="rounded-2xl border border-border bg-card p-5 flex flex-col gap-4">
+      {/* Header */}
+      <div className="flex items-center gap-2">
+        <Download className="w-4 h-4 text-muted-foreground" />
+        <h2 className="text-sm font-semibold text-foreground">Install a Skill</h2>
+      </div>
+
+      {/* Method toggle */}
+      <div className="flex rounded-xl border border-border overflow-hidden w-fit">
+        {(["url", "folder"] as InstallMethod[]).map((m) => (
+          <button
+            key={m}
+            onClick={() => setMethod(m)}
+            className={cn(
+              "px-4 py-1.5 text-xs font-medium transition-colors",
+              method === m
+                ? "bg-primary/15 text-primary"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
+            )}
+          >
+            {m === "url" ? "From URL" : "From Folder"}
+          </button>
+        ))}
+      </div>
+
+      {/* ── From URL ── */}
+      {method === "url" && (
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-medium text-foreground">Skill URL or Link</label>
+            <p className="text-[11px] text-muted-foreground">
+              Paste a skill URL (e.g. from GitHub or a skill registry). We&apos;ll fetch and install it automatically.
+            </p>
+            <input
+              value={urlInput}
+              onChange={(e) => { setUrlInput(e.target.value); setUrlState("idle"); }}
+              placeholder="https://github.com/user/repo/skill"
+              className="rounded-xl border border-border bg-input px-3 py-2 text-sm font-mono text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 w-full transition-colors mt-1"
+            />
+          </div>
+
+          {/* Fetch button */}
+          {urlState !== "success" && (
+            <button
+              onClick={handleFetchUrl}
+              disabled={urlState === "loading"}
+              className="rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm font-medium w-fit flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90 transition-colors"
+            >
+              {urlState === "loading" && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+              {urlState === "loading" ? "Fetching skill..." : "Fetch & Install"}
+            </button>
+          )}
+
+          {/* Success card */}
+          {urlState === "success" && (
+            <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3 flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span className="text-sm font-semibold text-foreground">{DEMO_SKILL.name}</span>
+                <span className="rounded-full bg-muted/50 border border-border px-2 py-0.5 text-[10px] text-muted-foreground font-mono">
+                  v{DEMO_SKILL.version}
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground">{DEMO_SKILL.description}</p>
+              <button
+                onClick={handleInstallFromUrl}
+                className="rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm font-medium w-fit hover:bg-primary/90 transition-colors mt-1"
+              >
+                Confirm Install
+              </button>
+            </div>
+          )}
+
+          {/* Error card */}
+          {urlState === "error" && (
+            <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-3 flex items-start gap-2">
+              <XCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+              <p className="text-xs text-red-400">
+                Could not fetch skill — please check the URL and try again.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── From Folder ── */}
+      {method === "folder" && (
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-medium text-foreground">Folder Path</label>
+            <p className="text-[11px] text-muted-foreground">
+              Point to a local skill folder. The folder must contain a{" "}
+              <code className="font-mono">skill.json</code> manifest.
+            </p>
+            <input
+              value={folderInput}
+              onChange={(e) => { setFolderInput(e.target.value); setFolderState("idle"); }}
+              placeholder="/path/to/skill"
+              className="rounded-xl border border-border bg-input px-3 py-2 text-sm font-mono text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 w-full transition-colors mt-1"
+            />
+          </div>
+
+          {folderState !== "success" && (
+            <button
+              onClick={handleInstallFolder}
+              disabled={folderState === "loading"}
+              className="rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm font-medium w-fit flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90 transition-colors"
+            >
+              {folderState === "loading" && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+              {folderState === "loading" ? "Installing..." : "Install"}
+            </button>
+          )}
+
+          {folderState === "success" && (
+            <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3 flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span className="text-sm font-semibold text-foreground">{DEMO_SKILL.name}</span>
+                <span className="rounded-full bg-muted/50 border border-border px-2 py-0.5 text-[10px] text-muted-foreground font-mono">
+                  v{DEMO_SKILL.version}
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground">{DEMO_SKILL.description}</p>
+              <button
+                onClick={handleConfirmFolder}
+                className="rounded-full bg-primary text-primary-foreground px-4 py-2 text-sm font-medium w-fit hover:bg-primary/90 transition-colors mt-1"
+              >
+                Confirm Install
+              </button>
+            </div>
+          )}
+
+          {folderState === "error" && (
+            <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-3 flex items-start gap-2">
+              <XCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+              <p className="text-xs text-red-400">
+                Could not find a valid skill at that path — make sure the folder contains a{" "}
+                <code className="font-mono">skill.json</code> manifest.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Info box */}
+      <div className="rounded-xl bg-muted/30 border border-border/50 p-3 text-xs text-muted-foreground">
+        Skills extend your agents&apos; capabilities. A skill is a collection of tools and instructions packaged for reuse.{" "}
+        Browse the skill registry at{" "}
+        <a
+          href="https://skills.myaicompany.io"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary/70 hover:text-primary underline"
+        >
+          skills.myaicompany.io
+        </a>
+      </div>
+    </div>
+  );
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
 export default function SkillsPage() {
+  // Existing skills (agent-prompt skills)
   const [skills, setSkills] = useState<Skill[]>(INITIAL_SKILLS);
   const [query, setQuery] = useState("");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState<NewSkillForm>(EMPTY_FORM);
+
+  // Installed skills
+  const [installedSkills, setInstalledSkills] = useState<InstalledSkill[]>(INITIAL_INSTALLED);
+  const [showInstallPanel, setShowInstallPanel] = useState(false);
 
   const filtered = skills.filter(
     (s) =>
@@ -178,13 +549,23 @@ export default function SkillsPage() {
     setShowModal(false);
   }
 
+  function handleInstall(skill: InstalledSkill) {
+    setInstalledSkills((prev) => [...prev, skill]);
+    setShowInstallPanel(false);
+  }
+
+  function handleRemoveInstalled(id: string) {
+    setInstalledSkills((prev) => prev.filter((s) => s.id !== id));
+  }
+
   return (
     <div className="flex flex-col h-full bg-background overflow-hidden">
       {/* Page header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
         <div className="flex items-center gap-2">
+          <Boxes className="w-4 h-4 text-muted-foreground" />
           <h1 className="text-base font-semibold text-foreground">Skills</h1>
-          <span className="flex items-center justify-center h-4 min-w-5 px-1 text-[10px] font-medium bg-muted text-muted-foreground">
+          <span className="flex items-center justify-center h-5 min-w-6 px-1.5 text-[10px] font-medium rounded-full bg-muted text-muted-foreground">
             {skills.length}
           </span>
         </div>
@@ -197,38 +578,112 @@ export default function SkillsPage() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search skills..."
-              className="pl-7 pr-3 py-1.5 text-xs bg-card border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground/30 transition-colors w-48"
+              className="pl-7 pr-3 py-1.5 text-xs bg-card border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground/30 transition-colors w-48 rounded-lg"
             />
           </div>
           {/* New Skill button */}
           <button
             onClick={() => setShowModal(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-600 text-white text-xs font-medium hover:bg-violet-500 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-600 text-white text-xs font-medium hover:bg-violet-500 transition-colors rounded-full"
           >
             <Plus className="w-3 h-3" />
             New Skill
           </button>
+          {/* Install Skill button */}
+          <button
+            onClick={() => setShowInstallPanel((v) => !v)}
+            className="flex items-center gap-1.5 px-3 py-1.5 border border-border text-xs font-medium text-foreground hover:bg-muted/40 transition-colors rounded-full"
+          >
+            <Download className="w-3 h-3" />
+            Install Skill
+          </button>
         </div>
       </div>
 
-      {/* Grid */}
+      {/* ── Skills Installation section ─────────────────────────────────── */}
       <div className="flex-1 overflow-y-auto">
-        {filtered.length === 0 ? (
-          <div className="flex items-center justify-center h-32 text-sm text-muted-foreground">
-            No skills found
+        {/* Two-column layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-0 h-full">
+          {/* Left: installed skills list */}
+          <div className="p-5 border-r border-border flex flex-col gap-4 overflow-y-auto">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-semibold text-foreground">
+                Installed Skills
+                <span className="ml-2 rounded-full bg-muted/60 border border-border px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                  {installedSkills.length}
+                </span>
+              </h2>
+            </div>
+
+            {installedSkills.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-border bg-muted/10 p-8 text-center">
+                <p className="text-sm text-muted-foreground">No skills installed yet.</p>
+                <p className="mt-1 text-xs text-muted-foreground/60">
+                  Use &quot;Install Skill&quot; to add your first skill.
+                </p>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {installedSkills.map((skill) => (
+                  <InstalledSkillCard
+                    key={skill.id}
+                    skill={skill}
+                    onRemove={handleRemoveInstalled}
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* Divider to existing skills grid */}
+            <div className="mt-4 pt-4 border-t border-border">
+              <h2 className="text-sm font-semibold text-foreground mb-3">
+                Agent Prompt Skills
+                <span className="ml-2 rounded-full bg-muted/60 border border-border px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                  {filtered.length}
+                </span>
+              </h2>
+              {filtered.length === 0 ? (
+                <div className="flex items-center justify-center h-24 text-sm text-muted-foreground">
+                  No skills found
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {filtered.map((skill) => (
+                    <SkillCard
+                      key={skill.id}
+                      skill={skill}
+                      expanded={expandedId === skill.id}
+                      onToggle={() => handleToggle(skill.id)}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 p-4">
-            {filtered.map((skill) => (
-              <SkillCard
-                key={skill.id}
-                skill={skill}
-                expanded={expandedId === skill.id}
-                onToggle={() => handleToggle(skill.id)}
-              />
-            ))}
+
+          {/* Right: install panel */}
+          <div className="p-5 overflow-y-auto">
+            {showInstallPanel ? (
+              <InstallPanel onInstall={handleInstall} />
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full gap-3 text-center px-6">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted/40 border border-border">
+                  <Download className="w-5 h-5 text-muted-foreground" />
+                </div>
+                <p className="text-sm font-medium text-foreground">Install a skill</p>
+                <p className="text-xs text-muted-foreground">
+                  Click &quot;Install Skill&quot; to add new capabilities from a URL or local folder.
+                </p>
+                <button
+                  onClick={() => setShowInstallPanel(true)}
+                  className="rounded-full border border-border px-4 py-2 text-xs font-medium text-foreground hover:bg-muted/40 transition-colors mt-1"
+                >
+                  Open install panel
+                </button>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
 
       {/* New Skill Modal */}
@@ -239,7 +694,7 @@ export default function SkillsPage() {
             if (e.target === e.currentTarget) setShowModal(false);
           }}
         >
-          <div className="bg-card border border-border w-full max-w-md mx-4 flex flex-col">
+          <div className="bg-card border border-border w-full max-w-md mx-4 flex flex-col rounded-2xl">
             {/* Modal header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-border">
               <h2 className="text-sm font-semibold text-foreground">New Skill</h2>
@@ -263,7 +718,7 @@ export default function SkillsPage() {
                   value={form.name}
                   onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                   placeholder="e.g. Summarize Ticket"
-                  className="bg-background border border-border px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground/30 transition-colors"
+                  className="bg-background border border-border px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground/30 transition-colors rounded-xl"
                 />
               </div>
 
@@ -277,7 +732,7 @@ export default function SkillsPage() {
                   onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                   placeholder="Brief description of what this skill does..."
                   rows={2}
-                  className="resize-none bg-background border border-border px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground/30 transition-colors"
+                  className="resize-none bg-background border border-border px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground/30 transition-colors rounded-xl"
                 />
               </div>
 
@@ -291,7 +746,7 @@ export default function SkillsPage() {
                   onChange={(e) =>
                     setForm((f) => ({ ...f, category: e.target.value as Category }))
                   }
-                  className="bg-background border border-border px-3 py-2 text-sm text-foreground focus:outline-none focus:border-foreground/30 transition-colors"
+                  className="bg-background border border-border px-3 py-2 text-sm text-foreground focus:outline-none focus:border-foreground/30 transition-colors rounded-xl"
                 >
                   {(Object.keys(CATEGORY_COLORS) as Category[]).map((cat) => (
                     <option key={cat} value={cat}>
@@ -313,7 +768,7 @@ export default function SkillsPage() {
                   }
                   placeholder="Describe step-by-step what the agent should do when using this skill..."
                   rows={6}
-                  className="resize-none bg-background border border-border px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground/30 transition-colors font-mono"
+                  className="resize-none bg-background border border-border px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground/30 transition-colors font-mono rounded-xl"
                 />
               </div>
             </div>
@@ -329,7 +784,7 @@ export default function SkillsPage() {
               <button
                 onClick={handleCreate}
                 disabled={!form.name.trim()}
-                className="px-4 py-1.5 bg-violet-600 text-white text-xs font-medium hover:bg-violet-500 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="px-4 py-1.5 bg-violet-600 text-white text-xs font-medium hover:bg-violet-500 transition-colors disabled:opacity-40 disabled:cursor-not-allowed rounded-full"
               >
                 Create Skill
               </button>

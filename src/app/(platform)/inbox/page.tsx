@@ -3,35 +3,29 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import {
-  Send,
-  Inbox,
-  Search,
+  MessageSquare,
+  AlertTriangle,
+  XCircle,
+  CheckSquare,
   FileText,
-  AlertCircle,
-  Archive,
-  MailOpen,
+  Check,
+  Clock,
+  X,
+  Send,
   Download,
+  Inbox,
 } from "lucide-react";
 
-interface Message {
-  from: string;
-  time: string;
-  text: string;
-}
+// ── Types ──────────────────────────────────────────────────────────────────
 
-interface DocumentSection {
-  heading: string;
-  body: string;
-}
+type ItemType = "message" | "alert" | "report" | "approval" | "error";
+type Section = "inbox" | "done" | "later";
+type FilterType = "all" | "alerts" | "reports" | "messages" | "errors";
 
-interface DocumentMeta {
-  author: string;
-  created: string;
-  pages: number;
-}
-
-interface Thread {
+interface InboxItem {
   id: number;
+  section: Section;
+  type: ItemType;
   agent: string;
   initials: string;
   color: string;
@@ -39,605 +33,664 @@ interface Thread {
   preview: string;
   time: string;
   unread: boolean;
-  type: "message" | "document" | "alert";
-  messages: Message[];
+  snoozedUntil?: string;
+  messages?: { from: string; time: string; text: string }[];
   document?: {
     title: string;
-    sections: DocumentSection[];
-    metadata: DocumentMeta;
+    sections: { heading: string; body: string }[];
+    metadata: { author: string; created: string; pages: number };
+  };
+  agentContext?: {
+    status: "active" | "paused" | "error";
+    currentTask: string | null;
+    lastRun: string;
+    runsToday: number;
+    budget: number;
+    spend: number;
   };
 }
 
-const INITIAL_THREADS: Thread[] = [
+// ── Seed data ──────────────────────────────────────────────────────────────
+
+const INBOX_ITEMS: InboxItem[] = [
   {
-    id: 1,
-    agent: "Dev Agent",
-    initials: "DA",
-    color: "#6366f1",
-    subject: "PR Ready for Review",
-    preview: "I've completed the OAuth2 PKCE implementation...",
+    id: 1, section: "inbox", type: "message", unread: true,
+    agent: "Dev Agent", initials: "DA", color: "#6366f1",
+    subject: "PR Ready for Review", preview: "OAuth2 PKCE implementation complete, all tests passing...",
     time: "2m ago",
-    unread: true,
-    type: "message",
     messages: [
-      { from: "Dev Agent", time: "2m ago", text: "I've completed the OAuth2 PKCE implementation. The PR is ready for your review. I've added unit tests and updated the docs." },
+      { from: "Dev Agent", time: "2m ago", text: "I've completed the OAuth2 PKCE implementation. The PR is ready for your review. I've added unit tests and updated the documentation. All 247 tests passing." },
       { from: "You", time: "1m ago", text: "Great, I'll take a look. Did you handle the token refresh edge case?" },
-      { from: "Dev Agent", time: "30s ago", text: "Yes, I added a refresh token rotation mechanism. The edge case where tokens expire mid-request is now handled with automatic retry logic." },
+      { from: "Dev Agent", time: "30s ago", text: "Yes — I added refresh token rotation with automatic retry logic for mid-request expirations. The edge case is covered in test ISS-145-token-refresh." },
     ],
+    agentContext: { status: "active", currentTask: "Awaiting PR review", lastRun: "2m ago", runsToday: 8, budget: 150, spend: 84.5 },
   },
   {
-    id: 2,
-    agent: "QA Agent",
-    initials: "QA",
-    color: "#f59e0b",
-    subject: "Test Suite Results",
-    preview: "All 247 tests passing. Coverage at 84%...",
-    time: "15m ago",
-    unread: true,
-    type: "message",
+    id: 2, section: "inbox", type: "alert", unread: true,
+    agent: "QA Agent", initials: "QA", color: "#f59e0b",
+    subject: "Budget Alert: 84% used", preview: "Dev Agent has consumed 84% of monthly budget...",
+    time: "8m ago",
     messages: [
-      { from: "QA Agent", time: "15m ago", text: "All 247 tests are passing. Code coverage is at 84%, up from 71% last sprint. I found 2 edge cases in the payment service that need attention." },
-      { from: "You", time: "10m ago", text: "What are the edge cases?" },
-      { from: "QA Agent", time: "9m ago", text: "Edge case 1: concurrent payment requests with the same idempotency key. Edge case 2: timeout handling when the payment gateway takes >30s. I've created issues ISS-146 and ISS-147 for these." },
+      { from: "QA Agent", time: "8m ago", text: "⚠️ Budget Alert: Dev Agent has consumed $126 of $150 (84%) this month. At current burn rate (~$3.20/day), the budget will be exhausted in 7 days. Recommend reviewing or increasing budget." },
     ],
+    agentContext: { status: "active", currentTask: "Monitoring budgets", lastRun: "8m ago", runsToday: 4, budget: 100, spend: 42 },
   },
   {
-    id: 3,
-    agent: "PM Agent",
-    initials: "PM",
-    color: "#10b981",
-    subject: "Sprint Planning Complete",
-    preview: "I've prepared the sprint board for next week...",
+    id: 3, section: "inbox", type: "error", unread: true,
+    agent: "Docs Agent", initials: "DO", color: "#ef4444",
+    subject: "Error: Permission Denied", preview: "EACCES: permission denied, open '/srv/api/openapi.json'...",
     time: "1h ago",
-    unread: false,
-    type: "message",
     messages: [
-      { from: "PM Agent", time: "1h ago", text: "Sprint planning is complete. I've prioritized 12 issues for next sprint based on the Q2 goals. The Dev Agent has 6 assigned, QA Agent has 4, and I'll handle 2." },
-      { from: "You", time: "50m ago", text: "Looks good. Make sure the security audit tasks are top priority." },
-      { from: "PM Agent", time: "48m ago", text: "Understood. I've moved ISS-140 (Audit user permissions) and ISS-142 (Rate limiting) to the top of the queue. The Dev Agent will start on these tomorrow morning." },
+      { from: "Docs Agent", time: "1h ago", text: "Task failed: EACCES: permission denied, open '/srv/api/openapi.json'. I've paused documentation generation until this is resolved. File path: /srv/api/openapi.json" },
+      { from: "You", time: "50m ago", text: "I'll fix the permissions. Retry in 30 minutes." },
+      { from: "Docs Agent", time: "30m ago", text: "Retried — still receiving EACCES. The permissions may require a process restart to take effect." },
     ],
+    agentContext: { status: "error", currentTask: null, lastRun: "30m ago", runsToday: 0, budget: 50, spend: 6.8 },
   },
   {
-    id: 4,
-    agent: "Dev Agent",
-    initials: "DA",
-    color: "#6366f1",
-    subject: "Requesting Approval: Deploy to Production",
-    preview: "v2.3.1 is ready for production deployment...",
+    id: 4, section: "inbox", type: "approval", unread: false,
+    agent: "Dev Agent", initials: "DA", color: "#6366f1",
+    subject: "Approval Required: Deploy v2.3.1", preview: "Staging has been stable for 48h. Ready for production...",
     time: "2h ago",
-    unread: false,
-    type: "message",
     messages: [
-      { from: "Dev Agent", time: "2h ago", text: "v2.3.1 is ready for production deployment. All tests pass, the staging environment has been running for 48h without issues. Requesting approval to proceed." },
-      { from: "You", time: "1h 55m ago", text: "I'll review the checklist first. Hold off for now." },
+      { from: "Dev Agent", time: "2h ago", text: "v2.3.1 is ready for production deployment. Staging has been running cleanly for 48h. All tests pass. Rollback plan is prepared. Requesting your approval to proceed." },
     ],
+    agentContext: { status: "active", currentTask: "Awaiting deployment approval", lastRun: "2h ago", runsToday: 3, budget: 150, spend: 84.5 },
   },
   {
-    id: 5,
-    agent: "Docs Agent",
-    initials: "DO",
-    color: "#ec4899",
-    subject: "Error: Documentation Generation Failed",
-    preview: "Encountered a permission error when accessing...",
-    time: "3h ago",
-    unread: true,
-    type: "alert",
-    messages: [
-      { from: "Docs Agent", time: "3h ago", text: "I encountered a permission error when trying to access the API spec files. Error: EACCES: permission denied, open '/srv/api/openapi.json'. I've paused the task until this is resolved." },
-      { from: "You", time: "2h 50m ago", text: "I'll fix the permissions. Can you retry in 30 minutes?" },
-      { from: "Docs Agent", time: "30m ago", text: "Retried but still getting the same error. The file permissions were updated but I may need a restart to pick up the changes." },
-    ],
-  },
-  {
-    id: 6,
-    agent: "QA Agent",
-    initials: "QA",
-    color: "#f59e0b",
-    subject: "Coverage Report - Week 15",
-    preview: "Weekly coverage report is ready...",
-    time: "1d ago",
-    unread: false,
-    type: "message",
-    messages: [
-      { from: "QA Agent", time: "1d ago", text: "Weekly coverage report for Week 15 is ready. Overall: 84% (+3%). By module — Auth: 91%, Payments: 78%, API: 87%, Models: 89%. Biggest improvement was in the payment module after the new tests I added." },
-    ],
-  },
-  {
-    id: 7,
-    agent: "PM Agent",
-    initials: "PM",
-    color: "#10b981",
-    subject: "Budget Alert: Dev Agent at 82%",
-    preview: "Dev Agent has used 82% of monthly budget...",
-    time: "2d ago",
-    unread: false,
-    type: "alert",
-    messages: [
-      { from: "PM Agent", time: "2d ago", text: "Alert: Dev Agent has consumed 82% of their $150 monthly budget ($123 of $150). At the current burn rate, the budget will be exhausted in approximately 5 days. Recommend either reducing run frequency or increasing the budget limit." },
-    ],
-  },
-  {
-    id: 8,
-    agent: "PM Agent",
-    initials: "PM",
-    color: "#10b981",
-    subject: "Sprint 15 Report",
-    preview: "Comprehensive sprint summary with metrics...",
+    id: 5, section: "inbox", type: "report", unread: false,
+    agent: "PM Agent", initials: "PM", color: "#10b981",
+    subject: "Sprint 15 Report", preview: "18 story points delivered, 12% above velocity target...",
     time: "3d ago",
-    unread: false,
-    type: "document",
-    messages: [],
     document: {
       title: "Sprint 15 — Velocity & Delivery Report",
       sections: [
-        {
-          heading: "Executive Summary",
-          body: "Sprint 15 delivered 18 story points across 12 issues. The team exceeded velocity targets by 12%. Key deliverables include the OAuth2 PKCE implementation, rate limiting on API endpoints, and the new test suite for payment processing.",
-        },
-        {
-          heading: "Issues Completed",
-          body: "ISS-138 Migrate legacy endpoints · ISS-139 Refactor auth middleware · ISS-140 Audit permissions · ISS-143 Optimize DB queries\n\n4 issues carried over to Sprint 16: ISS-141 (CI/CD pipeline), ISS-142 (Rate limiting — in review).",
-        },
-        {
-          heading: "Metrics",
-          body: "Velocity: 18 pts (+12% vs Sprint 14) · Test coverage: 84% (+3%) · PR merge time: avg 4.2h · Bug escape rate: 0%",
-        },
-        {
-          heading: "Sprint 16 Priorities",
-          body: "Focus on mobile push notifications, SEO optimization, and completing the remaining security audit items. Estimated velocity: 16–20 points.",
-        },
+        { heading: "Executive Summary", body: "Sprint 15 delivered 18 story points across 12 issues, exceeding the velocity target by 12%. Key deliverables: OAuth2 PKCE flow, API rate limiting, and expanded test coverage." },
+        { heading: "Completed Issues", body: "ISS-138 Migrate legacy endpoints · ISS-139 Refactor auth middleware · ISS-140 Audit permissions · ISS-143 Optimize DB queries\n\n4 issues carried to Sprint 16: ISS-141 (CI/CD), ISS-142 (Rate limiting — in review)." },
+        { heading: "Metrics", body: "Velocity: 18 pts (+12% vs Sprint 14) · Coverage: 84% (+3%) · PR merge time: avg 4.2h · Bug escape rate: 0%" },
+        { heading: "Sprint 16 Priorities", body: "Mobile push notifications, SEO optimisation, security audit completion. Estimated velocity: 16–20 pts." },
       ],
       metadata: { author: "PM Agent", created: "Apr 14, 2026", pages: 3 },
     },
+    agentContext: { status: "paused", currentTask: null, lastRun: "3d ago", runsToday: 0, budget: 80, spend: 18 },
   },
   {
-    id: 9,
-    agent: "QA Agent",
-    initials: "QA",
-    color: "#f59e0b",
-    subject: "Security Audit Report",
-    preview: "Full security assessment of the platform...",
+    id: 6, section: "done", type: "message", unread: false,
+    agent: "QA Agent", initials: "QA", color: "#f59e0b",
+    subject: "Test Suite: 247 Tests Passing", preview: "Coverage at 84%, up from 71%...",
+    time: "1d ago",
+    messages: [
+      { from: "QA Agent", time: "1d ago", text: "All 247 tests passing. Code coverage at 84% (+13%). Two edge cases in payment service logged as ISS-146 and ISS-147." },
+    ],
+    agentContext: { status: "active", currentTask: "Writing payment tests", lastRun: "5m ago", runsToday: 4, budget: 100, spend: 42 },
+  },
+  {
+    id: 7, section: "done", type: "report", unread: false,
+    agent: "QA Agent", initials: "QA", color: "#f59e0b",
+    subject: "Security Audit Report Q2", preview: "47 endpoints tested, 3 critical findings resolved...",
     time: "5d ago",
-    unread: false,
-    type: "document",
-    messages: [],
     document: {
       title: "Platform Security Audit — Q2 2026",
       sections: [
-        {
-          heading: "Scope",
-          body: "Full audit of authentication flows, API endpoints, user data handling, and infrastructure configuration. 47 endpoints tested, 8 agent workflows reviewed.",
-        },
-        {
-          heading: "Critical Findings",
-          body: "1. Rate limiting absent on /api/auth/login — FIXED (ISS-142)\n2. User permissions not validated on admin routes — IN PROGRESS (ISS-140)\n3. API tokens stored in plaintext in dev config — FIXED",
-        },
-        {
-          heading: "Recommendations",
-          body: "Implement OWASP top-10 checklist quarterly. Add automated security scanning to CI/CD pipeline. Rotate all API keys on a 90-day schedule.",
-        },
-        {
-          heading: "Compliance Status",
-          body: "SOC 2 Type II: 87% compliant (target: 100% by Q3)\nGDPR: Fully compliant\nISO 27001: Assessment scheduled for Q3 2026",
-        },
+        { heading: "Scope", body: "Full audit: authentication flows, API endpoints, user data handling, infrastructure. 47 endpoints tested, 8 agent workflows reviewed." },
+        { heading: "Critical Findings", body: "1. Rate limiting absent on /api/auth/login — FIXED (ISS-142)\n2. Admin route permissions not validated — IN PROGRESS (ISS-140)\n3. API tokens in plaintext dev config — FIXED" },
+        { heading: "Compliance", body: "SOC 2 Type II: 87% (target 100% Q3) · GDPR: Compliant · ISO 27001: Scheduled Q3 2026" },
       ],
       metadata: { author: "QA Agent", created: "Apr 11, 2026", pages: 5 },
     },
+    agentContext: { status: "active", currentTask: "Writing payment tests", lastRun: "5m ago", runsToday: 4, budget: 100, spend: 42 },
+  },
+  {
+    id: 8, section: "later", type: "message", unread: false,
+    agent: "PM Agent", initials: "PM", color: "#10b981",
+    subject: "Sprint 16 Planning", preview: "Scheduled for Monday 8:00 AM...",
+    time: "In 2 days",
+    snoozedUntil: "Mon, Apr 20 · 8:00 AM",
+    messages: [
+      { from: "PM Agent", time: "2d ago", text: "Sprint 16 planning is prepared. I've drafted the board with 14 candidate issues. Ready to review when you are — snoozed until Monday." },
+    ],
+    agentContext: { status: "paused", currentTask: null, lastRun: "2d ago", runsToday: 0, budget: 80, spend: 18 },
   },
 ];
 
-type Tab = "all" | "unread" | "documents" | "alerts";
+// ── Helpers ────────────────────────────────────────────────────────────────
 
-function Avatar({
+function typeIcon(type: ItemType) {
+  switch (type) {
+    case "message":  return <MessageSquare className="w-3.5 h-3.5 text-violet-400" />;
+    case "alert":    return <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />;
+    case "error":    return <XCircle className="w-3.5 h-3.5 text-red-400" />;
+    case "approval": return <CheckSquare className="w-3.5 h-3.5 text-blue-400" />;
+    case "report":   return <FileText className="w-3.5 h-3.5 text-emerald-400" />;
+  }
+}
+
+function typeIconBg(type: ItemType): string {
+  switch (type) {
+    case "message":  return "bg-violet-500/15";
+    case "alert":    return "bg-amber-500/15";
+    case "error":    return "bg-red-500/15";
+    case "approval": return "bg-blue-500/15";
+    case "report":   return "bg-emerald-500/15";
+  }
+}
+
+function statusDotColor(status: "active" | "paused" | "error"): string {
+  switch (status) {
+    case "active": return "bg-emerald-400";
+    case "paused": return "bg-yellow-400";
+    case "error":  return "bg-red-400";
+  }
+}
+
+function renderBodyText(body: string) {
+  return body.split("\n\n").map((para, pi) => (
+    <p key={pi} className={cn("text-sm leading-relaxed", pi > 0 && "mt-3")} style={{ color: "hsl(var(--foreground) / 0.85)" }}>
+      {para.split("\n").map((line, li, arr) => (
+        <span key={li}>{line}{li < arr.length - 1 && <br />}</span>
+      ))}
+    </p>
+  ));
+}
+
+// ── Sub-components ─────────────────────────────────────────────────────────
+
+function TypeIconBadge({ type }: { type: ItemType }) {
+  return (
+    <div
+      className={cn("flex items-center justify-center rounded-lg shrink-0", typeIconBg(type))}
+      style={{ width: 28, height: 28 }}
+    >
+      {typeIcon(type)}
+    </div>
+  );
+}
+
+function AgentAvatar({
   initials,
   color,
-  size = "md",
+  size = 28,
 }: {
   initials: string;
   color: string;
-  size?: "sm" | "md";
+  size?: number;
 }) {
-  const sizeClass = size === "sm" ? "w-7 h-7 text-[10px]" : "w-9 h-9 text-xs";
+  const fontSize = size <= 20 ? 9 : size <= 28 ? 10 : 11;
   return (
     <div
-      className={cn(
-        "flex items-center justify-center font-semibold text-white shrink-0 rounded-xl",
-        sizeClass
-      )}
-      style={{ backgroundColor: color }}
+      className="flex items-center justify-center font-semibold text-white shrink-0 rounded-lg"
+      style={{ width: size, height: size, backgroundColor: color, fontSize }}
     >
       {initials}
     </div>
   );
 }
 
-function renderBodyText(body: string) {
-  const paragraphs = body.split("\n\n");
-  return paragraphs.map((para, pi) => (
-    <p key={pi} className={cn("text-sm text-foreground/80 leading-relaxed", pi > 0 && "mt-3")}>
-      {para.split("\n").map((line, li, arr) => (
-        <span key={li}>
-          {line}
-          {li < arr.length - 1 && <br />}
-        </span>
-      ))}
-    </p>
-  ));
+function ContextSidebar({ item }: { item: InboxItem }) {
+  const ctx = item.agentContext;
+  if (!ctx) return null;
+  const pct = Math.min(100, Math.round((ctx.spend / ctx.budget) * 100));
+  const barColor = pct >= 85 ? "#ef4444" : pct >= 65 ? "#f59e0b" : "#10b981";
+
+  return (
+    <div className="border-l border-border h-full overflow-y-auto" style={{ width: 220 }}>
+      <div className="p-4 space-y-4">
+        {/* Agent header */}
+        <div className="flex items-center gap-2.5">
+          <AgentAvatar initials={item.initials} color={item.color} size={32} />
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-semibold text-foreground truncate">{item.agent}</p>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", statusDotColor(ctx.status))} />
+              <span className="text-[10px] text-muted-foreground capitalize">{ctx.status}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          {/* Current task */}
+          <div>
+            <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest mb-1">Current Task</p>
+            <p className="text-xs text-foreground/80">{ctx.currentTask ?? "Idle"}</p>
+          </div>
+
+          {/* Last run */}
+          <div>
+            <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest mb-1">Last Run</p>
+            <p className="text-xs text-foreground/80">{ctx.lastRun}</p>
+          </div>
+
+          {/* Runs today */}
+          <div>
+            <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest mb-1">Today&apos;s Runs</p>
+            <p className="text-xs text-foreground/80">{ctx.runsToday}</p>
+          </div>
+
+          {/* Budget */}
+          <div>
+            <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest mb-1.5">Budget</p>
+            <div className="h-1.5 rounded-full bg-muted overflow-hidden mb-1">
+              <div
+                className="h-full rounded-full transition-all"
+                style={{ width: `${pct}%`, backgroundColor: barColor }}
+              />
+            </div>
+            <p className="text-[10px] text-muted-foreground">${ctx.spend} / ${ctx.budget}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
+function MessageThread({
+  item,
+  replyText,
+  onReplyChange,
+  onSend,
+  onMarkDone,
+  onSnooze,
+}: {
+  item: InboxItem;
+  replyText: string;
+  onReplyChange: (v: string) => void;
+  onSend: () => void;
+  onMarkDone: () => void;
+  onSnooze: () => void;
+}) {
+  return (
+    <div className="flex flex-col h-full min-w-0 flex-1">
+      {/* Top bar */}
+      <div className="flex items-center gap-3 border-b border-border px-4 shrink-0" style={{ paddingTop: 10, paddingBottom: 10 }}>
+        <AgentAvatar initials={item.initials} color={item.color} size={28} />
+        <div className="flex-1 min-w-0">
+          <p className="text-xs font-medium text-foreground truncate leading-none mb-0.5">{item.agent}</p>
+          <p className="text-xs font-semibold text-foreground truncate">{item.subject}</p>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={onMarkDone}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-border/60 rounded-full text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors cursor-pointer"
+          >
+            <Check className="w-3 h-3" />
+            {item.section === "done" ? "Undo Done" : "Mark Done"}
+          </button>
+          <button
+            onClick={onSnooze}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-border/60 rounded-full text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors cursor-pointer"
+          >
+            <Clock className="w-3 h-3" />
+            Snooze
+          </button>
+        </div>
+      </div>
+
+      {/* Thread */}
+      <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
+        {(item.messages ?? []).map((msg, i) => {
+          const isYou = msg.from === "You";
+          return (
+            <div key={i} className={cn("flex gap-2.5", isYou && "flex-row-reverse")}>
+              <div
+                className="w-5 h-5 flex items-center justify-center text-white font-semibold shrink-0 rounded-md"
+                style={{ backgroundColor: isYou ? "#64748b" : item.color, fontSize: 9 }}
+              >
+                {isYou ? "Y" : item.initials}
+              </div>
+              <div className={cn("flex flex-col", isYou ? "items-end" : "items-start")} style={{ maxWidth: "65%" }}>
+                <div
+                  className={cn(
+                    "px-3 py-2 text-sm leading-relaxed",
+                    isYou
+                      ? "rounded-2xl rounded-tr-sm border border-primary/20"
+                      : "rounded-2xl rounded-tl-sm bg-card border border-border/60"
+                  )}
+                  style={isYou ? { backgroundColor: "hsl(var(--primary) / 0.15)" } : undefined}
+                >
+                  {msg.text}
+                </div>
+                <p className="text-[10px] text-muted-foreground mt-0.5">{msg.time}</p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Reply bar */}
+      <div className="border-t border-border p-3 shrink-0">
+        <div className="flex items-center gap-2">
+          <input
+            type="text"
+            value={replyText}
+            onChange={(e) => onReplyChange(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); onSend(); } }}
+            placeholder="Reply..."
+            className="flex-1 rounded-full border border-border bg-card px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground/30 transition-colors"
+          />
+          <button
+            onClick={onSend}
+            disabled={!replyText.trim()}
+            className="flex items-center justify-center rounded-full bg-primary text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer shrink-0"
+            style={{ width: 32, height: 32 }}
+          >
+            <Send className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DocumentViewer({
+  item,
+  onMarkDone,
+  onSnooze,
+}: {
+  item: InboxItem;
+  onMarkDone: () => void;
+  onSnooze: () => void;
+}) {
+  const doc = item.document;
+  if (!doc) return null;
+  return (
+    <div className="flex flex-col h-full min-w-0 flex-1">
+      {/* Top bar */}
+      <div className="flex items-center gap-3 border-b border-border px-4 shrink-0" style={{ paddingTop: 10, paddingBottom: 10 }}>
+        <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-foreground truncate">{doc.title}</p>
+          <p className="text-[10px] text-muted-foreground mt-0.5">{doc.metadata.author} · {doc.metadata.created} · {doc.metadata.pages} pages</p>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={onMarkDone}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-border/60 rounded-full text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors cursor-pointer"
+          >
+            <Check className="w-3 h-3" />
+            {item.section === "done" ? "Undo Done" : "Mark Done"}
+          </button>
+          <button
+            onClick={onSnooze}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-border/60 rounded-full text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors cursor-pointer"
+          >
+            <Clock className="w-3 h-3" />
+            Snooze
+          </button>
+          <button className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-border/60 rounded-full text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors cursor-pointer">
+            <Download className="w-3 h-3" />
+            Download
+          </button>
+        </div>
+      </div>
+
+      {/* Body */}
+      <div className="flex-1 overflow-y-auto px-8 py-6">
+        {doc.sections.map((section, si) => (
+          <div key={si} className="mb-8">
+            <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">{section.heading}</h3>
+            {renderBodyText(section.body)}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Main page ──────────────────────────────────────────────────────────────
+
 export default function InboxPage() {
-  const [threads, setThreads] = useState<Thread[]>(INITIAL_THREADS);
+  const [items, setItems] = useState<InboxItem[]>(INBOX_ITEMS);
   const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [activeTab, setActiveTab] = useState<Tab>("all");
+  const [activeSection, setActiveSection] = useState<Section>("inbox");
+  const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [replyText, setReplyText] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [hoveredId, setHoveredId] = useState<number | null>(null);
 
-  const selectedThread = threads.find((t) => t.id === selectedId) ?? null;
+  const selectedItem = items.find((it) => it.id === selectedId) ?? null;
 
-  const filteredThreads = threads.filter((t) => {
-    const matchesSearch =
-      !searchQuery ||
-      t.agent.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      t.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      t.preview.toLowerCase().includes(searchQuery.toLowerCase());
+  const inboxCount = items.filter((it) => it.section === "inbox" && it.unread).length;
 
-    if (!matchesSearch) return false;
-    if (activeTab === "unread") return t.unread;
-    if (activeTab === "documents") return t.type === "document";
-    if (activeTab === "alerts") return t.type === "alert";
+  const visibleItems = items.filter((it) => {
+    if (it.section !== activeSection) return false;
+    if (activeFilter === "alerts") return it.type === "alert";
+    if (activeFilter === "reports") return it.type === "report";
+    if (activeFilter === "messages") return it.type === "message" || it.type === "approval";
+    if (activeFilter === "errors") return it.type === "error";
     return true;
   });
 
-  function handleSelectThread(id: number) {
+  function selectItem(id: number) {
     setSelectedId(id);
-    setThreads((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, unread: false } : t))
-    );
+    setItems((prev) => prev.map((it) => (it.id === id ? { ...it, unread: false } : it)));
     setReplyText("");
   }
 
-  function handleArchive(id: number) {
-    setThreads((prev) => prev.filter((t) => t.id !== id));
+  function markDone(id: number) {
+    setItems((prev) =>
+      prev.map((it) => {
+        if (it.id !== id) return it;
+        return { ...it, section: it.section === "done" ? "inbox" : "done" };
+      })
+    );
+  }
+
+  function moveLater(id: number) {
+    setItems((prev) =>
+      prev.map((it) => (it.id === id ? { ...it, section: "later" } : it))
+    );
+  }
+
+  function dismiss(id: number) {
+    setItems((prev) => prev.filter((it) => it.id !== id));
     if (selectedId === id) setSelectedId(null);
   }
 
   function handleSend() {
     if (!replyText.trim() || !selectedId) return;
-    const newMessage: Message = {
-      from: "You",
-      time: "just now",
-      text: replyText.trim(),
-    };
-    setThreads((prev) =>
-      prev.map((t) =>
-        t.id === selectedId
-          ? { ...t, messages: [...t.messages, newMessage] }
-          : t
+    setItems((prev) =>
+      prev.map((it) =>
+        it.id === selectedId
+          ? { ...it, messages: [...(it.messages ?? []), { from: "You", time: "just now", text: replyText.trim() }] }
+          : it
       )
     );
     setReplyText("");
   }
 
-  const unreadCount = threads.filter((t) => t.unread).length;
+  const SECTIONS: { id: Section; label: string }[] = [
+    { id: "inbox", label: "Inbox" },
+    { id: "done", label: "Done" },
+    { id: "later", label: "Later" },
+  ];
 
-  const TABS: { id: Tab; label: string }[] = [
+  const FILTERS: { id: FilterType; label: string }[] = [
     { id: "all", label: "All" },
-    { id: "unread", label: "Unread" },
-    { id: "documents", label: "Documents" },
     { id: "alerts", label: "Alerts" },
+    { id: "reports", label: "Reports" },
+    { id: "messages", label: "Messages" },
+    { id: "errors", label: "Errors" },
   ];
 
   return (
     <div className="flex h-full w-full overflow-hidden bg-background">
-      {/* Left panel */}
-      <div
-        className="flex flex-col shrink-0 border-r border-border h-full"
-        style={{ width: "280px" }}
-      >
-        {/* Header */}
-        <div className="px-3 pt-4 pb-3 shrink-0 border-b border-border">
+      {/* ── Left panel ── */}
+      <div className="flex flex-col shrink-0 border-r border-border h-full" style={{ width: 300 }}>
+
+        {/* Page header */}
+        <div className="px-4 pt-4 pb-3 shrink-0">
           <div className="flex items-center gap-2 mb-3">
             <h1 className="text-base font-semibold text-foreground">Inbox</h1>
-            {unreadCount > 0 && (
-              <span className="flex items-center justify-center h-5 min-w-5 px-1.5 text-[10px] font-semibold bg-violet-600 text-white rounded-full">
-                {unreadCount}
+            {inboxCount > 0 && (
+              <span className="flex items-center justify-center h-5 min-w-5 px-1.5 text-[10px] font-bold bg-primary text-primary-foreground rounded-full">
+                {inboxCount}
               </span>
             )}
           </div>
 
-          {/* Search */}
-          <div className="relative mb-3">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search..."
-              className="w-full pl-8 pr-3 py-1.5 text-xs bg-muted/40 border border-border/60 rounded-full text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground/30 transition-colors"
-            />
+          {/* Section tabs — Close.com underline style */}
+          <div className="flex border-b border-border mb-3">
+            {SECTIONS.map((s) => {
+              const count = s.id === "inbox" ? items.filter((it) => it.section === "inbox").length
+                : s.id === "done" ? items.filter((it) => it.section === "done").length
+                : items.filter((it) => it.section === "later").length;
+              const isActive = activeSection === s.id;
+              return (
+                <button
+                  key={s.id}
+                  onClick={() => { setActiveSection(s.id); setSelectedId(null); }}
+                  className={cn(
+                    "flex items-center gap-1.5 px-3 py-2 text-xs font-medium transition-colors cursor-pointer border-b-2 -mb-px",
+                    isActive
+                      ? "border-primary text-foreground"
+                      : "border-transparent text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {s.label}
+                  <span className={cn(
+                    "text-[10px] px-1.5 py-0.5 rounded-full font-semibold",
+                    isActive ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"
+                  )}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
-          {/* Tabs */}
-          <div className="flex gap-1 flex-wrap">
-            {TABS.map((tab) => (
+          {/* Filter chips */}
+          <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
+            {FILTERS.map((f) => (
               <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                key={f.id}
+                onClick={() => setActiveFilter(f.id)}
                 className={cn(
-                  "px-2.5 py-1 text-[11px] font-medium rounded-full transition-colors",
-                  activeTab === tab.id
-                    ? "bg-accent text-foreground"
+                  "px-2.5 py-1 text-xs rounded-full shrink-0 transition-colors cursor-pointer",
+                  activeFilter === f.id
+                    ? "bg-accent text-foreground font-medium"
                     : "text-muted-foreground hover:text-foreground hover:bg-accent/40"
                 )}
               >
-                {tab.label}
+                {f.label}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Thread list */}
+        {/* Item list */}
         <div className="flex-1 overflow-y-auto py-1">
-          {filteredThreads.length === 0 ? (
-            <div className="flex items-center justify-center h-32 text-xs text-muted-foreground">
-              No messages
+          {visibleItems.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground">
+              <Inbox className="w-6 h-6 opacity-30" />
+              <p className="text-xs">Nothing here</p>
             </div>
           ) : (
-            filteredThreads.map((thread) => (
-              <button
-                key={thread.id}
-                onClick={() => handleSelectThread(thread.id)}
-                className={cn(
-                  "w-full flex items-start gap-2.5 px-3 py-2.5 text-left transition-colors mb-0.5 mx-1 rounded-xl",
-                  "hover:bg-accent/30",
-                  selectedId === thread.id ? "bg-accent/60" : ""
-                )}
-                style={{ width: "calc(100% - 8px)" }}
-              >
-                <Avatar initials={thread.initials} color={thread.color} size="md" />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-1 mb-0.5">
-                    <span
-                      className={cn(
-                        "text-xs truncate",
-                        thread.unread
-                          ? "font-semibold text-foreground"
-                          : "font-medium text-foreground/80"
-                      )}
-                    >
-                      {thread.agent}
-                    </span>
-                    <span className="text-[10px] text-muted-foreground/60 shrink-0">
-                      {thread.time}
-                    </span>
-                  </div>
-                  <p
-                    className={cn(
-                      "text-xs truncate mb-0.5",
-                      thread.unread
-                        ? "font-medium text-foreground"
-                        : "text-foreground/70"
-                    )}
-                  >
-                    {thread.subject}
-                  </p>
-                  <div className="flex items-center gap-1.5">
-                    {thread.type === "document" && (
-                      <FileText className="w-2.5 h-2.5 text-muted-foreground/60 shrink-0" />
-                    )}
-                    {thread.type === "alert" && (
-                      <AlertCircle className="w-2.5 h-2.5 text-orange-400 shrink-0" />
-                    )}
-                    <p className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed">
-                      {thread.preview}
+            visibleItems.map((item) => {
+              const isSelected = selectedId === item.id;
+              const isHovered = hoveredId === item.id;
+              return (
+                <div
+                  key={item.id}
+                  onMouseEnter={() => setHoveredId(item.id)}
+                  onMouseLeave={() => setHoveredId(null)}
+                  onClick={() => selectItem(item.id)}
+                  className={cn(
+                    "relative flex items-start gap-2.5 px-3 py-2.5 cursor-pointer transition-colors mx-1 rounded-lg mb-0.5",
+                    isSelected
+                      ? "bg-accent/60 border-l-2 border-primary"
+                      : "hover:bg-accent/30 border-l-2 border-transparent"
+                  )}
+                  style={{ width: "calc(100% - 8px)" }}
+                >
+                  <TypeIconBadge type={item.type} />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-1 mb-0.5">
+                      <span className="text-xs font-medium text-foreground/80 truncate">{item.agent}</span>
+                      <span className="text-[10px] text-muted-foreground/60 shrink-0">{item.time}</span>
+                    </div>
+                    <p className={cn("text-sm truncate mb-0.5", item.unread ? "font-semibold text-foreground" : "text-foreground/80")}>
+                      {item.subject}
                     </p>
+                    <div className="flex items-center gap-1.5">
+                      {item.snoozedUntil && <Clock className="w-2.5 h-2.5 text-muted-foreground/60 shrink-0" />}
+                      <p className="text-xs text-muted-foreground truncate">
+                        {item.snoozedUntil ? `Until ${item.snoozedUntil}` : item.preview}
+                      </p>
+                    </div>
                   </div>
+                  {item.unread && (
+                    <div className="w-1.5 h-1.5 rounded-full shrink-0 mt-1" style={{ backgroundColor: item.color }} />
+                  )}
+
+                  {/* Quick action buttons on hover */}
+                  {isHovered && (
+                    <div
+                      className="absolute flex items-center gap-1"
+                      style={{ right: 8, top: "50%", transform: "translateY(-50%)" }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <button
+                        onClick={() => markDone(item.id)}
+                        title="Mark Done"
+                        className="flex items-center justify-center rounded-full bg-muted hover:bg-accent/70 transition-colors cursor-pointer"
+                        style={{ width: 24, height: 24 }}
+                      >
+                        <Check className="w-3 h-3 text-foreground/70" />
+                      </button>
+                      <button
+                        onClick={() => moveLater(item.id)}
+                        title="Snooze"
+                        className="flex items-center justify-center rounded-full bg-muted hover:bg-accent/70 transition-colors cursor-pointer"
+                        style={{ width: 24, height: 24 }}
+                      >
+                        <Clock className="w-3 h-3 text-foreground/70" />
+                      </button>
+                      <button
+                        onClick={() => dismiss(item.id)}
+                        title="Dismiss"
+                        className="flex items-center justify-center rounded-full bg-muted hover:bg-accent/70 transition-colors cursor-pointer"
+                        style={{ width: 24, height: 24 }}
+                      >
+                        <X className="w-3 h-3 text-foreground/70" />
+                      </button>
+                    </div>
+                  )}
                 </div>
-                {thread.unread && (
-                  <div
-                    className="w-1.5 h-1.5 rounded-full shrink-0 mt-1.5"
-                    style={{ backgroundColor: thread.color }}
-                  />
-                )}
-              </button>
-            ))
+              );
+            })
           )}
         </div>
       </div>
 
-      {/* Right panel */}
-      <div className="flex-1 flex flex-col h-full min-w-0">
-        {!selectedThread ? (
-          <div className="flex-1 flex flex-col items-center justify-center gap-3 text-muted-foreground">
-            <Inbox className="w-12 h-12 opacity-20" />
-            <p className="text-sm font-medium">Select a conversation</p>
-            <p className="text-xs text-muted-foreground/60">
-              Choose a message from the left to get started
-            </p>
-          </div>
-        ) : selectedThread.type === "document" ? (
-          /* Document view */
-          <div className="flex-1 overflow-y-auto">
-            {/* Thread header */}
-            <div className="rounded-xl bg-card/50 border border-border/50 px-4 py-3 mx-4 mt-4 mb-4 flex items-center gap-3">
-              <Avatar initials={selectedThread.initials} color={selectedThread.color} size="md" />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-foreground leading-none mb-1">
-                  {selectedThread.agent}
-                </p>
-                <p className="text-xs text-muted-foreground truncate">
-                  {selectedThread.subject}
-                </p>
-              </div>
-              <span className="text-xs text-muted-foreground shrink-0">{selectedThread.time}</span>
-              <button
-                onClick={() => handleArchive(selectedThread.id)}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-border/60 rounded-full text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors shrink-0"
-              >
-                <Archive className="w-3 h-3" />
-                Archive
-              </button>
-            </div>
-
-            {/* Document container */}
-            {selectedThread.document && (
-              <div className="mx-4 mb-4 rounded-2xl border border-border bg-card overflow-hidden">
-                {/* Document header bar */}
-                <div className="bg-muted/30 border-b border-border px-6 py-4 flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <FileText className="w-4 h-4 text-foreground/60 shrink-0" />
-                    <span className="font-semibold text-base text-foreground">
-                      {selectedThread.document.title}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3 shrink-0">
-                    <span className="text-xs text-muted-foreground">
-                      {selectedThread.document.metadata.author}
-                      {" · "}
-                      {selectedThread.document.metadata.created}
-                      {" · "}
-                      {selectedThread.document.metadata.pages} pages
-                    </span>
-                    <button className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-border/60 rounded-full text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors">
-                      <Download className="w-3 h-3" />
-                      Download
-                    </button>
-                  </div>
-                </div>
-
-                {/* Document body */}
-                <div className="px-8 py-6 space-y-6">
-                  {selectedThread.document.sections.map((section, si) => (
-                    <div
-                      key={si}
-                      className={cn(
-                        "pb-6",
-                        si < selectedThread.document!.sections.length - 1 &&
-                          "border-b border-border/30"
-                      )}
-                    >
-                      <h3 className="text-sm font-semibold text-foreground mb-2 uppercase tracking-wide">
-                        {section.heading}
-                      </h3>
-                      {renderBodyText(section.body)}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+      {/* ── Right panel ── */}
+      <div className="flex-1 flex h-full min-w-0 overflow-hidden">
+        {!selectedItem ? (
+          <div className="flex-1 flex flex-col items-center justify-center gap-2 text-muted-foreground">
+            <Inbox className="w-10 h-10 opacity-20" />
+            <p className="text-sm font-medium">Select an item</p>
+            <p className="text-xs opacity-60">Choose a message or report from the left</p>
           </div>
         ) : (
-          /* Message/Alert view */
           <>
-            {/* Thread header */}
-            <div className="rounded-xl bg-card/50 border border-border/50 px-4 py-3 mx-4 mt-4 mb-0 flex items-center gap-3 shrink-0">
-              <Avatar initials={selectedThread.initials} color={selectedThread.color} size="md" />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-foreground leading-none mb-1">
-                  {selectedThread.agent}
-                </p>
-                <p className="text-xs text-muted-foreground truncate">
-                  {selectedThread.subject}
-                </p>
-              </div>
-              <span className="text-xs text-muted-foreground shrink-0">{selectedThread.time}</span>
-              <div className="flex items-center gap-2 shrink-0">
-                <button
-                  onClick={() => handleArchive(selectedThread.id)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-border/60 rounded-full text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
-                >
-                  <Archive className="w-3 h-3" />
-                  Archive
-                </button>
-                <button
-                  onClick={() =>
-                    setThreads((prev) =>
-                      prev.map((t) =>
-                        t.id === selectedThread.id ? { ...t, unread: false } : t
-                      )
-                    )
-                  }
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-border/60 rounded-full text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
-                >
-                  <MailOpen className="w-3 h-3" />
-                  Mark Read
-                </button>
-              </div>
-            </div>
-
-            {/* Messages */}
-            <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-5">
-              {selectedThread.messages.map((msg, i) => {
-                const isYou = msg.from === "You";
-                return (
-                  <div
-                    key={i}
-                    className={cn("flex gap-3", isYou && "flex-row-reverse")}
-                  >
-                    <div
-                      className="w-7 h-7 flex items-center justify-center text-[10px] font-semibold text-white shrink-0 rounded-xl"
-                      style={{
-                        backgroundColor: isYou ? "#64748b" : selectedThread.color,
-                      }}
-                    >
-                      {isYou ? "Y" : selectedThread.initials}
-                    </div>
-                    <div
-                      className={cn(
-                        "flex flex-col max-w-[65%]",
-                        isYou && "items-end"
-                      )}
-                    >
-                      <div className={cn("flex items-baseline gap-2 mb-1", isYou && "flex-row-reverse")}>
-                        <span className="text-xs font-semibold text-foreground">
-                          {msg.from}
-                        </span>
-                        <span className="text-[10px] text-muted-foreground">
-                          {msg.time}
-                        </span>
-                      </div>
-                      <div
-                        className={cn(
-                          "text-sm text-foreground px-3.5 py-2.5 leading-relaxed",
-                          isYou
-                            ? "rounded-2xl rounded-tr-sm bg-accent/60"
-                            : "rounded-2xl rounded-tl-sm bg-card border border-border/50"
-                        )}
-                      >
-                        {msg.text}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Reply area */}
-            <div className="shrink-0 rounded-2xl border border-border bg-card mx-4 mb-4 mt-2 p-3">
-              <textarea
-                value={replyText}
-                onChange={(e) => setReplyText(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSend();
-                  }
-                }}
-                placeholder="Reply to this thread..."
-                rows={2}
-                className="w-full resize-none bg-transparent px-1 py-1 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none transition-colors rounded-xl"
+            {/* Content area */}
+            {selectedItem.type === "report" ? (
+              <DocumentViewer
+                item={selectedItem}
+                onMarkDone={() => markDone(selectedItem.id)}
+                onSnooze={() => moveLater(selectedItem.id)}
               />
-              <div className="flex items-center justify-end mt-1">
-                <button
-                  onClick={handleSend}
-                  disabled={!replyText.trim()}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 bg-primary text-primary-foreground text-xs font-medium rounded-full hover:opacity-90 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed"
-                >
-                  <Send className="w-3 h-3" />
-                  Send
-                </button>
-              </div>
-            </div>
+            ) : (
+              <MessageThread
+                item={selectedItem}
+                replyText={replyText}
+                onReplyChange={setReplyText}
+                onSend={handleSend}
+                onMarkDone={() => markDone(selectedItem.id)}
+                onSnooze={() => moveLater(selectedItem.id)}
+              />
+            )}
+
+            {/* Context sidebar */}
+            <ContextSidebar item={selectedItem} />
           </>
         )}
       </div>

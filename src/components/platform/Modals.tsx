@@ -68,17 +68,17 @@ export function NewIssueModal({ open, onClose, onSubmit }: NewIssueModalProps) {
 interface NewAgentModalProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (agent: { name: string; role: string; adapter: string; budget: number }) => void;
+  onSubmit: (agent: { name: string; role: string; adapter: string; budget: number; model: string }) => void;
 }
 
 export function NewAgentModal({ open, onClose, onSubmit }: NewAgentModalProps) {
-  const [form, setForm] = useState({ name: "", role: "", adapter: "claude-code", budget: "100" });
+  const [form, setForm] = useState({ name: "", role: "", adapter: "claude-code", budget: "100", model: "google/gemma-4-26b-a4b-it:free" });
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
   const handleSubmit = () => {
     if (!form.name.trim() || !form.role.trim()) return;
-    onSubmit({ name: form.name, role: form.role, adapter: form.adapter, budget: Number(form.budget) });
-    setForm({ name: "", role: "", adapter: "claude-code", budget: "100" });
+    onSubmit({ name: form.name, role: form.role, adapter: form.adapter, budget: Number(form.budget), model: form.model });
+    setForm({ name: "", role: "", adapter: "claude-code", budget: "100", model: "google/gemma-4-26b-a4b-it:free" });
     onClose();
   };
 
@@ -105,6 +105,38 @@ export function NewAgentModal({ open, onClose, onSubmit }: NewAgentModalProps) {
             <Input type="number" value={form.budget} onChange={(e) => set("budget", e.target.value)} min="0" max="1000" />
           </FormField>
         </div>
+        <FormField label="AI Model">
+          <Select value={form.model} onChange={(e) => set("model", e.target.value)}>
+            <optgroup label="Text & Code">
+              <option value="google/gemma-4-26b-a4b-it:free">Gemma 4 26B — Free (Default)</option>
+              <option value="anthropic/claude-opus-4.7">Claude Opus 4.7</option>
+              <option value="anthropic/claude-sonnet-4.6">Claude Sonnet 4.6</option>
+              <option value="openai/gpt-5.4">GPT-5.4</option>
+              <option value="openai/gpt-5.4-mini">GPT-5.4 Mini</option>
+              <option value="openai/gpt-5.3-codex">GPT-5.3 Codex (code)</option>
+              <option value="google/gemini-3.1-pro-preview">Gemini 3.1 Pro</option>
+              <option value="x-ai/grok-4.20">Grok 4.20</option>
+              <option value="x-ai/grok-4.20-multi-agent">Grok 4.20 Multi-Agent</option>
+              <option value="qwen/qwen3.6-plus">Qwen 3.6 Plus</option>
+              <option value="openrouter/auto">Auto (OpenRouter)</option>
+            </optgroup>
+            <optgroup label="Image">
+              <option value="black-forest-labs/flux.2-max">FLUX.2 Max</option>
+              <option value="google/gemini-3.1-flash-image-preview">Gemini 3.1 Flash Image</option>
+            </optgroup>
+            <optgroup label="Video">
+              <option value="google/veo-3.1">Veo 3.1</option>
+              <option value="openai/sora-2-pro">Sora 2 Pro</option>
+            </optgroup>
+          </Select>
+          <p className="text-[11px] text-muted-foreground mt-1">
+            Default model is Gemma 4 (free).{" "}
+            <a href="/costs?tab=marketplace" className="text-primary/70 hover:text-primary underline">
+              Browse marketplace
+            </a>{" "}
+            to add more models.
+          </p>
+        </FormField>
         <div className="bg-muted/40 border border-border p-3 text-xs text-muted-foreground">
           <strong className="text-foreground">Note:</strong> The agent will start paused. Enable it from the Agents page once configured.
         </div>

@@ -106,6 +106,7 @@ interface Agent {
   currentTask: string | null;
   supervisor: string | null;
   errorMsg?: string;
+  model?: string;
 }
 
 const STATUS_TABS = ["all", "active", "paused", "error"] as const;
@@ -212,6 +213,7 @@ function AgentsPageInner() {
               budget: form.budget,
               currentTask: null,
               supervisor: null,
+              model: form.model,
             },
           ])
         }

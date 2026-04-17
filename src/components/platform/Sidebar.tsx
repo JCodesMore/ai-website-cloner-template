@@ -5,14 +5,14 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, Inbox, CircleDot, Repeat2, Target, Network,
   Boxes, DollarSign, History, Settings, SquarePen, Search,
-  Bot, CheckSquare, ChevronDown, Plus, Cpu, Globe, Layers,
+  Bot, CheckSquare, ChevronDown, Plus,
   Check,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useShell } from "./PlatformShell";
 import { MyaiCompanyLogo } from "./Logo";
 import { useI18n } from "@/context/i18n";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -93,22 +93,6 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 export function Sidebar() {
   const { openCommandPalette, openNewProject, openNewAgent, projects, activeProject, setActiveProject } = useShell();
   const { t } = useI18n();
-  const [projectOpen, setProjectOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Close dropdown on outside click
-  useEffect(() => {
-    if (!projectOpen) return;
-    function handleClick(e: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setProjectOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, [projectOpen]);
-
-  const activeProjectData = projects.find((p) => p.name === activeProject) ?? null;
 
   const navItems: NavItemDef[] = [
     { labelKey: "dashboard" as const, href: "/", icon: LayoutDashboard },
@@ -126,7 +110,6 @@ export function Sidebar() {
     { labelKey: "skills" as const, href: "/skills", icon: Boxes },
     { labelKey: "costs" as const, href: "/costs", icon: DollarSign },
     { labelKey: "activity" as const, href: "/activity", icon: History },
-    { labelKey: "models" as const, href: "/models", icon: Cpu },
     { labelKey: "settings" as const, href: "/settings", icon: Settings },
   ];
 
@@ -146,89 +129,6 @@ export function Sidebar() {
           </span>
         </div>
         <ChevronDown className="w-3.5 h-3.5 text-sidebar-foreground/35 shrink-0" />
-      </div>
-
-      {/* Project switcher */}
-      <div className="px-1 py-2 border-b border-sidebar-border relative" ref={dropdownRef}>
-        <button
-          onClick={() => setProjectOpen((v) => !v)}
-          className="w-full flex items-center gap-2 px-3 py-2 mx-0 rounded-xl hover:bg-sidebar-accent/50 cursor-pointer transition-all duration-150"
-        >
-          {activeProjectData ? (
-            <span
-              className="w-2 h-2 rounded-full shrink-0"
-              style={{ backgroundColor: activeProjectData.color }}
-            />
-          ) : (
-            <Layers className="w-3.5 h-3.5 text-sidebar-foreground/50 shrink-0" />
-          )}
-          <span className="flex-1 text-left text-sm text-sidebar-foreground/80 truncate">
-            {activeProject ?? "All Projects"}
-          </span>
-          <ChevronDown
-            className={cn(
-              "w-3.5 h-3.5 text-sidebar-foreground/35 shrink-0 transition-transform duration-150",
-              projectOpen && "rotate-180"
-            )}
-          />
-        </button>
-
-        {/* Dropdown */}
-        {projectOpen && (
-          <div className="absolute left-2 right-2 top-full mt-1 z-50 rounded-xl border border-sidebar-border bg-sidebar shadow-xl slide-down overflow-hidden">
-            {/* All Projects */}
-            <button
-              onClick={() => { setActiveProject(null); setProjectOpen(false); }}
-              className={cn(
-                "w-full flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg mx-1 cursor-pointer transition-colors text-left",
-                "hover:bg-sidebar-accent/60",
-                activeProject === null
-                  ? "bg-sidebar-accent text-sidebar-foreground font-medium"
-                  : "text-sidebar-foreground/70"
-              )}
-              style={{ width: "calc(100% - 8px)" }}
-            >
-              <Globe className="w-3.5 h-3.5 text-sidebar-foreground/50 shrink-0" />
-              <span className="flex-1">All Projects</span>
-              {activeProject === null && <Check className="w-3.5 h-3.5 shrink-0" />}
-            </button>
-
-            {/* Project list */}
-            {projects.map((p) => (
-              <button
-                key={p.name}
-                onClick={() => { setActiveProject(p.name); setProjectOpen(false); }}
-                className={cn(
-                  "w-full flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg mx-1 cursor-pointer transition-colors text-left",
-                  "hover:bg-sidebar-accent/60",
-                  activeProject === p.name
-                    ? "bg-sidebar-accent text-sidebar-foreground font-medium"
-                    : "text-sidebar-foreground/70"
-                )}
-                style={{ width: "calc(100% - 8px)" }}
-              >
-                <span
-                  className="w-2 h-2 rounded-full shrink-0"
-                  style={{ backgroundColor: p.color }}
-                />
-                <span className="flex-1 truncate">{p.name}</span>
-                {activeProject === p.name && <Check className="w-3.5 h-3.5 shrink-0" />}
-              </button>
-            ))}
-
-            {/* New Project */}
-            <div className="border-t border-sidebar-border/50 mt-1 pt-1 pb-1">
-              <button
-                onClick={() => { openNewProject(); setProjectOpen(false); }}
-                className="w-full flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg mx-1 cursor-pointer transition-colors text-left text-sidebar-foreground/45 hover:text-sidebar-foreground hover:bg-sidebar-accent/60"
-                style={{ width: "calc(100% - 8px)" }}
-              >
-                <Plus className="w-3.5 h-3.5 shrink-0" />
-                <span>New Project</span>
-              </button>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Search + New Issue */}
@@ -306,25 +206,31 @@ export function Sidebar() {
           </div>
         </div>
         {projects.map((p) => (
-          <Link
+          <button
             key={p.name}
-            href={`/issues?project=${encodeURIComponent(p.name)}`}
+            onClick={() => setActiveProject(activeProject === p.name ? null : p.name)}
             className={cn(
-              "flex items-center gap-2.5 px-2.5 py-1.5 text-sm hover:text-sidebar-foreground hover:bg-sidebar-accent/50 rounded-lg transition-all duration-150",
+              "relative w-full flex items-center gap-2.5 px-2.5 py-1.5 text-sm rounded-lg transition-all duration-150",
               activeProject === p.name
-                ? "text-sidebar-foreground font-medium"
-                : "text-sidebar-foreground/65"
+                ? "bg-sidebar-primary/10 text-sidebar-foreground font-medium"
+                : "text-sidebar-foreground/65 hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
             )}
           >
+            {activeProject === p.name && (
+              <span
+                className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 rounded-full"
+                style={{ backgroundColor: p.color }}
+              />
+            )}
             <span
               className="w-2 h-2 rounded-full shrink-0"
               style={{ backgroundColor: p.color }}
             />
-            <span className="truncate flex-1">{p.name}</span>
+            <span className="truncate flex-1 text-left">{p.name}</span>
             {activeProject === p.name && (
               <Check className="w-3 h-3 shrink-0 text-sidebar-foreground/60" />
             )}
-          </Link>
+          </button>
         ))}
 
         {/* Agents */}
