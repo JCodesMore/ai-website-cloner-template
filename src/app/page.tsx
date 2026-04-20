@@ -2,6 +2,7 @@ import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import { TestimonialsSection } from "@/components/TestimonialsSection";
 import FeaturedInSection from "@/components/FeaturedInSection";
+import LiabilityCheckupSection from "@/components/LiabilityCheckupSection";
 import PerksSection from "@/components/PerksSection";
 import PricingSection from "@/components/PricingSection";
 import SolutionsSection from "@/components/SolutionsSection";
@@ -15,6 +16,7 @@ export default function Home() {
       <Header />
       <main>
         <HeroSection />
+        <LiabilityCheckupSection />
         <TestimonialsSection />
         <FeaturedInSection />
         <PerksSection />
