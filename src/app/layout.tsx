@@ -1,20 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
-  title: "Website Clone",
-  description: "Pixel-perfect website clone",
+  title: "DODOMIO Robotics",
+  description: "DODOMIO website giới thiệu robot AI, giải pháp AI và đăng ký demo.",
+  icons: {
+    icon: "/images/dodo/dodomio.ico",
+  },
 };
 
 export default function RootLayout({
@@ -23,11 +15,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="vi" suppressHydrationWarning>
+      <body className="antialiased">
+        {children}
+      </body>
     </html>
   );
 }
