@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -12,10 +15,12 @@ import {
   LayoutTemplate,
   MessageSquareText,
   Mic,
+  Menu,
   Rocket,
   ScanText,
   ShieldCheck,
   Sparkles,
+  X,
   Users,
 } from "lucide-react";
 
@@ -165,35 +170,114 @@ const companyPillars = [
 ];
 
 export default function Home() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
     <main className="min-h-screen bg-[#fcfbff] text-[#24153a]">
       <section
         id="home"
         className="relative overflow-hidden bg-white"
       >
-        <div className="absolute inset-0">
+        <div className="absolute inset-0 hidden md:block">
           <Image
             src="/images/dodo/home.png"
             alt="Dodomio robotics hero"
             fill
             priority
-            className="object-cover object-center"
+            sizes="100vw"
+            className="object-contain object-[82%_center] md:object-contain md:object-[78%_center] lg:object-cover lg:object-[62%_center] xl:object-center"
           />
         </div>
 
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.02)_0%,rgba(255,255,255,0.02)_100%)] lg:hidden" />
+        <div className="absolute inset-0 hidden md:block bg-[linear-gradient(180deg,rgba(255,255,255,0.82)_0%,rgba(255,255,255,0.42)_42%,rgba(255,255,255,0.16)_70%,rgba(255,255,255,0.06)_100%)] md:bg-[linear-gradient(90deg,rgba(255,255,255,0.96)_0%,rgba(255,255,255,0.90)_42%,rgba(255,255,255,0.58)_58%,rgba(255,255,255,0.18)_74%,rgba(255,255,255,0)_100%)] lg:bg-[linear-gradient(90deg,rgba(255,255,255,1)_0%,rgba(255,255,255,0.98)_39%,rgba(255,255,255,0.54)_56%,rgba(255,255,255,0.10)_72%,rgba(255,255,255,0)_100%)]" />
 
-        <header className="relative z-10 mx-auto flex max-w-[1600px] items-center justify-between px-6 py-8 sm:px-10 lg:px-14 lg:py-10">
+        <div className="relative md:hidden">
+          <div className="absolute inset-x-0 top-0 h-[420px] overflow-hidden">
+            <Image
+              src="/images/dodo/home.png"
+              alt="Dodomio robotics hero"
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover object-[74%_center]"
+            />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.92)_0%,rgba(255,255,255,0.82)_55%,rgba(255,255,255,0.46)_78%,rgba(255,255,255,0.20)_100%)]" />
+          </div>
+
+          <header className="relative z-10 mx-auto flex max-w-[1600px] items-center justify-between px-6 py-8 sm:px-10">
+            <Link href="/" className="flex items-center gap-4">
+              <Image
+                src="/images/dodo/dodomio-logo.png"
+                alt="DODOMIO Robotics"
+                width={240}
+                height={120}
+                className="h-[75px] w-[150px] sm:h-[95px] sm:w-[190px]"
+                priority
+              />
+            </Link>
+            <button
+              type="button"
+              className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#eadcff] bg-white/84 text-[#6d25c3] shadow-[0_14px_30px_rgba(86,33,163,0.12)] backdrop-blur-[8px]"
+              aria-label={mobileMenuOpen ? "Đóng menu" : "Mở menu"}
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-navigation"
+              onClick={() => setMobileMenuOpen((value) => !value)}
+            >
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </header>
+
+          <div
+            id="mobile-navigation"
+            className={`absolute inset-x-0 top-[108px] z-20 px-6 transition-all sm:px-10 ${
+              mobileMenuOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
+            }`}
+          >
+            <nav className="ml-auto flex max-w-[320px] flex-col gap-3 rounded-[28px] border border-white/30 bg-white/78 p-4 shadow-[0_18px_50px_rgba(126,94,171,0.10)] backdrop-blur-[14px]">
+              {navigation.map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="rounded-2xl border border-[#eadcff] bg-white/90 px-4 py-3 text-[15px] font-semibold text-[#412a66] transition-colors hover:bg-[#f5edff]"
+                >
+                  {item.label}
+                </Link>
+              ))}
+              <Link
+                href="#contact"
+                onClick={() => setMobileMenuOpen(false)}
+                className="rounded-2xl bg-[#8b58d6] px-4 py-3 text-[15px] font-semibold text-white"
+              >
+                Liên hệ
+              </Link>
+            </nav>
+          </div>
+
+          <div className="h-[300px] sm:h-[340px]" aria-hidden="true" />
+        </div>
+
+        <header className="relative z-10 mx-auto hidden max-w-[1600px] items-center justify-between px-6 py-8 sm:px-10 lg:flex lg:px-14 lg:py-10">
           <Link href="/" className="flex items-center gap-4">
             <Image
               src="/images/dodo/dodomio-logo.png"
               alt="DODOMIO Robotics"
               width={240}
               height={120}
-              className="h-auto w-[150px] sm:w-[190px] lg:w-[240px]"
+              className="h-[75px] w-[150px] sm:h-[95px] sm:w-[190px] lg:h-[120px] lg:w-[240px]"
               priority
             />
           </Link>
+          <button
+            type="button"
+            className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#eadcff] bg-white/90 text-[#6d25c3] shadow-[0_14px_30px_rgba(86,33,163,0.12)] lg:hidden"
+            aria-label={mobileMenuOpen ? "Đóng menu" : "Mở menu"}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-navigation"
+            onClick={() => setMobileMenuOpen((value) => !value)}
+          >
+            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
           <div className="hidden items-center gap-12 lg:flex">
             <nav className="flex items-center gap-12">
               {navigation.map((item) => (
@@ -215,22 +299,22 @@ export default function Home() {
           </div>
         </header>
 
-        <div className="relative z-10 mx-auto max-w-[1600px] px-6 pb-20 pt-8 sm:px-10 lg:px-14 lg:pb-24 lg:pt-12">
-          <div className="max-w-[620px] lg:ml-[2px] lg:mt-8">
-            <h1 className="text-[54px] font-semibold leading-[0.95] tracking-[-0.065em] text-[#232c37] sm:text-[72px] lg:text-[92px]">
-              ROBOT
-              <br />
+        <div className="relative z-10 mx-auto max-w-[1600px] px-6 pb-16 pt-4 sm:px-10 sm:pb-20 md:min-h-[700px] md:pb-24 md:pt-8 lg:px-14 lg:pb-24 lg:pt-12 xl:min-h-[820px]">
+          <div className="w-full max-w-none rounded-[28px] bg-white/88 px-4 py-5 shadow-[0_18px_50px_rgba(126,94,171,0.08)] backdrop-blur-[3px] sm:px-6 sm:py-6 md:max-w-[500px] md:rounded-[32px] md:bg-white/76 lg:ml-[2px] lg:mt-8 lg:block lg:max-w-[620px] lg:bg-transparent lg:p-0 lg:shadow-none lg:backdrop-blur-0">
+            <h1 className="text-[32px] font-semibold leading-[0.95] tracking-[-0.065em] whitespace-nowrap text-[#232c37] sm:text-[64px] sm:whitespace-normal md:text-[72px] lg:text-[92px]">
+              ROBOT{" "}
+              <br className="hidden sm:block" />
               THÔNG MINH
             </h1>
-            <p className="mt-6 max-w-[660px] text-[20px] leading-[1.9] text-[#8c8f96] lg:text-[21px]">
+            <p className="mt-5 max-w-[36ch] text-[17px] leading-[1.8] text-[#6f7480] sm:mt-6 sm:text-[18px] md:text-[19px] md:leading-[1.85] lg:max-w-[660px] lg:text-[21px] lg:leading-[1.9]">
               Dodomio là robot AI tương tác dành cho giáo dục, gia đình và các tổ chức hiện đại,
               kết hợp trải nghiệm trực quan với năng lực AI để học tập, giao tiếp và hỗ trợ vận hành.
             </p>
 
-            <div className="mt-8 flex flex-col gap-4 sm:flex-row">
+            <div className="mt-7 flex flex-col gap-4 sm:mt-8 sm:flex-row">
               <Link
                 href="#contact"
-                className="inline-flex items-center justify-center bg-[#8b58d6] px-9 py-5 text-[18px] font-semibold text-white shadow-[0_22px_40px_rgba(138,82,213,0.28)] transition-transform hover:-translate-y-0.5"
+                className="inline-flex w-fit items-center justify-center bg-[#8b58d6] px-8 py-4 text-[17px] font-semibold text-white shadow-[0_22px_40px_rgba(138,82,213,0.28)] transition-transform hover:-translate-y-0.5 sm:px-9 sm:py-5 sm:text-[18px]"
               >
                 Tìm hiểu thêm
               </Link>
