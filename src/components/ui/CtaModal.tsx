@@ -123,7 +123,7 @@ const itemVariants: Variants = {
 const stepsListVariants: Variants = {
   hidden: {},
   visible: {
-    transition: { delayChildren: 0.44, staggerChildren: 0.08 },
+    transition: { delayChildren: 0.64, staggerChildren: 0.08 },
   },
 };
 
