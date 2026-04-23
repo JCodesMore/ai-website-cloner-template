@@ -887,6 +887,70 @@ function KeyCap({
 }
 
 /* ══════════════════════════════════════════════════════════════
+   HERO BUTTON — dominant primary action, stays visible + dims on click
+═══════════════════════════════════════════════════════════════ */
+
+function HeroButton({
+  state,
+  onClick,
+}: {
+  state: "idle" | "copying" | "copied";
+  onClick: () => void;
+}) {
+  const disabled = state !== "idle";
+  const isBusy = state === "copying";
+
+  const handleClick = () => {
+    if (disabled) return;
+    onClick();
+  };
+
+  return (
+    <motion.div
+      variants={itemVariants}
+      aria-busy={isBusy}
+      className={cn(
+        "relative px-8 pb-3 transition-opacity duration-200",
+        disabled && "pointer-events-none opacity-[0.35]",
+      )}
+    >
+      <MagneticButton
+        strength={30}
+        onClick={handleClick}
+        className={cn(
+          "group relative flex h-16 w-full items-center justify-center gap-2 overflow-hidden rounded-full px-8 text-[14px] font-semibold tracking-tight",
+          "border-2 border-emerald-500/70",
+          "bg-gradient-to-b from-emerald-500/20 via-emerald-600/15 to-emerald-500/[0.05] text-zinc-50",
+          "shadow-[0_0_0_1px_rgb(16_185_129/0.4),0_10px_32px_-8px_rgb(16_185_129/0.6),inset_0_1px_0_rgb(255_255_255/0.3)]",
+          "transition-[filter,box-shadow,transform] duration-200",
+          "hover:scale-[1.01] hover:shadow-[0_0_0_1px_rgb(16_185_129/0.5),0_14px_44px_-6px_rgb(16_185_129/0.7)]",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[oklch(0.12_0.005_260)]",
+          isBusy && "cursor-progress",
+        )}
+      >
+        {/* inner ring */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-[3px] rounded-full ring-1 ring-inset ring-emerald-400/30"
+        />
+        <BorderTrail
+          size={64}
+          className="opacity-50"
+          transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
+        />
+        <span className="relative z-10 flex items-center gap-2">
+          <span>Try Free</span>
+          <ArrowRight
+            className="size-4 transition-transform duration-200 group-hover:translate-x-0.5"
+            strokeWidth={2.5}
+          />
+        </span>
+      </MagneticButton>
+    </motion.div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
    MORPHING CTA — idle → copying → copied
 ═══════════════════════════════════════════════════════════════ */
 
