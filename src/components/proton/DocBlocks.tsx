@@ -92,11 +92,11 @@ export function DocFeatureGrid({
 }) {
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-      {items.map((item, i) => {
+      {items.map((item) => {
         const Icon = item.icon;
         return (
           <div
-            key={i}
+            key={item.text}
             className="flex items-start gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3.5 backdrop-blur-sm"
           >
             {Icon ? (
