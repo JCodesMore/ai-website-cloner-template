@@ -33,7 +33,7 @@ export default function VpnServersPage() {
       <p>
         Closer servers often mean lower round-trip time; distant servers help
         when you need a specific region for testing or content availability.
-        Automatic "fastest server" picks balance load and distance on your
+        Automatic &quot;fastest server&quot; picks balance load and distance on your
         behalf.
       </p>
       <DocH3>Special-purpose groups</DocH3>
