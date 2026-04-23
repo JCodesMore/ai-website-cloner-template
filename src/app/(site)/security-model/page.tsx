@@ -1,6 +1,12 @@
-import { DocH2, DocH3, DocUl } from "@/components/proton/DocBlocks";
+import {
+  DocFeatureGrid,
+  DocH2,
+  DocH3,
+  DocSectionLabel,
+} from "@/components/proton/DocBlocks";
 import { SimpleDocPage } from "@/components/proton/SimpleDocPage";
 import { docMetadata } from "@/lib/page-meta";
+import { MapPin, Shield, ShieldOff, Wifi } from "lucide-react";
 
 export const metadata = docMetadata(
   "Security model",
@@ -12,17 +18,27 @@ export default function SecurityModelPage() {
   return (
     <SimpleDocPage
       title="Threat model"
-      description="A VPN encrypts traffic between your device and the VPN provider’s network. It does not turn a compromised laptop into a safe laptop, and it does not stop you from typing your password into a fake login form."
+      description="A VPN encrypts traffic between your device and the VPN provider's network. It does not turn a compromised laptop into a safe laptop, and it does not stop you from typing your password into a fake login form."
     >
-      <DocH2>In scope</DocH2>
-      <DocUl
+      <DocSectionLabel>Protection scope</DocSectionLabel>
+      <DocH2 icon={Shield}>In scope</DocH2>
+      <DocFeatureGrid
         items={[
-          "Local network attackers on untrusted Wi‑Fi sniffing plaintext or performing DNS spoofing.",
-          "ISP visibility into destination domains and timing metadata for tunneled traffic.",
-          "Casual IP-based geolocation for services that see the VPN exit address.",
+          {
+            icon: Wifi,
+            text: "Local network attackers on untrusted Wi‑Fi sniffing plaintext or performing DNS spoofing.",
+          },
+          {
+            icon: Shield,
+            text: "ISP visibility into destination domains and timing metadata for tunneled traffic.",
+          },
+          {
+            icon: MapPin,
+            text: "Casual IP-based geolocation for services that see the VPN exit address.",
+          },
         ]}
       />
-      <DocH2>Out of scope</DocH2>
+      <DocH2 icon={ShieldOff}>Out of scope</DocH2>
       <DocH3>Endpoint compromise</DocH3>
       <p>
         Malware with root access can read keystrokes and screen contents before
