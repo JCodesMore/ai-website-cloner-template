@@ -664,6 +664,27 @@ function NoiseLayer() {
 }
 
 /* ══════════════════════════════════════════════════════════════
+   AURORA BACKLIGHT — slow-rotating emerald atmosphere inside shell
+═══════════════════════════════════════════════════════════════ */
+
+function AuroraBacklight({ reduceMotion }: { reduceMotion: boolean }) {
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-0 overflow-hidden rounded-[26px]"
+    >
+      <motion.span
+        className="absolute left-1/2 top-1/2 block size-[180%] -translate-x-1/2 -translate-y-1/2 opacity-30 [background:conic-gradient(from_0deg_at_50%_50%,oklch(0.28_0.20_143)_0%,oklch(0.12_0.005_260/0)_33%,oklch(0.48_0.18_141)_66%,oklch(0.12_0.005_260/0)_100%)] blur-[80px]"
+        animate={reduceMotion ? {} : { rotate: 360 }}
+        transition={
+          reduceMotion ? undefined : { duration: 60, repeat: Infinity, ease: "linear" }
+        }
+      />
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
    STATUS DOT
 ═══════════════════════════════════════════════════════════════ */
 
