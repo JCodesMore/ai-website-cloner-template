@@ -761,26 +761,17 @@ function HeroButton({
   state: "idle" | "copying" | "copied";
   onClick: () => void;
 }) {
-  const disabled = state !== "idle";
   const isBusy = state === "copying";
-
-  const handleClick = () => {
-    if (disabled) return;
-    onClick();
-  };
 
   return (
     <motion.div
       variants={itemVariants}
       aria-busy={isBusy}
-      className={cn(
-        "relative px-8 pb-3 transition-opacity duration-200",
-        disabled && "pointer-events-none opacity-[0.35]",
-      )}
+      className="relative px-8 pb-3"
     >
       <MagneticButton
         strength={30}
-        onClick={handleClick}
+        onClick={onClick}
         className={cn(
           "group relative flex h-16 w-full items-center justify-center gap-2 overflow-hidden rounded-full px-8 text-[14px] font-semibold tracking-tight",
           "border-2 border-emerald-500/70",
@@ -844,14 +835,19 @@ function SectionDivider() {
     <motion.div
       variants={itemVariants}
       className="relative flex items-center gap-3 px-8 pb-3 pt-2"
+      aria-hidden
     >
-      <span
-        aria-hidden
-        className="block h-4 w-0.5 rounded-full bg-emerald-400/50"
-      />
-      <span className="text-[13px] font-medium text-zinc-300">
-        Then in File Explorer:
+      <span className="h-px flex-1 bg-gradient-to-r from-transparent via-emerald-400/20 to-emerald-400/20" />
+      <span className="flex items-center gap-1.5 whitespace-nowrap">
+        <span
+          aria-hidden
+          className="inline-block size-1 rounded-full bg-emerald-400/80 shadow-[0_0_6px_rgb(16_185_129/0.7)]"
+        />
+        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-emerald-300/80">
+          Then in File Explorer
+        </span>
       </span>
+      <span className="h-px flex-1 bg-gradient-to-l from-transparent via-emerald-400/20 to-emerald-400/20" />
     </motion.div>
   );
 }
