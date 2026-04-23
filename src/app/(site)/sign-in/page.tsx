@@ -65,7 +65,7 @@ export default function SignInPage() {
             </div>
 
             <button
-              type="button"
+              type="submit"
               className="group flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-[oklch(0.08_0_0)] shadow-[0_4px_20px_rgb(16_185_129/_0.35)] transition-all hover:bg-emerald-400 hover:shadow-[0_6px_28px_rgb(16_185_129/_0.5)] focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-zinc-950"
             >
               Authenticate
