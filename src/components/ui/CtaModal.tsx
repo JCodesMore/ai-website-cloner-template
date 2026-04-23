@@ -309,7 +309,7 @@ export function CtaModal() {
                 variants={itemVariants}
                 className="relative hidden border-r border-white/[0.05] md:block"
               >
-                <VPNOrbit reduceMotion={!!reduceMotion} />
+                <VPNOrbit reduceMotion={!!reduceMotion} acknowledged={copied} />
               </motion.aside>
 
               {/* ── RIGHT PANEL: content ── */}
@@ -456,27 +456,57 @@ const ORBIT_ICONS = [
   { Icon: Key, angle: 240, delay: 1 },
 ] as const;
 
-function VPNOrbit({ reduceMotion }: { reduceMotion: boolean }) {
+function VPNOrbit({
+  reduceMotion,
+  acknowledged,
+}: {
+  reduceMotion: boolean;
+  acknowledged: boolean;
+}) {
   return (
-    <div className="relative flex h-full min-h-[340px] items-center justify-center overflow-hidden">
-      {/* outer pulse rings */}
-      <motion.span
-        aria-hidden
-        className="absolute size-[220px] rounded-full border border-emerald-400/10"
-        animate={reduceMotion ? {} : { scale: [1, 1.08, 1], opacity: [0.4, 0.15, 0.4] }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.span
-        aria-hidden
-        className="absolute size-[170px] rounded-full border border-emerald-400/15"
-        animate={reduceMotion ? {} : { scale: [1, 1.12, 1], opacity: [0.5, 0.2, 0.5] }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
-      />
-
-      {/* orbit ring (dashed circle) */}
+    <div className="relative flex h-full min-h-[340px] items-center justify-center overflow-hidden [filter:saturate(0.85)_brightness(0.95)]">
+      {/* radial bleed — soft emerald halo behind everything */}
       <span
         aria-hidden
-        className="absolute size-[180px] rounded-full border border-dashed border-emerald-400/20"
+        className="pointer-events-none absolute left-1/2 top-1/2 z-0 size-[360px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-500/15 blur-[80px]"
+      />
+
+      {/* outer pulse ring — master beat 4.8s (flashes on acknowledged) */}
+      <motion.span
+        aria-hidden
+        className="absolute z-10 size-[220px] rounded-full border border-emerald-400/10"
+        animate={
+          reduceMotion
+            ? {}
+            : acknowledged
+              ? { scale: [1, 1.3, 1], opacity: [0.5, 0.8, 0.5] }
+              : { scale: [1, 1.1, 1], opacity: [0.5, 0.15, 0.5] }
+        }
+        transition={
+          reduceMotion
+            ? undefined
+            : acknowledged
+              ? { duration: 0.6, ease: "easeInOut" }
+              : { duration: 4.8, repeat: Infinity, ease: "easeInOut" }
+        }
+      />
+
+      {/* inner pulse ring — phase offset 1.6s (rolling wave) */}
+      <motion.span
+        aria-hidden
+        className="absolute z-10 size-[170px] rounded-full border border-emerald-400/15"
+        animate={reduceMotion ? {} : { scale: [1, 1.12, 1], opacity: [0.6, 0.2, 0.6] }}
+        transition={
+          reduceMotion
+            ? undefined
+            : { duration: 4.8, repeat: Infinity, ease: "easeInOut", delay: 1.6 }
+        }
+      />
+
+      {/* orbit ring (dashed, static) */}
+      <span
+        aria-hidden
+        className="absolute z-20 size-[180px] rounded-full border border-dashed border-emerald-400/20"
       />
 
       {/* orbiting icons */}
@@ -484,7 +514,7 @@ function VPNOrbit({ reduceMotion }: { reduceMotion: boolean }) {
         <motion.span
           key={i}
           aria-hidden
-          className="absolute left-1/2 top-1/2 -ml-[14px] -mt-[14px] size-7"
+          className="absolute left-1/2 top-1/2 z-30 -ml-[14px] -mt-[14px] size-7"
           style={{ transformOrigin: "center" }}
           initial={{ rotate: angle }}
           animate={reduceMotion ? { rotate: angle } : { rotate: angle + 360 }}
@@ -495,7 +525,7 @@ function VPNOrbit({ reduceMotion }: { reduceMotion: boolean }) {
           }
         >
           <span
-            className="absolute left-1/2 top-1/2 -ml-[14px] -mt-[14px] flex size-7 items-center justify-center rounded-full border border-emerald-400/25 bg-[oklch(0.12_0.005_260)]/85 text-emerald-300 shadow-[0_0_12px_-2px_rgb(16_185_129/0.5)] backdrop-blur-sm"
+            className="absolute left-1/2 top-1/2 -ml-[14px] -mt-[14px] flex size-7 items-center justify-center rounded-full border border-emerald-400/25 bg-[oklch(0.12_0.005_260)]/85 text-emerald-300/75 shadow-[0_0_12px_-2px_rgb(16_185_129/0.5)] backdrop-blur-sm"
             style={{ transform: `translateX(90px)` }}
           >
             <Icon className="size-[14px]" strokeWidth={2} />
@@ -503,11 +533,23 @@ function VPNOrbit({ reduceMotion }: { reduceMotion: boolean }) {
         </motion.span>
       ))}
 
-      {/* central shield */}
+      {/* central shield — breathing at master beat 4.8s, flash on acknowledged */}
       <motion.div
-        className="relative z-10 flex size-[88px] items-center justify-center rounded-full border border-emerald-400/40 bg-gradient-to-b from-emerald-500/20 to-emerald-500/5 shadow-[0_0_40px_-4px_rgb(16_185_129/0.55),inset_0_1px_0_rgb(16_185_129/0.4)] backdrop-blur-md"
-        animate={reduceMotion ? {} : { scale: [1, 1.04, 1] }}
-        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        className="relative z-40 flex size-[88px] items-center justify-center rounded-full border border-emerald-400/40 bg-gradient-to-b from-emerald-500/20 to-emerald-500/5 shadow-[0_0_40px_-4px_rgb(16_185_129/0.55),inset_0_1px_0_rgb(16_185_129/0.4)] backdrop-blur-md"
+        animate={
+          reduceMotion
+            ? {}
+            : acknowledged
+              ? { scale: [1, 1.08, 1], opacity: [0.55, 0.9, 0.55] }
+              : { scale: [1, 1.04, 1], opacity: 1 }
+        }
+        transition={
+          reduceMotion
+            ? undefined
+            : acknowledged
+              ? { duration: 0.6, ease: "easeInOut" }
+              : { duration: 4.8, repeat: Infinity, ease: "easeInOut" }
+        }
       >
         <ShieldCheck
           className="size-10 text-emerald-300"
@@ -521,14 +563,14 @@ function VPNOrbit({ reduceMotion }: { reduceMotion: boolean }) {
       </motion.div>
 
       {/* bottom meta */}
-      <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1.5">
+      <div className="absolute bottom-2 left-1/2 z-50 flex -translate-x-1/2 flex-col items-center gap-1.5">
         <div className="flex items-center gap-1.5">
           <Wifi className="size-3 text-emerald-400/80" strokeWidth={2} aria-hidden />
-          <span className="font-mono text-[9.5px] uppercase tracking-[0.22em] text-emerald-300/80">
+          <span className="font-mono text-[9px] uppercase tracking-[0.22em] text-emerald-300/75">
             secured tunnel
           </span>
         </div>
-        <span className="font-mono text-[8.5px] uppercase tracking-[0.18em] text-zinc-600">
+        <span className="font-mono text-[8px] uppercase tracking-[0.18em] text-zinc-600">
           wireguard · sha-256
         </span>
       </div>
