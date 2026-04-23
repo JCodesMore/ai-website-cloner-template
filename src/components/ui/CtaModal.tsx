@@ -218,9 +218,9 @@ export function CtaModal() {
           return;
         } catch (err) {
           const name = (err as { name?: string })?.name;
-          // user cancelled — НЕ fallback, не открываем второй picker
+          // user cancelled — do NOT fallback, second picker would be a bug
           if (name === "AbortError") return;
-          // permission denied / security — тоже не fallback, второй picker не поможет
+          // permission denied / security — also no fallback, second picker won't help
           if (name === "SecurityError" || name === "NotAllowedError") return;
           // unsupported / unknown error — fall through to input fallback
         }
@@ -850,7 +850,7 @@ function SectionDivider() {
         className="block h-4 w-0.5 rounded-full bg-emerald-400/50"
       />
       <span className="text-[13px] font-medium text-zinc-300">
-        Затем в Проводнике:
+        Then in File Explorer:
       </span>
     </motion.div>
   );
