@@ -951,6 +951,143 @@ function HeroButton({
 }
 
 /* ══════════════════════════════════════════════════════════════
+   LAUNCHED CHIP — confirmation pill above hero button
+═══════════════════════════════════════════════════════════════ */
+
+function LaunchedChip() {
+  return (
+    <motion.span
+      role="status"
+      aria-live="polite"
+      initial={{ opacity: 0, x: 12 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: 12 }}
+      transition={{ duration: 0.22, ease: "easeOut" }}
+      className="pointer-events-none absolute right-8 top-0 flex -translate-y-1/2 items-center gap-1.5 rounded-full border border-emerald-400/40 bg-[oklch(0.12_0.005_260)]/90 px-3 py-1 text-[12px] font-medium text-emerald-100 shadow-[0_0_18px_-4px_rgb(16_185_129/0.6)] backdrop-blur-sm"
+    >
+      <CheckCircle2 className="size-3.5 text-emerald-300" strokeWidth={2.5} aria-hidden />
+      <span>Installer launched</span>
+    </motion.span>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SECTION DIVIDER — separates hero from stepper
+═══════════════════════════════════════════════════════════════ */
+
+function SectionDivider() {
+  return (
+    <motion.div
+      variants={itemVariants}
+      className="relative flex items-center gap-3 px-8 pb-3 pt-2"
+    >
+      <span
+        aria-hidden
+        className="block h-4 w-0.5 rounded-full bg-emerald-400/50"
+      />
+      <span className="text-[13px] font-medium text-zinc-300">
+        Затем в Проводнике:
+      </span>
+    </motion.div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   STEP CARD — vertical instruction card (dim default, active on copied)
+═══════════════════════════════════════════════════════════════ */
+
+function StepCard({
+  step,
+  index,
+  active,
+}: {
+  step: StepSpec;
+  index: number;
+  active: boolean;
+}) {
+  return (
+    <motion.li
+      variants={stepVariants}
+      aria-label={`Step ${index + 1}: ${step.label}, ${step.keys.join("+")}`}
+      className={cn(
+        "group relative grid h-[72px] grid-cols-[28px_1fr_auto] items-center gap-4 rounded-2xl border px-4 py-3 transition-[background-color,border-color,opacity,box-shadow] duration-[220ms] ease-out",
+        active
+          ? "border-emerald-400/30 bg-emerald-400/[0.06] opacity-100"
+          : "border-white/[0.05] bg-white/[0.01] opacity-55 hover:border-white/[0.08] hover:bg-white/[0.02]",
+      )}
+    >
+      {/* number chip */}
+      <span
+        aria-hidden
+        className={cn(
+          "flex size-7 items-center justify-center rounded-lg border font-mono text-[11px] font-semibold tracking-wider transition-colors duration-[220ms]",
+          active
+            ? "border-emerald-400/30 bg-emerald-400/15 text-emerald-200 shadow-[0_0_12px_-2px_rgb(16_185_129/0.5)]"
+            : "border-white/[0.05] text-zinc-500",
+        )}
+      >
+        {`0${index + 1}`}
+      </span>
+
+      {/* label + desc */}
+      <div className="min-w-0">
+        <p
+          className={cn(
+            "text-[13.5px] font-medium leading-tight tracking-tight transition-colors duration-[220ms]",
+            active ? "text-zinc-50" : "text-zinc-100",
+          )}
+        >
+          {step.label}
+        </p>
+        <p className="mt-1 text-[12px] leading-snug text-zinc-500">
+          {step.desc}
+        </p>
+      </div>
+
+      {/* keycaps */}
+      <div className="flex shrink-0 items-center gap-1">
+        {step.keys.map((key, i) => (
+          <div key={i} className="flex items-center gap-1">
+            {i > 0 && (
+              <span className="select-none text-[11px] font-medium text-zinc-600">+</span>
+            )}
+            <kbd
+              className={cn(
+                "inline-flex items-center justify-center rounded-md border px-2 py-[3px] font-mono text-[11px] font-medium transition-colors duration-[220ms]",
+                key.length > 1 ? "min-w-[32px]" : "min-w-[24px]",
+                active
+                  ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-200"
+                  : "border-white/[0.08] bg-white/[0.02] text-zinc-400",
+              )}
+            >
+              {key}
+            </kbd>
+          </div>
+        ))}
+      </div>
+    </motion.li>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   STEPPER CONNECTOR — vertical line between step cards
+═══════════════════════════════════════════════════════════════ */
+
+function StepperConnector({ active }: { active: boolean }) {
+  return (
+    <motion.span
+      aria-hidden
+      variants={itemVariants}
+      className={cn(
+        "relative z-0 block h-4 w-[2px] self-start transition-colors duration-[220ms] ease-out",
+        active ? "bg-emerald-400/40" : "bg-white/[0.05]",
+      )}
+      style={{ marginLeft: "30px" }}
+    />
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
    MORPHING CTA — idle → copying → copied
 ═══════════════════════════════════════════════════════════════ */
 
