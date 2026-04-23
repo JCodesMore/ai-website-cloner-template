@@ -291,6 +291,7 @@ export function CtaModal() {
               "focus-visible:outline-none",
             )}
           >
+            <AuroraBacklight reduceMotion={!!reduceMotion} />
             <NoiseLayer />
 
             {/* soft emerald edge bloom */}
