@@ -146,7 +146,6 @@ export function CtaModal() {
   const [platform, setPlatform] = useState<Platform>("windows");
   const [copied, setCopied] = useState(false);
   const [copying, setCopying] = useState(false);
-  const [revealedIndex, setRevealedIndex] = useState(-1);
 
   useEffect(() => {
     setPlatform(detectPlatform());
@@ -179,18 +178,8 @@ export function CtaModal() {
     if (!open) {
       setCopied(false);
       setCopying(false);
-      setRevealedIndex(-1);
     }
   }, [open]);
-
-  // sequential cascade after copy
-  useEffect(() => {
-    if (!copied) return;
-    const timers = [0, 180, 360].map((delay, i) =>
-      window.setTimeout(() => setRevealedIndex(i), delay),
-    );
-    return () => timers.forEach((t) => window.clearTimeout(t));
-  }, [copied]);
 
   const handleClose = () => {
     setCopied(false);
@@ -373,22 +362,30 @@ export function CtaModal() {
               </span>
             </motion.div>
 
-            {/* ── steps (CTA card first, then keystrokes) ── */}
-            <motion.ol
-              variants={stepsListVariants}
-              className="relative space-y-2.5 px-8"
-            >
-              <TryFreeCard
+            {/* ── hero button + launched chip ── */}
+            <div className="relative">
+              <HeroButton
                 state={copying ? "copying" : copied ? "copied" : "idle"}
                 onClick={copyAndLaunch}
               />
+              <AnimatePresence>{copied && <LaunchedChip />}</AnimatePresence>
+            </div>
+
+            {/* ── section divider ── */}
+            <SectionDivider />
+
+            {/* ── stepper cards ── */}
+            <motion.ol
+              variants={stepsListVariants}
+              className="relative flex flex-col gap-0 px-8"
+            >
               {WIN_STEPS.map((step, i) => (
-                <StepRow
-                  key={i}
-                  step={step}
-                  index={i}
-                  active={copied && revealedIndex >= i}
-                />
+                <div key={i}>
+                  <StepCard step={step} index={i} active={copied} />
+                  {i < WIN_STEPS.length - 1 && (
+                    <StepperConnector active={copied} />
+                  )}
+                </div>
               ))}
             </motion.ol>
 
@@ -396,7 +393,7 @@ export function CtaModal() {
             {platform === "other" && (
               <motion.div
                 variants={itemVariants}
-                className="relative mx-8 mt-5 flex items-start gap-2.5 rounded-2xl border border-amber-400/20 bg-amber-400/[0.04] px-4 py-3"
+                className="relative mx-8 mt-4 flex items-start gap-2.5 rounded-2xl border border-amber-400/20 bg-amber-400/[0.04] px-4 py-3"
               >
                 <Sparkles
                   className="mt-0.5 size-4 shrink-0 text-amber-300/90"
