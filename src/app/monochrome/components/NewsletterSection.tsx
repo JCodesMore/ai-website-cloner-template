@@ -1,6 +1,6 @@
 export function NewsletterSection() {
   return (
-    <section className="relative py-16 md:py-20 lg:py-40 base-px">
+    <section data-reveal className="relative py-16 md:py-20 lg:py-40 base-px">
       <div className="grid grid-cols-12 base-gap-x">
         <div className="col-span-12 md:col-start-3 md:col-span-8 lg:col-start-4 lg:col-span-6">
           <h2 className="text-[1.5rem] md:text-[1.75rem] font-normal leading-[1.5] mb-6 whitespace-pre-line">

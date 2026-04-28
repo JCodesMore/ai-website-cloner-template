@@ -121,3 +121,55 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 .fade-up { animation: monochrome-fade-up 800ms var(--ease-out-expo) both; }
+
+/* ----- Scroll-triggered reveals (driven by RevealObserver) ----- */
+[data-clone="monochrome"] [data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 900ms var(--ease-out-expo),
+    transform 900ms var(--ease-out-expo);
+  will-change: opacity, transform;
+}
+[data-clone="monochrome"] [data-reveal][data-revealed] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger child elements within a reveal container */
+[data-clone="monochrome"] [data-reveal-stagger] > * {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 800ms var(--ease-out-expo),
+    transform 800ms var(--ease-out-expo);
+  will-change: opacity, transform;
+}
+[data-clone="monochrome"] [data-reveal-stagger] > *:nth-child(1) { transition-delay: 0ms; }
+[data-clone="monochrome"] [data-reveal-stagger] > *:nth-child(2) { transition-delay: 90ms; }
+[data-clone="monochrome"] [data-reveal-stagger] > *:nth-child(3) { transition-delay: 180ms; }
+[data-clone="monochrome"] [data-reveal-stagger] > *:nth-child(4) { transition-delay: 260ms; }
+[data-clone="monochrome"] [data-reveal-stagger] > *:nth-child(5) { transition-delay: 340ms; }
+[data-clone="monochrome"] [data-reveal-stagger] > *:nth-child(6) { transition-delay: 420ms; }
+[data-clone="monochrome"] [data-reveal-stagger] > *:nth-child(n+7) { transition-delay: 500ms; }
+[data-clone="monochrome"] [data-reveal-stagger][data-revealed] > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-clone="monochrome"] [data-reveal],
+  [data-clone="monochrome"] [data-reveal-stagger] > * {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Hide scrollbar caused by Lenis when content size grows on reveal. */
+html.lenis,
+html.lenis body { overscroll-behavior: contain; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: hidden; }
+.lenis.lenis-smooth iframe { pointer-events: none; }

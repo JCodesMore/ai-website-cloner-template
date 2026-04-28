@@ -24,7 +24,7 @@ const JOURNAL_ARTICLES: JournalArticle[] = [
       "【建築家インタビュー】「太陽にありがとうと言える暮らし」建築家・堀部安嗣の葉山の自邸",
     image: "/clones/monochrome/images/journal/article_1.png",
     imageAlt: "Roof-1 architect interview",
-    href: "/journal/article-1",
+    href: "/monochrome/journal/architect-interview-horibe-yasushi-20251230",
     productBadge: "Roof-1",
   },
   {
@@ -33,7 +33,7 @@ const JOURNAL_ARTICLES: JournalArticle[] = [
     title: "Wall-1の魅力—外壁が発電する新しい建築の風景",
     image: "/clones/monochrome/images/journal/article_2.webp",
     imageAlt: "Wall-1 product feature",
-    href: "/journal/article-2",
+    href: "/monochrome/journal/lp-roof1-for-architects",
     productBadge: "Wall-1",
   },
   {
@@ -42,7 +42,7 @@ const JOURNAL_ARTICLES: JournalArticle[] = [
     title: "Panel-Bを採用した最先端の住宅事例",
     image: "/clones/monochrome/images/journal/article_3.jpg",
     imageAlt: "Panel-B case study",
-    href: "/journal/article-3",
+    href: "/monochrome/journal/owner-interview-ashikaga-251114",
     productBadge: "Panel-B",
   },
   {
@@ -51,7 +51,7 @@ const JOURNAL_ARTICLES: JournalArticle[] = [
     title: "Energy-1で実現する次世代のエネルギーマネジメント",
     image: "/clones/monochrome/images/journal/article_4.jpg",
     imageAlt: "Energy-1 management feature",
-    href: "/journal/article-4",
+    href: "/monochrome/journal/rcc-bess-202601",
     productBadge: "Energy-1",
   },
 ];
@@ -81,14 +81,14 @@ export function JournalSection() {
   const current = JOURNAL_ARTICLES[active];
 
   return (
-    <section className="py-20 md:py-20 lg:py-40 base-px text-white bg-dark overflow-hidden">
+    <section data-reveal className="py-20 md:py-20 lg:py-40 base-px text-white bg-dark overflow-hidden">
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <MonogramIcon className="w-5 h-5" />
           <span className="ml-3 text-base">ジャーナル</span>
         </div>
         <Link
-          href="/journal"
+          href="/monochrome/journal"
           className="button-base button-outline-on-dark"
         >
           一覧を見る

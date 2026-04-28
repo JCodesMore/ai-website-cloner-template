@@ -9,16 +9,16 @@ type FeaturedArchitect = {
 };
 
 const FEATURED_ARCHITECTS: FeaturedArchitect[] = [
-  { name: "SUEP.", image: "/clones/monochrome/images/architects/01.jpg", href: "/cases/suep" },
+  { name: "SUEP.", image: "/clones/monochrome/images/architects/01.jpg", href: "/monochrome/archive/project/kazeno-ie" },
   {
     name: "Suppose Design Office",
     image: "/clones/monochrome/images/architects/02.jpg",
-    href: "/cases/suppose",
+    href: "/monochrome/archive/project/azabu-no-ie",
   },
   {
     name: "中川エリカ建築設計事務所",
     image: "/clones/monochrome/images/architects/03.jpg",
-    href: "/cases/nakagawa-erika",
+    href: "/monochrome/archive/project/Akiya-A",
   },
 ];
 
@@ -35,17 +35,17 @@ const TEXT_ARCHITECTS = [
 
 export function CasesSection() {
   return (
-    <section className="relative py-20 md:py-30 lg:py-40 base-px">
+    <section data-reveal className="relative py-20 md:py-30 lg:py-40 base-px">
       <div className="flex items-center justify-between mb-12">
         <h2 className="text-[2rem] font-normal leading-[1.4]">
           モノクローム施工事例
         </h2>
-        <Link href="/cases" className="button-base button-outline">
+        <Link href="/monochrome/archive/projects" className="button-base button-outline">
           一覧を見る
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-8">
+      <div data-reveal-stagger className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-8">
         {FEATURED_ARCHITECTS.map((architect) => (
           <a
             key={architect.name}
@@ -76,7 +76,7 @@ export function CasesSection() {
 
       <ul className="mt-16 grid grid-cols-1 lg:grid-cols-3 gap-x-8 lg:items-start">
         <li className="lg:col-span-1">
-          <ul>
+          <ul data-reveal-stagger>
             {TEXT_ARCHITECTS.map((name) => (
               <li
                 key={name}

@@ -6,9 +6,9 @@ import { cn } from "@/lib/utils";
 import { HamburgerIcon, MonochromeLogo } from "./icons";
 
 const NAV_LINKS = [
-  { href: "/#products", label: "製品情報" },
-  { href: "/journal", label: "ジャーナル" },
-  { href: "/press", label: "ニュース" },
+  { href: "/monochrome#products", label: "製品情報" },
+  { href: "/monochrome/journal", label: "ジャーナル" },
+  { href: "/monochrome/press", label: "ニュース" },
 ] as const;
 
 function HeaderInner() {
@@ -16,7 +16,7 @@ function HeaderInner() {
     <div className="base-px relative flex h-[var(--header-height)] w-full items-center justify-between py-5">
       {/* Logo (left) */}
       <Link
-        href="/"
+        href="/monochrome"
         aria-label="Monochrome — Home"
         className="relative z-10 inline-flex items-center text-black"
       >
@@ -45,13 +45,13 @@ function HeaderInner() {
       {/* Right cluster: CTAs + Hamburger */}
       <div className="relative z-10 flex items-center gap-3">
         <Link
-          href="/contact"
+          href="/monochrome/contact"
           className="button-base button-fill hidden md:inline-flex"
         >
           お問い合わせ
         </Link>
         <Link
-          href="/download"
+          href="/monochrome/download"
           className="button-base button-outline hidden md:inline-flex"
         >
           製品資料一覧

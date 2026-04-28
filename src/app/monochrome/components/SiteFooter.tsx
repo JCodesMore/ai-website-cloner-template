@@ -21,20 +21,20 @@ const NEWS: NewsItem[] = [
     badge: "プレスリリース",
     title:
       "モノクローム、HEMS「Energy-1」がみらいエコ住宅2026事業（GX志向型住宅）に対応。工事不要で補助金要件を一体で満たせる提案を強化-AIF認証を取得。発電から制御まで一体提案を強化",
-    href: "/press/1",
+    href: "/monochrome/press/202604-aif",
   },
   {
     date: "2026.4.22",
     badge: "プレスリリース",
     title:
       "モノクローム、シリーズB資金調達を実施-建材一体型太陽光パネル開発スタートアップ。プロダクトから体験へ。一棟からまちへ。",
-    href: "/press/2",
+    href: "/monochrome/press/202604-funding-b",
   },
   {
     date: "2026.4.14",
     badge: "採用情報",
     title: "採用情報",
-    href: "/recruit",
+    href: "/monochrome/press/recruit",
   },
 ];
 
@@ -77,27 +77,27 @@ const FOOTER_COLUMNS: FooterColumn[] = [
   {
     id: "products",
     links: [
-      { label: "Roof-1", href: "/roof-1" },
-      { label: "Wall-1", href: "/wall-1" },
-      { label: "Panel-B", href: "/panel-b" },
-      { label: "Energy-1", href: "/energy-1" },
-      { label: "モノクローム電力", href: "/electricity" },
+      { label: "Roof-1", href: "/monochrome/roof" },
+      { label: "Wall-1", href: "/monochrome/wall" },
+      { label: "Panel-B", href: "/monochrome/panel" },
+      { label: "Energy-1", href: "/monochrome/energy" },
+      { label: "モノクローム電力", href: "/monochrome/power" },
     ],
   },
   {
     id: "resources",
     links: [
-      { label: "ジャーナル", href: "/journal" },
-      { label: "ニュース", href: "/press" },
-      { label: "よくあるご質問", href: "/faq" },
-      { label: "施工事例", href: "/cases" },
+      { label: "ジャーナル", href: "/monochrome/journal" },
+      { label: "ニュース", href: "/monochrome/press" },
+      { label: "よくあるご質問", href: "/monochrome/faq" },
+      { label: "施工事例", href: "/monochrome/archive/projects" },
     ],
   },
   {
     id: "company",
     links: [
-      { label: "会社情報", href: "/about" },
-      { label: "採用情報", href: "/careers" },
+      { label: "会社情報", href: "/monochrome/company" },
+      { label: "採用情報", href: "/monochrome/press/recruit" },
     ],
   },
 ];
@@ -177,37 +177,37 @@ export function SiteFooter() {
         ))}
         <div className="flex flex-col gap-3">
           <Link
-            href="/contact"
+            href="/monochrome/contact"
             className="text-sm text-white/80 transition-colors hover:text-white"
           >
             お問い合わせ
           </Link>
           <Link
-            href="/newsletter"
+            href="/monochrome/newsletter"
             className="text-sm text-white/80 transition-colors hover:text-white"
           >
             ニュースレター登録
           </Link>
           <Link
-            href="/download"
+            href="/monochrome/download"
             className="text-sm text-white/80 transition-colors hover:text-white"
           >
             製品資料一覧
           </Link>
           <Link
-            href="/tour"
+            href="/monochrome#kengakukai"
             className="text-sm text-white/80 transition-colors hover:text-white"
           >
             見学会
           </Link>
           <Link
-            href="/builders"
+            href="/monochrome/mc-builder"
             className="button-base button-outline-on-dark mt-2 w-fit"
           >
             工務店の方はこちら
           </Link>
           <Link
-            href="/partners"
+            href="/monochrome/installer-partner-application"
             className="button-base button-outline-on-dark w-fit"
           >
             施工パートナー募集
@@ -252,14 +252,14 @@ export function SiteFooter() {
         <ul className="flex gap-6">
           <li>
             <Link
-              href="/privacy"
+              href="/monochrome/privacy-policy"
               className="transition-colors hover:text-white"
             >
               Privacy Policy
             </Link>
           </li>
           <li>
-            <Link href="/legal" className="transition-colors hover:text-white">
+            <Link href="/monochrome/tokusho" className="transition-colors hover:text-white">
               特定商取引法に基づく表記
             </Link>
           </li>

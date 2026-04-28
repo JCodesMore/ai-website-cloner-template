@@ -28,8 +28,8 @@ const PRODUCTS: Product[] = [
       { label: "Silver", hex: "#a3a39c" },
       { label: "Roof-1e", hex: "#0d1f1a" },
     ],
-    detailHref: "/roof-1",
-    consultHref: "/contact",
+    detailHref: "/monochrome/roof",
+    consultHref: "/monochrome/contact",
   },
   {
     name: "Wall-1",
@@ -37,8 +37,8 @@ const PRODUCTS: Product[] = [
     image: "/clones/monochrome/images/products/wall_1.jpg",
     imageAlt: "Wall-1 product",
     colors: [{ label: "Black", hex: "#141419" }],
-    detailHref: "/wall-1",
-    consultHref: "/contact",
+    detailHref: "/monochrome/wall",
+    consultHref: "/monochrome/contact",
   },
   {
     name: "Panel-B",
@@ -46,14 +46,15 @@ const PRODUCTS: Product[] = [
     image: "/clones/monochrome/images/products/panel_1.jpg",
     imageAlt: "Panel-B product",
     colors: [{ label: "Black", hex: "#141419" }],
-    detailHref: "/panel-b",
-    consultHref: "/contact",
+    detailHref: "/monochrome/panel",
+    consultHref: "/monochrome/contact",
   },
 ];
 
 export function ProductsSection() {
   return (
     <section
+      data-reveal
       id="products"
       className="overflow-clip base-px py-16 md:py-20 lg:py-30 scroll-mt-20"
     >
@@ -61,7 +62,7 @@ export function ProductsSection() {
         エネルギーをつくる
       </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 lg:gap-x-8 gap-y-12">
+      <div data-reveal-stagger className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 lg:gap-x-8 gap-y-12">
         {PRODUCTS.map((product) => (
           <article key={product.name} className="group flex flex-col">
             <header className="flex items-baseline justify-between mb-4">

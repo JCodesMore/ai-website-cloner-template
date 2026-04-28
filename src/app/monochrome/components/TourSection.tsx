@@ -5,8 +5,10 @@ import { cn } from "@/lib/utils";
 export function TourSection() {
   return (
     <section
+      data-reveal
+      id="kengakukai"
       className={cn(
-        "relative py-20 md:py-30 lg:py-40 base-px bg-beige"
+        "relative py-20 md:py-30 lg:py-40 base-px bg-beige scroll-mt-20"
       )}
     >
       <h2 className="text-[2rem] font-normal mb-12">見学会</h2>
@@ -30,10 +32,10 @@ export function TourSection() {
             {`最新のイベント情報はニュースレターにて配信を行なっております。\nまた見学会に関するご質問はお問い合わせフォームよりお願いします。`}
           </p>
           <div className="flex flex-wrap gap-3">
-            <Link href="/newsletter" className="button-base button-fill">
+            <Link href="/monochrome/newsletter" className="button-base button-fill">
               ニュースレター
             </Link>
-            <Link href="/contact" className="button-base button-fill">
+            <Link href="/monochrome/contact" className="button-base button-fill">
               お問い合わせ
             </Link>
           </div>

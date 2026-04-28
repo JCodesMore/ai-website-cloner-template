@@ -13,7 +13,7 @@ const CLONES: Clone[] = [
     slug: "monochrome",
     title: "Monochrome",
     origin: "monochrome.so",
-    blurb: "Japanese building-integrated solar panel brand. KV carousel, dark journal section, hover-driven architect grid.",
+    blurb: "Japanese building-integrated solar panel brand. ~60 routes — KV carousel home, 5 product pages (Roof–1 / Wall–1 / Panel–B / Energy–1 / Power), 13 journal articles, 11 case studies, 10 press releases, product-scoped contact + download flows, B2B partner forms, FAQ, careers, and legal.",
     status: "ready",
   },
 ];

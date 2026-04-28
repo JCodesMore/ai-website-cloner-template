@@ -24,6 +24,7 @@ const SMART_ENERGY = [
 export function SmartEnergySection() {
   return (
     <section
+      data-reveal
       className={cn(
         "relative pt-16 border-t border-black-10 md:pt-30 base-px py-16 md:py-20 lg:py-30",
       )}
@@ -31,7 +32,7 @@ export function SmartEnergySection() {
       <h2 className="text-[2rem] lg:text-[2.125rem] font-normal leading-[1.4] mb-10 lg:mb-14">
         エネルギーをかしこく使う
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 lg:gap-x-8 gap-y-12">
+      <div data-reveal-stagger className="grid grid-cols-1 md:grid-cols-2 gap-x-6 lg:gap-x-8 gap-y-12">
         {SMART_ENERGY.map((item) => (
           <article key={item.name} className="flex flex-col">
             <h3 className="text-[1.5rem] lg:text-[1.75rem] font-normal mb-4">

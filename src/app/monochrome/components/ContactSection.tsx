@@ -18,7 +18,7 @@ const CONTACT_BLOCKS = [
 
 export function ContactSection() {
   return (
-    <section className="relative bg-gray md:flex">
+    <section data-reveal className="relative bg-gray md:flex">
       {CONTACT_BLOCKS.map((b, i) => (
         <div
           key={b.title}

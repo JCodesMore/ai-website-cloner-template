@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter, Noto_Sans_JP } from "next/font/google";
 import "./monochrome.css";
+import { SmoothScroll } from "./components/SmoothScroll";
+import { RevealObserver } from "./components/RevealObserver";
 
 // Inter is the closest free substitute for neue-haas-unica (a Helvetica grotesque)
 const inter = Inter({
@@ -56,6 +58,8 @@ export default function MonochromeLayout({
       data-clone="monochrome"
       className={`${inter.variable} ${notoSansJp.variable} antialiased`}
     >
+      <SmoothScroll />
+      <RevealObserver />
       {children}
     </div>
   );
