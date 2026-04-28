@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { HamburgerIcon, MonochromeLogo } from "@/components/icons";
+import { HamburgerIcon, MonochromeLogo } from "./icons";
 
 const NAV_LINKS = [
   { href: "/#products", label: "製品情報" },

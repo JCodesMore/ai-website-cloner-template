@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { MonogramIcon } from "@/components/icons";
+import { MonogramIcon } from "./icons";
 
 type JournalArticle = {
   date: string;
@@ -22,7 +22,7 @@ const JOURNAL_ARTICLES: JournalArticle[] = [
     category: "建築家紹介",
     title:
       "【建築家インタビュー】「太陽にありがとうと言える暮らし」建築家・堀部安嗣の葉山の自邸",
-    image: "/images/journal/article_1.png",
+    image: "/clones/monochrome/images/journal/article_1.png",
     imageAlt: "Roof-1 architect interview",
     href: "/journal/article-1",
     productBadge: "Roof-1",
@@ -31,7 +31,7 @@ const JOURNAL_ARTICLES: JournalArticle[] = [
     date: "01/28",
     category: "プロダクト",
     title: "Wall-1の魅力—外壁が発電する新しい建築の風景",
-    image: "/images/journal/article_2.webp",
+    image: "/clones/monochrome/images/journal/article_2.webp",
     imageAlt: "Wall-1 product feature",
     href: "/journal/article-2",
     productBadge: "Wall-1",
@@ -40,7 +40,7 @@ const JOURNAL_ARTICLES: JournalArticle[] = [
     date: "01/15",
     category: "施工事例",
     title: "Panel-Bを採用した最先端の住宅事例",
-    image: "/images/journal/article_3.jpg",
+    image: "/clones/monochrome/images/journal/article_3.jpg",
     imageAlt: "Panel-B case study",
     href: "/journal/article-3",
     productBadge: "Panel-B",
@@ -49,7 +49,7 @@ const JOURNAL_ARTICLES: JournalArticle[] = [
     date: "01/02",
     category: "ニュース",
     title: "Energy-1で実現する次世代のエネルギーマネジメント",
-    image: "/images/journal/article_4.jpg",
+    image: "/clones/monochrome/images/journal/article_4.jpg",
     imageAlt: "Energy-1 management feature",
     href: "/journal/article-4",
     productBadge: "Energy-1",

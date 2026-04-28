@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 const SMART_ENERGY = [
   {
     name: "Energy-1",
-    image: "/images/products/energy_1.jpg",
+    image: "/clones/monochrome/images/products/energy_1.jpg",
     imageAlt: "Energy-1 HEMS device",
     subtitle: "電力コストを下げ、災害時に家族を守るHEMS",
     detailHref: "/energy-1",
@@ -13,7 +13,7 @@ const SMART_ENERGY = [
   },
   {
     name: "モノクローム電力",
-    image: "/images/products/energy_2.jpg",
+    image: "/clones/monochrome/images/products/energy_2.jpg",
     imageAlt: "Monochrome electricity plan",
     subtitle: "環境に貢献し、電気代がお得になる電力プラン",
     detailHref: "/electricity",

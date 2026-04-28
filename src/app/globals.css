@@ -1,36 +1,17 @@
+/*
+ * Universal styles for the copier hub.
+ *
+ * This file deliberately stays small: only the things every clone shares
+ * (Tailwind itself, base resets, the index page's typography). Each clone
+ * keeps its brand tokens, fonts, and custom utilities in its own CSS file
+ * (e.g. src/app/monochrome/monochrome.css), imported from that clone's
+ * route layout so styles only ship for visited routes.
+ */
+
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
-
-@theme inline {
-  /* Brand colors extracted from monochrome.so */
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-
-  /* Custom monochrome.so tokens */
-  --color-dark: #1b1b1b;        /* footer / journal bg */
-  --color-dark-2: #141419;      /* primary text on light surfaces */
-  --color-beige: #d6d3c4;       /* tour section bg */
-  --color-gray: #e6e6e4;        /* contact section bg */
-  --color-black-10: rgba(20, 20, 25, 0.1);
-  --color-black-20: rgba(20, 20, 25, 0.2);
-  --color-black-40: rgba(20, 20, 25, 0.4);
-  --color-black-60: rgba(20, 20, 25, 0.6);
-  --color-white-20: rgba(255, 255, 255, 0.2);
-  --color-white-40: rgba(255, 255, 255, 0.4);
-  --color-white-60: rgba(255, 255, 255, 0.6);
-
-  --font-sans: var(--font-inter), var(--font-noto-jp), -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --font-jp: var(--font-noto-jp), var(--font-inter), sans-serif;
-
-  /* Custom easings used on monochrome.so */
-  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-out-cubic: cubic-bezier(0.33, 1, 0.68, 1);
-  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
-
-  --header-height: 5rem;
-}
 
 :root {
   --background: #ffffff;
@@ -39,124 +20,30 @@
 }
 
 .dark {
-  --background: #1b1b1b;
+  --background: #0a0a0a;
   --foreground: #fafafa;
 }
 
 @layer base {
   * {
     box-sizing: border-box;
-    border-color: var(--color-black-10);
   }
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    color: var(--color-foreground);
-    background: var(--color-background);
+    color: var(--foreground);
+    background: var(--background);
   }
   body {
-    font-family: var(--font-sans);
-    font-feature-settings: "palt" 1; /* Japanese proportional kerning */
-    color: var(--color-foreground);
-    background: var(--color-background);
+    font-family:
+      -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      "Helvetica Neue", Arial, sans-serif;
+    color: var(--foreground);
+    background: var(--background);
     overflow-x: hidden;
   }
   ::selection {
-    background: var(--color-foreground);
-    color: var(--color-background);
+    background: var(--foreground);
+    color: var(--background);
   }
 }
-
-/* ----- Custom utilities (mirroring monochrome.so naming) ----- */
-@layer utilities {
-  .base-px {
-    padding-left: 1.25rem;
-    padding-right: 1.25rem;
-  }
-  @media (min-width: 768px) {
-    .base-px { padding-left: 2.5rem; padding-right: 2.5rem; }
-  }
-  @media (min-width: 1280px) {
-    .base-px { padding-left: 3.75rem; padding-right: 3.75rem; }
-  }
-
-  .base-pr {
-    padding-right: 1.25rem;
-  }
-  @media (min-width: 768px) {
-    .base-pr { padding-right: 2.5rem; }
-  }
-  @media (min-width: 1280px) {
-    .base-pr { padding-right: 3.75rem; }
-  }
-
-  .base-gap-x { column-gap: 1rem; }
-  @media (min-width: 768px) { .base-gap-x { column-gap: 1.5rem; } }
-  @media (min-width: 1280px) { .base-gap-x { column-gap: 2rem; } }
-
-  .h-screen-s {
-    height: 100vh;
-    height: 100svh;
-  }
-
-  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
-
-  .bg-dark { background-color: var(--color-dark); }
-  .bg-beige { background-color: var(--color-beige); }
-  .bg-gray { background-color: var(--color-gray); }
-  .text-dark { color: var(--color-dark-2); }
-
-  .border-black-10 { border-color: var(--color-black-10); }
-  .border-white-20 { border-color: var(--color-white-20); }
-
-  .ease-out-expo { transition-timing-function: var(--ease-out-expo); }
-  .ease-out-cubic { transition-timing-function: var(--ease-out-cubic); }
-  .ease-out-quart { transition-timing-function: var(--ease-out-quart); }
-
-  /* Reusable pill buttons */
-  .button-base {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: 2.25rem;
-    padding-left: 1.25rem;
-    padding-right: 1.25rem;
-    font-size: 0.78125rem; /* 12.5px */
-    line-height: 1.4;
-    font-weight: 500;
-    letter-spacing: 0.01em;
-    border-radius: 9999px;
-    border: 1px solid transparent;
-    transition: background-color 300ms ease, color 300ms ease, border-color 300ms ease;
-    white-space: nowrap;
-    cursor: pointer;
-  }
-
-  .button-fill {
-    background-color: #000;
-    color: #fff;
-    border-color: rgba(255, 255, 255, 0.2);
-  }
-  .button-fill:hover { background-color: #2a2a2a; }
-
-  .button-outline {
-    background-color: transparent;
-    color: #141419;
-    border-color: #141419;
-  }
-  .button-outline:hover { background-color: #141419; color: #fff; }
-
-  .button-outline-on-dark {
-    background-color: transparent;
-    color: #fafafa;
-    border-color: rgba(255, 255, 255, 0.4);
-  }
-  .button-outline-on-dark:hover { background-color: #fafafa; color: #1b1b1b; }
-}
-
-@keyframes monochrome-fade-up {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.fade-up { animation: monochrome-fade-up 800ms var(--ease-out-expo) both; }

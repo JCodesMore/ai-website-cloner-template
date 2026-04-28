@@ -9,15 +9,15 @@ type FeaturedArchitect = {
 };
 
 const FEATURED_ARCHITECTS: FeaturedArchitect[] = [
-  { name: "SUEP.", image: "/images/architects/01.jpg", href: "/cases/suep" },
+  { name: "SUEP.", image: "/clones/monochrome/images/architects/01.jpg", href: "/cases/suep" },
   {
     name: "Suppose Design Office",
-    image: "/images/architects/02.jpg",
+    image: "/clones/monochrome/images/architects/02.jpg",
     href: "/cases/suppose",
   },
   {
     name: "中川エリカ建築設計事務所",
-    image: "/images/architects/03.jpg",
+    image: "/clones/monochrome/images/architects/03.jpg",
     href: "/cases/nakagawa-erika",
   },
 ];

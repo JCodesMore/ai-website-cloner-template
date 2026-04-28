@@ -4,7 +4,7 @@ import {
   ArrowRightIcon,
   ArrowUpRightIcon,
   MonochromeMark,
-} from "@/components/icons";
+} from "./icons";
 
 type NewsItem = {
   date: string;

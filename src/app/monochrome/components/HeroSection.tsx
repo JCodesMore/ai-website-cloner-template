@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 const KV_IMAGES = Array.from({ length: 17 }, (_, i) => ({
-  src: `/images/kv/kv_${String(i + 1).padStart(2, "0")}.jpg`,
+  src: `/clones/monochrome/images/kv/kv_${String(i + 1).padStart(2, "0")}.jpg`,
   alt: `Monochrome visual ${String(i + 1).padStart(2, "0")}`,
 }));
 

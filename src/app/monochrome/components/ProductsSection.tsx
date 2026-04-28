@@ -21,7 +21,7 @@ const PRODUCTS: Product[] = [
   {
     name: "Roof-1",
     tagline: "エネルギーをつくる屋根",
-    image: "/images/products/roof_1.jpg",
+    image: "/clones/monochrome/images/products/roof_1.jpg",
     imageAlt: "Roof-1 product",
     colors: [
       { label: "Black", hex: "#141419" },
@@ -34,7 +34,7 @@ const PRODUCTS: Product[] = [
   {
     name: "Wall-1",
     tagline: "エネルギーをつくる壁",
-    image: "/images/products/wall_1.jpg",
+    image: "/clones/monochrome/images/products/wall_1.jpg",
     imageAlt: "Wall-1 product",
     colors: [{ label: "Black", hex: "#141419" }],
     detailHref: "/wall-1",
@@ -43,7 +43,7 @@ const PRODUCTS: Product[] = [
   {
     name: "Panel-B",
     tagline: "最もミニマルな太陽光パネル",
-    image: "/images/products/panel_1.jpg",
+    image: "/clones/monochrome/images/products/panel_1.jpg",
     imageAlt: "Panel-B product",
     colors: [{ label: "Black", hex: "#141419" }],
     detailHref: "/panel-b",

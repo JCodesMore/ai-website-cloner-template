@@ -14,7 +14,7 @@ export function TourSection() {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-x-8 items-center">
         <div className="md:col-span-6 lg:col-span-5 relative aspect-[4/3] overflow-hidden">
           <Image
-            src="/images/event.jpg"
+            src="/clones/monochrome/images/event.jpg"
             alt="開催中の見学会の様子"
             fill
             sizes="(min-width: 1024px) 42vw, (min-width: 768px) 50vw, 100vw"

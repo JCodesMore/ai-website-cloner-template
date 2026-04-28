@@ -26,12 +26,48 @@ The target is whatever page `$ARGUMENTS` resolves to. Clone exactly what's visib
 
 If the user provides additional instructions (specific fidelity level, customizations, extra context), honor those over the defaults.
 
+## Repo Layout (Multi-Clone Hub)
+
+This repo hosts MANY clones side-by-side. Each clone is one Next.js route under `/<slug>` with its own components, CSS tokens, fonts, and assets. **Never write to `src/components/`, `public/images/`, `public/seo/`, `public/videos/`, or the root `src/app/page.tsx` / `src/app/globals.css`** — those are either shared or reserved for the hub index.
+
+Pick a `<slug>` for each target URL: lowercase, hyphenated, derived from the apex domain. Examples: `monochrome.so → monochrome`, `linear.app → linear`, `notion.so → notion`. If a slug already exists in `src/app/`, append a discriminator (e.g. `notion-2025`).
+
+Per-clone paths (replace `<slug>` everywhere):
+
+```
+src/app/<slug>/
+  page.tsx                  # composes section components
+  layout.tsx                # next/font, metadata, favicons, data-clone="<slug>" wrapper
+  <slug>.css                # @theme tokens + @layer utilities (imported by layout.tsx)
+  types.ts                  # content type definitions
+  components/
+    SiteHeader.tsx
+    HeroSection.tsx
+    icons.tsx               # clone-specific SVGs
+    …
+public/clones/<slug>/
+  images/…                  # all image assets
+  videos/…
+  seo/                      # favicons, apple-touch-icons, OG images, webmanifest
+docs/research/<slug>/
+  PAGE_TOPOLOGY.md
+  BEHAVIORS.md
+  assets.json               # manifest consumed by scripts/download-assets.mjs
+  components/<name>.spec.md
+docs/design-references/<slug>/
+  *.png                     # screenshots
+```
+
+After the clone is finished, you ALSO register it on the hub by appending a `Clone` entry to the `CLONES` array in `src/app/page.tsx`. That's how it becomes browsable from the index.
+
+Asset URL convention inside components: every reference is `/clones/<slug>/...` (e.g. `/clones/monochrome/images/kv/kv_01.jpg`), NOT `/images/...`. Same for favicons: `/clones/<slug>/seo/favicon.ico`.
+
 ## Pre-Flight
 
 1. **Browser automation is required.** Check for available browser MCP tools (Chrome MCP, Playwright MCP, Browserbase MCP, Puppeteer MCP, etc.). Use whichever is available — if multiple exist, prefer Chrome MCP. If none are detected, ask the user which browser tool they have and how to connect it. This skill cannot work without browser automation.
-2. Parse `$ARGUMENTS` as one or more URLs. Normalize and validate each URL; if any are invalid, ask the user to correct them before proceeding. For each valid URL, verify it is accessible via your browser MCP tool.
+2. Parse `$ARGUMENTS` as one or more URLs. Normalize and validate each URL; if any are invalid, ask the user to correct them before proceeding. For each valid URL, verify it is accessible via your browser MCP tool. Derive a `<slug>` for each URL per the convention above.
 3. Verify the base project builds: `npm run build`. The Next.js + shadcn/ui + Tailwind v4 scaffold should already be in place. If not, tell the user to set it up first.
-4. Create the output directories if they don't exist: `docs/research/`, `docs/research/components/`, `docs/design-references/`, `scripts/`. For multiple clones, also prepare per-site folders like `docs/research/<hostname>/` and `docs/design-references/<hostname>/`.
+4. Create the per-clone output directories if they don't exist: `src/app/<slug>/components/`, `public/clones/<slug>/{images,videos,seo}/`, `docs/research/<slug>/components/`, `docs/design-references/<slug>/`. If `src/app/<slug>/` already exists, ask the user whether to overwrite or pick a new slug before continuing.
 5. When working with multiple sites in one command, optionally confirm whether to run them in parallel (recommended, if resources allow) or sequentially to avoid overload.
 
 ## Guiding Principles
@@ -125,19 +161,19 @@ Navigate to the target URL with browser MCP.
 
 ### Screenshots
 - Take **full-page screenshots** at desktop (1440px) and mobile (390px) viewports
-- Save to `docs/design-references/` with descriptive names
+- Save to `docs/design-references/<slug>/` with descriptive names
 - These are your master reference — builders will receive section-specific crops/screenshots later
 
 ### Global Extraction
 Extract these from the page before doing anything else:
 
-**Fonts** — Inspect `<link>` tags for Google Fonts or self-hosted fonts. Check computed `font-family` on key elements (headings, body, code, labels). Document every family, weight, and style actually used. Configure them in `src/app/layout.tsx` using `next/font/google` or `next/font/local`.
+**Fonts** — Inspect `<link>` tags for Google Fonts or self-hosted fonts. Check computed `font-family` on key elements (headings, body, code, labels). Document every family, weight, and style actually used. Configure them in `src/app/<slug>/layout.tsx` using `next/font/google` or `next/font/local`. Set them as CSS variables on the `data-clone="<slug>"` wrapper div (NOT on `<html>`) so they only apply to the clone's subtree.
 
-**Colors** — Extract the site's color palette from computed styles across the page. Update `src/app/globals.css` with the target's actual colors in the `:root` and `.dark` CSS variable blocks. Map them to shadcn's token names (background, foreground, primary, muted, etc.) where they fit. Add custom properties for colors that don't map to shadcn tokens.
+**Colors** — Extract the site's color palette from computed styles across the page. Define brand tokens in a `@theme inline` block in `src/app/<slug>/<slug>.css`. Add helper utilities (`.bg-dark`, `.button-fill`, etc.) inside `@layer utilities` in the same file. Import that CSS file from `src/app/<slug>/layout.tsx`. Do NOT touch the root `src/app/globals.css` — it stays minimal and shared.
 
-**Favicons & Meta** — Download favicons, apple-touch-icons, OG images, webmanifest to `public/seo/`. Update `layout.tsx` metadata.
+**Favicons & Meta** — Download favicons, apple-touch-icons, OG images, webmanifest to `public/clones/<slug>/seo/`. Wire them into `metadata.icons` in `src/app/<slug>/layout.tsx` using full paths like `/clones/<slug>/seo/favicon.ico`.
 
-**Global UI patterns** — Identify any site-wide CSS or JS: custom scrollbar hiding, scroll-snap on the page container, global keyframe animations, backdrop filters, gradients used as overlays, **smooth scroll libraries** (Lenis, Locomotive Scroll — check for `.lenis`, `.locomotive-scroll`, or custom scroll container classes). Add these to `globals.css` and note any libraries that need to be installed.
+**Global UI patterns** — Identify any site-wide CSS or JS: custom scrollbar hiding, scroll-snap on the page container, global keyframe animations, backdrop filters, gradients used as overlays, **smooth scroll libraries** (Lenis, Locomotive Scroll — check for `.lenis`, `.locomotive-scroll`, or custom scroll container classes). Add these to `<slug>.css` (NOT `globals.css`) and note any libraries that need to be installed.
 
 ### Mandatory Interaction Sweep
 
@@ -165,7 +201,7 @@ This is a dedicated pass AFTER screenshots and BEFORE anything else. Its purpose
 - Mobile: 390px
 - At each width, note which sections change layout (column → stack, sidebar disappears, etc.) and at approximately which breakpoint the change occurs.
 
-Save all findings to `docs/research/BEHAVIORS.md`. This is your behavior bible — reference it when writing every component spec.
+Save all findings to `docs/research/<slug>/BEHAVIORS.md`. This is your behavior bible — reference it when writing every component spec.
 
 ### Page Topology
 Map out every distinct section of the page from top to bottom. Give each a working name. Document:
@@ -175,18 +211,40 @@ Map out every distinct section of the page from top to bottom. Give each a worki
 - Dependencies between sections (e.g., a floating nav that overlays everything)
 - **The interaction model** of each section (static, click-driven, scroll-driven, time-driven)
 
-Save this as `docs/research/PAGE_TOPOLOGY.md` — it becomes your assembly blueprint.
+Save this as `docs/research/<slug>/PAGE_TOPOLOGY.md` — it becomes your assembly blueprint.
 
 ## Phase 2: Foundation Build
 
 This is sequential. Do it yourself (not delegated to an agent) since it touches many files:
 
-1. **Update fonts** in `layout.tsx` to match the target site's actual fonts
-2. **Update globals.css** with the target's color tokens, spacing values, keyframe animations, utility classes, and any **global scroll behaviors** (Lenis, smooth scroll CSS, scroll-snap on body)
-3. **Create TypeScript interfaces** in `src/types/` for the content structures you've observed
-4. **Extract SVG icons** — find all inline `<svg>` elements on the page, deduplicate them, and save as named React components in `src/components/icons.tsx`. Name them by visual function (e.g., `SearchIcon`, `ArrowRightIcon`, `LogoIcon`).
-5. **Download global assets** — write and run a Node.js script (`scripts/download-assets.mjs`) that downloads all images, videos, and other binary assets from the page to `public/`. Preserve meaningful directory structure.
+1. **Create the clone's layout** at `src/app/<slug>/layout.tsx`. It should:
+   - Load fonts via `next/font/google` (or `next/font/local`) with CSS variables.
+   - Import `./<slug>.css`.
+   - Export `metadata` with the page title, description, `metadataBase` (the original origin), and an `icons` block pointing at `/clones/<slug>/seo/...`.
+   - Return a single `<div data-clone="<slug>" className={`${font1.variable} ${font2.variable} antialiased`}>{children}</div>` — no `<html>` or `<body>`, those live in the root layout.
+2. **Create `src/app/<slug>/<slug>.css`** with the target's color tokens (in `@theme inline`), custom utilities (in `@layer utilities`), keyframe animations, and any **global scroll behaviors** (Lenis CSS, scroll-snap rules) scoped under `[data-clone="<slug>"]` so they don't leak.
+3. **Create TypeScript interfaces** at `src/app/<slug>/types.ts` for the content structures you've observed.
+4. **Extract SVG icons** — find all inline `<svg>` elements on the page, deduplicate them, and save as named React components in `src/app/<slug>/components/icons.tsx`. Name them by visual function (e.g., `SearchIcon`, `ArrowRightIcon`, `LogoIcon`).
+5. **Build the asset manifest** at `docs/research/<slug>/assets.json` with the schema below, then download via `node scripts/download-assets.mjs <slug>`. Files land in `public/clones/<slug>/`.
 6. Verify: `npm run build` passes
+
+### Asset manifest (`docs/research/<slug>/assets.json`)
+
+```json
+{
+  "slug": "<slug>",
+  "origin": "https://<origin>",
+  "assets": [
+    ["<path-relative-to-origin>", "<path-relative-to-public/clones/slug>"],
+    ["/Icons/favicon.ico", "seo/favicon.ico"]
+  ],
+  "external": [
+    ["https://fully.qualified.example/img.png", "images/foo.png"]
+  ]
+}
+```
+
+`scripts/download-assets.mjs` is generic — it reads any clone's manifest. You don't usually need to edit the script itself.
 
 ### Asset Discovery Script Pattern
 
@@ -226,7 +284,7 @@ JSON.stringify({
 });
 ```
 
-Then write a download script that fetches everything to `public/`. Use batched parallel downloads (4 at a time) with proper error handling.
+Convert that DOM survey into the `assets.json` manifest. Then run `node scripts/download-assets.mjs <slug>` — it does batched parallel downloads (4 at a time) with proper error handling and skips files that already exist.
 
 ## Phase 3: Component Specification & Dispatch
 
@@ -236,7 +294,7 @@ This is the core loop. For each section in your page topology (top to bottom), y
 
 For each section, use browser MCP to extract everything:
 
-1. **Screenshot** the section in isolation (scroll to it, screenshot the viewport). Save to `docs/design-references/`.
+1. **Screenshot** the section in isolation (scroll to it, screenshot the viewport). Save to `docs/design-references/<slug>/`.
 
 2. **Extract CSS** for every element in the section. Use the extraction script below — don't hand-measure individual properties. Run it once per component container and capture the full output:
 
@@ -303,9 +361,9 @@ Record the diff explicitly: "Property X changes from VALUE_A to VALUE_B, trigger
 
 ### Step 2: Write the Component Spec File
 
-For each section (or sub-component, if you're breaking it up), create a spec file in `docs/research/components/`. This is NOT optional — every builder must have a corresponding spec file.
+For each section (or sub-component, if you're breaking it up), create a spec file in `docs/research/<slug>/components/`. This is NOT optional — every builder must have a corresponding spec file.
 
-**File path:** `docs/research/components/<component-name>.spec.md`
+**File path:** `docs/research/<slug>/components/<component-name>.spec.md`
 
 **Template:**
 
@@ -313,8 +371,8 @@ For each section (or sub-component, if you're breaking it up), create a spec fil
 # <ComponentName> Specification
 
 ## Overview
-- **Target file:** `src/components/<ComponentName>.tsx`
-- **Screenshot:** `docs/design-references/<screenshot-name>.png`
+- **Target file:** `src/app/<slug>/components/<ComponentName>.tsx`
+- **Screenshot:** `docs/design-references/<slug>/<screenshot-name>.png`
 - **Interaction model:** <static | click-driven | scroll-driven | time-driven>
 
 ## DOM Structure
@@ -360,9 +418,9 @@ For each section (or sub-component, if you're breaking it up), create a spec fil
 - Cards: [...]
 
 ## Assets
-- Background image: `public/images/<file>.webp`
-- Overlay image: `public/images/<file>.png`
-- Icons used: <ArrowIcon>, <SearchIcon> from icons.tsx
+- Background image: `/clones/<slug>/images/<file>.webp`
+- Overlay image: `/clones/<slug>/images/<file>.png`
+- Icons used: <ArrowIcon>, <SearchIcon> from `./icons` (relative import inside the components folder)
 
 ## Text Content (verbatim)
 <All text content, copy-pasted from the live site>
@@ -386,9 +444,10 @@ Based on complexity, dispatch builder agent(s) in worktree(s):
 
 **What every builder agent receives:**
 - The full contents of its component spec file (inline in the prompt — don't say "go read the spec file")
-- Path to the section screenshot in `docs/design-references/`
-- Which shared components to import (`icons.tsx`, `cn()`, shadcn primitives)
-- The target file path (e.g., `src/components/HeroSection.tsx`)
+- Path to the section screenshot in `docs/design-references/<slug>/`
+- Which shared components to import — the clone's own `./icons` (relative), `cn()` from `@/lib/utils`, shadcn primitives from `@/components/ui/*`
+- The target file path (e.g., `src/app/<slug>/components/HeroSection.tsx`)
+- Asset paths under `/clones/<slug>/...` for `next/image` `src` props
 - Instruction to verify with `npx tsc --noEmit` before finishing
 - For responsive behavior: the specific breakpoint values and what changes
 
@@ -406,13 +465,33 @@ The extract → spec → dispatch → merge cycle continues until all sections a
 
 ## Phase 4: Page Assembly
 
-After all sections are built and merged, wire everything together in `src/app/page.tsx`:
+After all sections are built and merged, do TWO things:
 
-- Import all section components
+### 4a. Wire the clone's own page
+
+In `src/app/<slug>/page.tsx`:
+
+- Import all section components from `./components/<Name>` (relative imports)
 - Implement the page-level layout from your topology doc (scroll containers, column structures, sticky positioning, z-index layering)
 - Connect real content to component props
 - Implement page-level behaviors: scroll snap, scroll-driven animations, dark-to-light transitions, intersection observers, smooth scroll (Lenis etc.)
-- Verify: `npm run build` passes clean
+- Verify: `npm run build` passes clean. The new route should appear as `○ /<slug>` in the build output.
+
+### 4b. Register the clone on the hub
+
+Open `src/app/page.tsx` (the hub index) and append a `Clone` entry to the `CLONES` array:
+
+```ts
+{
+  slug: "<slug>",
+  title: "<Brand Title>",
+  origin: "<original-domain>",
+  blurb: "<one-sentence summary of the clone — what's distinctive>",
+  status: "ready",
+}
+```
+
+This makes the clone appear in the index list at `/`. Then re-verify `npm run build` is clean.
 
 ## Phase 5: Visual QA Diff
 
@@ -434,7 +513,7 @@ Only after this visual QA pass is the clone complete.
 
 Before dispatching ANY builder agent, verify you can check every box. If you can't, go back and extract more.
 
-- [ ] Spec file written to `docs/research/components/<name>.spec.md` with ALL sections filled
+- [ ] Spec file written to `docs/research/<slug>/components/<name>.spec.md` with ALL sections filled
 - [ ] Every CSS value in the spec is from `getComputedStyle()`, not estimated
 - [ ] Interaction model is identified and documented (static / click / scroll / time)
 - [ ] For stateful components: every state's content and styles are captured
@@ -465,11 +544,17 @@ These are lessons from previous failed clones — each one cost hours of rework:
 
 ## Completion
 
+Before reporting done, confirm:
+- Route appears at `/<slug>` (visible in `npm run build` output)
+- Hub entry appended to `CLONES` in `src/app/page.tsx`
+- All asset references use `/clones/<slug>/...` (grep `src/app/<slug>` for `/images/`, `/seo/`, `/videos/` — should return zero hits)
+
 When done, report:
+- Slug used and the URL it lives at
 - Total sections built
 - Total components created
 - Total spec files written (should match components)
-- Total assets downloaded (images, videos, SVGs, fonts)
+- Total assets downloaded (images, videos, SVGs, fonts) — and the manifest path
 - Build status (`npm run build` result)
 - Visual QA results (any remaining discrepancies)
 - Any known gaps or limitations
