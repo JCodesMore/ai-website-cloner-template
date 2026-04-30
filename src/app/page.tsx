@@ -120,11 +120,11 @@ export default function Home() {
           loop
           muted
           playsInline
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover object-center"
         >
           <source src="/incomparables-web/videos/logo-animado.mp4" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-black/65" />
+        <div className="absolute inset-0 bg-black/65 backdrop-blur-[2px]" />
 
         <div className="relative z-10 flex flex-col items-center justify-center px-4 max-w-5xl mx-auto h-full gap-12 mt-20">
           {/* Hero is now clean and focus on the video/logo background */}
@@ -132,10 +132,10 @@ export default function Home() {
       </section>
 
       {/* About Section */}
-      <section id="nosotros" className="py-20 px-4 relative">
+      <section id="nosotros" className="py-24 px-4 relative">
         <div className="max-w-4xl mx-auto">
           {/* Transition Buttons - Vertical Stack */}
-          <div className="flex flex-col items-center justify-center gap-8 mb-20">
+          <div className="flex flex-col items-center justify-center gap-8 mb-24">
             <div className="relative group">
               {/* Pulse Animation Effect */}
               <div className="absolute -inset-1 bg-primary rounded-full blur opacity-40 group-hover:opacity-75 animate-pulse transition duration-1000 group-hover:duration-200"></div>
@@ -157,26 +157,39 @@ export default function Home() {
             </a>
           </div>
 
-          <h2 className="text-4xl sm:text-5xl font-bold text-center mb-12">
+          <h2 className="text-4xl sm:text-6xl font-bold text-center mb-16 tracking-tight">
             Sobre <span className="text-primary">Nosotros</span>
           </h2>
 
-          <div className="bg-card border border-border rounded-xl p-8 sm:p-12">
-            <div className="flex items-center gap-4 mb-6">
-              <span className="text-5xl">🎵</span>
-              <h3 className="text-2xl font-bold">Grupo Norteño Incomparables</h3>
-            </div>
-            <p className="text-lg leading-relaxed text-muted-foreground">
-              Con más de 35 años aportando la mejor música norteña, hemos brindado entretenimiento
-              en San Luis Potosí y Estados Unidos. Nos especializamos en hacer de cada evento una
-              experiencia única, ya sea en fiestas privadas, eventos corporativos o conciertos masivos.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-4 justify-center">
-              <div className="bg-secondary/50 px-6 py-3 rounded-full">
-                <span className="text-primary font-bold">35+</span> Años de Trayectoria
+          <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 sm:p-16 shadow-2xl relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-32 -mt-32" />
+            
+            <div className="flex flex-col md:flex-row items-center gap-12 relative z-10">
+              <div className="w-32 h-32 sm:w-48 sm:h-48 relative flex-shrink-0">
+                <Image
+                  src="/incomparables-web/images/nosotros-icon.png"
+                  alt="Acordeón Incomparables"
+                  fill
+                  className="object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] group-hover:scale-110 transition-transform duration-700"
+                />
               </div>
-              <div className="bg-secondary/50 px-6 py-3 rounded-full">
-                <span className="text-primary font-bold">🇲🇽🇺🇸</span> México y USA
+              <div>
+                <h3 className="text-2xl sm:text-3xl font-bold mb-6 text-white tracking-wide">Música Norteña de Excelencia</h3>
+                <p className="text-lg sm:text-xl leading-relaxed text-white/70 font-light">
+                  Con más de <span className="text-primary font-semibold">35 años</span> aportando la mejor música norteña, hemos brindado entretenimiento
+                  en San Luis Potosí y Estados Unidos. Nos especializamos en hacer de cada evento una
+                  experiencia única, ya sea en fiestas privadas, eventos corporativos o conciertos masivos.
+                </p>
+                <div className="mt-10 flex flex-wrap gap-4">
+                  <div className="bg-white/5 border border-white/10 px-6 py-3 rounded-2xl flex items-center gap-3">
+                    <span className="text-primary font-bold">35+</span>
+                    <span className="text-sm uppercase tracking-widest text-white/40 font-medium">Años de Historia</span>
+                  </div>
+                  <div className="bg-white/5 border border-white/10 px-6 py-3 rounded-2xl flex items-center gap-3">
+                    <span className="text-primary font-bold">🇲🇽🇺🇸</span>
+                    <span className="text-sm uppercase tracking-widest text-white/40 font-medium">México y USA</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -190,8 +203,8 @@ export default function Home() {
             Nuestros <span className="text-primary">Servicios</span>
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="group bg-card border border-border rounded-xl p-8 hover:border-primary transition-all hover:shadow-lg hover:shadow-primary/10 text-center overflow-hidden">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="group bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 hover:border-primary/50 transition-all hover:shadow-2xl hover:shadow-primary/20 text-center overflow-hidden">
               <div className="relative h-48 w-full mb-6">
                 <Image
                   src="/incomparables-web/images/servicios/fiestas.png"
@@ -206,7 +219,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="group bg-card border border-border rounded-xl p-8 hover:border-primary transition-all hover:shadow-lg hover:shadow-primary/10 text-center overflow-hidden">
+            <div className="group bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 hover:border-primary/50 transition-all hover:shadow-2xl hover:shadow-primary/20 text-center overflow-hidden">
               <div className="relative h-48 w-full mb-6">
                 <Image
                   src="/incomparables-web/images/servicios/conciertos.png"
@@ -221,7 +234,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="group bg-card border border-border rounded-xl p-8 hover:border-primary transition-all hover:shadow-lg hover:shadow-primary/10 text-center overflow-hidden">
+            <div className="group bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 hover:border-primary/50 transition-all hover:shadow-2xl hover:shadow-primary/20 text-center overflow-hidden">
               <div className="relative h-48 w-full mb-6">
                 <Image
                   src="/incomparables-web/images/servicios/corporativos.png"
@@ -257,45 +270,56 @@ export default function Home() {
       {/* Contact Section */}
       <section id="contacto" className="py-20 px-4">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-4xl sm:text-5xl font-bold mb-12">
+          <h2 className="text-4xl sm:text-6xl font-bold mb-16 tracking-tight">
             <span className="text-primary">Contáctanos</span>
           </h2>
 
-          <div className="bg-card border border-border rounded-xl p-8 sm:p-12">
-            <p className="text-lg text-muted-foreground mb-8">
-              ¿Tienes un evento? ¡Contáctanos y hagamos que sea inolvidable!
-            </p>
+          <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 sm:p-16 shadow-2xl relative overflow-hidden group">
+            <div className="absolute top-0 left-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -ml-32 -mt-32" />
+            
+            <div className="flex flex-col items-center relative z-10">
+              <div className="w-24 h-24 sm:w-32 sm:h-32 relative mb-8">
+                <Image
+                  src="/incomparables-web/images/contacto-icon.png"
+                  alt="Contacto Incomparables"
+                  fill
+                  className="object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] group-hover:scale-110 transition-transform duration-700"
+                />
+              </div>
+              
+              <p className="text-xl text-white/70 mb-12 font-light max-w-lg">
+                ¿Tienes un evento? ¡Hagamos que sea inolvidable con el mejor repertorio norteño!
+              </p>
 
-            <div className="space-y-6">
-              <a
-                href="tel:+526141073188"
-                className="flex items-center justify-center gap-4 p-4 bg-secondary/50 rounded-lg hover:bg-primary/20 transition-colors group"
-              >
-                <PhoneIcon className="w-6 h-6 text-primary" />
-                <span className="text-xl font-semibold group-hover:text-primary transition-colors">
-                  614 107 3188
-                </span>
-              </a>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-2xl">
+                <a
+                  href="tel:+526141073188"
+                  className="flex items-center justify-center gap-4 p-6 bg-white/5 border border-white/10 rounded-2xl hover:bg-primary hover:text-black transition-all group/btn"
+                >
+                  <PhoneIcon className="w-6 h-6 text-primary group-hover/btn:text-black" />
+                  <span className="text-xl font-bold">614 107 3188</span>
+                </a>
 
-              <a
-                href="mailto:pmailprueba@gmail.com"
-                className="flex items-center justify-center gap-4 p-4 bg-secondary/50 rounded-lg hover:bg-primary/20 transition-colors group"
-              >
-                <MailIcon className="w-6 h-6 text-primary" />
-                <span className="text-xl font-semibold group-hover:text-primary transition-colors">
-                  pmailprueba@gmail.com
-                </span>
-              </a>
+                <a
+                  href="mailto:pmailprueba@gmail.com"
+                  className="flex items-center justify-center gap-4 p-6 bg-white/5 border border-white/10 rounded-2xl hover:bg-primary hover:text-black transition-all group/btn"
+                >
+                  <MailIcon className="w-6 h-6 text-primary group-hover/btn:text-black" />
+                  <span className="text-lg font-bold">Escríbenos</span>
+                </a>
+              </div>
 
-              <a
-                href="https://www.facebook.com/search?q=incomparables+de+manuel+vargas"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-all"
-              >
-                <FacebookIcon className="w-5 h-5" />
-                Buscar en Facebook
-              </a>
+              <div className="mt-12">
+                <a
+                  href="https://www.facebook.com/search?q=incomparables+de+manuel+vargas"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-3 px-10 py-4 bg-primary text-black rounded-full font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-primary/20"
+                >
+                  <FacebookIcon className="w-5 h-5" />
+                  Ver en Facebook
+                </a>
+              </div>
             </div>
           </div>
         </div>
