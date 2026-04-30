@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Website Clone",
-  description: "Pixel-perfect website clone",
+  title: "Incomparables de Manuel Vargas - Grupo Norteño",
+  description: "Grupo Norteño con Trayectoria de 35 Años. Música norteña para toda ocasión.",
 };
 
 export default function RootLayout({
@@ -23,11 +23,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="es" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}>
+      <head>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=AWM6NcaNRp6rTGmNUah7LQ"></script>
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'AWM6NcaNRp6rTGmNUah7LQ');
+          `
+        }} />
+      </head>
+      <body className="min-h-full flex flex-col bg-background text-foreground">{children}</body>
     </html>
   );
 }
