@@ -124,7 +124,7 @@ export default function Home() {
         >
           <source src="/incomparables-web/videos/logo-animado.mp4" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-black/65 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 bg-black/35" />
 
         <div className="relative z-10 flex flex-col items-center justify-center px-4 max-w-5xl mx-auto h-full gap-12 mt-20">
           {/* Hero is now clean and focus on the video/logo background */}
