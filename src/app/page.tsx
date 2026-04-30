@@ -86,11 +86,7 @@ export default function Home() {
         </video>
         <div className="absolute inset-0 bg-black/60" />
 
-        <div className="relative z-10 flex flex-col items-center justify-end px-4 max-w-5xl mx-auto pb-16 sm:pb-24 gap-6">
-          <p className="text-white/80 font-semibold text-lg tracking-widest uppercase">
-            🎵 Música Norteña para Toda Ocasión
-          </p>
-
+        <div className="relative z-10 flex flex-col items-center justify-end px-4 max-w-5xl mx-auto pb-8 sm:pb-16 gap-6">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
               href="#servicios"
