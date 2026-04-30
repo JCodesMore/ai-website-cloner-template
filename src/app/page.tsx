@@ -271,8 +271,15 @@ export default function Home() {
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
               
               <div className="relative z-10">
-                <h3 className="text-2xl sm:text-3xl font-black text-white mb-6 tracking-tight uppercase">
-                  ¡Tu evento merece ser <span className="text-primary">Incomparable</span>!
+                <h3 className="text-3xl sm:text-5xl font-black text-white mb-8 tracking-tighter uppercase leading-tight animate-pulse-slow">
+                  ¡Tu evento merece ser <br />
+                  <span className="relative inline-block mt-2">
+                    <span className="bg-gradient-to-b from-[#f7e382] via-[#b68d40] to-[#f7e382] bg-clip-text text-transparent drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] filter brightness-110 contrast-125">
+                      INCOMPARABLE
+                    </span>
+                    <span className="absolute -inset-1 bg-primary/20 blur-xl -z-10 animate-pulse"></span>
+                  </span>
+                  !
                 </h3>
                 
                 <p className="text-lg sm:text-xl text-white/80 font-light mb-10 leading-relaxed">
