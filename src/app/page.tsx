@@ -7,11 +7,24 @@ import { InstagramIcon, FacebookIcon, TikTokIcon, PhoneIcon, MailIcon, QrCodeIco
 export default function Home() {
   const [scrollY, setScrollY] = useState(0);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [showRotatePrompt, setShowRotatePrompt] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    const checkOrientation = () => {
+      const isPortrait = window.innerHeight > window.innerWidth;
+      const isMobile = window.innerWidth < 768;
+      setShowRotatePrompt(isPortrait && isMobile);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("resize", checkOrientation);
+    checkOrientation();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", checkOrientation);
+    };
   }, []);
 
   useEffect(() => {
@@ -20,6 +33,48 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background text-foreground relative">
+      {/* Rotation Prompt for Mobile */}
+      {showRotatePrompt && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md md:hidden animate-in fade-in duration-500">
+          <div className="text-center p-8 flex flex-col items-center gap-6">
+            <div className="relative w-20 h-20">
+              <div className="absolute inset-0 bg-primary/20 rounded-full animate-ping" />
+              <div className="relative bg-white/10 p-5 rounded-2xl border border-white/20 animate-bounce">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="40"
+                  height="40"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-primary animate-spin-slow"
+                  style={{ animationDuration: '3s' }}
+                >
+                  <path d="M12 22h6a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v10" />
+                  <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+                  <path d="M10.4 12.6a2 2 0 1 1 3 3L8 21l-4-4 3.4-3.4" />
+                </svg>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-xl font-bold text-white tracking-tight">Experiencia Cinemática</h3>
+              <p className="text-white/60 text-sm max-w-[200px] mx-auto leading-relaxed">
+                Para disfrutar del video y el diseño completo, gira tu dispositivo horizontalmente.
+              </p>
+            </div>
+            <button 
+              onClick={() => setShowRotatePrompt(false)}
+              className="mt-4 text-[10px] uppercase tracking-[0.3em] text-white/30 hover:text-white transition-colors border-b border-white/10 pb-1"
+            >
+              Continuar en vertical
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Global Body Watermark */}
       <div className="fixed inset-0 z-0 flex items-center justify-center opacity-[0.20] pointer-events-none overflow-hidden">
         <Image
