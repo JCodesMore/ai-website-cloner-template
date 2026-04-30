@@ -136,7 +136,7 @@ export default function Home() {
                 <InstagramIcon className="w-5 h-5" />
               </a>
               <a
-                href="https://www.facebook.com/profile.php?id=100057375342864"
+                href="https://www.facebook.com/p/Incomparables-de-Manuel-Vargas-100057375342864/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 hover:text-primary transition-colors"
@@ -167,7 +167,7 @@ export default function Home() {
           <InstagramIcon className="w-6 h-6" />
         </a>
         <a
-          href="https://www.facebook.com/profile.php?id=100057375342864"
+          href="https://www.facebook.com/p/Incomparables-de-Manuel-Vargas-100057375342864/"
           target="_blank"
           rel="noopener noreferrer"
           className="p-3 text-white/60 hover:text-primary transition-all hover:scale-125 hover:-translate-x-1"
@@ -373,7 +373,7 @@ export default function Home() {
 
               <div className="mt-12">
                 <a
-                  href="https://www.facebook.com/profile.php?id=100057375342864"
+                  href="https://www.facebook.com/p/Incomparables-de-Manuel-Vargas-100057375342864/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-3 px-10 py-4 bg-primary text-black rounded-full font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-primary/20"
@@ -424,7 +424,7 @@ export default function Home() {
               <InstagramIcon className="w-6 h-6" />
             </a>
             <a
-              href="https://www.facebook.com/profile.php?id=100057375342864"
+              href="https://www.facebook.com/p/Incomparables-de-Manuel-Vargas-100057375342864/"
               target="_blank"
               rel="noopener noreferrer"
               className="p-2 text-white/60 hover:text-primary transition-all hover:scale-110"
