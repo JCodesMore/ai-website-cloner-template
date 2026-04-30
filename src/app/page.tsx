@@ -292,51 +292,66 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-4 border-t border-border">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="flex items-center gap-4">
-              <Image
-                src="https://minimax-algeng-chat-tts-us.oss-us-east-1.aliyuncs.com/ccv2%2F2026-05-01%2FMiniMax-M2.7%2F2042579070591447735%2F4a331924528823191df614002a0e4b320b99b44b6d0435ac26623086311557a2..jpeg?Expires=1777667206&OSSAccessKeyId=LTAI5tCpJNKCf5EkQHSuL9xg&Signature=Pe4Nm0M0SdlAlk4AH%2ByUtEgsdJ4%3D"
-                alt="Incomparables"
-                width={120}
-                height={40}
-                className="h-16 w-auto opacity-80"
-              />
-            </div>
+      <footer className="py-16 px-4 bg-black border-t border-white/5">
+        <div className="max-w-7xl mx-auto flex flex-col items-center text-center">
+          {/* Footer Logo */}
+          <div className="mb-8">
+            <Image
+              src="/incomparables-web/images/logo-incomparables.jpeg"
+              alt="Los Incomparables de Manuel Vargas"
+              width={200}
+              height={80}
+              className="h-20 w-auto object-contain mx-auto brightness-110"
+            />
+          </div>
 
-            <div className="flex items-center gap-6">
-              <a
-                href="https://www.instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <InstagramIcon className="w-5 h-5" />
-              </a>
-              <a
-                href="https://www.facebook.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <FacebookIcon className="w-5 h-5" />
-              </a>
-              <a
-                href="https://www.tiktok.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <TikTokIcon className="w-5 h-5" />
-              </a>
-            </div>
+          {/* Social Links */}
+          <div className="flex items-center gap-8 mb-10">
+            <a
+              href="https://www.instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/40 hover:text-primary transition-all hover:scale-125 duration-300"
+            >
+              <InstagramIcon className="w-6 h-6" />
+            </a>
+            <a
+              href="https://www.facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/40 hover:text-primary transition-all hover:scale-125 duration-300"
+            >
+              <FacebookIcon className="w-6 h-6" />
+            </a>
+            <a
+              href="https://www.tiktok.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/40 hover:text-primary transition-all hover:scale-125 duration-300"
+            >
+              <TikTokIcon className="w-6 h-6" />
+            </a>
+          </div>
 
-            <div className="text-center md:text-right">
-              <p className="text-sm text-muted-foreground">
-                © 2024 Incomparables de Manuel Vargas. Todos los derechos reservados.
-              </p>
-            </div>
+          {/* Navigation and Contact Links (Quick View) */}
+          <div className="flex flex-wrap justify-center gap-x-12 gap-y-4 mb-10 text-sm font-medium tracking-widest uppercase text-white/60">
+            <a href="#inicio" className="hover:text-primary transition-colors">Inicio</a>
+            <a href="#nosotros" className="hover:text-primary transition-colors">Nosotros</a>
+            <a href="#servicios" className="hover:text-primary transition-colors">Servicios</a>
+            <a href="#contacto" className="hover:text-primary transition-colors">Contrataciones</a>
+          </div>
+
+          {/* Divider */}
+          <div className="w-24 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent mb-8" />
+
+          {/* Copyright */}
+          <div className="text-center">
+            <p className="text-sm text-white/30 tracking-wide">
+              © {new Date().getFullYear()} LOS INCOMPARABLES DE MANUEL VARGAS.
+            </p>
+            <p className="text-[10px] text-white/20 mt-2 uppercase tracking-[0.2em]">
+              Diseño de Alta Fidelidad • Música Norteña de Excelencia
+            </p>
           </div>
         </div>
       </footer>
