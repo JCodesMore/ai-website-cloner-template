@@ -319,15 +319,6 @@ export default function Home() {
             <div className="absolute top-0 left-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -ml-32 -mt-32" />
             
             <div className="flex flex-col items-center relative z-10">
-              <div className="w-24 h-24 sm:w-32 sm:h-32 relative mb-8">
-                <Image
-                  src="/incomparables-web/images/contacto-icon.png"
-                  alt="Contacto Incomparables"
-                  fill
-                  className="object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] group-hover:scale-110 transition-transform duration-700"
-                />
-              </div>
-              
               <p className="text-xl text-white/70 mb-12 font-light max-w-lg">
                 ¿Tienes un evento? ¡Hagamos que sea inolvidable con el mejor repertorio norteño!
               </p>
