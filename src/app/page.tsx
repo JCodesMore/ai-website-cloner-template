@@ -292,19 +292,18 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="py-16 px-4 bg-black border-t border-white/5">
-        <div className="max-w-7xl mx-auto flex flex-col items-center text-center">
-          {/* Footer Logo */}
-          <div className="mb-8">
-            <Image
-              src="/incomparables-web/images/logo-incomparables.jpeg"
-              alt="Los Incomparables de Manuel Vargas"
-              width={200}
-              height={80}
-              className="h-20 w-auto object-contain mx-auto brightness-110"
-            />
-          </div>
+      <footer className="relative py-24 px-4 bg-black border-t border-white/5 overflow-hidden">
+        {/* Logo Watermark Background */}
+        <div className="absolute inset-0 z-0 flex items-center justify-center opacity-[0.07] pointer-events-none">
+          <Image
+            src="/incomparables-web/images/logo-incomparables.jpeg"
+            alt=""
+            fill
+            className="object-contain scale-150"
+          />
+        </div>
 
+        <div className="relative z-10 max-w-7xl mx-auto flex flex-col items-center text-center">
           {/* Social Links */}
           <div className="flex items-center gap-8 mb-10">
             <a
