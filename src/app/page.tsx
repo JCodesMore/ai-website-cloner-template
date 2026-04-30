@@ -273,7 +273,7 @@ export default function Home() {
                 alt="Incomparables"
                 width={120}
                 height={40}
-                className="h-10 w-auto opacity-80"
+                className="h-16 w-auto opacity-80"
               />
             </div>
 
