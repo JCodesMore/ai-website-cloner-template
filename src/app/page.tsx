@@ -114,16 +114,7 @@ export default function Home() {
             {/* Left Spacer */}
             <div className="hidden sm:flex flex-1" />
 
-            {/* Centered Logo */}
-            <div className="absolute left-1/2 -translate-x-1/2 flex items-center">
-              <Image
-                src="/incomparables-web/images/logo-incomparables.jpeg"
-                alt="Los Incomparables de Manuel Vargas"
-                width={150}
-                height={50}
-                className="h-8 sm:h-12 w-auto object-contain"
-              />
-            </div>
+            {/* Removed Centered Logo for a cleaner look */}
 
             {/* Right side icons */}
             <div className="flex items-center justify-end gap-2 sm:gap-4 flex-1">
