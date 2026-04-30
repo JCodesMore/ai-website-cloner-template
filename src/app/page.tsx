@@ -27,17 +27,23 @@ export default function Home() {
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between h-16 relative">
+            {/* Left Spacer */}
+            <div className="hidden sm:flex flex-1" />
+
+            {/* Centered Logo */}
+            <div className="absolute left-1/2 -translate-x-1/2 flex items-center">
               <Image
                 src="/incomparables-web/images/logo.svg"
                 alt="Incomparables"
                 width={120}
                 height={40}
-                className="h-auto w-auto brightness-0 invert opacity-40"
+                className="h-10 w-auto brightness-0 invert opacity-60"
               />
             </div>
-            <div className="flex items-center gap-4">
+
+            {/* Right side icons */}
+            <div className="flex items-center justify-end gap-2 sm:gap-4 flex-1">
               <a
                 href="https://www.instagram.com"
                 target="_blank"
@@ -84,9 +90,9 @@ export default function Home() {
           <Image
             src="/incomparables-web/images/logo.svg"
             alt="Incomparables"
-            width={350}
-            height={117}
-            className="mb-8 brightness-0 invert opacity-40"
+            width={600}
+            height={200}
+            className="w-full max-w-[300px] sm:max-w-[500px] mb-8 brightness-0 invert opacity-40 h-auto"
             priority
           />
           <p className="text-white/80 font-semibold text-lg tracking-widest uppercase mb-8">
