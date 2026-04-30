@@ -21,7 +21,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background text-foreground relative">
       {/* Global Body Watermark */}
-      <div className="fixed inset-0 z-0 flex items-center justify-center opacity-[0.35] pointer-events-none overflow-hidden">
+      <div className="fixed inset-0 z-0 flex items-center justify-center opacity-[0.20] pointer-events-none overflow-hidden">
         <Image
           src="/incomparables-web/images/shield-watermark.png"
           alt=""
