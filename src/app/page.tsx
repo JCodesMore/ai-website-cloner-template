@@ -243,7 +243,7 @@ export default function Home() {
             <div className="relative z-10 text-center max-w-2xl mx-auto">
               <h3 className="text-2xl sm:text-3xl font-bold mb-6 text-white tracking-wide">Música Norteña de Excelencia</h3>
               <p className="text-lg sm:text-xl leading-relaxed text-white/70 font-light">
-                Con más de <span className="text-primary font-semibold">35 años</span> aportando la mejor música norteña, hemos brindado entretenimiento
+                Aportando la mejor música norteña <span className="text-primary font-semibold">con una gran trayectoria y experiencia</span>, hemos brindado entretenimiento
                 en San Luis Potosí y Estados Unidos. Nos especializamos en hacer de cada evento una
                 experiencia única, ya sea en fiestas privadas, eventos corporativos o conciertos masivos.
               </p>
