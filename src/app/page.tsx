@@ -12,9 +12,22 @@ export default function Home() {
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
     const checkOrientation = () => {
+      const hasSeenPrompt = sessionStorage.getItem('hasSeenRotationPrompt');
+      if (hasSeenPrompt) {
+        setShowRotatePrompt(false);
+        return;
+      }
+      
       const isPortrait = window.innerHeight > window.innerWidth;
       const isMobile = window.innerWidth < 768;
-      setShowRotatePrompt(isPortrait && isMobile);
+      
+      if (isPortrait && isMobile) {
+        setShowRotatePrompt(true);
+      } else if (!isPortrait && isMobile) {
+        // If they rotate to landscape, count it as "seen"
+        sessionStorage.setItem('hasSeenRotationPrompt', 'true');
+        setShowRotatePrompt(false);
+      }
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -66,7 +79,10 @@ export default function Home() {
               </p>
             </div>
             <button 
-              onClick={() => setShowRotatePrompt(false)}
+              onClick={() => {
+                sessionStorage.setItem('hasSeenRotationPrompt', 'true');
+                setShowRotatePrompt(false);
+              }}
               className="mt-4 text-[10px] uppercase tracking-[0.3em] text-white/30 hover:text-white transition-colors border-b border-white/10 pb-1"
             >
               Continuar en vertical
