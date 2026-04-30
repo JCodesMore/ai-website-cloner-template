@@ -85,14 +85,6 @@ export default function Home() {
         </div>
 
         <div className="relative z-10 flex flex-col items-center justify-center px-4 max-w-5xl mx-auto pt-20">
-          <Image
-            src="/incomparables-web/images/logo.svg"
-            alt="Incomparables"
-            width={600}
-            height={200}
-            className="w-full max-w-[300px] sm:max-w-[500px] mb-8 brightness-0 invert opacity-40 h-auto"
-            priority
-          />
           <p className="text-white/80 font-semibold text-lg tracking-widest uppercase mb-8">
             🎵 Música Norteña para Toda Ocasión
           </p>
