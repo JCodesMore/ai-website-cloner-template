@@ -269,10 +269,10 @@ export default function Home() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-8">
             <div className="flex items-center gap-4">
               <Image
-                src="/incomparables-web/images/logo.svg"
+                src="https://minimax-algeng-chat-tts-us.oss-us-east-1.aliyuncs.com/ccv2%2F2026-05-01%2FMiniMax-M2.7%2F2042579070591447735%2F4a331924528823191df614002a0e4b320b99b44b6d0435ac26623086311557a2..jpeg?Expires=1777667206&OSSAccessKeyId=LTAI5tCpJNKCf5EkQHSuL9xg&Signature=Pe4Nm0M0SdlAlk4AH%2ByUtEgsdJ4%3D"
                 alt="Incomparables"
-                width={100}
-                height={33}
+                width={120}
+                height={40}
                 className="h-auto w-auto opacity-50 brightness-0 invert"
               />
             </div>
