@@ -294,7 +294,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="relative py-24 px-4 bg-black border-t border-white/5 overflow-hidden">
         {/* Logo Watermark Background */}
-        <div className="absolute inset-0 z-0 flex items-center justify-center opacity-[0.07] pointer-events-none">
+        <div className="absolute inset-0 z-0 flex items-center justify-center opacity-[0.14] pointer-events-none">
           <Image
             src="/incomparables-web/images/logo-incomparables.jpeg"
             alt=""
