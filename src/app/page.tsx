@@ -27,7 +27,7 @@ export default function Home() {
           alt=""
           width={1000}
           height={1000}
-          className="w-full max-w-[800px] h-auto object-contain"
+          className="w-[90%] max-w-[300px] sm:max-w-[800px] h-auto object-contain"
           priority
         />
       </div>
@@ -48,9 +48,9 @@ export default function Home() {
               <Image
                 src="/incomparables-web/images/logo-incomparables.jpeg"
                 alt="Los Incomparables de Manuel Vargas"
-                width={180}
-                height={60}
-                className="h-12 w-auto object-contain"
+                width={150}
+                height={50}
+                className="h-8 sm:h-12 w-auto object-contain"
               />
             </div>
 
@@ -98,46 +98,55 @@ export default function Home() {
         </video>
         <div className="absolute inset-0 bg-black/65" />
 
-        <div className="relative z-10 flex flex-col items-center justify-end px-4 max-w-5xl mx-auto pb-8 sm:pb-16 gap-6">
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div className="relative z-10 flex flex-col items-center justify-end px-4 max-w-5xl mx-auto pb-12 sm:pb-16 gap-8">
+          <div className="text-center">
+            <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold text-white mb-4 tracking-tighter">
+              LOS <span className="text-primary">INCOMPARABLES</span>
+            </h1>
+            <p className="text-white/80 font-medium text-sm sm:text-lg tracking-[0.3em] uppercase mb-8">
+              De Manuel Vargas
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
             <a
               href="#servicios"
-              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-4 rounded-lg font-semibold hover:bg-primary/90 transition-all hover:scale-105 shadow-lg shadow-primary/25"
+              className="w-full sm:w-auto text-center inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-8 py-4 rounded-lg font-semibold hover:bg-primary/90 transition-all hover:scale-105 shadow-lg shadow-primary/25"
             >
               Nuestros Servicios
             </a>
             <a
               href="#contacto"
-              className="inline-flex items-center gap-2 border border-border text-foreground px-8 py-4 rounded-lg font-semibold hover:bg-secondary transition-all"
+              className="w-full sm:w-auto text-center inline-flex items-center justify-center gap-2 border border-border text-foreground px-8 py-4 rounded-lg font-semibold hover:bg-secondary transition-all"
             >
               Contáctanos
             </a>
           </div>
 
-          <div className="flex items-center gap-6 mt-4">
+          <div className="flex items-center gap-8 mt-4">
             <a
               href="https://www.instagram.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 hover:text-primary transition-colors"
+              className="p-2 hover:text-primary transition-all hover:scale-125"
             >
-              <InstagramIcon className="w-6 h-6 text-white hover:text-primary" />
+              <InstagramIcon className="w-6 h-6 text-white" />
             </a>
             <a
               href="https://www.facebook.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 hover:text-primary transition-colors"
+              className="p-2 hover:text-primary transition-all hover:scale-125"
             >
-              <FacebookIcon className="w-6 h-6 text-white hover:text-primary" />
+              <FacebookIcon className="w-6 h-6 text-white" />
             </a>
             <a
               href="https://www.tiktok.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 hover:text-primary transition-colors"
+              className="p-2 hover:text-primary transition-all hover:scale-125"
             >
-              <TikTokIcon className="w-6 h-6 text-white hover:text-primary" />
+              <TikTokIcon className="w-6 h-6 text-white" />
             </a>
           </div>
         </div>
