@@ -74,7 +74,7 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-[85vh] flex flex-col justify-end overflow-hidden">
         <video
           autoPlay
           loop
@@ -86,8 +86,8 @@ export default function Home() {
         </video>
         <div className="absolute inset-0 bg-black/60" />
 
-        <div className="relative z-10 flex flex-col items-center justify-center px-4 max-w-5xl mx-auto pt-20">
-          <p className="text-white/80 font-semibold text-lg tracking-widest uppercase mb-8">
+        <div className="relative z-10 flex flex-col items-center justify-end px-4 max-w-5xl mx-auto pb-16 sm:pb-24 gap-6">
+          <p className="text-white/80 font-semibold text-lg tracking-widest uppercase">
             🎵 Música Norteña para Toda Ocasión
           </p>
 
@@ -103,6 +103,33 @@ export default function Home() {
               className="inline-flex items-center gap-2 border border-border text-foreground px-8 py-4 rounded-lg font-semibold hover:bg-secondary transition-all"
             >
               Contáctanos
+            </a>
+          </div>
+
+          <div className="flex items-center gap-6 mt-4">
+            <a
+              href="https://www.instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 hover:text-primary transition-colors"
+            >
+              <InstagramIcon className="w-6 h-6 text-white hover:text-primary" />
+            </a>
+            <a
+              href="https://www.facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 hover:text-primary transition-colors"
+            >
+              <FacebookIcon className="w-6 h-6 text-white hover:text-primary" />
+            </a>
+            <a
+              href="https://www.tiktok.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 hover:text-primary transition-colors"
+            >
+              <TikTokIcon className="w-6 h-6 text-white hover:text-primary" />
             </a>
           </div>
         </div>
