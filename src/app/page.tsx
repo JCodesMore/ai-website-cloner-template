@@ -169,7 +169,13 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="group bg-card border border-border rounded-xl p-8 hover:border-primary transition-all hover:shadow-lg hover:shadow-primary/10 text-center">
-              <div className="text-5xl mb-4">🎉</div>
+              <Image
+                src="https://minimax-algeng-chat-tts-us.oss-us-east-1.aliyuncs.com/ccv2%2F2026-05-01%2FMiniMax-M2.7%2F2042579070591447735%2F8c65f689704933e12bf25a9dd7d206cbcb2b9587ca51df5a050309f2ba703f10..jpeg?Expires=1777668362&OSSAccessKeyId=LTAI5tCpJNKCf5EkQHSuL9xg&Signature=XYDoICaexXxvS%2FRpaeOqprh5Edg%3D"
+                alt="Fiestas Privadas"
+                width={80}
+                height={80}
+                className="mx-auto mb-4 object-contain"
+              />
               <h3 className="text-xl font-bold mb-2">Fiestas Privadas</h3>
               <p className="text-muted-foreground text-sm">
                 Hacemos de tu celebración un evento memorable con la mejor música norteña.
