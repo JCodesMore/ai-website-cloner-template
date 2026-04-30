@@ -74,15 +74,16 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0">
-          <img
-            src="/incomparables-web/images/background-hero.jpg"
-            alt="Incomparables"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/60" />
-        </div>
+      <section
+        className="relative min-h-screen flex items-center justify-center overflow-hidden"
+        style={{
+          backgroundImage: "url('/incomparables-web/images/background-hero.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        <div className="absolute inset-0 bg-black/60" />
 
         <div className="relative z-10 flex flex-col items-center justify-center px-4 max-w-5xl mx-auto pt-20">
           <p className="text-white/80 font-semibold text-lg tracking-widest uppercase mb-8">
