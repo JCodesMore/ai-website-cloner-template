@@ -168,36 +168,60 @@ export default function Home() {
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="group bg-card border border-border rounded-xl p-8 hover:border-primary transition-all hover:shadow-lg hover:shadow-primary/10 text-center">
-              <img
-                src="https://minimax-algeng-chat-tts-us.oss-us-east-1.aliyuncs.com/ccv2%2F2026-05-01%2FMiniMax-M2.7%2F2042579070591447735%2F8c65f689704933e12bf25a9dd7d206cbcb2b9587ca51df5a050309f2ba703f10..jpeg?Expires=1777668362&OSSAccessKeyId=LTAI5tCpJNKCf5EkQHSuL9xg&Signature=XYDoICaexXxvS%2FRpaeOqprh5Edg%3D"
-                alt="Fiestas Privadas"
-                className="w-full h-48 object-contain mb-4"
-              />
+            <div className="group bg-card border border-border rounded-xl p-8 hover:border-primary transition-all hover:shadow-lg hover:shadow-primary/10 text-center overflow-hidden">
+              <div className="relative h-48 w-full mb-6">
+                <Image
+                  src="/incomparables-web/images/servicios/fiestas.png"
+                  alt="Fiestas Privadas"
+                  fill
+                  className="object-contain group-hover:scale-110 transition-transform duration-500"
+                />
+              </div>
               <h3 className="text-xl font-bold mb-2">Fiestas Privadas</h3>
               <p className="text-muted-foreground text-sm">
                 Hacemos de tu celebración un evento memorable con la mejor música norteña.
               </p>
             </div>
 
-            <div className="group bg-card border border-border rounded-xl p-8 hover:border-primary transition-all hover:shadow-lg hover:shadow-primary/10 text-center">
-              <div className="text-5xl mb-4">🎤</div>
+            <div className="group bg-card border border-border rounded-xl p-8 hover:border-primary transition-all hover:shadow-lg hover:shadow-primary/10 text-center overflow-hidden">
+              <div className="relative h-48 w-full mb-6">
+                <Image
+                  src="/incomparables-web/images/servicios/conciertos.png"
+                  alt="Conciertos Masivos"
+                  fill
+                  className="object-contain group-hover:scale-110 transition-transform duration-500"
+                />
+              </div>
               <h3 className="text-xl font-bold mb-2">Conciertos Masivos</h3>
               <p className="text-muted-foreground text-sm">
                 Actuamos en grandes escenarios llevando nuestra música a miles de personas.
               </p>
             </div>
 
-            <div className="group bg-card border border-border rounded-xl p-8 hover:border-primary transition-all hover:shadow-lg hover:shadow-primary/10 text-center">
-              <div className="text-5xl mb-4">🏢</div>
+            <div className="group bg-card border border-border rounded-xl p-8 hover:border-primary transition-all hover:shadow-lg hover:shadow-primary/10 text-center overflow-hidden">
+              <div className="relative h-48 w-full mb-6">
+                <Image
+                  src="/incomparables-web/images/servicios/corporativos.png"
+                  alt="Eventos Corporativos"
+                  fill
+                  className="object-contain group-hover:scale-110 transition-transform duration-500"
+                />
+              </div>
               <h3 className="text-xl font-bold mb-2">Eventos Corporativos</h3>
               <p className="text-muted-foreground text-sm">
                 Ambientamos eventos empresariales con profesionalismo y calidad musical.
               </p>
             </div>
 
-            <div className="group bg-card border border-border rounded-xl p-8 hover:border-primary transition-all hover:shadow-lg hover:shadow-primary/10 text-center">
-              <div className="text-5xl mb-4">🎺</div>
+            <div className="group bg-card border border-border rounded-xl p-8 hover:border-primary transition-all hover:shadow-lg hover:shadow-primary/10 text-center overflow-hidden">
+              <div className="relative h-48 w-full mb-6">
+                <Image
+                  src="/incomparables-web/images/servicios/ambientacion.png"
+                  alt="Ambientación Musical"
+                  fill
+                  className="object-contain group-hover:scale-110 transition-transform duration-500"
+                />
+              </div>
               <h3 className="text-xl font-bold mb-2">Ambientación Musical</h3>
               <p className="text-muted-foreground text-sm">
                 La música perfecta para crear el ambiente ideal en cualquier ocasión.
