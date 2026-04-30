@@ -96,7 +96,7 @@ export default function Home() {
         >
           <source src="/incomparables-web/videos/logo-animado.mp4" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-black/60" />
+        <div className="absolute inset-0 bg-black/65" />
 
         <div className="relative z-10 flex flex-col items-center justify-end px-4 max-w-5xl mx-auto pb-8 sm:pb-16 gap-6">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
