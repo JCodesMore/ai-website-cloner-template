@@ -164,31 +164,17 @@ export default function Home() {
           <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 sm:p-16 shadow-2xl relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-32 -mt-32" />
             
-            <div className="flex flex-col md:flex-row items-center gap-12 relative z-10">
-              <div className="w-32 h-32 sm:w-48 sm:h-48 relative flex-shrink-0">
-                <Image
-                  src="/incomparables-web/images/nosotros-icon.png"
-                  alt="Acordeón Incomparables"
-                  fill
-                  className="object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] group-hover:scale-110 transition-transform duration-700"
-                />
-              </div>
-              <div>
-                <h3 className="text-2xl sm:text-3xl font-bold mb-6 text-white tracking-wide">Música Norteña de Excelencia</h3>
-                <p className="text-lg sm:text-xl leading-relaxed text-white/70 font-light">
-                  Con más de <span className="text-primary font-semibold">35 años</span> aportando la mejor música norteña, hemos brindado entretenimiento
-                  en San Luis Potosí y Estados Unidos. Nos especializamos en hacer de cada evento una
-                  experiencia única, ya sea en fiestas privadas, eventos corporativos o conciertos masivos.
-                </p>
-                <div className="mt-10 flex flex-wrap gap-4">
-                  <div className="bg-white/5 border border-white/10 px-6 py-3 rounded-2xl flex items-center gap-3">
-                    <span className="text-primary font-bold">35+</span>
-                    <span className="text-sm uppercase tracking-widest text-white/40 font-medium">Años de Historia</span>
-                  </div>
-                  <div className="bg-white/5 border border-white/10 px-6 py-3 rounded-2xl flex items-center gap-3">
-                    <span className="text-primary font-bold">🇲🇽🇺🇸</span>
-                    <span className="text-sm uppercase tracking-widest text-white/40 font-medium">México y USA</span>
-                  </div>
+            <div className="relative z-10 text-center max-w-2xl mx-auto">
+              <h3 className="text-2xl sm:text-3xl font-bold mb-6 text-white tracking-wide">Música Norteña de Excelencia</h3>
+              <p className="text-lg sm:text-xl leading-relaxed text-white/70 font-light">
+                Con más de <span className="text-primary font-semibold">35 años</span> aportando la mejor música norteña, hemos brindado entretenimiento
+                en San Luis Potosí y Estados Unidos. Nos especializamos en hacer de cada evento una
+                experiencia única, ya sea en fiestas privadas, eventos corporativos o conciertos masivos.
+              </p>
+              <div className="mt-10 flex justify-center">
+                <div className="bg-white/5 border border-white/10 px-6 py-3 rounded-2xl flex items-center gap-3">
+                  <span className="text-primary font-bold">🇲🇽🇺🇸</span>
+                  <span className="text-sm uppercase tracking-widest text-white/40 font-medium">México y USA</span>
                 </div>
               </div>
             </div>
