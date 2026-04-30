@@ -75,11 +75,11 @@ export default function Home() {
 
       {/* Hero Section */}
       <section
-        className="relative min-h-screen flex items-center justify-center overflow-hidden"
+        className="relative min-h-[85vh] flex items-center justify-center overflow-hidden"
         style={{
           backgroundImage: "url('/incomparables-web/images/background-hero.jpg')",
           backgroundSize: "cover",
-          backgroundPosition: "center center",
+          backgroundPosition: "center 20%",
           backgroundRepeat: "no-repeat",
         }}
       >
