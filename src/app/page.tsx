@@ -30,7 +30,7 @@ export default function Home() {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
               <Image
-                src="images/logo.svg"
+                src="/incomparables-web/images/logo.svg"
                 alt="Incomparables"
                 width={120}
                 height={40}
@@ -71,7 +71,7 @@ export default function Home() {
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="images/background-hero.jpg"
+            src="/incomparables-web/images/background-hero.jpg"
             alt="Incomparables"
             fill
             className="object-cover"
@@ -82,7 +82,7 @@ export default function Home() {
 
         <div className="relative z-10 flex flex-col items-center justify-center px-4 max-w-5xl mx-auto pt-20">
           <Image
-            src="images/logo.svg"
+            src="/incomparables-web/images/logo.svg"
             alt="Incomparables"
             width={350}
             height={117}
@@ -248,7 +248,7 @@ export default function Home() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-8">
             <div className="flex items-center gap-4">
               <Image
-                src="images/logo.svg"
+                src="/incomparables-web/images/logo.svg"
                 alt="Incomparables"
                 width={100}
                 height={33}
