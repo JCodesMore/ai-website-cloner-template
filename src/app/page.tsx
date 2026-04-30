@@ -172,9 +172,7 @@ export default function Home() {
               <img
                 src="https://minimax-algeng-chat-tts-us.oss-us-east-1.aliyuncs.com/ccv2%2F2026-05-01%2FMiniMax-M2.7%2F2042579070591447735%2F8c65f689704933e12bf25a9dd7d206cbcb2b9587ca51df5a050309f2ba703f10..jpeg?Expires=1777668362&OSSAccessKeyId=LTAI5tCpJNKCf5EkQHSuL9xg&Signature=XYDoICaexXxvS%2FRpaeOqprh5Edg%3D"
                 alt="Fiestas Privadas"
-                width={80}
-                height={80}
-                className="mx-auto mb-4 object-contain"
+                className="w-full h-48 object-contain mb-4"
               />
               <h3 className="text-xl font-bold mb-2">Fiestas Privadas</h3>
               <p className="text-muted-foreground text-sm">
