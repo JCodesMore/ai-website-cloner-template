@@ -34,11 +34,11 @@ export default function Home() {
             {/* Centered Logo */}
             <div className="absolute left-1/2 -translate-x-1/2 flex items-center">
               <Image
-                src="/incomparables-web/images/logo.svg"
-                alt="Incomparables"
-                width={120}
-                height={40}
-                className="h-10 w-auto brightness-0 invert opacity-60"
+                src="/incomparables-web/images/logo-incomparables.jpeg"
+                alt="Los Incomparables de Manuel Vargas"
+                width={180}
+                height={60}
+                className="h-12 w-auto object-contain"
               />
             </div>
 
