@@ -326,6 +326,50 @@ export default function Home() {
               </p>
             </div>
           </div>
+
+          {/* Featured Bonus Section */}
+          <div className="mt-20 max-w-4xl mx-auto">
+            <div className="bg-gradient-to-br from-primary/20 via-white/5 to-transparent backdrop-blur-2xl border border-primary/20 rounded-[2.5rem] p-8 sm:p-12 shadow-2xl relative overflow-hidden text-center group">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+              
+              <div className="relative z-10">
+                <h3 className="text-2xl sm:text-3xl font-black text-white mb-6 tracking-tight uppercase">
+                  ¡Tu evento merece ser <span className="text-primary">Incomparable</span>!
+                </h3>
+                
+                <p className="text-lg sm:text-xl text-white/80 font-light mb-10 leading-relaxed">
+                  Al contratarnos, no solo llevas música, llevas una <span className="text-primary font-semibold">producción completa</span>. 
+                  Todos nuestros servicios incluyen beneficios exclusivos sin costo adicional:
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                  <div className="bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-primary/30 transition-colors">
+                    <div className="text-3xl mb-3">🎬</div>
+                    <h4 className="text-primary font-bold text-sm uppercase tracking-widest mb-2">Reseña VIP</h4>
+                    <p className="text-white/60 text-xs text-balance">Reseña de la fiesta para inmortalizar tu celebración.</p>
+                  </div>
+                  
+                  <div className="bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-primary/30 transition-colors">
+                    <div className="text-3xl mb-3">📅</div>
+                    <h4 className="text-primary font-bold text-sm uppercase tracking-widest mb-2">Programación</h4>
+                    <p className="text-white/60 text-xs text-balance">Logística total para Quince Años, Bodas, Bautizos y más.</p>
+                  </div>
+                  
+                  <div className="bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-primary/30 transition-colors">
+                    <div className="text-3xl mb-3">📢</div>
+                    <h4 className="text-primary font-bold text-sm uppercase tracking-widest mb-2">Flyer Digital</h4>
+                    <p className="text-white/60 text-xs text-balance">Flyer promocional exclusivo para tus redes sociales.</p>
+                  </div>
+                </div>
+
+                <div className="mt-10 inline-flex items-center gap-2 text-primary/80 text-sm font-medium italic">
+                  <span className="w-12 h-[1px] bg-primary/30"></span>
+                  Garantizamos el éxito total de tu celebración
+                  <span className="w-12 h-[1px] bg-primary/30"></span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
