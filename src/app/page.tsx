@@ -76,12 +76,10 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <Image
+          <img
             src="/incomparables-web/images/background-hero.jpg"
             alt="Incomparables"
-            fill
-            className="object-cover"
-            priority
+            className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-black/60" />
         </div>
