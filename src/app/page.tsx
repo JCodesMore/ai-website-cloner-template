@@ -19,7 +19,19 @@ export default function Home() {
   }, [scrollY]);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground relative">
+      {/* Global Body Watermark */}
+      <div className="fixed inset-0 z-0 flex items-center justify-center opacity-[0.03] pointer-events-none overflow-hidden">
+        <Image
+          src="/incomparables-web/images/shield-watermark.png"
+          alt=""
+          width={1000}
+          height={1000}
+          className="w-full max-w-[800px] h-auto object-contain"
+          priority
+        />
+      </div>
+
       {/* Navigation */}
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
