@@ -134,19 +134,26 @@ export default function Home() {
       {/* About Section */}
       <section id="nosotros" className="py-20 px-4 relative">
         <div className="max-w-4xl mx-auto">
-          {/* Transition Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-20">
+          {/* Transition Buttons - Vertical Stack */}
+          <div className="flex flex-col items-center justify-center gap-8 mb-20">
+            <div className="relative group">
+              {/* Pulse Animation Effect */}
+              <div className="absolute -inset-1 bg-primary rounded-full blur opacity-40 group-hover:opacity-75 animate-pulse transition duration-1000 group-hover:duration-200"></div>
+              
+              <a
+                href="#contacto"
+                className="relative w-[280px] sm:w-[320px] text-center inline-flex items-center justify-center gap-3 bg-primary text-black px-10 py-5 rounded-full font-black text-xl hover:bg-primary/90 transition-all hover:scale-110 shadow-2xl shadow-primary/40 uppercase tracking-wider"
+              >
+                <PhoneIcon className="w-6 h-6 animate-bounce" />
+                Contáctanos
+              </a>
+            </div>
+
             <a
               href="#servicios"
-              className="w-full sm:w-auto text-center inline-flex items-center justify-center gap-2 border-2 border-white/20 text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-white/10 transition-all hover:scale-105"
+              className="w-[240px] sm:w-[280px] text-center inline-flex items-center justify-center gap-2 border-2 border-white/10 text-white/60 px-8 py-3 rounded-full font-bold text-base hover:border-white/40 hover:text-white transition-all"
             >
               Nuestros Servicios
-            </a>
-            <a
-              href="#contacto"
-              className="w-full sm:w-auto text-center inline-flex items-center justify-center gap-2 bg-primary text-black px-10 py-4 rounded-full font-bold text-lg hover:bg-primary/90 transition-all hover:scale-105 shadow-xl shadow-primary/20"
-            >
-              Contáctanos
             </a>
           </div>
 
