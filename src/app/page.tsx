@@ -218,12 +218,12 @@ export default function Home() {
 
           <div className="mb-20 relative group">
             <div className="absolute -inset-1 bg-primary/20 rounded-[2rem] blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-700" />
-            <div className="relative aspect-[2/3] sm:aspect-[4/5] md:aspect-[16/9] w-full overflow-hidden rounded-[2rem] border border-white/10 shadow-2xl">
+            <div className="relative aspect-[4/5] sm:aspect-[4/5] md:aspect-[3/2] w-full overflow-hidden rounded-[2rem] border border-white/10 shadow-2xl">
               <Image
                 src="/incomparables-web/images/grupo-oficial.png"
                 alt="Los Incomparables de Manuel Vargas - Foto Oficial"
                 fill
-                className="object-cover object-top group-hover:scale-105 transition-transform duration-1000"
+                className="object-cover object-bottom group-hover:scale-105 transition-transform duration-1000"
                 priority
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
