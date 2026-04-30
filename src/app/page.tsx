@@ -127,54 +127,29 @@ export default function Home() {
         <div className="absolute inset-0 bg-black/65" />
 
         <div className="relative z-10 flex flex-col items-center justify-center px-4 max-w-5xl mx-auto h-full gap-12 mt-20">
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 w-full sm:w-auto">
+          {/* Hero is now clean and focus on the video/logo background */}
+        </div>
+      </section>
+
+      {/* About Section */}
+      <section id="nosotros" className="py-20 px-4 relative">
+        <div className="max-w-4xl mx-auto">
+          {/* Transition Buttons */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-20">
             <a
               href="#servicios"
-              className="w-full sm:w-auto text-center inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-10 py-5 rounded-full font-bold text-lg hover:bg-primary/90 transition-all hover:scale-105 shadow-xl shadow-primary/30"
+              className="w-full sm:w-auto text-center inline-flex items-center justify-center gap-2 border-2 border-white/20 text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-white/10 transition-all hover:scale-105"
             >
               Nuestros Servicios
             </a>
             <a
               href="#contacto"
-              className="w-full sm:w-auto text-center inline-flex items-center justify-center gap-2 border-2 border-white/20 text-white px-10 py-5 rounded-full font-bold text-lg hover:bg-white/10 backdrop-blur-sm transition-all hover:scale-105"
+              className="w-full sm:w-auto text-center inline-flex items-center justify-center gap-2 bg-primary text-black px-10 py-4 rounded-full font-bold text-lg hover:bg-primary/90 transition-all hover:scale-105 shadow-xl shadow-primary/20"
             >
               Contáctanos
             </a>
           </div>
 
-          {/* Social Icons for Mobile Only (centered) */}
-          <div className="flex md:hidden items-center gap-10 mt-8">
-            <a
-              href="https://www.instagram.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white/60 hover:text-primary transition-all"
-            >
-              <InstagramIcon className="w-7 h-7" />
-            </a>
-            <a
-              href="https://www.facebook.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white/60 hover:text-primary transition-all"
-            >
-              <FacebookIcon className="w-7 h-7" />
-            </a>
-            <a
-              href="https://www.tiktok.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white/60 hover:text-primary transition-all"
-            >
-              <TikTokIcon className="w-7 h-7" />
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* About Section */}
-      <section id="nosotros" className="py-20 px-4">
-        <div className="max-w-4xl mx-auto">
           <h2 className="text-4xl sm:text-5xl font-bold text-center mb-12">
             Sobre <span className="text-primary">Nosotros</span>
           </h2>
