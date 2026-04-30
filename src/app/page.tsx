@@ -74,15 +74,16 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section
-        className="relative min-h-[85vh] flex items-center justify-center overflow-hidden"
-        style={{
-          backgroundImage: "url('/incomparables-web/images/background-hero.jpg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center 20%",
-          backgroundRepeat: "no-repeat",
-        }}
-      >
+      <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source src="/incomparables-web/videos/logo-animado.mp4" type="video/mp4" />
+        </video>
         <div className="absolute inset-0 bg-black/60" />
 
         <div className="relative z-10 flex flex-col items-center justify-center px-4 max-w-5xl mx-auto pt-20">
