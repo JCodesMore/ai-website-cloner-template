@@ -85,8 +85,36 @@ export default function Home() {
         </div>
       </nav>
 
+      {/* Fixed Social Sidebar (Desktop) */}
+      <div className="fixed right-0 top-1/2 -translate-y-1/2 z-[60] hidden md:flex flex-col gap-4 p-4 bg-black/40 backdrop-blur-md border-l border-y border-white/10 rounded-l-2xl shadow-2xl">
+        <a
+          href="https://www.instagram.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-3 text-white/60 hover:text-primary transition-all hover:scale-125 hover:-translate-x-1"
+        >
+          <InstagramIcon className="w-6 h-6" />
+        </a>
+        <a
+          href="https://www.facebook.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-3 text-white/60 hover:text-primary transition-all hover:scale-125 hover:-translate-x-1"
+        >
+          <FacebookIcon className="w-6 h-6" />
+        </a>
+        <a
+          href="https://www.tiktok.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-3 text-white/60 hover:text-primary transition-all hover:scale-125 hover:-translate-x-1"
+        >
+          <TikTokIcon className="w-6 h-6" />
+        </a>
+      </div>
+
       {/* Hero Section */}
-      <section className="relative min-h-[85vh] flex flex-col justify-end overflow-hidden">
+      <section id="inicio" className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
         <video
           autoPlay
           loop
@@ -98,55 +126,47 @@ export default function Home() {
         </video>
         <div className="absolute inset-0 bg-black/65" />
 
-        <div className="relative z-10 flex flex-col items-center justify-end px-4 max-w-5xl mx-auto pb-12 sm:pb-16 gap-8">
-          <div className="text-center">
-            <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold text-white mb-4 tracking-tighter">
-              LOS <span className="text-primary">INCOMPARABLES</span>
-            </h1>
-            <p className="text-white/80 font-medium text-sm sm:text-lg tracking-[0.3em] uppercase mb-8">
-              De Manuel Vargas
-            </p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
+        <div className="relative z-10 flex flex-col items-center justify-center px-4 max-w-5xl mx-auto h-full gap-12 mt-20">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 w-full sm:w-auto">
             <a
               href="#servicios"
-              className="w-full sm:w-auto text-center inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-8 py-4 rounded-lg font-semibold hover:bg-primary/90 transition-all hover:scale-105 shadow-lg shadow-primary/25"
+              className="w-full sm:w-auto text-center inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-10 py-5 rounded-full font-bold text-lg hover:bg-primary/90 transition-all hover:scale-105 shadow-xl shadow-primary/30"
             >
               Nuestros Servicios
             </a>
             <a
               href="#contacto"
-              className="w-full sm:w-auto text-center inline-flex items-center justify-center gap-2 border border-border text-foreground px-8 py-4 rounded-lg font-semibold hover:bg-secondary transition-all"
+              className="w-full sm:w-auto text-center inline-flex items-center justify-center gap-2 border-2 border-white/20 text-white px-10 py-5 rounded-full font-bold text-lg hover:bg-white/10 backdrop-blur-sm transition-all hover:scale-105"
             >
               Contáctanos
             </a>
           </div>
 
-          <div className="flex items-center gap-8 mt-4">
+          {/* Social Icons for Mobile Only (centered) */}
+          <div className="flex md:hidden items-center gap-10 mt-8">
             <a
               href="https://www.instagram.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 hover:text-primary transition-all hover:scale-125"
+              className="text-white/60 hover:text-primary transition-all"
             >
-              <InstagramIcon className="w-6 h-6 text-white" />
+              <InstagramIcon className="w-7 h-7" />
             </a>
             <a
               href="https://www.facebook.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 hover:text-primary transition-all hover:scale-125"
+              className="text-white/60 hover:text-primary transition-all"
             >
-              <FacebookIcon className="w-6 h-6 text-white" />
+              <FacebookIcon className="w-7 h-7" />
             </a>
             <a
               href="https://www.tiktok.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 hover:text-primary transition-all hover:scale-125"
+              className="text-white/60 hover:text-primary transition-all"
             >
-              <TikTokIcon className="w-6 h-6 text-white" />
+              <TikTokIcon className="w-7 h-7" />
             </a>
           </div>
         </div>
