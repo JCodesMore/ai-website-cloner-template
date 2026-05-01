@@ -379,7 +379,7 @@ export default function Home() {
           {showProduction && (
             <div className="mt-20 animate-in fade-in slide-in-from-top-10 duration-700">
               <h3 className="text-2xl sm:text-3xl font-bold text-center mb-12 uppercase tracking-widest text-primary">
-                Equipamiento de Escenario Incluido
+                Equipamiento de Escenario
               </h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
