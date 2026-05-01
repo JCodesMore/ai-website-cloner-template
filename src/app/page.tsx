@@ -500,54 +500,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Final WhatsApp QR Section */}
-      <section className="py-24 px-4 bg-black relative overflow-hidden">
-        {/* Background Relief Pattern (Simulated with opacity image) */}
-        <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
-          <Image
-            src="/incomparables-web/images/logo-incomparables.jpeg"
-            alt=""
-            fill
-            className="object-contain scale-125"
-          />
-        </div>
-
-        <div className="max-w-5xl mx-auto text-center relative z-10">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4 uppercase tracking-widest text-white">
-            Contacto Directo <span className="text-primary">WhatsApp</span>
-          </h2>
-          <p className="text-white/50 mb-16 tracking-widest uppercase text-xs">Escanea para llamar o escribir</p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-12">
-            {/* Manuel QR */}
-            <div className="flex flex-col items-center group">
-              <div className="bg-white p-4 rounded-[2rem] shadow-[0_0_50px_rgba(255,0,0,0.3)] group-hover:shadow-[0_0_70px_rgba(255,0,0,0.5)] transition-all duration-500 mb-6">
-                <img 
-                  src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://wa.me/524448480720&color=990000" 
-                  alt="QR Manuel" 
-                  className="w-48 h-48"
-                />
-              </div>
-              <h3 className="text-xl font-black text-white tracking-tighter mb-1">MANUEL TEJADA</h3>
-              <p className="text-primary font-mono tracking-widest text-lg">44 48 48 07 20</p>
-            </div>
-
-            {/* Eduardo QR */}
-            <div className="flex flex-col items-center group">
-              <div className="bg-white p-4 rounded-[2rem] shadow-[0_0_50px_rgba(255,0,0,0.3)] group-hover:shadow-[0_0_70px_rgba(255,0,0,0.5)] transition-all duration-500 mb-6">
-                <img 
-                  src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://wa.me/524442994132&color=990000" 
-                  alt="QR Eduardo" 
-                  className="w-48 h-48"
-                />
-              </div>
-              <h3 className="text-xl font-black text-white tracking-tighter mb-1">EDUARDO TEJADA</h3>
-              <p className="text-primary font-mono tracking-widest text-lg">44 42 99 41 32</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Footer */}
       <footer className="relative py-24 px-4 bg-black border-t border-white/5 overflow-hidden">
         {/* Logo Watermark Background */}
