@@ -448,25 +448,40 @@ export default function Home() {
             
             <div className="flex flex-col items-center relative z-10">
               <p className="text-xl text-white/70 mb-12 font-light max-w-lg">
-                ¿Tienes un evento? ¡Hagamos que sea inolvidable con el mejor repertorio norteño!
+                ¿Tienes un evento? ¡Hagamos que sea inolvidable! <br />
+                <span className="text-primary font-bold">Escanea o toca para WhatsApp directo:</span>
               </p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-2xl">
-                <a
-                  href="tel:+526141073188"
-                  className="flex items-center justify-center gap-4 p-6 bg-white/5 border border-white/10 rounded-2xl hover:bg-primary hover:text-black transition-all group/btn"
-                >
-                  <PhoneIcon className="w-6 h-6 text-primary group-hover/btn:text-black" />
-                  <span className="text-xl font-bold">614 107 3188</span>
-                </a>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 w-full max-w-4xl">
+                {/* Manuel Tejada QR */}
+                <div className="flex flex-col items-center bg-white/5 p-8 rounded-3xl border border-white/10 hover:border-primary/50 transition-all">
+                  <div className="bg-white p-3 rounded-2xl mb-4">
+                    <img 
+                      src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://wa.me/524448480720" 
+                      alt="WhatsApp Manuel Tejada" 
+                      className="w-40 h-40"
+                    />
+                  </div>
+                  <h4 className="text-xl font-bold text-white mb-1">MANUEL TEJADA</h4>
+                  <a href="https://wa.me/524448480720" className="text-primary font-mono text-lg hover:underline">
+                    44 48 48 07 20
+                  </a>
+                </div>
 
-                <a
-                  href="mailto:pmailprueba@gmail.com"
-                  className="flex items-center justify-center gap-4 p-6 bg-white/5 border border-white/10 rounded-2xl hover:bg-primary hover:text-black transition-all group/btn"
-                >
-                  <MailIcon className="w-6 h-6 text-primary group-hover/btn:text-black" />
-                  <span className="text-lg font-bold">Escríbenos</span>
-                </a>
+                {/* Eduardo Tejada QR */}
+                <div className="flex flex-col items-center bg-white/5 p-8 rounded-3xl border border-white/10 hover:border-primary/50 transition-all">
+                  <div className="bg-white p-3 rounded-2xl mb-4">
+                    <img 
+                      src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://wa.me/524442994132" 
+                      alt="WhatsApp Eduardo Tejada" 
+                      className="w-40 h-40"
+                    />
+                  </div>
+                  <h4 className="text-xl font-bold text-white mb-1">EDUARDO TEJADA</h4>
+                  <a href="https://wa.me/524442994132" className="text-primary font-mono text-lg hover:underline">
+                    44 42 99 41 32
+                  </a>
+                </div>
               </div>
 
               <div className="mt-12">
@@ -474,26 +489,13 @@ export default function Home() {
                   href="https://www.facebook.com/p/Incomparables-de-Manuel-Vargas-100057375342864/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-3 px-10 py-4 bg-primary text-black rounded-full font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-primary/20"
+                  className="inline-flex items-center gap-3 px-10 py-4 bg-primary text-white rounded-full font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-primary/20"
                 >
                   <FacebookIcon className="w-5 h-5" />
                   Ver en Facebook
                 </a>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* QR Section */}
-      <section className="py-12 px-4 bg-secondary/30">
-        <div className="max-w-md mx-auto text-center">
-          <div className="bg-card border border-border rounded-xl p-8">
-            <QrCodeIcon className="w-32 h-32 mx-auto mb-4 text-primary" />
-            <h3 className="text-lg font-bold mb-2">Comparte esta página fácilmente</h3>
-            <p className="text-sm text-muted-foreground">
-              Escanea para compartir
-            </p>
           </div>
         </div>
       </section>
