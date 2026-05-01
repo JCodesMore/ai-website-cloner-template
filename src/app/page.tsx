@@ -8,6 +8,7 @@ export default function Home() {
   const [scrollY, setScrollY] = useState(0);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showRotatePrompt, setShowRotatePrompt] = useState(false);
+  const [showProduction, setShowProduction] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -352,7 +353,10 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="group bg-card border border-border rounded-xl p-8 hover:border-primary transition-all hover:shadow-lg hover:shadow-primary/10 text-center overflow-hidden">
+            <button 
+              onClick={() => setShowProduction(!showProduction)}
+              className={`group w-full bg-card border border-border rounded-xl p-8 hover:border-primary transition-all hover:shadow-lg hover:shadow-primary/10 text-center overflow-hidden ${showProduction ? 'ring-2 ring-primary border-primary' : ''}`}
+            >
               <div className="relative h-48 w-full mb-6">
                 <Image
                   src="/incomparables-web/images/servicios/ambientacion.png"
@@ -365,71 +369,76 @@ export default function Home() {
               <p className="text-muted-foreground text-sm">
                 La música perfecta para crear el ambiente ideal en cualquier ocasión.
               </p>
-            </div>
+              <div className="mt-4 text-xs font-bold text-primary uppercase tracking-widest animate-pulse">
+                {showProduction ? '▲ Ocultar Detalles' : '▼ Ver Equipamiento Técnico'}
+              </div>
+            </button>
           </div>
 
-          {/* New: Technical Production Section */}
-          <div className="mt-32">
-            <h3 className="text-3xl sm:text-4xl font-bold text-center mb-16 uppercase tracking-widest">
-              Infraestructura y <span className="text-primary">Producción de Escenario</span>
-            </h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* LED Screens */}
-              <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl hover:border-primary/50 transition-all group">
-                <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">🖥️</div>
-                <h4 className="text-xl font-bold text-white mb-2">Pantallas LED Gigantes</h4>
-                <p className="text-white/50 text-sm leading-relaxed">
-                  Visuales de alta definición para una experiencia inmersiva en todo el recinto.
-                </p>
-              </div>
+          {/* New: Technical Production Section (Deployable) */}
+          {showProduction && (
+            <div className="mt-20 animate-in fade-in slide-in-from-top-10 duration-700">
+              <h3 className="text-2xl sm:text-3xl font-bold text-center mb-12 uppercase tracking-widest text-primary">
+                Equipamiento de Escenario Incluido
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* LED Screens */}
+                <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl hover:border-primary/50 transition-all group">
+                  <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">🖥️</div>
+                  <h4 className="text-xl font-bold text-white mb-2">Pantallas LED Gigantes</h4>
+                  <p className="text-white/50 text-sm leading-relaxed">
+                    Visuales de alta definición para una experiencia inmersiva en todo el recinto.
+                  </p>
+                </div>
 
-              {/* Scenarios */}
-              <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl hover:border-primary/50 transition-all group">
-                <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">🏗️</div>
-                <h4 className="text-xl font-bold text-white mb-2">Escenarios Versátiles</h4>
-                <p className="text-white/50 text-sm leading-relaxed">
-                  Contamos con 4 tipos de configuraciones ajustables al tamaño de tu evento.
-                </p>
-              </div>
+                {/* Scenarios */}
+                <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl hover:border-primary/50 transition-all group">
+                  <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">🏗️</div>
+                  <h4 className="text-xl font-bold text-white mb-2">Escenarios Versátiles</h4>
+                  <p className="text-white/50 text-sm leading-relaxed">
+                    Contamos con 4 tipos de configuraciones ajustables al tamaño de tu evento.
+                  </p>
+                </div>
 
-              {/* Lighting */}
-              <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl hover:border-primary/50 transition-all group">
-                <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">💡</div>
-                <h4 className="text-xl font-bold text-white mb-2">Iluminación Robótica</h4>
-                <p className="text-white/50 text-sm leading-relaxed">
-                  Sistemas de luces inteligentes para crear la atmósfera perfecta.
-                </p>
-              </div>
+                {/* Lighting */}
+                <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl hover:border-primary/50 transition-all group">
+                  <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">💡</div>
+                  <h4 className="text-xl font-bold text-white mb-2">Iluminación Robótica</h4>
+                  <p className="text-white/50 text-sm leading-relaxed">
+                    Sistemas de luces inteligentes para crear la atmósfera perfecta.
+                  </p>
+                </div>
 
-              {/* Special Effects */}
-              <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl hover:border-primary/50 transition-all group">
-                <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">🔥</div>
-                <h4 className="text-xl font-bold text-white mb-2">Efectos Especiales</h4>
-                <p className="text-white/50 text-sm leading-relaxed">
-                  Máquinas de flamas, humo denso y chisperos para un show de alto impacto.
-                </p>
-              </div>
+                {/* Special Effects */}
+                <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl hover:border-primary/50 transition-all group">
+                  <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">🔥</div>
+                  <h4 className="text-xl font-bold text-white mb-2">Efectos Especiales</h4>
+                  <p className="text-white/50 text-sm leading-relaxed">
+                    Máquinas de flamas, humo denso y chisperos para un show de alto impacto.
+                  </p>
+                </div>
 
-              {/* MELO Audio */}
-              <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl hover:border-primary/50 transition-all group">
-                <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">🔊</div>
-                <h4 className="text-xl font-bold text-white mb-2">Audio Profesional MELO</h4>
-                <p className="text-white/50 text-sm leading-relaxed">
-                  Fidelidad sonora garantizada con equipo MELO (Audio Actual) de última generación.
-                </p>
-              </div>
+                {/* MELO Audio */}
+                <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl hover:border-primary/50 transition-all group">
+                  <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">🔊</div>
+                  <h4 className="text-xl font-bold text-white mb-2">Audio Profesional MELO</h4>
+                  <p className="text-white/50 text-sm leading-relaxed">
+                    Fidelidad sonora garantizada con equipo MELO (Audio Actual) de última generación.
+                  </p>
+                </div>
 
-              {/* Power Generator */}
-              <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl hover:border-primary/50 transition-all group">
-                <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">⚡</div>
-                <h4 className="text-xl font-bold text-white mb-2">Energía Independiente</h4>
-                <p className="text-white/50 text-sm leading-relaxed">
-                  Planta de luz moderna y ultra-silenciosa. Cero interrupciones en tu fiesta.
-                </p>
+                {/* Power Generator */}
+                <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl hover:border-primary/50 transition-all group">
+                  <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">⚡</div>
+                  <h4 className="text-xl font-bold text-white mb-2">Energía Independiente</h4>
+                  <p className="text-white/50 text-sm leading-relaxed">
+                    Planta de luz moderna y ultra-silenciosa. Cero interrupciones en tu fiesta.
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </section>
 
