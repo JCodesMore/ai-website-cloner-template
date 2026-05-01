@@ -274,10 +274,11 @@ export default function Home() {
                 <h3 className="text-3xl sm:text-5xl font-black text-white mb-8 tracking-tighter uppercase leading-tight animate-pulse-slow">
                   ¡Tu evento merece ser <br />
                   <span className="relative inline-block mt-2">
-                    <span className="bg-gradient-to-b from-[#ffffff] via-[#a1a1a1] to-[#ffffff] bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(255,0,0,0.8)] filter brightness-125 contrast-125 tracking-tighter">
-                      INCOMPARABLE
+                    <span className="relative inline-block px-2">
+                      <span className="bg-gradient-to-b from-[#ffffff] via-[#d1d1d1] to-[#7a7a7a] bg-clip-text text-transparent filter drop-shadow-[0_1px_0_#ffffff] drop-shadow-[0_2px_0_#999] drop-shadow-[0_3px_0_#777] drop-shadow-[0_4px_0_#555] drop-shadow-[0_8px_15px_rgba(255,0,0,0.6)] tracking-tight font-black sm:text-6xl text-4xl">
+                        INCOMPARABLE
+                      </span>
                     </span>
-                    <span className="absolute -inset-2 bg-red-600/20 blur-2xl -z-10 animate-pulse"></span>
                   </span>
                   !
                 </h3>
