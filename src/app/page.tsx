@@ -220,11 +220,11 @@ export default function Home() {
           </div>
 
           <h2 className="text-4xl sm:text-6xl font-bold text-center mb-16 tracking-tight">
-            Sobre <span className="text-primary">Nosotros</span>
+            Sobre <span className="text-yellow-400">Nosotros</span>
           </h2>
 
           <div className="mb-20 relative group">
-            <div className="absolute -inset-1 bg-primary/20 rounded-[2rem] blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-700" />
+            <div className="absolute -inset-1 bg-yellow-400/20 rounded-[2rem] blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-700" />
             <div className="relative aspect-[3/4] sm:aspect-[4/5] md:aspect-[16/10] w-full overflow-hidden rounded-[2rem] border border-white/10 shadow-2xl">
               <Image
                 src="/incomparables-web/images/grupo-oficial.png"
@@ -262,48 +262,46 @@ export default function Home() {
       <section id="servicios" className="py-20 px-4 bg-secondary/30">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-4xl sm:text-5xl font-bold text-center mb-16">
-            Nuestros <span className="text-primary">Servicios</span>
+            Nuestros <span className="text-yellow-400">Servicios</span>
           </h2>
 
-          {/* Featured Bonus Section - Moved to Top */}
+          {/* Featured Bonus Section - RED ACCENTS */}
           <div className="mb-20 max-w-4xl mx-auto">
-            <div className="bg-gradient-to-br from-primary/20 via-white/5 to-transparent backdrop-blur-2xl border border-primary/20 rounded-[2.5rem] p-8 sm:p-12 shadow-2xl relative overflow-hidden text-center group">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+            <div className="bg-gradient-to-br from-red-600/20 via-white/5 to-transparent backdrop-blur-2xl border border-red-600/30 rounded-[2.5rem] p-8 sm:p-12 shadow-2xl relative overflow-hidden text-center group">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-600/50 to-transparent" />
               
               <div className="relative z-10">
-                <h3 className="text-3xl sm:text-5xl font-black text-white mb-8 tracking-tighter uppercase leading-tight animate-pulse-slow">
+                <h3 className="text-3xl sm:text-5xl font-black text-white mb-10 tracking-tighter uppercase leading-tight animate-pulse-slow">
                   ¡Tu evento merece ser <br />
                   <span className="relative inline-block mt-2">
-                    <span className="relative inline-block px-2">
-                      <span className="bg-gradient-to-b from-[#ffffff] via-[#d1d1d1] to-[#7a7a7a] bg-clip-text text-transparent filter drop-shadow-[0_1px_0_#ffffff] drop-shadow-[0_2px_0_#999] drop-shadow-[0_3px_0_#777] drop-shadow-[0_4px_0_#555] drop-shadow-[0_8px_15px_rgba(255,0,0,0.6)] tracking-tight font-black sm:text-6xl text-4xl">
-                        INCOMPARABLE
-                      </span>
+                    <span className="bg-gradient-to-b from-[#fff2b2] via-[#ffd700] to-[#b8860b] bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(255,0,0,0.6)] filter brightness-110 contrast-125 tracking-tighter font-black sm:text-7xl text-5xl">
+                      INCOMPARABLE
                     </span>
                   </span>
                   !
                 </h3>
                 
                 <p className="text-lg sm:text-xl text-white/80 font-light mb-10 leading-relaxed">
-                  Al contratarnos, no solo llevas música, llevas una <span className="text-primary font-semibold">producción completa</span>. 
+                  Al contratarnos, no solo llevas música, llevas una <span className="text-yellow-400 font-semibold">producción completa</span>. 
                   Todos nuestros servicios incluyen beneficios exclusivos sin costo adicional:
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                  <div className="bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-primary/30 transition-colors">
-                    <div className="text-3xl mb-3">🎬</div>
-                    <h4 className="text-primary font-bold text-sm uppercase tracking-widest mb-2">Reseña VIP</h4>
+                  <div className="bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-red-600/50 transition-colors group/item">
+                    <div className="text-3xl mb-3 group-hover/item:scale-110 transition-transform">🎬</div>
+                    <h4 className="text-yellow-400 font-bold text-sm uppercase tracking-widest mb-2">Reseña VIP</h4>
                     <p className="text-white/60 text-xs text-balance">Reseña de la fiesta para inmortalizar tu celebración.</p>
                   </div>
                   
-                  <div className="bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-primary/30 transition-colors">
-                    <div className="text-3xl mb-3">📅</div>
-                    <h4 className="text-primary font-bold text-sm uppercase tracking-widest mb-2">Programación</h4>
+                  <div className="bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-red-600/50 transition-colors group/item">
+                    <div className="text-3xl mb-3 group-hover/item:scale-110 transition-transform">📅</div>
+                    <h4 className="text-yellow-400 font-bold text-sm uppercase tracking-widest mb-2">Programación</h4>
                     <p className="text-white/60 text-xs text-balance">Logística total para Quince Años, Bodas, Bautizos y más.</p>
                   </div>
                   
-                  <div className="bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-primary/30 transition-colors">
-                    <div className="text-3xl mb-3">📢</div>
-                    <h4 className="text-primary font-bold text-sm uppercase tracking-widest mb-2">Flyer Digital</h4>
+                  <div className="bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-red-600/50 transition-colors group/item">
+                    <div className="text-3xl mb-3 group-hover/item:scale-110 transition-transform">📢</div>
+                    <h4 className="text-yellow-400 font-bold text-sm uppercase tracking-widest mb-2">Flyer Digital</h4>
                     <p className="text-white/60 text-xs text-balance">Flyer promocional exclusivo para tus redes sociales.</p>
                   </div>
                 </div>
@@ -380,7 +378,7 @@ export default function Home() {
       <section id="contacto" className="py-20 px-4">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-4xl sm:text-6xl font-bold mb-16 tracking-tight">
-            <span className="text-primary">Contáctanos</span>
+            <span className="text-yellow-400">Contáctanos</span>
           </h2>
 
           <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 sm:p-16 shadow-2xl relative overflow-hidden group">
@@ -481,10 +479,10 @@ export default function Home() {
 
           {/* Navigation and Contact Links (Quick View) */}
           <div className="flex flex-wrap justify-center gap-x-12 gap-y-4 mb-10 text-sm font-medium tracking-widest uppercase text-white/60">
-            <a href="#inicio" className="hover:text-primary transition-colors">Inicio</a>
-            <a href="#nosotros" className="hover:text-primary transition-colors">Nosotros</a>
-            <a href="#servicios" className="hover:text-primary transition-colors">Servicios</a>
-            <a href="#contacto" className="hover:text-primary transition-colors">Contrataciones</a>
+            <a href="#inicio" className="hover:text-yellow-400 transition-colors">Inicio</a>
+            <a href="#nosotros" className="hover:text-yellow-400 transition-colors">Nosotros</a>
+            <a href="#servicios" className="hover:text-yellow-400 transition-colors">Servicios</a>
+            <a href="#contacto" className="hover:text-yellow-400 transition-colors">Contrataciones</a>
           </div>
 
           {/* Divider */}
