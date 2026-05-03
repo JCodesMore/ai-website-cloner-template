@@ -456,9 +456,11 @@ export default function Home() {
                 {/* Manuel Tejada QR */}
                 <div className="flex flex-col items-center bg-white/5 p-8 rounded-3xl border border-white/10 hover:border-primary/50 transition-all">
                   <div className="bg-white p-3 rounded-2xl mb-4">
-                    <img 
+                    <Image 
                       src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://wa.me/524448480720" 
                       alt="WhatsApp Manuel Tejada" 
+                      width={200}
+                      height={200}
                       className="w-40 h-40"
                     />
                   </div>
@@ -471,9 +473,11 @@ export default function Home() {
                 {/* Eduardo Tejada QR */}
                 <div className="flex flex-col items-center bg-white/5 p-8 rounded-3xl border border-white/10 hover:border-primary/50 transition-all">
                   <div className="bg-white p-3 rounded-2xl mb-4">
-                    <img 
+                    <Image 
                       src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://wa.me/524442994132" 
                       alt="WhatsApp Eduardo Tejada" 
+                      width={200}
+                      height={200}
                       className="w-40 h-40"
                     />
                   </div>
