@@ -1,9 +1,572 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import { InstagramIcon, FacebookIcon, TikTokIcon, PhoneIcon, MailIcon, QrCodeIcon } from "@/components/icons";
+
 export default function Home() {
+  const [scrollY, setScrollY] = useState(0);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [showRotatePrompt, setShowRotatePrompt] = useState(false);
+  const [showProduction, setShowProduction] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    const checkOrientation = () => {
+      const hasSeenPrompt = sessionStorage.getItem('hasSeenRotationPrompt');
+      if (hasSeenPrompt) {
+        setShowRotatePrompt(false);
+        return;
+      }
+      
+      const isPortrait = window.innerHeight > window.innerWidth;
+      const isMobile = window.innerWidth < 768;
+      
+      if (isPortrait && isMobile) {
+        setShowRotatePrompt(true);
+      } else if (!isPortrait && isMobile) {
+        // If they rotate to landscape, count it as "seen"
+        sessionStorage.setItem('hasSeenRotationPrompt', 'true');
+        setShowRotatePrompt(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("resize", checkOrientation);
+    checkOrientation();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", checkOrientation);
+    };
+  }, []);
+
+  useEffect(() => {
+    setIsScrolled(scrollY > 50);
+  }, [scrollY]);
+
   return (
-    <main className="flex min-h-screen items-center justify-center">
-      <p className="text-muted-foreground">
-        Clone target not yet built. Run <code className="font-mono text-foreground">/clone-website</code> to start.
-      </p>
-    </main>
+    <div className="min-h-screen bg-background text-foreground relative">
+      {/* Rotation Prompt for Mobile */}
+      {showRotatePrompt && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md md:hidden animate-in fade-in duration-500">
+          <div className="text-center p-8 flex flex-col items-center gap-6">
+            <div className="relative w-20 h-20">
+              <div className="absolute inset-0 bg-primary/20 rounded-full animate-ping" />
+              <div className="relative bg-white/10 p-5 rounded-2xl border border-white/20 animate-bounce">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="40"
+                  height="40"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-primary animate-spin-slow"
+                  style={{ animationDuration: '3s' }}
+                >
+                  <path d="M12 22h6a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v10" />
+                  <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+                  <path d="M10.4 12.6a2 2 0 1 1 3 3L8 21l-4-4 3.4-3.4" />
+                </svg>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-xl font-bold text-white tracking-tight">Experiencia Cinemática</h3>
+              <p className="text-white/60 text-sm max-w-[200px] mx-auto leading-relaxed">
+                Para disfrutar del video y el diseño completo, gira tu dispositivo horizontalmente.
+              </p>
+            </div>
+            <button 
+              onClick={() => {
+                sessionStorage.setItem('hasSeenRotationPrompt', 'true');
+                setShowRotatePrompt(false);
+              }}
+              className="mt-4 text-[10px] uppercase tracking-[0.3em] text-white/30 hover:text-white transition-colors border-b border-white/10 pb-1"
+            >
+              Continuar en vertical
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Global Body Watermark */}
+      <div className="fixed inset-0 z-0 flex items-center justify-center opacity-[0.20] pointer-events-none overflow-hidden">
+        <Image
+          src="/incomparables-web/images/shield-watermark.png"
+          alt=""
+          width={1000}
+          height={1000}
+          className="w-[90%] max-w-[300px] sm:max-w-[800px] h-auto object-contain"
+          priority
+        />
+      </div>
+
+      {/* Navigation */}
+      <nav
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          isScrolled ? "bg-background/95 backdrop-blur-md shadow-lg" : "bg-transparent"
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16 relative">
+            {/* Left Spacer */}
+            <div className="hidden sm:flex flex-1" />
+
+            {/* Removed Centered Logo for a cleaner look */}
+
+            {/* Right side icons */}
+            <div className="flex items-center justify-end gap-2 sm:gap-4 flex-1">
+              <a
+                href="https://www.instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 hover:text-primary transition-colors"
+              >
+                <InstagramIcon className="w-5 h-5" />
+              </a>
+              <a
+                href="https://www.facebook.com/p/Incomparables-de-Manuel-Vargas-100057375342864/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 hover:text-primary transition-colors"
+              >
+                <FacebookIcon className="w-5 h-5" />
+              </a>
+              <a
+                href="https://www.tiktok.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 hover:text-primary transition-colors"
+              >
+                <TikTokIcon className="w-5 h-5" />
+              </a>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* Fixed Social Sidebar (Desktop) */}
+      <div className="fixed right-0 top-1/2 -translate-y-1/2 z-[60] hidden md:flex flex-col gap-4 p-4 bg-black/40 backdrop-blur-md border-l border-y border-white/10 rounded-l-2xl shadow-2xl">
+        <a
+          href="https://www.instagram.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-3 text-white/60 hover:text-primary transition-all hover:scale-125 hover:-translate-x-1"
+        >
+          <InstagramIcon className="w-6 h-6" />
+        </a>
+        <a
+          href="https://www.facebook.com/p/Incomparables-de-Manuel-Vargas-100057375342864/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-3 text-white/60 hover:text-primary transition-all hover:scale-125 hover:-translate-x-1"
+        >
+          <FacebookIcon className="w-6 h-6" />
+        </a>
+        <a
+          href="https://www.tiktok.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-3 text-white/60 hover:text-primary transition-all hover:scale-125 hover:-translate-x-1"
+        >
+          <TikTokIcon className="w-6 h-6" />
+        </a>
+      </div>
+
+      {/* Hero Section */}
+      <section id="inicio" className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover object-center"
+        >
+          <source src="/incomparables-web/videos/logo-animado.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-black/35" />
+
+        <div className="relative z-10 flex flex-col items-center justify-center px-4 max-w-5xl mx-auto h-full gap-12 mt-20">
+          {/* Hero is now clean and focus on the video/logo background */}
+        </div>
+      </section>
+
+      {/* About Section */}
+      <section id="nosotros" className="py-24 px-4 relative">
+        <div className="max-w-4xl mx-auto">
+          {/* Transition Buttons - Vertical Stack */}
+          <div className="flex flex-col items-center justify-center gap-8 mb-24">
+            <div className="relative group">
+              {/* Pulse Animation Effect */}
+              <div className="absolute -inset-1 bg-primary rounded-full blur opacity-40 group-hover:opacity-75 animate-pulse transition duration-1000 group-hover:duration-200"></div>
+              
+              <a
+                href="#contacto"
+                className="relative w-[280px] sm:w-[320px] text-center inline-flex items-center justify-center gap-3 bg-primary text-black px-10 py-5 rounded-full font-black text-xl hover:bg-primary/90 transition-all hover:scale-110 shadow-2xl shadow-primary/40 uppercase tracking-wider"
+              >
+                <PhoneIcon className="w-6 h-6 animate-bounce" />
+                Contáctanos
+              </a>
+            </div>
+
+            <a
+              href="#servicios"
+              className="w-[240px] sm:w-[280px] text-center inline-flex items-center justify-center gap-2 border-2 border-white/10 text-white/60 px-8 py-3 rounded-full font-bold text-base hover:border-white/40 hover:text-white transition-all"
+            >
+              Nuestros Servicios
+            </a>
+          </div>
+
+          <h2 className="text-4xl sm:text-6xl font-bold text-center mb-16 tracking-tight">
+            Sobre <span className="text-primary">Nosotros</span>
+          </h2>
+
+          <div className="mb-20 relative group">
+            <div className="absolute -inset-1 bg-yellow-400/20 rounded-[2rem] blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-700" />
+            <div className="relative aspect-[3/4] sm:aspect-[4/5] md:aspect-[16/10] w-full overflow-hidden rounded-[2rem] border border-white/10 shadow-2xl">
+              <Image
+                src="/incomparables-web/images/grupo-oficial.png"
+                alt="Los Incomparables de Manuel Vargas - Foto Oficial"
+                fill
+                className="object-cover object-center group-hover:scale-105 transition-transform duration-1000"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+            </div>
+          </div>
+
+          <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 sm:p-16 shadow-2xl relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-32 -mt-32" />
+            
+            <div className="relative z-10 text-center max-w-2xl mx-auto">
+              <h3 className="text-2xl sm:text-3xl font-bold mb-6 text-white tracking-wide">Música Norteña de Excelencia</h3>
+              <p className="text-lg sm:text-xl leading-relaxed text-white/70 font-light">
+                Aportando la mejor música norteña <span className="text-primary font-semibold">con una gran trayectoria y experiencia</span>, hemos brindado entretenimiento
+                en San Luis Potosí y Estados Unidos. Nos especializamos en hacer de cada evento una
+                experiencia única, ya sea en fiestas privadas, eventos corporativos o conciertos masivos.
+              </p>
+              <div className="mt-10 flex justify-center">
+                <div className="bg-white/5 border border-white/10 px-6 py-3 rounded-2xl flex items-center gap-3">
+                  <span className="text-primary font-bold">🇲🇽🇺🇸</span>
+                  <span className="text-sm uppercase tracking-widest text-white/40 font-medium">México y USA</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Services Section */}
+      <section id="servicios" className="py-20 px-4 bg-secondary/30">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-4xl sm:text-5xl font-bold text-center mb-16">
+            Nuestros <span className="text-primary">Servicios</span>
+          </h2>
+
+          {/* Featured Bonus Section - RED ACCENTS */}
+          <div className="mb-20 max-w-4xl mx-auto">
+            <div className="bg-gradient-to-br from-red-600/20 via-white/5 to-transparent backdrop-blur-2xl border border-red-600/30 rounded-[2.5rem] p-8 sm:p-12 shadow-2xl relative overflow-hidden text-center group">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-600/50 to-transparent" />
+              
+              <div className="relative z-10">
+                <h3 className="text-3xl sm:text-5xl font-black text-white mb-10 tracking-tighter uppercase leading-tight animate-pulse-slow">
+                  ¡Tu evento merece ser <br />
+                  <span className="relative inline-block mt-2">
+                    <span className="bg-gradient-to-b from-[#ff3333] via-[#ff0000] to-[#990000] bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(255,0,0,0.6)] tracking-tight font-black sm:text-7xl text-5xl">
+                      INCOMPARABLE
+                    </span>
+                  </span>
+                  !
+                </h3>
+                
+                <p className="text-lg sm:text-xl text-white/80 font-light mb-10 leading-relaxed">
+                  Al contratarnos, no solo llevas música, llevas una <span className="text-primary font-semibold">producción completa</span>. 
+                  Todos nuestros servicios incluyen beneficios exclusivos sin costo adicional:
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                  <div className="bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-red-600/50 transition-colors group/item">
+                    <h4 className="text-primary font-bold text-sm uppercase tracking-widest mb-2">Reseña VIP</h4>
+                    <p className="text-white/60 text-xs text-balance">Reseña de la fiesta para inmortalizar tu celebración.</p>
+                  </div>
+
+                  <div className="bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-red-600/50 transition-colors group/item">
+                    <h4 className="text-primary font-bold text-sm uppercase tracking-widest mb-2">Programación</h4>
+                    <p className="text-white/60 text-xs text-balance">Logística total para Quince Años, Bodas, Bautizos y más.</p>
+                  </div>
+
+                  <div className="bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-red-600/50 transition-colors group/item">
+                    <h4 className="text-primary font-bold text-sm uppercase tracking-widest mb-2">Flyer Digital</h4>
+                    <p className="text-white/60 text-xs text-balance">Flyer promocional exclusivo para tus redes sociales.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="group bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 hover:border-primary/50 transition-all hover:shadow-2xl hover:shadow-primary/20 text-center overflow-hidden">
+              <div className="relative h-48 w-full mb-6">
+                <Image
+                  src="/incomparables-web/images/servicios/fiestas.png"
+                  alt="Fiestas Privadas"
+                  fill
+                  className="object-contain group-hover:scale-110 transition-transform duration-500"
+                />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Fiestas Privadas</h3>
+              <p className="text-muted-foreground text-sm">
+                Hacemos de tu celebración un evento memorable con la mejor música norteña.
+              </p>
+            </div>
+
+            <div className="group bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 hover:border-primary/50 transition-all hover:shadow-2xl hover:shadow-primary/20 text-center overflow-hidden">
+              <div className="relative h-48 w-full mb-6">
+                <Image
+                  src="/incomparables-web/images/servicios/conciertos.png"
+                  alt="Conciertos Masivos"
+                  fill
+                  className="object-contain group-hover:scale-110 transition-transform duration-500"
+                />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Conciertos Masivos</h3>
+              <p className="text-muted-foreground text-sm">
+                Actuamos en grandes escenarios llevando nuestra música a miles de personas.
+              </p>
+            </div>
+
+            <div className="group bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 hover:border-primary/50 transition-all hover:shadow-2xl hover:shadow-primary/20 text-center overflow-hidden">
+              <div className="relative h-48 w-full mb-6">
+                <Image
+                  src="/incomparables-web/images/servicios/corporativos.png"
+                  alt="Eventos Corporativos"
+                  fill
+                  className="object-contain group-hover:scale-110 transition-transform duration-500"
+                />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Eventos Corporativos</h3>
+              <p className="text-muted-foreground text-sm">
+                Ambientamos eventos empresariales con profesionalismo y calidad musical.
+              </p>
+            </div>
+
+            <button 
+              onClick={() => setShowProduction(!showProduction)}
+              className={`group w-full bg-card border border-border rounded-xl p-8 hover:border-primary transition-all hover:shadow-lg hover:shadow-primary/10 text-center overflow-hidden ${showProduction ? 'ring-2 ring-primary border-primary' : ''}`}
+            >
+              <div className="relative h-48 w-full mb-6">
+                <Image
+                  src="/incomparables-web/images/servicios/ambientacion.png"
+                  alt="Ambientación Musical"
+                  fill
+                  className="object-contain group-hover:scale-110 transition-transform duration-500"
+                />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Ambientación Musical</h3>
+              <p className="text-muted-foreground text-sm">
+                La música perfecta para crear el ambiente ideal en cualquier ocasión.
+              </p>
+              <div className="mt-4 text-xs font-bold text-primary uppercase tracking-widest animate-pulse">
+                {showProduction ? '▲ Ocultar Detalles' : '▼ Ver Equipamiento Técnico'}
+              </div>
+            </button>
+          </div>
+
+          {/* New: Technical Production Section (Deployable) */}
+          {showProduction && (
+            <div className="mt-20 animate-in fade-in slide-in-from-top-10 duration-700">
+              <h3 className="text-2xl sm:text-3xl font-bold text-center mb-12 uppercase tracking-widest text-primary">
+                Equipamiento de Escenario
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* LED Screens */}
+                <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl hover:border-primary/50 transition-all group text-center">
+                  <h4 className="text-xl font-bold text-white mb-2">Pantallas LED Gigantes</h4>
+                  <p className="text-white text-sm leading-relaxed">
+                    Visuales de alta definición para una experiencia inmersiva en todo el recinto.
+                  </p>
+                </div>
+
+                {/* Scenarios */}
+                <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl hover:border-primary/50 transition-all group text-center">
+                  <h4 className="text-xl font-bold text-white mb-2">Escenarios Versátiles</h4>
+                  <p className="text-white text-sm leading-relaxed">
+                    Contamos con 4 tipos de configuraciones ajustables al tamaño de tu evento.
+                  </p>
+                </div>
+
+                {/* Lighting */}
+                <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl hover:border-primary/50 transition-all group text-center">
+                  <h4 className="text-xl font-bold text-white mb-2">Iluminación Robótica</h4>
+                  <p className="text-white text-sm leading-relaxed">
+                    Sistemas de luces inteligentes para crear la atmósfera perfecta.
+                  </p>
+                </div>
+
+                {/* Special Effects */}
+                <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl hover:border-primary/50 transition-all group text-center">
+                  <h4 className="text-xl font-bold text-white mb-2">Efectos Especiales</h4>
+                  <p className="text-white text-sm leading-relaxed">
+                    Máquinas de flamas, humo denso y chisperos para un show de alto impacto.
+                  </p>
+                </div>
+
+                {/* MELO Audio */}
+                <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl hover:border-primary/50 transition-all group text-center">
+                  <h4 className="text-xl font-bold text-white mb-2">Audio Profesional MELO</h4>
+                  <p className="text-white text-sm leading-relaxed">
+                    Fidelidad sonora garantizada con equipo MELO (Audio Actual) de última generación.
+                  </p>
+                </div>
+
+                {/* Power Generator */}
+                <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl hover:border-primary/50 transition-all group text-center">
+                  <h4 className="text-xl font-bold text-white mb-2">Energía Independiente</h4>
+                  <p className="text-white text-sm leading-relaxed">
+                    Planta de luz moderna y ultra-silenciosa. Cero interrupciones en tu fiesta.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contacto" className="py-20 px-4">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-4xl sm:text-6xl font-bold mb-16 tracking-tight">
+            <span className="text-primary">Contáctanos</span>
+          </h2>
+
+          <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 sm:p-16 shadow-2xl relative overflow-hidden group">
+            <div className="absolute top-0 left-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -ml-32 -mt-32" />
+            
+            <div className="flex flex-col items-center relative z-10">
+              <p className="text-xl text-white/70 mb-12 font-light max-w-lg">
+                ¿Tienes un evento? ¡Hagamos que sea inolvidable! <br />
+                <span className="text-primary font-bold">Escanea o toca para WhatsApp directo:</span>
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 w-full max-w-4xl">
+                {/* Manuel Tejada QR */}
+                <div className="flex flex-col items-center bg-white/5 p-8 rounded-3xl border border-white/10 hover:border-primary/50 transition-all">
+                  <div className="bg-white p-3 rounded-2xl mb-4">
+                    <Image 
+                      src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://wa.me/524448480720" 
+                      alt="WhatsApp Manuel Tejada" 
+                      width={200}
+                      height={200}
+                      className="w-40 h-40"
+                    />
+                  </div>
+                  <h4 className="text-xl font-bold text-white mb-1">MANUEL TEJADA</h4>
+                  <a href="https://wa.me/524448480720" className="text-primary font-mono text-lg hover:underline">
+                    44 48 48 07 20
+                  </a>
+                </div>
+
+                {/* Eduardo Tejada QR */}
+                <div className="flex flex-col items-center bg-white/5 p-8 rounded-3xl border border-white/10 hover:border-primary/50 transition-all">
+                  <div className="bg-white p-3 rounded-2xl mb-4">
+                    <Image 
+                      src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://wa.me/524442994132" 
+                      alt="WhatsApp Eduardo Tejada" 
+                      width={200}
+                      height={200}
+                      className="w-40 h-40"
+                    />
+                  </div>
+                  <h4 className="text-xl font-bold text-white mb-1">EDUARDO TEJADA</h4>
+                  <a href="https://wa.me/524442994132" className="text-primary font-mono text-lg hover:underline">
+                    44 42 99 41 32
+                  </a>
+                </div>
+              </div>
+
+              <div className="mt-12">
+                <a
+                  href="https://www.facebook.com/p/Incomparables-de-Manuel-Vargas-100057375342864/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-3 px-10 py-4 bg-primary text-white rounded-full font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-primary/20"
+                >
+                  <FacebookIcon className="w-5 h-5" />
+                  Ver en Facebook
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="relative py-24 px-4 bg-black border-t border-white/5 overflow-hidden">
+        {/* Logo Watermark Background */}
+        <div className="absolute inset-0 z-0 flex items-center justify-center opacity-[0.14] pointer-events-none">
+          <Image
+            src="/incomparables-web/images/logo-incomparables.jpeg"
+            alt=""
+            fill
+            className="object-contain scale-150"
+          />
+        </div>
+
+        <div className="relative z-10 max-w-7xl mx-auto flex flex-col items-center text-center">
+          {/* Social Links */}
+          <div className="flex items-center gap-8 mb-10">
+            <a
+              href="https://www.instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/40 hover:text-primary transition-all hover:scale-125 duration-300"
+            >
+              <InstagramIcon className="w-6 h-6" />
+            </a>
+            <a
+              href="https://www.facebook.com/p/Incomparables-de-Manuel-Vargas-100057375342864/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 text-white/60 hover:text-primary transition-all hover:scale-110"
+            >
+              <FacebookIcon className="w-6 h-6" />
+            </a>
+            <a
+              href="https://www.tiktok.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/40 hover:text-primary transition-all hover:scale-125 duration-300"
+            >
+              <TikTokIcon className="w-6 h-6" />
+            </a>
+          </div>
+
+          {/* Navigation and Contact Links (Quick View) */}
+          <div className="flex flex-wrap justify-center gap-x-12 gap-y-4 mb-10 text-sm font-medium tracking-widest uppercase text-white/60">
+            <a href="#inicio" className="hover:text-primary transition-colors">Inicio</a>
+            <a href="#nosotros" className="hover:text-primary transition-colors">Nosotros</a>
+            <a href="#servicios" className="hover:text-primary transition-colors">Servicios</a>
+            <a href="#contacto" className="hover:text-primary transition-colors">Contrataciones</a>
+          </div>
+
+          {/* Divider */}
+          <div className="w-24 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent mb-8" />
+
+          {/* Copyright */}
+          <div className="text-center">
+            <p className="text-sm text-white/30 tracking-wide">
+              © {new Date().getFullYear()} LOS INCOMPARABLES DE MANUEL VARGAS.
+            </p>
+            <p className="text-[10px] text-white/20 mt-2 uppercase tracking-[0.2em]">
+              Diseño de Alta Fidelidad • Música Norteña de Excelencia
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
   );
 }
