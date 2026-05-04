@@ -47,3 +47,30 @@ next-env.d.ts
 
 # Local temp files
 temp/
+
+# Local/generated video outputs are hosted externally, not committed.
+public/videos/
+public/video-preview.html
+
+# ── GSD baseline (auto-generated) ──
+.gsd
+.gsd-id
+.bg-shell/
+*~
+*.code-workspace
+.env.*
+!.env.example
+__pycache__/
+*.pyc
+.venv/
+venv/
+target/
+vendor/
+*.log
+coverage/
+.cache/
+tmp/
+
+# n8n stack — never commit real secrets
+n8n/docker/.env
+n8n/docker/.env.local
