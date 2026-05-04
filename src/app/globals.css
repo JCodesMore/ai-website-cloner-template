@@ -5,118 +5,119 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /* ── Ambient animations ── */
+  --animate-float-slow: float-slow 20s ease-in-out infinite;
+  --animate-float-reverse: float-slow-reverse 25s ease-in-out infinite;
+
+  /* ── Bajablue Palette — derived from Sea of Cortez footage ── */
+  --color-deep: #0A1C24;
+  --color-deep-light: #0F2832;
+  --color-deep-lighter: #163440;
+  --color-navy: #1A3A4A;
+  --color-navy-light: rgba(26, 58, 74, 0.15);
+  --color-coral: #FFF9F0;
+  --color-coral-light: #FFF5E8;
+  --color-teal: #36859A;
+  --color-teal-light: #4A9DB2;
+  --color-warm-white: #E4EEF0;
+  --color-sand: #EFF5F6;
+  --color-cream: #F5FAFB;
+  --color-warm-gray: #1D3844;
+  --color-copper: #C8754F;
+  --color-copper-light: #D88B65;
+
+  /* ── Mapped to shadcn tokens ── */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
-  --font-heading: var(--font-sans);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
+
+  /* ── Fonts ── */
+  --font-display: "Oswald", "Arial Narrow", Arial, sans-serif;
+  --font-body: "Inter Tight", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-serif: "Playfair Display", Georgia, Cambria, "Times New Roman", serif;
+  --font-sans: var(--font-body);
+  --font-heading: var(--font-display);
+
+  /* ── shadcn color tokens ── */
   --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
   --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  /* ── Radius ── */
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) * 1.4);
   --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --background: #0A1C24;
+  --foreground: #E4EEF0;
+  --card: #0F2832;
+  --card-foreground: #E4EEF0;
+  --popover: #0F2832;
+  --popover-foreground: #E4EEF0;
+  --primary: #E4EEF0;
+  --primary-foreground: #0A1C24;
+  --secondary: #163440;
+  --secondary-foreground: #E4EEF0;
+  --muted: #163440;
+  --muted-foreground: #7AACB8;
+  --accent: #FFF9F0;
+  --accent-foreground: #0A1C24;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --border: rgba(54, 133, 154, 0.15);
+  --input: rgba(54, 133, 154, 0.2);
+  --ring: #36859A;
+  --radius: 0.5rem;
 }
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+/* ── Luxury button softening ── */
+a[class*="bg-coral"],
+button[class*="bg-coral"],
+a[class*="bg-deep"],
+button[class*="bg-deep"],
+a[class*="bg-\\[#25D366\\]"],
+button[type="submit"] {
+  border-radius: 2px;
 }
 
+a[class*="border-"] {
+  border-radius: 2px;
+}
+
+/* ── Lenis Smooth Scroll ── */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* ── Global Styles ── */
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -125,6 +126,316 @@
     @apply bg-background text-foreground;
   }
   html {
-    @apply font-sans;
+    @apply font-body;
+  }
+}
+
+/* ── Typography Utilities ── */
+@layer utilities {
+  .text-display {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-weight: 400;
+  }
+
+  .text-serif {
+    font-family: var(--font-serif);
+  }
+
+  /* ── Light panel (for text-heavy sections) ── */
+  .light-panel {
+    background: #EFF5F6;
+    color: #1A3A4A;
+  }
+  .light-panel .text-display {
+    color: #1A3A4A;
+  }
+
+  /* ── Dashed Divider ── */
+  .dashed-divider {
+    height: 1px;
+    background: repeating-linear-gradient(
+      90deg,
+      rgba(54, 133, 154, 0.3) 0px,
+      rgba(54, 133, 154, 0.3) 2px,
+      transparent 2px,
+      transparent 4px
+    );
+  }
+  .dashed-divider-dark {
+    height: 1px;
+    background: repeating-linear-gradient(
+      90deg,
+      rgba(26, 58, 74, 0.25) 0px,
+      rgba(26, 58, 74, 0.25) 2px,
+      transparent 2px,
+      transparent 4px
+    );
+  }
+
+  /* ── Image overlay gradient ── */
+  .overlay-gradient {
+    position: relative;
+  }
+  .overlay-gradient::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 40%, rgba(10, 28, 36, 0.7) 100%);
+    pointer-events: none;
+  }
+
+  /* ── Parallax container ── */
+  .parallax-container {
+    position: relative;
+    overflow: hidden;
+  }
+  .parallax-image {
+    position: absolute;
+    inset: -20% 0;
+    width: 100%;
+    height: 140%;
+    object-fit: cover;
+  }
+}
+
+/* ── Scrollbar hiding (cinematic feel) ── */
+body::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Lock horizontal drift + kill iOS rubber-band on both axes ──
+   `overflow-x: clip` (not hidden) prevents sideways drag without breaking
+   position: sticky on inner elements. Vertical scrolling is unaffected.
+   Embla/Vaul/Drawer touch interactions are unaffected because we never
+   set touch-action on body — only individual buttons. */
+html {
+  overflow-x: clip;
+  overscroll-behavior: none;
+}
+body {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  overflow-x: clip;
+  overscroll-behavior: none;
+}
+
+/* ── Mobile: kill iOS tap highlight, improve touch feel ── */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a, button {
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
+}
+
+/* ── Background videos should feel like imagery, not native video players. */
+video {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+video::-webkit-media-controls,
+video::-webkit-media-controls-panel,
+video::-webkit-media-controls-play-button,
+video::-webkit-media-controls-start-playback-button,
+video::-webkit-media-controls-overlay-play-button {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
+/* ── Accessibility: respect reduced motion preference ── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Selection color ── */
+::selection {
+  background-color: #FFF9F0;
+  color: #0A1C24;
+}
+
+/* ── Glass Design System ── */
+
+.glass-card {
+  background: linear-gradient(145deg, rgba(54,133,154,0.08), rgba(54,133,154,0.03));
+  backdrop-filter: blur(25px) saturate(180%);
+  -webkit-backdrop-filter: blur(25px) saturate(180%);
+  border: 1px solid rgba(54,133,154,0.15);
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    inset 0 -1px 0 rgba(255,255,255,0.02);
+}
+
+.glass-stat {
+  background: linear-gradient(145deg, rgba(54,133,154,0.12), rgba(54,133,154,0.04));
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid rgba(74,157,178,0.2);
+  box-shadow:
+    0 4px 24px rgba(0,0,0,0.2),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-stat::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255,255,255,0.07) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.glass-sidebar {
+  background: linear-gradient(180deg, rgba(10,28,36,0.85), rgba(10,28,36,0.95));
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border-right: 1px solid rgba(54,133,154,0.1);
+}
+
+.glass-warning {
+  background: linear-gradient(145deg, rgba(251,191,36,0.06), rgba(251,191,36,0.02));
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(251,191,36,0.15);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(251,191,36,0.06);
+}
+
+.glass-table {
+  background: linear-gradient(145deg, rgba(54,133,154,0.05), rgba(54,133,154,0.02));
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  border: 1px solid rgba(54,133,154,0.1);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.progress-glow {
+  box-shadow: 0 0 8px rgba(54,133,154,0.4);
+}
+
+/* Ambient float keyframes */
+@keyframes float-slow {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -20px) scale(1.05); }
+  66% { transform: translate(-20px, 15px) scale(0.95); }
+}
+
+@keyframes float-slow-reverse {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-25px, 20px) scale(0.95); }
+  66% { transform: translate(15px, -25px) scale(1.05); }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Baja Swarm Bubbles concierge — mobile overrides
+
+   The widget's WebM mascot is yuv420p (no alpha plane), so its green
+   chroma background is visible on every browser that doesn't fake the
+   transparency. SVG filters and canvas chroma-key are both unreliable
+   on real mobile devices (Safari blocks SVG filter on <video>; canvas
+   getImageData taints from cross-origin video without crossOrigin attr).
+
+   The boring fix that works on every device: on mobile, hide the video
+   entirely and replace it with a properly chroma-keyed static PNG of
+   Bubbles (generated server-side via ImageMagick with true alpha).
+   The button still gets the click and opens the chat panel.
+   ───────────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  html body #bs-concierge-mascot {
+    top: -18px !important;
+    bottom: auto !important;
+    left: 8px !important;
+    right: auto !important;
+    width: 110px !important;
+    height: 110px !important;
+    /* Animated WebP of Bubbles — chroma-keyed server-side, true alpha,
+       144KB, ~5sec loop. Animates on every device that supports WebP
+       (universal in 2020+); no <video>, no canvas, no chroma. */
+    background-image: url("/images/bubbles-mobile.webp") !important;
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.25)) !important;
+  }
+  html body #bs-concierge-mascot video,
+  html body #bs-concierge-mascot img,
+  html body #bs-concierge-mascot canvas,
+  html body #bs-concierge-mascot svg {
+    display: none !important;
+  }
+
+  html body #bs-concierge-panel {
+    /* Compact mobile drawer: enough room to chat, not a full-screen takeover. */
+    top: 104px !important;
+    bottom: auto !important;
+    left: 12px !important;
+    right: 12px !important;
+    width: auto !important;
+    max-width: calc(100vw - 24px) !important;
+    height: min(58dvh, 460px) !important;
+    max-height: min(calc(100dvh - 128px), 460px) !important;
+    border-radius: 16px !important;
+  }
+
+  html body #bs-concierge-panel .bs-header {
+    padding: 10px 12px !important;
+  }
+
+  html body #bs-concierge-panel .bs-messages {
+    padding: 12px !important;
+  }
+
+  html body #bs-concierge-panel .bs-msg {
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+  }
+
+  html body #bs-concierge-panel .bs-composer {
+    padding: 9px 10px !important;
+  }
+
+  html body #bs-concierge-panel .bs-composer textarea {
+    /* iOS Safari zooms the page when focusing inputs below 16px. */
+    font-size: 16px !important;
+    line-height: 1.35 !important;
+    min-height: 42px !important;
+    -webkit-text-size-adjust: 100% !important;
+    text-size-adjust: 100% !important;
+  }
+
+  html body #bs-concierge-panel .bs-footer {
+    padding: 6px 12px 8px !important;
+  }
+}
+
+@media (max-width: 768px) and (max-height: 700px) {
+  html body #bs-concierge-mascot {
+    top: -22px !important;
+    left: 6px !important;
+    width: 110px !important;
+    height: 110px !important;
+  }
+
+  html body #bs-concierge-panel {
+    top: 92px !important;
+    left: 10px !important;
+    right: 10px !important;
+    max-width: calc(100vw - 20px) !important;
+    height: min(54dvh, 360px) !important;
+    max-height: min(calc(100dvh - 112px), 360px) !important;
   }
 }
