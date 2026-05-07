@@ -71,6 +71,25 @@ Point it at a URL, run `/clone-website`, and your AI agent will inspect the site
 
 The `/clone-website` skill runs a multi-phase pipeline:
 
+```mermaid
+flowchart TD
+    Start((Run /clone-website)) -.-> Phase1
+    
+    subgraph Pipeline [Multi-Phase Cloning Pipeline]
+        direction TB
+        Phase1[1. Reconnaissance] -->|extracts design tokens & interaction sweep| Phase2[2. Foundation]
+        Phase2 -->|updates globals & downloads assets| Phase3[3. Component Specs]
+        Phase3 -->|writes detailed CSS & behavior specs| Phase4[4. Parallel Build]
+        Phase4 -->|dispatches agents in git worktrees| Phase5[5. Assembly & QA]
+    end
+    
+    Phase5 -.-> Done(((Clone Ready)))
+    
+    classDef phase fill:#2563eb,stroke:#1d4ed8,stroke-width:2px,color:#fff,border-radius:6px;
+        class Phase1,Phase2,Phase3,Phase4,Phase5 phase;
+```
+
+
 1. **Reconnaissance** — screenshots, design token extraction, interaction sweep (scroll, click, hover, responsive)
 2. **Foundation** — updates fonts, colors, globals, downloads all assets
 3. **Component Specs** — writes detailed spec files (`docs/research/components/`) with exact computed CSS values, states, behaviors, and content
