@@ -25,10 +25,34 @@ The target is whatever page `{{args}}` resolves to. Clone exactly what's visible
 
 If the user provides additional instructions (specific fidelity level, customizations, extra context), honor those over the defaults.
 
+## agent-browser Quick Reference
+
+All browser automation in this skill uses the `agent-browser` CLI. The daemon starts automatically on first use and maintains persistent browser state (cookies, localStorage, sessions) across commands.
+
+| Action | Command |
+|--------|---------|
+| Navigate to URL | `agent-browser open <url>` |
+| Take screenshot | `agent-browser screenshot` |
+| Annotated screenshot (with element refs) | `agent-browser screenshot --annotate` |
+| Get interactive elements with refs | `agent-browser snapshot -i` |
+| Click element | `agent-browser click @eN` |
+| Hover element | `agent-browser hover @eN` |
+| Fill input | `agent-browser fill @eN "text"` |
+| Scroll by pixels | `agent-browser scroll <pixels>` |
+| Execute JavaScript | `agent-browser eval "JS_CODE"` |
+| Execute JS from file | `agent-browser eval "$(cat script.js)"` |
+| Get element text | `agent-browser get-text @eN` |
+| Get element attribute | `agent-browser get-attribute @eN "attr"` |
+| Close browser | `agent-browser close` |
+
+**Element refs** (`@e1`, `@e2`, etc.) are obtained from `agent-browser snapshot -i`. They are compact identifiers that reduce context usage vs full CSS selectors. You can also use CSS selectors directly in `agent-browser eval` calls.
+
+**For complex JS extraction scripts**: Save the script to a file (e.g., `scripts/extract-styles.js`) and run with `agent-browser eval "$(cat scripts/extract-styles.js)"`. This avoids shell quoting issues with inline JS.
+
 ## Pre-Flight
 
-1. **Browser automation is required.** Check for available browser MCP tools (Chrome MCP, Playwright MCP, Browserbase MCP, Puppeteer MCP, etc.). Use whichever is available — if multiple exist, prefer Chrome MCP. If none are detected, ask the user which browser tool they have and how to connect it. This skill cannot work without browser automation.
-2. Parse `{{args}}` as one or more URLs. Normalize and validate each URL; if any are invalid, ask the user to correct them before proceeding. For each valid URL, verify it is accessible via your browser MCP tool.
+1. **Browser automation is required via `agent-browser`.** Verify agent-browser is installed by running `agent-browser --version`. If it's not installed, install it with `npm install -g agent-browser && agent-browser install`. The daemon starts automatically on first use and maintains persistent browser state across commands. This skill cannot work without agent-browser.
+2. Parse `{{args}}` as one or more URLs. Normalize and validate each URL; if any are invalid, ask the user to correct them before proceeding. For each valid URL, verify it is accessible by running `agent-browser open <url>` and confirming the page loads.
 3. Verify the base project builds: `npm run build`. The Next.js + shadcn/ui + Tailwind v4 scaffold should already be in place. If not, tell the user to set it up first.
 4. Create the output directories if they don't exist: `docs/research/`, `docs/research/components/`, `docs/design-references/`, `scripts/`. For multiple clones, also prepare per-site folders like `docs/research/<hostname>/` and `docs/design-references/<hostname>/`.
 5. When working with multiple sites in one command, optionally confirm whether to run them in parallel (recommended, if resources allow) or sequentially to avoid overload.
@@ -96,7 +120,7 @@ A section with a sticky sidebar and scrolling content panels is fundamentally di
 Many components have multiple visual states — a tab bar shows different cards per tab, a header looks different at scroll position 0 vs 100, a card has hover effects. You must extract ALL states, not just whatever is visible on page load.
 
 For tabbed/stateful content:
-- Click each tab/button via browser MCP
+- Click each tab/button via agent-browser
 - Extract the content, images, and card data for EACH state
 - Record which content belongs to which state
 - Note the transition animation between states (opacity, slide, fade, etc.)
@@ -112,7 +136,7 @@ For scroll-dependent elements:
 
 Every component gets a specification file in `docs/research/components/` BEFORE any builder is dispatched. This file is the contract between your extraction work and the builder agent. The builder receives the spec file contents inline in its prompt — the file also persists as an auditable artifact that the user (or you) can review if something looks wrong.
 
-The spec file is not optional. It is not a nice-to-have. If you dispatch a builder without first writing a spec file, you are shipping incomplete instructions based on whatever you can remember from a browser MCP session, and the builder will guess to fill gaps.
+The spec file is not optional. It is not a nice-to-have. If you dispatch a builder without first writing a spec file, you are shipping incomplete instructions based on whatever you can remember from a agent-browser session, and the builder will guess to fill gaps.
 
 ### 9. Build Must Always Compile
 
@@ -120,17 +144,21 @@ Every builder agent must verify `npx tsc --noEmit` passes before finishing. Afte
 
 ## Phase 1: Reconnaissance
 
-Navigate to the target URL with browser MCP.
+Navigate to the target URL:
+```bash
+agent-browser open <url>
+```
 
 ### Screenshots
-- Take **full-page screenshots** at desktop (1440px) and mobile (390px) viewports
+- Take **full-page screenshots** at desktop (1440px) and mobile (390px) viewports using `agent-browser screenshot --full-page`
+- Use `agent-browser screenshot --annotate` for annotated screenshots with element refs when you need to identify interactive elements
 - Save to `docs/design-references/` with descriptive names
 - These are your master reference — builders will receive section-specific crops/screenshots later
 
 ### Global Extraction
 Extract these from the page before doing anything else:
 
-**Fonts** — Inspect `<link>` tags for Google Fonts or self-hosted fonts. Check computed `font-family` on key elements (headings, body, code, labels). Document every family, weight, and style actually used. Configure them in `src/app/layout.tsx` using `next/font/google` or `next/font/local`.
+**Fonts** — Inspect `<link>` tags for Google Fonts or self-hosted fonts via `agent-browser eval "JSON.stringify([...document.querySelectorAll('link[rel=stylesheet]')].map(l => l.href))"`. Check computed `font-family` on key elements (headings, body, code, labels). Document every family, weight, and style actually used. Configure them in `src/app/layout.tsx` using `next/font/google` or `next/font/local`.
 
 **Colors** — Extract the site's color palette from computed styles across the page. Update `src/app/globals.css` with the target's actual colors in the `:root` and `.dark` CSS variable blocks. Map them to shadcn's token names (background, foreground, primary, muted, etc.) where they fit. Add custom properties for colors that don't map to shadcn tokens.
 
@@ -142,27 +170,27 @@ Extract these from the page before doing anything else:
 
 This is a dedicated pass AFTER screenshots and BEFORE anything else. Its purpose is to discover every behavior on the page — many of which are invisible in a static screenshot.
 
-**Scroll sweep:** Scroll the page slowly from top to bottom via browser MCP. At each section, pause and observe:
+**Scroll sweep:** Scroll the page slowly from top to bottom using `agent-browser scroll <pixels>` in increments. At each section, pause and observe with `agent-browser screenshot`:
 - Does the header change appearance? Record the scroll position where it triggers.
 - Do elements animate into view? Record which ones and the animation type.
 - Does a sidebar or tab indicator auto-switch as you scroll? Record the mechanism.
 - Are there scroll-snap points? Record which containers.
 - Is there a smooth scroll library active? Check for non-native scroll behavior.
 
-**Click sweep:** Click every element that looks interactive:
+**Click sweep:** Use `agent-browser snapshot -i` to get interactive element refs, then click every element that looks interactive with `agent-browser click @eN`:
 - Every button, tab, pill, link, card
 - Record what happens: does content change? Does a modal open? Does a dropdown appear?
 - For tabs/pills: click EACH ONE and record the content that appears for each state
 
-**Hover sweep:** Hover over every element that might have hover states:
+**Hover sweep:** Hover over every element that might have hover states with `agent-browser hover @eN`:
 - Buttons, cards, links, images, nav items
 - Record what changes: color, scale, shadow, underline, opacity
 
-**Responsive sweep:** Test at 3 viewport widths via browser MCP:
+**Responsive sweep:** Test at 3 viewport widths using `agent-browser eval "window.resizeTo(WIDTH, 900)"` or equivalent viewport resize:
 - Desktop: 1440px
 - Tablet: 768px
 - Mobile: 390px
-- At each width, note which sections change layout (column → stack, sidebar disappears, etc.) and at approximately which breakpoint the change occurs.
+- At each width, take a screenshot with `agent-browser screenshot` and note which sections change layout (column → stack, sidebar disappears, etc.) and at approximately which breakpoint the change occurs.
 
 Save all findings to `docs/research/BEHAVIORS.md`. This is your behavior bible — reference it when writing every component spec.
 
@@ -189,17 +217,17 @@ This is sequential. Do it yourself (not delegated to an agent) since it touches 
 
 ### Asset Discovery Script Pattern
 
-Use browser MCP to enumerate all assets on the page:
+Use `agent-browser eval` to enumerate all assets on the page:
 
 ```javascript
-// Run this via browser MCP to discover all assets
+// Save this as scripts/discover-assets.js, then run via: agent-browser eval "$(cat scripts/discover-assets.js)"
+// Or run inline with: agent-browser eval "<the JS below>"
 JSON.stringify({
   images: [...document.querySelectorAll('img')].map(img => ({
     src: img.src || img.currentSrc,
     alt: img.alt,
     width: img.naturalWidth,
     height: img.naturalHeight,
-    // Include parent info to detect layered compositions
     parentClasses: img.parentElement?.className,
     siblings: img.parentElement ? [...img.parentElement.querySelectorAll('img')].length : 0,
     position: getComputedStyle(img).position,
@@ -233,14 +261,16 @@ This is the core loop. For each section in your page topology (top to bottom), y
 
 ### Step 1: Extract
 
-For each section, use browser MCP to extract everything:
+For each section, use agent-browser to extract everything:
 
-1. **Screenshot** the section in isolation (scroll to it, screenshot the viewport). Save to `docs/design-references/`.
+1. **Screenshot** the section in isolation — scroll to it with `agent-browser scroll <pixels>`, then `agent-browser screenshot`. Save to `docs/design-references/`.
 
-2. **Extract CSS** for every element in the section. Use the extraction script below — don't hand-measure individual properties. Run it once per component container and capture the full output:
+2. **Extract CSS** for every element in the section. Save the extraction script below to a file and run it via `agent-browser eval "$(cat scripts/extract-styles.js)"` — don't hand-measure individual properties. Run it once per component container and capture the full output:
 
 ```javascript
-// Per-component extraction — run via browser MCP
+// Per-component extraction — save as scripts/extract-styles.js
+// Run via: agent-browser eval "$(cat scripts/extract-styles.js)"
+// Or for a specific selector: agent-browser eval "(function(selector) { ... })('YOUR_SELECTOR')"
 // Replace SELECTOR with the actual CSS selector for the component
 (function(selector) {
   const el = document.querySelector(selector);
@@ -285,16 +315,24 @@ For each section, use browser MCP to extract everything:
 
 3. **Extract multi-state styles** — for any element with multiple states (scroll-triggered, hover, active tab), capture BOTH states:
 
-```javascript
-// State A: capture styles at current state (e.g., scroll position 0)
-// Then trigger the state change (scroll, click, hover via browser MCP)
-// State B: re-run the extraction script on the same element
-// The diff between A and B IS the behavior specification
+```bash
+# State A: capture styles at current state (e.g., scroll position 0)
+agent-browser eval "$(cat scripts/extract-styles.js)"  # captures State A
+
+# Then trigger the state change via agent-browser CLI:
+agent-browser scroll 500          # scroll to trigger
+# or: agent-browser click @eN    # click to trigger
+# or: agent-browser hover @eN    # hover to trigger
+
+# State B: re-run the extraction script on the same element
+agent-browser eval "$(cat scripts/extract-styles.js)"  # captures State B
+
+# The diff between A and B IS the behavior specification
 ```
 
 Record the diff explicitly: "Property X changes from VALUE_A to VALUE_B, triggered by TRIGGER, with transition: TRANSITION_CSS."
 
-4. **Extract real content** — all text, alt attributes, aria labels, placeholder text. Use `element.textContent` for each text node. For tabbed/stateful content, **click each tab and extract content per state**.
+4. **Extract real content** — all text, alt attributes, aria labels, placeholder text. Use `agent-browser eval "document.querySelector('SELECTOR').textContent"` or `agent-browser get-text @eN` for each text node. For tabbed/stateful content, **click each tab with `agent-browser click @eN` and extract content per state**.
 
 5. **Identify assets** this section uses — which downloaded images/videos from `public/`, which icon components from `icons.tsx`. Check for **layered images** (multiple `<img>` or background-images stacked in the same container).
 
@@ -422,7 +460,7 @@ After assembly, do NOT declare the clone complete. Take side-by-side comparison 
 3. Compare again at mobile (390px)
 4. For each discrepancy found:
    - Check the component spec file — was the value extracted correctly?
-   - If the spec was wrong: re-extract from browser MCP, update the spec, fix the component
+   - If the spec was wrong: re-extract from agent-browser, update the spec, fix the component
    - If the spec was right but the builder got it wrong: fix the component to match the spec
 5. Test all interactive behaviors: scroll through the page, click every button/tab, hover over interactive elements
 6. Verify smooth scroll feels right, header transitions work, tab switching works, animations play
@@ -459,18 +497,5 @@ These are lessons from previous failed clones — each one cost hours of rework:
 - **Don't give a builder agent too much scope.** If you're writing a builder prompt and it's getting long because the section is complex, that's a signal to break it into smaller tasks.
 - **Don't bundle unrelated sections into one agent.** A CTA section and a footer are different components with different designs — don't hand them both to one agent and hope for the best.
 - **Don't skip responsive extraction.** If you only inspect at desktop width, the clone will break at tablet and mobile. Test at 1440, 768, and 390 during extraction.
-- **Don't forget smooth scroll libraries.** Check for Lenis (`.lenis` class), Locomotive Scroll, or similar. Default browser scrolling feels noticeably different and the user will spot it immediately.
-- **Don't dispatch builders without a spec file.** The spec file forces exhaustive extraction and creates an auditable artifact. Skipping it means the builder gets whatever you can fit in a prompt from memory.
-
-## Completion
-
-When done, report:
-- Total sections built
-- Total components created
-- Total spec files written (should match components)
-- Total assets downloaded (images, videos, SVGs, fonts)
-- Build status (`npm run build` result)
-- Visual QA results (any remaining discrepancies)
-- Any known gaps or limitations
 
 '''

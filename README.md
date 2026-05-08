@@ -25,15 +25,19 @@ Point it at a URL, run `/clone-website`, and your AI agent will inspect the site
    ```bash
    npm install
    ```
-3. **Start your AI agent** — Claude Code recommended:
+3. **Install agent-browser** (browser automation for the clone skill):
    ```bash
-   claude --chrome
+   npm install -g agent-browser && agent-browser install
    ```
-4. **Run the skill**:
+4. **Start your AI agent** — Claude Code recommended:
+   ```bash
+   claude
+   ```
+5. **Run the skill**:
    ```
    /clone-website <target-url1> [<target-url2> ...]
    ```
-5. **Customize** (optional) — after the base clone is built, modify as needed
+6. **Customize** (optional) — after the base clone is built, modify as needed
 
 > Using a different agent? Open `AGENTS.md` for project instructions — most agents pick it up automatically.
 
