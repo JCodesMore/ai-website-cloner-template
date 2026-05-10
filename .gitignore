@@ -47,3 +47,9 @@ next-env.d.ts
 
 # Local temp files
 temp/
+
+# ARS — local research notes (extracted from brand PDFs)
+docs/research/*.txt
+
+# Claude Code internal worktrees
+.claude/worktrees/
