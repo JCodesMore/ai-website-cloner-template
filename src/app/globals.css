@@ -1,130 +1,242 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
-  --font-heading: var(--font-sans);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  /* ---------- VertexLink palette ---------- */
+  --color-primary: #df0303;
+  --color-primary-50: rgba(223, 3, 3, 0.05);
+  --color-primary-10: rgba(223, 3, 3, 0.1);
+  --color-secondary: #010101;
+  --color-body: #42545e;
+  --color-heading: #232323;
+  --color-light: #f8f9fa;
+  --color-light-border: rgba(0, 0, 0, 0.08);
+  --color-light-white: rgba(255, 255, 255, 0.1);
+  --color-background: #ffffff;
+  --color-foreground: #232323;
+
+  /* shadcn aliases (kept so existing Button compiles) */
+  --color-primary-foreground: #ffffff;
+  --color-secondary-foreground: #ffffff;
+  --color-muted: #f8f9fa;
+  --color-muted-foreground: #42545e;
+  --color-accent: rgba(223, 3, 3, 0.05);
+  --color-accent-foreground: #df0303;
+  --color-destructive: #df0303;
+  --color-border: rgba(0, 0, 0, 0.08);
+  --color-input: rgba(0, 0, 0, 0.08);
+  --color-ring: #df0303;
+  --color-card: #ffffff;
+  --color-card-foreground: #232323;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #232323;
+
+  --radius: 0.5rem;
+  --radius-sm: 0.35rem;
+  --radius-md: 0.45rem;
+  --radius-lg: 0.625rem;
+  --radius-xl: 0.875rem;
+  --radius-2xl: 1.125rem;
+  --radius-pill: 50px;
+
+  /* fonts */
+  --font-sans: var(--font-jakarta), "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-heading: var(--font-jakarta), "Plus Jakarta Sans", system-ui, sans-serif;
+
+  /* container */
+  --container-content: 1320px;
+
+  /* shadows */
+  --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.06);
+  --shadow-primary: 0 14px 35px rgba(223, 3, 3, 0.18);
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  color-scheme: light;
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
   html {
-    @apply font-sans;
+    font-family: var(--font-sans);
+    scroll-behavior: smooth;
   }
+
+  body {
+    font-family: var(--font-sans);
+    background: #ffffff;
+    color: var(--color-body);
+    font-size: 16px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--color-heading);
+    font-family: var(--font-heading);
+    margin: 0;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  a:hover {
+    color: var(--color-primary);
+  }
+
+  img, video {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Reusable component classes (used by builder agents across sections)
+------------------------------------------------------------------ */
+@layer components {
+  /* Container wrapper: fluid up to 1320px max */
+  .yo-container {
+    width: 100%;
+    max-width: var(--container-content);
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+  @media (min-width: 992px)  { .yo-container { padding-inline: 1.6rem; } }
+  @media (min-width: 1200px) { .yo-container { padding-inline: 2.5rem; } }
+  @media (min-width: 1400px) { .yo-container { padding-inline: 2.9rem; } }
+
+  /* Section heading "OUR SERVICES" subtitle with red bar */
+  .yo-subtitle {
+    position: relative;
+    display: inline-block;
+    padding-left: 20px;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--color-heading);
+    line-height: 1;
+  }
+  .yo-subtitle::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 5px;
+    height: 24px;
+    background: var(--color-primary);
+    border-radius: 1px;
+  }
+
+  /* The "split-weight" headings: first part heavy, second part light */
+  .yo-headline-split { font-weight: 800; letter-spacing: -2px; line-height: 1; }
+  .yo-headline-split .light { font-weight: 400; }
+
+  /* Pill button */
+  .yo-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 43px;
+    padding: 0 22px;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border-radius: 50px;
+    transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+    white-space: nowrap;
+    cursor: pointer;
+    border: 2px solid transparent;
+  }
+  .yo-btn-primary { background: var(--color-primary); color: #fff; }
+  .yo-btn-primary:hover { background: #b80303; color: #fff; transform: translateY(-2px); box-shadow: var(--shadow-primary); }
+  .yo-btn-white { background: #fff; color: var(--color-primary); }
+  .yo-btn-white:hover { background: var(--color-primary); color: #fff; transform: translateY(-2px); }
+  .yo-btn-outline-white { background: transparent; color: #fff; border-color: rgba(255,255,255,0.4); }
+  .yo-btn-outline-white:hover { background: #fff; color: var(--color-primary); }
+  .yo-btn-dark { background: var(--color-secondary); color: #fff; }
+  .yo-btn-dark:hover { background: var(--color-primary); color: #fff; transform: translateY(-2px); }
+
+  /* Round behind icon (pink halo) */
+  .yo-icon-halo {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+  }
+  .yo-icon-halo::before {
+    content: "";
+    position: absolute;
+    inset: auto -10px -8px auto;
+    width: 42px;
+    height: 42px;
+    background: rgba(223, 3, 3, 0.12);
+    border-radius: 999px;
+    z-index: 0;
+  }
+  .yo-icon-halo > * { position: relative; z-index: 1; }
+
+  /* Hero ambient decorations */
+  .yo-deco-square {
+    position: absolute;
+    border-radius: 6px;
+    pointer-events: none;
+  }
+  .yo-deco-square--red {
+    background: var(--color-primary);
+  }
+  .yo-deco-square--outline {
+    border: 1px solid rgba(255, 255, 255, 0.35);
+  }
+  .yo-deco-dot {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 999px;
+    pointer-events: none;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Decorative keyframe animations (mirroring ani-move / ani-top-bottom)
+------------------------------------------------------------------ */
+@keyframes yo-float-y {
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(-12px); }
+}
+@keyframes yo-float-x {
+  0%,100% { transform: translateX(0); }
+  50%     { transform: translateX(12px); }
+}
+@keyframes yo-drift {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(8px, -10px); }
+  50%  { transform: translate(0, -18px); }
+  75%  { transform: translate(-8px, -10px); }
+  100% { transform: translate(0, 0); }
+}
+@keyframes yo-fade-up {
+  from { opacity: 0; transform: translate3d(0, 30px, 0); }
+  to   { opacity: 1; transform: none; }
+}
+
+.yo-anim-y       { animation: yo-float-y 4s ease-in-out infinite; }
+.yo-anim-x       { animation: yo-float-x 4s ease-in-out infinite; }
+.yo-anim-drift   { animation: yo-drift 6s ease-in-out infinite; }
+.yo-fade-up      { animation: yo-fade-up 0.8s ease-out both; }
+
+/* Owl-carousel style autoplay-cycler — used by the hero fader if no JS library */
+@keyframes yo-fade-cycle-3 {
+  0%, 30%   { opacity: 1; visibility: visible; }
+  33%, 97%  { opacity: 0; visibility: hidden; }
+  100%      { opacity: 1; visibility: visible; }
 }

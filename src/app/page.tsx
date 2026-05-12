@@ -1,9 +1,25 @@
-export default function Home() {
+import { AboutUs } from "@/components/AboutUs";
+import { BlogSection } from "@/components/BlogSection";
+import { CounterStats } from "@/components/CounterStats";
+import { HeroBanner } from "@/components/HeroBanner";
+import { OfferCallout } from "@/components/OfferCallout";
+import { PricingPlans } from "@/components/PricingPlans";
+import { ServicesGrid } from "@/components/ServicesGrid";
+import { Streaming } from "@/components/Streaming";
+import { WhyChooseUs } from "@/components/WhyChooseUs";
+
+export default function HomePage() {
   return (
-    <main className="flex min-h-screen items-center justify-center">
-      <p className="text-muted-foreground">
-        Clone target not yet built. Run <code className="font-mono text-foreground">/clone-website</code> to start.
-      </p>
-    </main>
+    <>
+      <HeroBanner />
+      <ServicesGrid />
+      <AboutUs />
+      <CounterStats />
+      <WhyChooseUs />
+      <OfferCallout />
+      <PricingPlans />
+      <Streaming />
+      <BlogSection />
+    </>
   );
 }
