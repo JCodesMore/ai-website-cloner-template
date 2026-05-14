@@ -1,20 +1,36 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Lato, Radley, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
+import { I18nProvider } from "@/lib/i18n/context";
+import { DataStoreProvider } from "@/lib/data-store";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const lato = Lato({
+  variable: "--font-sans",
   subsets: ["latin"],
+  weight: ["100", "300", "400", "700", "900"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const radley = Radley({
+  variable: "--font-serif",
   subsets: ["latin"],
+  weight: ["400"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  variable: "--font-mono",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Website Clone",
-  description: "Pixel-perfect website clone",
+  title: "ARS Intelligence — La forma simple de hacer que todo funcione",
+  description:
+    "Plataforma de monitoreo inteligente con IA: video analítica, reconocimiento facial, LPR, detección de personas y EPP, y alertas en tiempo real.",
+  metadataBase: new URL("https://arsintelligence.com"),
 };
 
 export default function RootLayout({
@@ -24,10 +40,18 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      lang="es"
+      className={`dark ${lato.variable} ${radley.variable} ${ibmPlexMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body
+        className="min-h-full bg-background text-foreground overflow-x-hidden"
+        suppressHydrationWarning
+      >
+        <I18nProvider>
+          <DataStoreProvider>{children}</DataStoreProvider>
+        </I18nProvider>
+      </body>
     </html>
   );
 }
