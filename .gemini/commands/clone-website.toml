@@ -2,9 +2,9 @@
 # Run `node scripts/sync-skills.mjs` to regenerate.
 
 description = "Reverse-engineer and clone any website as a pixel-perfect replica"
+name = "clone-website"
 
-[prompt]
-text = '''
+prompt = '''
 
 # Clone Website
 
