@@ -71,8 +71,9 @@ write(
   '.gemini/commands/clone-website.toml',
   `# AUTO-GENERATED from .claude/skills/clone-website/SKILL.md\n` +
     `# Run \`node scripts/sync-skills.mjs\` to regenerate.\n\n` +
-    `description = "${shortDesc}"\n\n` +
-    `[prompt]\ntext = '''\n${geminiBody}\n'''\n`
+    `description = "${shortDesc}"\n` +
+    `name = "clone-website"\n\n` +
+    `prompt = '''\n${geminiBody}\n'''\n`
 );
 
 // 6. OpenCode — markdown + YAML frontmatter, $ARGUMENTS works natively
