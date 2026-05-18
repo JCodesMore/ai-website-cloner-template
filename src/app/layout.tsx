@@ -1,33 +1,37 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { LenisProvider } from "@/components/LenisProvider";
 
 export const metadata: Metadata = {
-  title: "Website Clone",
-  description: "Pixel-perfect website clone",
+  title: "Home - Aurora",
+  description:
+    "Welcome to Aurora, your partner in innovative digital marketing solutions.",
+  icons: {
+    icon: [
+      { url: "/seo/favicon.ico" },
+      { url: "/seo/favicon-96x96.png", sizes: "96x96", type: "image/png" },
+      { url: "/seo/favicon.svg", type: "image/svg+xml" },
+    ],
+    apple: [{ url: "/seo/apple-touch-icon.png", sizes: "180x180" }],
+  },
+  manifest: "/seo/site.webmanifest",
+  openGraph: {
+    title: "Aurora Agency",
+    description:
+      "Where luxury outdoor meets glamping excellence, integrated marketing and communication, across the world.",
+    images: ["/seo/og.jpg"],
+  },
+  appleWebApp: { title: "Aurora" },
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en">
+      <body>
+        <LenisProvider>{children}</LenisProvider>
+      </body>
     </html>
   );
 }
