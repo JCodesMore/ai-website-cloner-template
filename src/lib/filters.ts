@@ -1,7 +1,7 @@
 import type { Product, Institution } from "@/types";
 
-export const PAGE_SIZE = 10;
-export const PAGE_SIZE_FAST = 12;
+export const PAGE_SIZE = 18;
+export const PAGE_SIZE_FAST = 18;
 
 export function getPage(searchParams: URLSearchParams): number {
   const p = parseInt(searchParams.get("page") || "1", 10);

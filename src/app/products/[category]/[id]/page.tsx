@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
+import ShareButton from "@/components/ShareButton";
 import { productDetails, newsItems, discussionItems } from "@/lib/data";
 import type { Metadata } from "next";
 
@@ -8,15 +9,20 @@ const categoryNames: Record<string,string>={person:"个人贷款",company:"企�
 
 interface Props { params: Promise<{ category: string; id: string }> }
 
+const DEFAULT_DESC = "找贷款，查询\"比比信•贷款口碑-bbxin.com\"，找贷款先查贷款产品口碑，贷款产品好坏一查便知。收录全网贷款产品，聚合贷款人口碑反馈，提供贷款产品查询、比对，贷款路上规避风险，\"比比信•贷款口碑\"致力于为个人和企业提供全面详实的信贷产品口碑信息！";
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { category, id } = await params;
-  const p = productDetails.find(x => x.category === category && x.id === id);
-  return { title: (p?.name||"产品") + " - 比比信", description: p?.summary };
+  let p = productDetails.find(x => x.category === category && x.id === id);
+  if (!p) p = productDetails.find(x => x.id === id);
+  const title = p ? `${p.institution} "${p.name}"，最高额度${p.maxAmount} - 比比信•贷款口碑-bbxin.com` : "产品 - 比比信";
+  return { title, description: p?.summary || DEFAULT_DESC };
 }
 
 export default async function ProductDetailPage({ params }: Props) {
   const { category, id } = await params;
-  const product = productDetails.find(x => x.category === category && x.id === id);
+  let product = productDetails.find(x => x.category === category && x.id === id);
+  if (!product) product = productDetails.find(x => x.id === id);
   if (!product) notFound();
 
   return (
@@ -75,7 +81,7 @@ export default async function ProductDetailPage({ params }: Props) {
                     <div className="product-jump-title">快速申请</div>
                     <p className="product-jump-desc">优先推荐网页直达申请，扫码可在微信中继续办理。</p>
                     <div className="product-jump-actions">
-                      <a className="layui-btn product-apply-btn" href="#" target="_blank" rel="nofollow noopener">立即申请</a>
+                      <a className="layui-btn product-apply-btn" href={`/api/products/${id}/jump?source=click`} target="_blank" rel="nofollow noopener">立即申请</a>
                     </div>
                   </div>
                   <div className="product-jump-qr-card">
@@ -98,6 +104,7 @@ export default async function ProductDetailPage({ params }: Props) {
           </div>
         </div>
       </div>
+      <ShareButton productId={id} productName={product.name} rate={product.rate} amount={product.maxAmount} term={product.term} repayment={product.repayment} />
     </>
   );
 }
