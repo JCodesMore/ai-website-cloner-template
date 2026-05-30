@@ -12,6 +12,7 @@ export function invalidateAllSessions(): void {
   minValidIssuedAt = Date.now();
   void auditLog("sessions_invalidated", `minValidIssuedAt=${minValidIssuedAt}`);
 }
+
 function getSecret(): string {
   const secret = process.env.SESSION_SECRET;
   if (!secret) throw new Error("SESSION_SECRET must be set");
