@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { paginate, getWd, getPage, filterByIk, PAGE_SIZE } from "@/lib/filters";
+import { paginate, getWd, getPage, filterByIk, filterInstitutionsByIk, PAGE_SIZE } from "@/lib/filters";
 
 // ── getWd ─────────────────────────────────────────────────
 
@@ -157,5 +157,35 @@ describe("filterByIk", () => {
   it("returns empty array when no institution matches", () => {
     const result = filterByIk([{ institution: "未知机构" }], "socb");
     expect(result).toHaveLength(0);
+  });
+});
+
+describe("Regression: institution search by abbreviation", () => {
+  it('"农商" matches institutions with short_name containing 农商', () => {
+    const institutions = [
+      { id: 1, name: "北京农村商业银行股份有限公司", fullName: "北京农商行" },
+      { id: 2, name: "上海农村商业银行股份有限公司", fullName: "上海农商银行" },
+      { id: 3, name: "招商银行股份有限公司", fullName: "招商银行" },
+    ];
+    const q = "农商";
+    const matches = institutions.filter((i: any) =>
+      i.name.includes(q) || (i.fullName || "").includes(q)
+    );
+    expect(matches.length).toBe(2);
+  });
+
+  it("filterInstitutionsByIk socb returns 6 state-owned banks", () => {
+    const banks = [
+      { id: 1, name: "工商银行", fullName: "中国工商银行股份有限公司" },
+      { id: 2, name: "农业银行", fullName: "中国农业银行股份有限公司" },
+      { id: 4, name: "建设银行", fullName: "中国建设银行股份有限公司" },
+      { id: 5, name: "邮储银行", fullName: "中国邮政储蓄银行股份有限公司" },
+      { id: 6, name: "交通银行", fullName: "中国交通银行股份有限公司" },
+      { id: 7, name: "中国银行", fullName: "中国银行股份有限公司" },
+      { id: 99, name: "招商银行", fullName: "招商银行股份有限公司" },
+    ] as any;
+    const result = filterInstitutionsByIk(banks, "socb");
+    expect(result.length).toBe(6);
+    expect(result.map((i: any) => i.id).sort()).toEqual([1, 2, 4, 5, 6, 7]);
   });
 });
