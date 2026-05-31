@@ -87,6 +87,10 @@ export default async function InstitutionDetailPage({ params }: Props) {
                             <div className="text-xs text-slate-400">参考利率</div>
                             <div className="text-xs font-medium text-slate-700">{detail.maxAmount}</div>
                             <div className="text-xs font-medium text-slate-700">{detail.rate}</div>
+                            <div className="text-xs text-slate-400 mt-1">还款期限</div>
+                            <div className="text-xs text-slate-400 mt-1">还款方式</div>
+                            <div className="text-xs font-medium text-slate-700">{detail.term}</div>
+                            <div className="text-xs font-medium text-slate-700">{detail.repayment}</div>
                           </div>
                         )}
                         <div className="mt-2 flex items-center gap-1 text-xs text-yellow-600">
