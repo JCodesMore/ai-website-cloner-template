@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
-import { articleDetails, newsItems, discussionItems, opinionItems, faqItems } from "@/lib/data";
+import { getArticleById } from "@/lib/repository";
+import { newsItems, discussionItems, opinionItems, faqItems } from "@/lib/data";
 import type { Metadata } from "next";
 import { Clock, Eye, Share2 } from "lucide-react";
 
@@ -9,14 +10,14 @@ interface Props { params: Promise<{ id: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const article = articleDetails.find((a) => a.id === Number(id));
+  const article = await getArticleById(Number(id));
   if (!article) return { title: "文章不存在" };
   return { title: article.title + " - 银脉圈", description: article.title };
 }
 
 export default async function ArticleDetailPage({ params }: Props) {
   const { id } = await params;
-  const article = articleDetails.find((a) => a.id === Number(id));
+  const article = await getArticleById(Number(id));
   if (!article) notFound();
 
   return (

@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { counselors } from "@/lib/data";
+import { getAllCounselors } from "@/lib/repository";
 import type { Metadata } from "next";
 import { Shield, MessageCircle, Phone } from "lucide-react";
 
@@ -7,13 +7,13 @@ interface Props { params: Promise<{ id: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const c = counselors.find(x => x.id === id);
+  const c = (await getAllCounselors()).find(x => x.id === id);
   return { title: (c?.name || "顾问") + " - 银脉圈", description: c?.bio };
 }
 
 export default async function CounselorPage({ params }: Props) {
   const { id } = await params;
-  const c = counselors.find(x => x.id === id);
+  const c = (await getAllCounselors()).find(x => x.id === id);
   if (!c) notFound();
 
   return (

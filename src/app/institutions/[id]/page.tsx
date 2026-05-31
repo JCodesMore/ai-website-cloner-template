@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
-import { institutionDetails, productDetails, newsItems, discussionItems, opinionItems, faqItems } from "@/lib/data";
+import { getInstitutionById } from "@/lib/repository";
+import { productDetails, newsItems, discussionItems, opinionItems, faqItems } from "@/lib/data";
 import type { Metadata } from "next";
 import { ExternalLink, ChevronRight } from "lucide-react";
 
@@ -9,7 +10,7 @@ interface Props { params: Promise<{ id: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const inst = institutionDetails.find(x => x.id === id);
+  const inst = await getInstitutionById(id);
   return { title: (inst?.name || "机构") + " - 银脉圈", description: inst?.fullName };
 }
 
@@ -18,7 +19,7 @@ const detailMap = new Map(productDetails.map((d) => [String(d.id), d]));
 
 export default async function InstitutionDetailPage({ params }: Props) {
   const { id } = await params;
-  const inst = institutionDetails.find(x => x.id === id);
+  const inst = await getInstitutionById(id);
   if (!inst) notFound();
 
   return (

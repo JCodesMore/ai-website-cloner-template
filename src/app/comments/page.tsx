@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { comments, newsItems, discussionItems, opinionItems, faqItems } from "@/lib/data";
+import { getAllComments } from "@/lib/repository";
+import { newsItems, discussionItems, opinionItems, faqItems } from "@/lib/data";
 import Sidebar from "@/components/Sidebar";
 import Pagination from "@/components/Pagination";
 import { getPage, paginate, PAGE_SIZE } from "@/lib/filters";
@@ -12,6 +13,7 @@ export default async function CommentsPage({ searchParams }: Props) {
   const sp = await searchParams;
   const mode = sp.m || "";
 
+  const comments = await getAllComments();
   let filtered = comments;
   if (mode === "image") {
     filtered = comments.filter((c) => c.images && c.images.length > 0);

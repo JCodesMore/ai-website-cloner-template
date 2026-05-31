@@ -1,6 +1,7 @@
 import Banner from "@/components/Banner";
 import Pagination from "@/components/Pagination";
-import { institutions, newsItems, discussionItems, opinionItems, faqItems } from "@/lib/data";
+import { getAllInstitutions } from "@/lib/repository";
+import { newsItems, discussionItems, opinionItems, faqItems } from "@/lib/data";
 import { getPage, paginate, PAGE_SIZE, filterInstitutionsByIk, searchInstitutions, sortInstitutions, getWd } from "@/lib/filters";
 import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
@@ -35,7 +36,7 @@ export default async function InstitutionsPage({ searchParams }: Props) {
   const od = params.get("od") || "";
   const page = getPage(params);
 
-  let filtered = institutions;
+  let filtered = await getAllInstitutions();
   filtered = filterInstitutionsByIk(filtered, ik);
   filtered = searchInstitutions(filtered, wd);
   filtered = sortInstitutions(filtered, ob, od);
