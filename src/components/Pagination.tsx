@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { PAGINATION_WINDOW } from "@/lib/constants";
 
 interface PaginationProps {
   currentPage: number;
@@ -10,6 +11,26 @@ interface PaginationProps {
   onPage?: (page: number) => void;
 }
 
+function getWindowPages(current: number, total: number, win: number): (number | "...")[] {
+  if (total <= win + 2) return Array.from({ length: total }, (_, i) => i + 1);
+
+  const half = Math.floor(win / 2);
+  let start = current - half;
+  let end = current + half;
+
+  if (start < 2) { start = 1; end = Math.min(win, total - 1); }
+  if (end > total - 1) { end = total; start = Math.max(total - win + 1, 2); }
+
+  const result: (number | "...")[] = [1];
+  if (start > 2) result.push("...");
+  for (let i = start; i <= end; i++) {
+    if (i > 1 && i < total) result.push(i);
+  }
+  if (end < total - 1) result.push("...");
+  if (total > 1) result.push(total);
+  return result;
+}
+
 export default function Pagination({
   currentPage,
   totalPages,
@@ -17,7 +38,7 @@ export default function Pagination({
   extraParams = "",
   onPage,
 }: PaginationProps) {
-  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+  const pages = getWindowPages(currentPage, totalPages, PAGINATION_WINDOW);
   const connector = baseHref.includes("?") ? "&" : "?";
   const sep = extraParams
     ? extraParams.startsWith("&")
@@ -43,7 +64,7 @@ export default function Pagination({
     "inline-flex h-9 min-w-[36px] items-center justify-center rounded-md px-3 text-sm text-slate-300 cursor-not-allowed";
 
   return (
-    <nav className="mt-8 flex items-center justify-center gap-1">
+    <nav className="mt-8 flex flex-wrap items-center justify-center gap-1">
       {currentPage > 1 ? (
         <Link className={linkClass} href={href(1)} onClick={handleClick(1)}>
           首页
@@ -58,8 +79,10 @@ export default function Pagination({
       ) : (
         <span className={disabledClass}>上一页</span>
       )}
-      {pages.map((p) =>
-        p === currentPage ? (
+      {pages.map((p, i) =>
+        p === "..." ? (
+          <span key={`e${i}`} className="inline-flex h-9 w-9 items-center justify-center text-sm text-slate-400">…</span>
+        ) : p === currentPage ? (
           <span className={activeClass} key={p}>
             {p}
           </span>
