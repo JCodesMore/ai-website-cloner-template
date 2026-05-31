@@ -1,28 +1,13 @@
-import { getAllProducts } from "@/lib/repository";
+import { getAllProducts, getAllInstitutions } from "@/lib/repository";
 import { getWd, paginate, PAGE_SIZE } from "@/lib/filters";
 import Banner from "@/components/Banner";
 import ProductCard from "@/components/ProductCard";
 import Pagination from "@/components/Pagination";
 import Sidebar from "@/components/Sidebar";
-import {
-  newsItems, discussionItems, opinionItems, faqItems,
-  fastProducts, companyProducts, personProducts, pledgeProducts,
-} from "@/lib/data";
+import { newsItems, discussionItems, opinionItems, faqItems } from "@/lib/data";
 
 interface Props {
   searchParams: Promise<{ wd?: string; page?: string }>;
-}
-
-// Build lookup of short institution names from listing JSON (which use
-// abbreviations like "北京农商行" vs. DB's full "北京农村商业银行股份有限公司").
-// The DB stores scraped full names that may not contain user search terms
-// as substrings (e.g., "农商" is NOT a substring of "农村商业银行").
-function buildInstAliasMap(): Map<number, string> {
-  const map = new Map<number, string>();
-  for (const p of [...fastProducts, ...companyProducts, ...personProducts, ...pledgeProducts]) {
-    if (!map.has(p.id)) map.set(p.id, p.institution);
-  }
-  return map;
 }
 
 export default async function SearchPage({ searchParams }: Props) {
@@ -34,21 +19,29 @@ export default async function SearchPage({ searchParams }: Props) {
   const wd = getWd(params);
   const page = Math.max(1, parseInt(sp.page || "1", 10) || 1);
 
-  const [allProducts, instAlias] = await Promise.all([
+  const [allProducts, allInstitutions] = await Promise.all([
     getAllProducts(),
-    buildInstAliasMap(),
+    getAllInstitutions(),
   ]);
+
+  // Build institution search lookup: id → combined searchable text
+  const instSearch = new Map<number, string>();
+  for (const inst of allInstitutions) {
+    instSearch.set(inst.id, [
+      inst.name,
+      inst.fullName,
+      (inst as any).shortName || "",
+    ].filter(Boolean).join(" ").toLowerCase());
+  }
 
   const filtered = wd
     ? allProducts.filter(
         (p) => {
-          const alias = instAlias.get(p.id);
           const q = wd.toLowerCase();
-          return (
-            p.name.toLowerCase().includes(q) ||
-            p.institution.toLowerCase().includes(q) ||
-            (alias && alias.toLowerCase().includes(q))
-          );
+          if (p.name.toLowerCase().includes(q)) return true;
+          if (p.institution.toLowerCase().includes(q)) return true;
+          const instText = instSearch.get(p.id);
+          return instText ? instText.includes(q) : false;
         },
       )
     : [];
