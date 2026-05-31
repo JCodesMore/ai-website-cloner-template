@@ -1,7 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createUser, setSessionCookie, getCurrentUser } from "@/lib/auth";
+import { rateLimit } from "@/lib/rate-limit";
+import { checkCsrf } from "@/lib/api-utils";
 
 export async function POST(req: NextRequest) {
+  const csrfCheck = checkCsrf(req);
+  if (csrfCheck) return csrfCheck;
+
+  const ip = req.headers.get("x-forwarded-for") || "unknown";
+  const rl = rateLimit(`register:${ip}`, 5, 60_000);
+  if (!rl.ok) return NextResponse.json({ error: "请求过于频繁，请稍后再试" }, { status: 429 });
+
   try {
     const alreadyLoggedIn = await getCurrentUser();
     if (alreadyLoggedIn) {
@@ -22,7 +31,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "密码至少6位" }, { status: 400 });
     }
 
-    const result = createUser(username, password);
+    const result = await createUser(username, password);
     if (!result.ok) {
       return NextResponse.json({ error: result.error }, { status: 409 });
     }

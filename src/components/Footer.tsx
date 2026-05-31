@@ -1,36 +1,58 @@
 import Link from "next/link";
 
+const footerLinks = [
+  { label: "关于我们", href: "/pages/about" },
+  { label: "联系我们", href: "/pages/contact" },
+  { label: "免责声明", href: "/pages/statement" },
+  { label: "隐私政策", href: "/pages/privacy" },
+  { label: "用户协议", href: "/pages/agreement" },
+];
+
 export default function Footer() {
   return (
-    <div className="ley-footer">
-      <div className="top">
-        <div className="ley-inner">
-          <div className="layui-row">
-            <div className="layui-col-md9">
-              <ul className="desc">
-                <li>
-                  <img className="ley-footer-logo" src="/statics/images/logo_write.png" alt="比比信" />
+    <footer className="mt-16 bg-slate-900 text-white">
+      <div className="mx-auto max-w-7xl px-4 py-12">
+        <div className="grid gap-10 md:grid-cols-[1fr_200px]">
+          <div className="space-y-3 text-sm text-slate-400">
+            <div className="mb-4 flex items-center gap-2">
+              <span className="text-3xl font-bold tracking-wide text-white">银脉圈</span>
+              <div className="flex flex-col">
+                <span className="text-base leading-tight text-slate-300">贷款随心选</span>
+                <span className="text-sm leading-tight text-slate-400">yinmaiquan.com</span>
+              </div>
+            </div>
+            <p>
+              银脉圈 &middot; 贷款随心选 &mdash; 万千用户的贷款优选指南
+            </p>
+            <p>
+              用数据说话，用口碑导航，让每个人都能找到对的贷款。
+            </p>
+            <p>
+              不推产品、只推适合，做用户身边的贷款参谋。
+            </p>
+          </div>
+          <div>
+            <h4 className="mb-3 text-sm font-semibold text-white">快速链接</h4>
+            <ul className="space-y-2 text-sm text-slate-400">
+              {footerLinks.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="transition-colors duration-200 hover:text-white"
+                  >
+                    {link.label}
+                  </Link>
                 </li>
-                <li>比比信&bull;贷款口碑-bbxin.com 致力于为个人和企业提供全面详实的贷款产品口碑信息！</li>
-                <li>比比信的服务宗旨是：助力企业个人资金需求，降低信贷融资成本，用服务创造价值。</li>
-                <li>比比信的服务理念是：秉承&ldquo;诚信创造财富&rdquo;的理念，让普惠金融惠及千企万户。</li>
-              </ul>
-            </div>
-            <div className="layui-col-md2 layui-col-md-offset1">
-              <ul className="menus">
-                <li><Link href="/pages/about">关于我们</Link></li>
-                <li><Link href="/pages/contact">联系我们</Link></li>
-                <li><Link href="/pages/statement">免责声明</Link></li>
-              </ul>
-            </div>
+              ))}
+            </ul>
           </div>
         </div>
       </div>
-      <div className="bottom">
-        <div className="ley-inner">
-          <p>Copyright 2008-2025&copy;北京捌捌科技有限公司版权所有 www.bbxin.com 京ICP备2023027192号-1</p>
+      <div className="border-t border-slate-800">
+        <div className="mx-auto max-w-7xl px-4 py-6 text-center text-xs text-slate-500">
+          Copyright &copy; 2025 内江银脉圈企业管理咨询有限公司版权所有 www.yinmaiquan.com
         </div>
       </div>
-    </div>
+    </footer>
   );
 }

@@ -27,7 +27,7 @@ export async function GET(
       return NextResponse.redirect(target, 302);
     }
     // Relative URL → resolve against site root
-    return NextResponse.redirect(new URL(target, "https://bbxin.com"), 302);
+    return NextResponse.redirect(new URL(target, "https://yinmaiquan.com"), 302);
   }
 
   // Fallback: redirect to product detail page

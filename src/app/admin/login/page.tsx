@@ -13,19 +13,16 @@ export default function AdminLoginPage() {
     fetch("/api/admin/auth/me")
       .then((r) => r.json())
       .then((d) => {
-        if (d.username) {
-          router.replace("/admin");
-        } else {
-          setChecking(false);
-        }
+        if (d.username) router.replace("/admin");
+        else setChecking(false);
       })
       .catch(() => setChecking(false));
   }, [router]);
 
   if (checking) {
     return (
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f5f6f8" }}>
-        <p style={{ color: "#999", fontSize: 14 }}>检查登录状态...</p>
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <p className="text-sm text-slate-400">检查登录状态...</p>
       </div>
     );
   }
@@ -58,24 +55,18 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f5f6f8" }}>
-      <div style={{ width: 380, background: "#fff", borderRadius: 12, padding: 40, boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}>
-        <h1 style={{ textAlign: "center", fontSize: 22, fontWeight: 700, color: "#1a1a1a", marginBottom: 8 }}>
-          银脉圈 · 后台管理
-        </h1>
-        <p style={{ textAlign: "center", fontSize: 13, color: "#999", marginBottom: 32 }}>
-          请使用管理员账号登录
-        </p>
-        <form className="layui-form" onSubmit={handleSubmit}>
-          <div className="layui-form-item" style={{ marginBottom: 16 }}>
-            <input type="text" name="username" required placeholder="管理员账号" className="layui-input" style={{ height: 44, borderRadius: 8 }} />
-          </div>
-          <div className="layui-form-item" style={{ marginBottom: 20 }}>
-            <input type="password" name="password" required placeholder="管理员密码" className="layui-input" style={{ height: 44, borderRadius: 8 }} />
-          </div>
-          {error && <p style={{ color: "#f56c6c", fontSize: 13, marginBottom: 12 }}>{error}</p>}
-          <button type="submit" className="layui-btn layui-btn-fluid" disabled={loading}
-            style={{ height: 44, borderRadius: 8, background: "#ff5f16", border: "none", color: "#fff", fontSize: 15, fontWeight: 600, cursor: "pointer", width: "100%" }}>
+    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
+      <div className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+        <h1 className="mb-1 text-center text-xl font-bold text-slate-900">银脉圈 · 后台管理</h1>
+        <p className="mb-8 text-center text-sm text-slate-400">请使用管理员账号登录</p>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input type="text" name="username" required placeholder="管理员账号"
+            className="h-11 w-full rounded-lg border border-slate-200 px-3 text-sm outline-none transition-colors duration-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20" />
+          <input type="password" name="password" required placeholder="管理员密码"
+            className="h-11 w-full rounded-lg border border-slate-200 px-3 text-sm outline-none transition-colors duration-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20" />
+          {error && <p className="text-sm text-red-500">{error}</p>}
+          <button type="submit" disabled={loading}
+            className="h-11 w-full rounded-lg bg-slate-900 text-sm font-medium text-white transition-colors duration-200 hover:bg-slate-800 disabled:opacity-60 cursor-pointer">
             {loading ? "登录中..." : "登录"}
           </button>
         </form>

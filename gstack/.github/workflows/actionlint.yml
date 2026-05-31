@@ -1,0 +1,8 @@
+name: Workflow Lint
+on: [push, pull_request]
+jobs:
+  actionlint:
+    runs-on: ubicloud-standard-8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: rhysd/actionlint@v1.7.11

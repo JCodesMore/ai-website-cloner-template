@@ -2,7 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useRef } from "react";
+import { ChevronDown } from "lucide-react";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { useDropdown } from "@/hooks/use-dropdown";
 
 const navItems = [
   { label: "极速贷款", href: "/products/fast" },
@@ -22,19 +25,9 @@ const subNavItems = [
 
 export default function Nav() {
   const pathname = usePathname();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [user, setUser] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("/api/auth/me")
-      .then((res) => res.ok ? res.json() : { authenticated: false })
-      .then((data) => {
-        if (data.authenticated) setUser(data.username);
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
+  const dropdownRef = useRef<HTMLLIElement>(null);
+  const { open: dropdownOpen, onMouseEnter, onMouseLeave } = useDropdown(150);
+  const { user, loading } = useCurrentUser();
 
   const isActive = (href: string) => {
     if (href === "/products/fast") return pathname.startsWith("/products/fast");
@@ -48,62 +41,90 @@ export default function Nav() {
 
   async function handleLogout() {
     await fetch("/api/auth/logout", { method: "POST" });
-    setUser(null);
     window.location.href = "/";
   }
 
   return (
-    <div className="ley-nav">
-      <div className="nav-wrapper ley-inner ley-inner-wide">
-        <Link href="/" className="logo">
-          <img src="/statics/images/logo.png" alt="" />
+    <nav className="fixed top-0 left-0 right-0 z-20 h-16 bg-slate-900 text-white">
+      <div className="mx-auto flex h-full max-w-7xl items-center gap-8 px-4">
+        <Link href="/" className="flex shrink-0 items-center gap-2">
+          <span className="text-2xl font-bold tracking-wide">银脉圈</span>
+          <div className="flex flex-col">
+            <span className="text-sm leading-tight text-slate-300">贷款随心选</span>
+            <span className="text-xs leading-tight text-slate-400">yinmaiquan.com</span>
+          </div>
         </Link>
-        <ul className="layui-nav ley-nav-ul">
+
+        <ul className="flex items-center gap-1 text-sm font-medium">
           {navItems.map((item) => (
-            <li
-              key={item.href}
-              className={`layui-nav-item ${isActive(item.href) ? "layui-this" : ""}`}
-            >
-              <Link href={item.href}>{item.label}</Link>
+            <li key={item.href}>
+              <Link
+                href={item.href}
+                className={`rounded-md px-3 py-2 transition-colors duration-200 hover:bg-white/10 ${
+                  isActive(item.href) ? "bg-white/10 text-yellow-400" : "text-slate-200"
+                }`}
+              >
+                {item.label}
+              </Link>
             </li>
           ))}
           <li
-            className="layui-nav-item"
-            onMouseEnter={() => setDropdownOpen(true)}
-            onMouseLeave={() => setDropdownOpen(false)}
+            ref={dropdownRef}
+            className="relative"
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
           >
-            <a href="javascript:;">贷款资讯</a>
+            <span className="inline-flex cursor-pointer items-center gap-1 rounded-md px-3 py-2 text-slate-200 transition-colors duration-200 hover:bg-white/10">
+              贷款资讯
+              <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`} />
+            </span>
             {dropdownOpen && (
-              <dl className="layui-nav-child" style={{ display: "block" }}>
+              <div className="absolute left-0 top-full mt-1 min-w-[140px] rounded-lg border border-slate-700 bg-slate-800 py-1 shadow-lg">
                 {subNavItems.map((sub) => (
-                  <dd key={sub.href}>
-                    <Link href={sub.href}>{sub.label}</Link>
-                  </dd>
+                  <Link
+                    key={sub.href}
+                    href={sub.href}
+                    className="block px-4 py-2 text-sm text-slate-200 transition-colors duration-150 hover:bg-white/10 hover:text-white"
+                  >
+                    {sub.label}
+                  </Link>
                 ))}
-              </dl>
+              </div>
             )}
           </li>
         </ul>
-        <div className="nav-right-area">
-          <div className="nav-auth-links">
-            {loading ? null : user ? (
-              <>
-                <span className="nav-auth-link" style={{ color: "#ff5f16", fontWeight: 600 }}>
-                  {user}
-                </span>
-                <span className="nav-auth-sep">|</span>
-                <a href="javascript:;" onClick={handleLogout} className="nav-auth-link">退出</a>
-              </>
-            ) : (
-              <>
-                <Link href="/login" className="nav-auth-link">登录</Link>
-                <span className="nav-auth-sep">|</span>
-                <Link href="/register" className="nav-auth-link nav-auth-link--register">注册</Link>
-              </>
-            )}
-          </div>
+
+        <div className="ml-auto flex items-center gap-4 text-sm">
+          {!loading && user ? (
+            <>
+              <Link href="/profile" className="text-slate-200 transition-colors duration-200 hover:text-white">
+                {user.username}
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="text-slate-400 transition-colors duration-200 hover:text-white cursor-pointer"
+              >
+                退出
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="text-slate-300 transition-colors duration-200 hover:text-white"
+              >
+                登录
+              </Link>
+              <Link
+                href="/register"
+                className="rounded-lg bg-yellow-600 px-4 py-1.5 text-white transition-colors duration-200 hover:bg-yellow-700"
+              >
+                注册
+              </Link>
+            </>
+          )}
         </div>
       </div>
-    </div>
+    </nav>
   );
 }

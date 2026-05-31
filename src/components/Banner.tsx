@@ -1,28 +1,56 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { type FormEvent, useState } from "react";
+
 interface BannerProps {
   productCount?: number;
 }
 
 export default function Banner({ productCount = 816 }: BannerProps) {
+  const router = useRouter();
+  const [wd, setWd] = useState("");
+
+  function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    if (!wd.trim()) return;
+    router.push(`/products/search?wd=${encodeURIComponent(wd.trim())}`);
+  }
+
   return (
-    <div className="ley-banner">
-      <div className="ley-inner">
-        <div className="ley-banner-inner">
-          <div className="ley-banner-slogan">
-            已收录全网 <strong className="ley-banner-count">{productCount}</strong> 个贷款产品
-          </div>
-          <form className="ley-banner-search" action="/products/search" method="get">
-            <input
-              className="ley-banner-search-input"
-              type="text"
-              name="wd"
-              placeholder="请输入产品名称或机构名称"
-            />
-            <button className="ley-banner-search-btn" type="submit">
-              <i className="layui-icon layui-icon-search"></i>
-            </button>
-          </form>
-        </div>
+    <section className="bg-slate-900 py-10 md:py-14">
+      <div className="mx-auto max-w-7xl px-4 text-center">
+        <p className="text-lg text-slate-300 md:text-xl">
+          已收录全网{" "}
+          <strong className="text-3xl font-bold text-white md:text-4xl">
+            {productCount.toLocaleString()}
+          </strong>{" "}
+          个贷款产品
+        </p>
+        <form
+          className="mx-auto mt-6 flex max-w-xl items-center"
+          onSubmit={handleSubmit}
+        >
+          <input
+            className="h-11 flex-1 rounded-l-lg border border-slate-700 bg-slate-800 px-4 text-sm text-white outline-none placeholder:text-slate-500 focus:border-blue-500"
+            type="text"
+            name="wd"
+            value={wd}
+            onChange={(e) => setWd(e.target.value)}
+            placeholder="请输入产品名称或机构名称"
+          />
+          <button
+            className="flex h-11 items-center gap-1.5 rounded-r-lg bg-yellow-600 px-6 text-sm font-medium text-white transition-colors duration-200 hover:bg-yellow-700 cursor-pointer"
+            type="submit"
+          >
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
+            搜索
+          </button>
+        </form>
       </div>
-    </div>
+    </section>
   );
 }

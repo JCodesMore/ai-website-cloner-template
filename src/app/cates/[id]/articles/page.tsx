@@ -1,9 +1,10 @@
 import type { NewsItem } from "@/types";
-import { industryArticles, discussionArticles, opinionArticles, faqArticles, discussionItems, newsItems } from "@/lib/data";
+import { industryArticles, discussionArticles, opinionArticles, faqArticles, newsItems, discussionItems, opinionItems, faqItems } from "@/lib/data";
 import ArticleCard from "@/components/ArticleCard";
 import Pagination from "@/components/Pagination";
 import Sidebar from "@/components/Sidebar";
 import { getPage, paginate, PAGE_SIZE } from "@/lib/filters";
+import Link from "next/link";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -27,44 +28,41 @@ export default async function ArticleCategoryPage(props: { params: Promise<{ id:
   const page = getPage(params);
 
   if (!config) {
-    return <div className="ley-page ley-page-list-news"><div className="ley-inner"><h1>页面未找到</h1></div></div>;
+    return (
+      <div className="mx-auto max-w-7xl px-4 py-10 text-center text-slate-500">
+        <h1 className="text-xl font-bold text-slate-900">页面未找到</h1>
+      </div>
+    );
   }
 
   const { items, currentPage, totalPages } = paginate(config.articles, page, PAGE_SIZE);
 
   return (
     <>
-      <div className="ley-breadcrumb">
-        <div className="ley-inner">
-          <span className="layui-breadcrumb">
-            <a href="/">首页</a>
-            <a><cite>{config.title}</cite></a>
-          </span>
+      <div className="border-b border-slate-200 bg-white">
+        <div className="mx-auto max-w-7xl px-4 py-3 text-sm text-slate-500">
+          <Link href="/" className="hover:text-blue-600 transition-colors duration-200">首页</Link>
+          <span className="mx-2">/</span>
+          <span>{config.title}</span>
         </div>
       </div>
 
-      <main className="ley-page ley-page-list-news">
-        <div className="ley-inner">
-          <div className="layui-row layui-col-space16">
-            <div className="layui-col-md9">
-              <p style={{ fontSize: 13, color: "#6b7280", marginBottom: 12 }}>
-                {config.title} — 共 {config.articles.length} 篇
-              </p>
-              <div className="list-news">
-                {items.map((article) => (
-                  <ArticleCard key={article.id} article={article} />
-                ))}
-              </div>
-              {totalPages > 1 && (
-                <Pagination currentPage={currentPage} totalPages={totalPages} baseHref={`/cates/${categoryId}/articles`} />
-              )}
+      <div className="mx-auto max-w-7xl px-4 py-6">
+        <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
+          <div>
+            <p className="mb-4 text-sm text-slate-500">{config.title} — 共 {config.articles.length} 篇</p>
+            <div className="space-y-3">
+              {items.map((article) => (
+                <ArticleCard key={article.id} article={article} />
+              ))}
             </div>
-            <div className="layui-col-md3">
-              <Sidebar newsItems={newsItems} discussionItems={discussionItems} />
-            </div>
+            {totalPages > 1 && (
+              <Pagination currentPage={currentPage} totalPages={totalPages} baseHref={`/cates/${categoryId}/articles`} />
+            )}
           </div>
+          <Sidebar newsItems={newsItems} discussionItems={discussionItems} opinionItems={opinionItems} faqItems={faqItems} />
         </div>
-      </main>
+      </div>
     </>
   );
 }

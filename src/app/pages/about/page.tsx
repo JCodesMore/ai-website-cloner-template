@@ -1,53 +1,60 @@
 import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 
 const sidebarItems = [
+  { href: "/pages/about", label: "关于我们", active: true },
+  { href: "/pages/contact", label: "联系我们" },
+  { href: "/pages/statement", label: "免责声明" },
   { href: "/pages/privacy", label: "隐私保护" },
   { href: "/pages/agreement", label: "使用协议" },
-  { href: "/pages/statement", label: "免责声明" },
-  { href: "/pages/contact", label: "联系我们" },
-  { href: "/pages/about", label: "关于我们", active: true },
 ];
 
 export default function AboutPage() {
   return (
     <>
-      <div className="ley-breadcrumb">
-        <div className="ley-inner">
-          <span className="layui-breadcrumb">
-            <a href="/">首页</a>
-            <a><cite>关于我们</cite></a>
-          </span>
+      <div className="border-b border-slate-200 bg-white">
+        <div className="mx-auto max-w-7xl px-4 py-3 text-sm text-slate-500">
+          <Link href="/" className="hover:text-blue-600 transition-colors duration-200">首页</Link>
+          <span className="mx-2">/</span>
+          <span>关于我们</span>
         </div>
       </div>
-      <div className="ley-page ley-page-about-us">
-        <div className="ley-inner">
-          <div className="page-container">
-            <div className="page-sidebar">
-              <div className="sidebar-title">相关页面</div>
-              <ul className="sidebar-menu">
+
+      <div className="mx-auto max-w-7xl px-4 py-6">
+        <div className="grid gap-6 md:grid-cols-[200px_1fr]">
+          <aside>
+            <nav className="rounded-lg border border-slate-200 bg-white">
+              <h3 className="border-b border-slate-100 px-4 py-3 text-sm font-semibold text-slate-900">相关页面</h3>
+              <ul>
                 {sidebarItems.map((item) => (
-                  <li key={item.href} className={`sidebar-menu-item${item.active ? " active" : ""}`}>
-                    <Link href={item.href}>
-                      <i className="layui-icon layui-icon-right"></i>
-                      <span>{item.label}</span>
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      className={`flex items-center gap-2 px-4 py-2.5 text-sm transition-colors duration-200 ${
+                        item.active
+                          ? "bg-blue-50 text-blue-700 font-medium"
+                          : "text-slate-600 hover:bg-slate-50"
+                      }`}
+                    >
+                      <ChevronRight className="h-3.5 w-3.5" />
+                      {item.label}
                     </Link>
                   </li>
                 ))}
               </ul>
-            </div>
-            <div className="page-content">
-              <div className="content-header">
-                <h1>关于我们</h1>
-              </div>
-              <div className="content-body layui-text">
-                <div id="editor-container">
-                  <p style={{ textAlign: "center" }}><img src="/images/products/58efa73697da.jpg" alt="" style={{ maxWidth: "100%" }} /></p>
-                  <p><strong>关于我们</strong></p>
-                  <p>比比信•贷款口碑-bbxin.com 作为专业的贷款产品口碑查询平台，找合适的贷款，上"比比信"，比比信•贷款口碑-bbxin.com，聚合贷款产品口碑信息，遵从金融本质，以数据为基石，专注于金融信贷产品口碑收录整合，用创新技术为用户提供信息服务，寻找信贷资金查"比比信•贷款口碑"，降低资金需求人的融资成本。并欢迎广大合规信贷产品入驻及展示，助力小微企业及个人，高效的寻求信贷资金支持，降低融资成本，用科技服务大众，促进金融服务效率的提升，践行普惠金融的使命。</p>
-                  <p>以"让金融惠及各行各业"为愿景，秉持"诚信创造财富"的理念，持续致力于实现"让每个人都享有简单、公平的互联网金融服务"的使命，为有融资需求的中小微企业及个人，提供详实的互联网金融产品信息服务。公司的服务宗旨是："助力企业资金需求，降低企业融资成本，用服务创造价值。"</p>
-                  <p>比比信•贷款口碑-bbxin.com 是国内专业的金融信息服务平台，平台汇聚全国各省市地区贷款产品，致力于用先进的互联网技术和金融创新应用，为有资金需求的企业和个人搭建一个高效精准的贷款产品方案查询渠道，为企业和个人提供一站式金融服务，实现合作共赢。</p>
-                </div>
-              </div>
+            </nav>
+          </aside>
+
+          <div className="rounded-lg border border-slate-200 bg-white p-6 md:p-8">
+            <h1 className="mb-6 text-2xl font-bold text-slate-900">关于我们</h1>
+            <div className="prose prose-slate max-w-none text-sm leading-relaxed text-slate-700">
+              <p className="text-center"><img src="/images/products/58efa73697da.jpg" alt="" className="mx-auto max-w-full rounded-lg" /></p>
+              <p><strong>关于我们</strong></p>
+              <p>银脉圈（yinmaiquan.com）是国内领先的贷款产品口碑查询与智能推荐平台。我们聚合全网信贷产品信息，通过用户真实评价和数据分析，帮助每一位借款人找到最适合自己的融资方案。</p>
+              <p>银脉圈由内江银脉圈企业管理咨询有限公司运营，核心团队深耕金融信息服务领域多年，致力于用互联网技术打破信贷信息不对称，让贷款选择更加透明、高效、个性化。</p>
+              <p>我们的使命：让每个人都能根据自身条件，在万千产品中精准找到对的贷款，省时、省心、省成本。</p>
+              <p>我们的定位：不隶属于任何金融机构，不向用户收取推荐费用，以中立第三方的身份为借贷双方搭建信息桥梁。平台通过严格的产品筛选机制和用户口碑反馈体系，帮助优质信贷产品脱颖而出，也帮助用户规避劣质产品风险。</p>
+              <p>我们欢迎合规金融机构入驻展示产品，共同推动普惠金融发展，让更多人享受到公平、便捷的信贷服务。</p>
             </div>
           </div>
         </div>

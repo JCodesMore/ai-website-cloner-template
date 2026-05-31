@@ -101,7 +101,7 @@ export function filterByAdv<T extends { id: number }>(
 
   return items.filter((p) => {
     const detail = productDetails.find(
-      (d) => d.id === String(p.id) && d.category === category,
+      (d) => d.id === p.id && d.category === category,
     );
     if (!detail) return false;
     return keywords.some((k) => detail.advantages.some((a) => a.includes(k)));

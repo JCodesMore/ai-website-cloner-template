@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { createHmac } from "crypto";
 import { validateAdminCredentials, auditLog, invalidateAllSessions } from "@/lib/admin-auth";
 import { checkCsrf } from "@/lib/api-utils";
 import { rateLimit } from "@/lib/rate-limit";
+import { signToken } from "@/lib/crypto";
 
 function getSecret(): string {
   const secret = process.env.SESSION_SECRET;
@@ -25,18 +25,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "请输入账号和密码" }, { status: 400 });
   }
 
-  if (!validateAdminCredentials(username, password)) {
+  if (!(await validateAdminCredentials(username, password))) {
     return NextResponse.json({ ok: false, error: "账号或密码错误" }, { status: 401 });
   }
 
-  // Invalidate all previous sessions before issuing a new token
-  invalidateAllSessions();
+  await invalidateAllSessions();
 
   const cookieStore = await cookies();
-  const payload = `${username}:${Date.now()}`;
-  const hmac = createHmac("sha256", getSecret());
-  hmac.update(payload);
-  const token = `${payload}.${hmac.digest("hex").slice(0, 32)}`;
+  const token = signToken(`${username}:${Date.now()}`, getSecret());
   cookieStore.set("ymq_admin_session", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -49,4 +45,3 @@ export async function POST(request: Request) {
 
   return NextResponse.json({ ok: true });
 }
-

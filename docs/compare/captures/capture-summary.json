@@ -1,0 +1,14 @@
+{
+  "total": 3276,
+  "ok": 2962,
+  "skipped": 313,
+  "errors": 1,
+  "errorDetails": [
+    {
+      "productId": "242",
+      "viewport": "mobile",
+      "origin": "remote",
+      "error": "page.goto: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"https://bbxin.com/products/242.html\", waiting until \"networkidle\"\u001b[22m\n"
+    }
+  ]
+}

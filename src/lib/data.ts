@@ -1,5 +1,5 @@
 /**
- * bbxin.com Data Layer - Static JSON imports (Next.js native)
+ * yinmaiquan.com Data Layer - Static JSON imports (Next.js native)
  */
 
 import fastProductsJson from '@/data/fastProducts.json';
@@ -30,9 +30,11 @@ export const discussionArticles: NewsItem[] = discussionArticlesJson as NewsItem
 export const opinionArticles: NewsItem[] = opinionArticlesJson as NewsItem[];
 export const faqArticles: NewsItem[] = faqArticlesJson as NewsItem[];
 export const articleDetails: ArticleDetail[] = articleDetailsJson as ArticleDetail[];
-export const productDetails: PDetail[] = productDetailsJson as PDetail[];
+export const productDetails: PDetail[] = (productDetailsJson as any[]).map((d) => ({ ...d, id: Number(d.id) }));
 export const institutionDetails: InstitutionDetail[] = institutionDetailsJson as InstitutionDetail[];
 export const counselors: Counselor[] = counselorsJson as Counselor[];
 
 export const newsItems: NewsItem[] = industryArticles.slice(0, 4);
 export const discussionItems: NewsItem[] = discussionArticles.slice(0, 4);
+export const opinionItems: NewsItem[] = opinionArticles.slice(0, 4);
+export const faqItems: NewsItem[] = faqArticles.slice(0, 4);
