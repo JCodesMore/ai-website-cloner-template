@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
-import { institutionDetails, newsItems, discussionItems, opinionItems, faqItems } from "@/lib/data";
+import { institutionDetails, productDetails, newsItems, discussionItems, opinionItems, faqItems } from "@/lib/data";
 import type { Metadata } from "next";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, ChevronRight } from "lucide-react";
 
 interface Props { params: Promise<{ id: string }> }
 
@@ -12,6 +12,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const inst = institutionDetails.find(x => x.id === id);
   return { title: (inst?.name || "机构") + " - 银脉圈", description: inst?.fullName };
 }
+
+// Build lookup from productDetails for clean metric data
+const detailMap = new Map(productDetails.map((d) => [String(d.id), d]));
 
 export default async function InstitutionDetailPage({ params }: Props) {
   const { id } = await params;
@@ -38,11 +41,12 @@ export default async function InstitutionDetailPage({ params }: Props) {
               <div className="flex-1">
                 <div className="mb-2 flex items-center gap-3">
                   <h1 className="text-xl font-bold text-slate-900">{inst.fullName}</h1>
-                  <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700">{inst.name}</span>
                 </div>
-                <a href={"http://" + inst.website} target="_blank" rel="noopener" className="inline-flex items-center gap-1 text-sm text-blue-600 hover:underline">
-                  <ExternalLink className="h-3.5 w-3.5" /> 访问官网
-                </a>
+                {inst.website && (
+                  <a href={"http://" + inst.website} target="_blank" rel="noopener" className="inline-flex items-center gap-1 text-sm text-blue-600 hover:underline">
+                    <ExternalLink className="h-3.5 w-3.5" /> 访问官网
+                  </a>
+                )}
               </div>
             </div>
 
@@ -61,15 +65,37 @@ export default async function InstitutionDetailPage({ params }: Props) {
                 <span className="text-sm font-normal text-slate-400">共 {inst.products.length} 款</span>
               </h2>
               <div className="grid gap-3 sm:grid-cols-2">
-                {inst.products.map((p: any, i: number) => (
-                  <Link key={i} href={p.href} className="flex items-center justify-between rounded-lg border border-slate-200 px-4 py-3 transition-colors duration-200 hover:bg-slate-50">
-                    <div className="flex items-center gap-2">
-                      {p.icon && <img src={p.icon} alt="" className="h-5 w-5 rounded-full" />}
-                      <span className="text-sm font-medium text-slate-900">{p.name}</span>
-                    </div>
-                    <span className="text-xs text-blue-600">查看详情</span>
-                  </Link>
-                ))}
+                {inst.products.map((p, i) => {
+                  const pid = p.href.split("/").pop() || "";
+                  const detail = detailMap.get(pid);
+                  return (
+                    <Link
+                      key={i}
+                      href={p.href}
+                      className="group flex items-start gap-3 rounded-lg border border-slate-200 bg-white p-4 transition-shadow duration-200 hover:shadow-md cursor-pointer"
+                    >
+                      {p.icon && (
+                        <img src={p.icon} alt="" className="mt-0.5 h-8 w-8 shrink-0 rounded-lg object-cover" />
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <h3 className="mb-1.5 text-sm font-semibold text-slate-900 transition-colors duration-200 group-hover:text-yellow-600">
+                          {detail ? detail.name : (p.name.split(/\s+/)[0] || p.name)}
+                        </h3>
+                        {detail && (
+                          <div className="grid grid-cols-2 gap-x-3 gap-y-1">
+                            <div className="text-xs text-slate-400">最高额度</div>
+                            <div className="text-xs text-slate-400">参考利率</div>
+                            <div className="text-xs font-medium text-slate-700">{detail.maxAmount}</div>
+                            <div className="text-xs font-medium text-slate-700">{detail.rate}</div>
+                          </div>
+                        )}
+                        <div className="mt-2 flex items-center gap-1 text-xs text-yellow-600">
+                          查看详情 <ChevronRight className="h-3 w-3" />
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           </div>
