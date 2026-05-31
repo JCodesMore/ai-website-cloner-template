@@ -1,4 +1,9 @@
 /**
+ * Seed data module — used ONLY by instrumentation.ts (startup seeding)
+ * and test files. Pages and API routes must use repository functions.
+ * @deprecated Do not import from this module in page/route files.
+ */
+/**
  * yinmaiquan.com Data Layer - Static JSON imports (Next.js native)
  */
 
