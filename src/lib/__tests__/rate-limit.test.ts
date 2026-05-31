@@ -9,7 +9,7 @@ describe("rateLimit", () => {
   });
 
   it("allows requests up to the limit", () => {
-    const key = `test-${Date.now()}`;
+    const key = `up-to-limit-${Date.now()}`;
     for (let i = 0; i < 5; i++) {
       const r = rateLimit(key, 5, 60_000);
       expect(r.ok).toBe(true);
@@ -18,7 +18,7 @@ describe("rateLimit", () => {
   });
 
   it("blocks requests exceeding the limit", () => {
-    const key = `test-${Date.now()}`;
+    const key = `block-test-${Date.now()}`;
     for (let i = 0; i < 5; i++) {
       rateLimit(key, 5, 60_000);
     }
@@ -71,7 +71,7 @@ describe("rateLimit", () => {
   });
 
   it("handles maxRequests of 1", () => {
-    const key = `test-${Date.now()}`;
+    const key = `max-1-${Date.now()}`;
     expect(rateLimit(key, 1, 60_000).ok).toBe(true);
     expect(rateLimit(key, 1, 60_000).ok).toBe(false);
   });

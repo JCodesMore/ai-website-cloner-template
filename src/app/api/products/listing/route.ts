@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
   // Filter to products that appear on this category's page on the target site
   const catIds = categoryIdSets[category];
   const catProducts = catIds
-    ? allProducts.filter((p) => catIds.has(p.id))
+    ? allProducts.filter((p) => catIds.has(p.id) || (p as any).category === category)
     : allProducts;
 
   // Apply ik/tag/adv filters

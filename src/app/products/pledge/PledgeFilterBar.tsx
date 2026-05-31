@@ -3,37 +3,21 @@
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { institutionTypes } from "@/lib/product-utils";
+import { FilterRow } from "@/components/FilterRow";
 
 function PledgeFilterInner() {
   const sp = useSearchParams();
   const ik = sp.get("ik") || "";
 
+  const buildHref = (_param: string, val: string) => {
+    const p = new URLSearchParams();
+    if (val) p.set("ik", val);
+    return p.toString() ? `/products/pledge?${p}` : "/products/pledge";
+  };
+
   return (
     <div className="rounded-lg border border-slate-200 bg-white p-5">
-      <div className="flex items-start gap-3">
-        <span className="mt-1.5 shrink-0 text-sm text-slate-500">机构类型</span>
-        <div className="flex flex-wrap gap-1.5">
-          {institutionTypes.map((opt) => {
-            const active = (!ik && !opt.value) || ik === opt.value;
-            const p = new URLSearchParams();
-            if (opt.value) p.set("ik", opt.value);
-            const href = p.toString() ? `/products/pledge?${p}` : "/products/pledge";
-            return (
-              <a
-                key={opt.value}
-                href={href}
-                className={`rounded-full px-3 py-1.5 text-sm transition-colors duration-200 ${
-                  active
-                    ? "bg-slate-900 text-white"
-                    : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
-                }`}
-              >
-                {opt.label}
-              </a>
-            );
-          })}
-        </div>
-      </div>
+      <FilterRow title="机构类型" param="ik" value={ik} options={institutionTypes} buildHref={buildHref} />
     </div>
   );
 }

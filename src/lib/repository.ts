@@ -29,7 +29,8 @@ async function seedIfEmpty<T>(
       }
       console.log(`[repository] Seeded ${rows.length} rows into ${key}`);
     }
-  } catch {
+  } catch (e) {
+    console.error(`[repository] seedIfEmpty failed for ${key}:`, (e as Error).message);
     // Table may not exist or DB not reachable — fall through to JSON
   }
   seeded.add(key);
@@ -47,7 +48,10 @@ export async function getAllProducts(): Promise<Product[]> {
   try {
     const rows = await db.select().from(schema.products).orderBy(desc(schema.products.sortOrder));
     if (rows.length > 0) return rows.map(mapProduct);
-  } catch { /* fall through */ }
+  } catch (e) {
+    console.error(`[repository] DB error in getAllProducts:`, (e as Error).message);
+    /* fall through */
+  }
   const seen = new Set<number>();
   return [...fastProducts, ...companyProducts, ...personProducts, ...pledgeProducts].filter(p => {
     if (seen.has(p.id)) return false;
@@ -71,7 +75,10 @@ export async function getProductById(id: string): Promise<ProductDetail | null> 
   try {
     const rows = await db.select().from(schema.products).where(eq(schema.products.id, parseInt(id, 10)));
     if (rows.length > 0) return mapProductDetail(rows[0]);
-  } catch { /* fall through */ }
+  } catch (e) {
+    console.error(`[repository] DB error in getProductById:`, (e as Error).message);
+    /* fall through */
+  }
   return productDetails.find(p => p.id === parseInt(id, 10)) || null;
 }
 
@@ -80,7 +87,10 @@ export async function getAllProductDetails(): Promise<ProductDetail[]> {
   try {
     const rows = await db.select().from(schema.products);
     if (rows.length > 0) return rows.map(mapProductDetail);
-  } catch { /* fall through */ }
+  } catch (e) {
+    console.error(`[repository] DB error in getAllProductDetails:`, (e as Error).message);
+    /* fall through */
+  }
   return productDetails;
 }
 
@@ -91,7 +101,10 @@ export async function getAllInstitutions(): Promise<Institution[]> {
   try {
     const rows = await db.select().from(schema.institutions);
     if (rows.length > 0) return rows.map(mapInstitution);
-  } catch { /* fall through */ }
+  } catch (e) {
+    console.error(`[repository] DB error in getAllInstitutions:`, (e as Error).message);
+    /* fall through */
+  }
   return institutions;
 }
 
@@ -100,7 +113,10 @@ export async function getInstitutionById(id: string): Promise<InstitutionDetail 
   try {
     const rows = await db.select().from(schema.institutions).where(eq(schema.institutions.id, parseInt(id, 10)));
     if (rows.length > 0) return mapInstitutionDetail(rows[0]);
-  } catch { /* fall through */ }
+  } catch (e) {
+    console.error(`[repository] DB error in getInstitutionById:`, (e as Error).message);
+    /* fall through */
+  }
   return institutionDetails.find(i => i.id === id) || null;
 }
 
@@ -111,7 +127,10 @@ export async function getAllComments(): Promise<Comment[]> {
   try {
     const rows = await db.select().from(schema.comments).where(eq(schema.comments.status, "approved"));
     if (rows.length > 0) return rows.map(mapComment);
-  } catch { /* fall through */ }
+  } catch (e) {
+    console.error(`[repository] DB error in getAllComments:`, (e as Error).message);
+    /* fall through */
+  }
   return comments;
 }
 
@@ -142,7 +161,10 @@ export async function getArticlesByCategory(categoryId: number): Promise<NewsIte
   try {
     const rows = await db.select().from(schema.articles).where(eq(schema.articles.categoryId, categoryId));
     if (rows.length > 0) return rows.map(mapArticle);
-  } catch { /* fall through */ }
+  } catch (e) {
+    console.error(`[repository] DB error in getArticlesByCategory:`, (e as Error).message);
+    /* fall through */
+  }
   return categoryArticleMap[categoryId] || [];
 }
 
@@ -157,7 +179,10 @@ export async function getArticleById(id: number): Promise<ArticleDetail | null> 
       viewCount: rows[0].viewCount || 0,
       body: rows[0].body || "",
     };
-  } catch { /* fall through */ }
+  } catch (e) {
+    console.error(`[repository] DB error in getArticleById:`, (e as Error).message);
+    /* fall through */
+  }
   return articleDetails.find(a => a.id === id) || null;
 }
 
