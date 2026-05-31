@@ -1,218 +1,77 @@
 import Link from "next/link";
 import type { NewsItem } from "@/types";
+import { ChevronRight } from "lucide-react";
+import LoanForm from "./LoanForm";
 
 interface SidebarProps {
   newsItems: NewsItem[];
   discussionItems: NewsItem[];
+  opinionItems: NewsItem[];
+  faqItems: NewsItem[];
 }
 
-export default function Sidebar({ newsItems, discussionItems }: SidebarProps) {
+function SideCard({
+  title,
+  moreHref,
+  color,
+  items,
+}: {
+  title: string;
+  moreHref: string;
+  color: "blue" | "emerald";
+  items: NewsItem[];
+}) {
+  const accent = color === "blue" ? "bg-slate-900" : "bg-emerald-600";
   return (
-    <div>
-      {/* Loan application form */}
-      <form
-        className="layui-form ley-radius"
-        style={{
-          backgroundColor: "#fff",
-          padding: "24px 20px",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.04)",
-          border: "1px solid #f0f2f5",
-          marginBottom: 24,
-        }}
-      >
-        <div className="ley-form-container" style={{ padding: 0 }}>
-          <div
-            className="form-header"
-            style={{
-              fontSize: 18,
-              fontWeight: 700,
-              color: "#333",
-              textAlign: "center",
-              marginBottom: 20,
-              position: "relative",
-              padding: 0,
-            }}
-          >
-            <span
-              style={{
-                position: "relative",
-                zIndex: 1,
-                padding: "0 16px",
-                background: "#fff",
-              }}
-            >
-              我要贷款
-            </span>
-            <div
-              style={{
-                position: "absolute",
-                left: 0,
-                right: 0,
-                top: "50%",
-                height: 1,
-                background: "#eee",
-                zIndex: 0,
-              }}
-            />
-          </div>
-          <div
-            className="layui-form-item"
-            style={{
-              marginBottom: 12,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <label
-              className="layui-form-label"
-              style={{
-                padding: 0,
-                width: "auto",
-                textAlign: "left",
-                fontSize: 14,
-                color: "#555",
-                lineHeight: 1,
-              }}
-            >
-              贷款类型
-            </label>
-            <div
-              className="layui-input-block"
-              style={{
-                marginLeft: 0,
-                display: "flex",
-                alignItems: "center",
-                minHeight: "auto",
-                gap: 12,
-              }}
-            >
-              <label style={{ fontSize: 14, color: "#555", cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
-                <input type="radio" name="kind" value="company" /> 企业
-              </label>
-              <label style={{ fontSize: 14, color: "#555", cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
-                <input type="radio" name="kind" value="person" defaultChecked /> 个人
-              </label>
-            </div>
-          </div>
-          <div className="layui-form-item" style={{ marginBottom: 20 }}>
-            <input
-              type="text"
-              name="phone"
-              required
-              placeholder="请输入手机号"
-              autoComplete="off"
-              className="layui-input"
-              style={{
-                height: 44,
-                borderRadius: 6,
-                borderColor: "#e5e7eb",
-                width: "100%",
-                padding: "0 12px",
-                fontSize: 14,
-                border: "1px solid #e5e7eb",
-                outline: "none",
-                boxSizing: "border-box",
-              }}
-            />
-          </div>
-          <div className="layui-form-item" style={{ marginBottom: 0 }}>
-            <button
-              type="submit"
-              className="layui-btn layui-btn-fluid"
-              style={{
-                height: 44,
-                lineHeight: "44px",
-                borderRadius: 6,
-                fontSize: 16,
-                fontWeight: 500,
-                background: "linear-gradient(135deg, #ff8c42, #ff5f16)",
-                border: "none",
-                color: "#fff",
-                width: "100%",
-                cursor: "pointer",
-                textAlign: "center",
-              }}
-            >
-              免费申请
-            </button>
-          </div>
+    <div className="rounded-lg border border-slate-200 bg-white">
+      <div className="flex items-center justify-between border-b border-slate-100 px-5 py-3.5">
+        <div className="flex items-center gap-2.5">
+          <span className={`block h-4 w-1 rounded-full ${accent}`} />
+          <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
         </div>
-      </form>
-
-      {/* Industry news */}
-      <div className="layui-card" style={{ marginBottom: 24 }}>
-        <div className="layui-card-header">
-          <div className="title" style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ width: 3, height: 16, background: "#ff5f16", borderRadius: 2 }} />
-            行业资讯
-          </div>
-          <Link href="/cates/91/articles" className="more" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>
-            更多 <span style={{ fontSize: 12 }}>&gt;</span>
-          </Link>
-        </div>
-        <div className="layui-card-body">
-          <ul className="news" style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 16 }}>
-            {newsItems.map((item) => (
-              <li key={item.id} className="item ellipsis" style={{ position: "relative", paddingLeft: 12 }}>
-                <span style={{ position: "absolute", left: 0, top: 10, width: 4, height: 4, borderRadius: "50%", background: "#d1d5db" }} />
-                <Link
-                  href={item.href}
-                  target="_blank"
-                  style={{
-                    fontSize: 14,
-                    color: "#4b5563",
-                    textDecoration: "none",
-                    display: "block",
-                    lineHeight: 1.6,
-                    transition: "all 0.2s ease",
-                  }}
-                  className="sidebar-news-link"
-                >
-                  {item.title}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <Link
+          href={moreHref}
+          className="flex items-center gap-0.5 text-xs text-slate-400 transition-colors duration-200 hover:text-blue-600"
+        >
+          更多 <ChevronRight className="h-3 w-3" />
+        </Link>
       </div>
-
-      {/* Discussion */}
-      <div className="layui-card" style={{ marginBottom: 24 }}>
-        <div className="layui-card-header">
-          <div className="title" style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ width: 3, height: 16, background: "#ff5f16", borderRadius: 2 }} />
-            贷款交流
-          </div>
-          <Link href="/cates/14/articles" className="more" style={{ fontSize: 13, color: "#999", textDecoration: "none" }}>
-            更多 <span style={{ fontSize: 12 }}>&gt;</span>
-          </Link>
-        </div>
-        <div className="layui-card-body">
-          <ul className="news" style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 16 }}>
-            {discussionItems.map((item) => (
-              <li key={item.id} className="item ellipsis" style={{ position: "relative", paddingLeft: 12 }}>
-                <span style={{ position: "absolute", left: 0, top: 10, width: 4, height: 4, borderRadius: "50%", background: "#d1d5db" }} />
-                <Link
-                  href={item.href}
-                  target="_blank"
-                  style={{
-                    fontSize: 14,
-                    color: "#4b5563",
-                    textDecoration: "none",
-                    display: "block",
-                    lineHeight: 1.6,
-                    transition: "all 0.2s ease",
-                  }}
-                  className="sidebar-news-link"
-                >
-                  {item.title}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+      <div className="px-5 py-3">
+        <ul className="space-y-3.5">
+          {items.map((item) => (
+            <li key={item.id} className="flex items-start gap-2">
+              <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-slate-300" />
+              <Link
+                href={item.href}
+                target="_blank"
+                className="text-sm leading-relaxed text-slate-600 transition-colors duration-200 hover:text-blue-600"
+              >
+                {item.title}
+              </Link>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
+  );
+}
+
+export default function Sidebar({ newsItems, discussionItems, opinionItems, faqItems }: SidebarProps) {
+  return (
+    <aside className="space-y-5">
+      <LoanForm />
+
+      {/* Industry News */}
+      <SideCard title="行业资讯" moreHref="/cates/91/articles" color="blue" items={newsItems} />
+
+      {/* Discussion */}
+      <SideCard title="贷款交流" moreHref="/cates/14/articles" color="emerald" items={discussionItems} />
+
+      {/* Public Opinion */}
+      <SideCard title="贷款舆情" moreHref="/cates/80/articles" color="blue" items={opinionItems} />
+
+      {/* FAQ */}
+      <SideCard title="常见问题" moreHref="/cates/1/articles" color="emerald" items={faqItems} />
+    </aside>
   );
 }
