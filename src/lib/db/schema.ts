@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, text, integer, jsonb, timestamp, uniqueIndex, index } from "drizzle-orm/pg-core";
+import { pgTable, serial, varchar, text, integer, jsonb, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
 
 export const settings = pgTable("settings", {
   key: varchar("key", { length: 100 }).primaryKey(),
@@ -92,12 +92,10 @@ export const followedProducts = pgTable("followed_products", {
   uniqueIndex("uq_follow_user_product").on(table.username, table.productId),
 ]);
 
-// Indexes for query hotspots:
-// - Product filtering by institution (used by filterByIk)
-// - Comment queries by product + status (most common comment query)
-// - Follow queries by username (profile page)
-// - Article listing by category (cates/[id]/articles pages)
-export const productsInstitutionIdx = index("idx_products_institution").on(products.institution);
-export const commentsProductStatusIdx = index("idx_comments_product_status").on(comments.productId, comments.status);
-export const followedUsernameIdx = index("idx_followed_username").on(followedProducts.username);
-export const articlesCategoryIdx = index("idx_articles_category").on(articles.categoryId);
+// Indexes (T6 from eng review) — deferred: drizzle-orm v0.45 index() API
+// requires runtime column introspection that fails with JSON.parse("undefined").
+// Re-enable after upgrading drizzle-orm or verifying index() compatibility.
+// export const productsInstitutionIdx = index("idx_products_institution").on(products.institution);
+// export const commentsProductStatusIdx = index("idx_comments_product_status").on(comments.productId, comments.status);
+// export const followedUsernameIdx = index("idx_followed_username").on(followedProducts.username);
+// export const articlesCategoryIdx = index("idx_articles_category").on(articles.categoryId);

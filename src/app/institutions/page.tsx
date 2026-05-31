@@ -1,6 +1,6 @@
 import Banner from "@/components/Banner";
 import Pagination from "@/components/Pagination";
-import { institutions, newsItems, discussionItems } from "@/lib/data";
+import { institutions, newsItems, discussionItems, opinionItems, faqItems } from "@/lib/data";
 import { getPage, paginate, PAGE_SIZE, filterInstitutionsByIk, searchInstitutions, sortInstitutions, getWd } from "@/lib/filters";
 import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
@@ -125,7 +125,7 @@ export default async function InstitutionsPage({ searchParams }: Props) {
             )}
           </div>
           <div className="layui-col-md3">
-            <Sidebar newsItems={newsItems} discussionItems={discussionItems} />
+            <Sidebar newsItems={newsItems} discussionItems={discussionItems} opinionItems={opinionItems} faqItems={faqItems} />
           </div>
         </div>
       </div>
