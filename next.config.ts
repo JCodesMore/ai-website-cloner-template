@@ -4,12 +4,11 @@ const nextConfig: NextConfig = {
   output: "standalone",
   async rewrites() {
     return [
-      // Products without category: /products/858.html -> /products/detail/858
+      // Products without category: /products/858(.html) -> /products/detail/858
       {
         source: "/products/:id(\\d+).html",
         destination: "/products/detail/:id",
       },
-      // Products without category (no .html): /products/858 -> /products/detail/858
       {
         source: "/products/:id(\\d+)",
         destination: "/products/detail/:id",

@@ -1,25 +1,36 @@
-import { redirect, notFound } from "next/navigation";
-import { productDetails, fastProducts, companyProducts, personProducts, pledgeProducts } from "@/lib/data";
+"use client";
 
-interface Props { params: Promise<{ id: string }> }
+import { useEffect } from "react";
+import { notFound } from "next/navigation";
+import { fastProducts, companyProducts, personProducts, pledgeProducts } from "@/lib/data";
 
-export default async function ProductDetailRedirect({ params }: Props) {
-  const { id } = await params;
-  const pid = Number(id);
-
-  // Try full detail first (has category)
-  const detail = productDetails.find(x => x.id === pid);
-  if (detail) {
-    redirect(`/products/${detail.category}/${id}`);
-  }
-
-  // Fallback: find which listing this product belongs to
-  for (const [category, products] of Object.entries({ fast: fastProducts, company: companyProducts, person: personProducts, pledge: pledgeProducts })) {
-    if (products.some(p => p.id === pid)) {
-      redirect(`/products/${category}/${id}`);
-    }
-  }
-
-  notFound();
+interface Props {
+  params: Promise<{ id: string }>;
 }
 
+export default function ProductDetailRedirect({ params: paramsPromise }: Props) {
+  useEffect(() => {
+    const doRedirect = async () => {
+      const { id } = await paramsPromise;
+      const pid = parseInt(id, 10);
+      if (isNaN(pid)) notFound();
+
+      for (const [category, products] of [
+        ["fast", fastProducts] as const,
+        ["company", companyProducts] as const,
+        ["person", personProducts] as const,
+        ["pledge", pledgeProducts] as const,
+      ]) {
+        if (products.some((p) => p.id === pid)) {
+          window.location.replace(`/products/${category}/${id}`);
+          return;
+        }
+      }
+
+      notFound();
+    };
+    doRedirect();
+  }, [paramsPromise]);
+
+  return null;
+}
