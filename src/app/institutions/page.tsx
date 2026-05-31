@@ -4,13 +4,14 @@ import { institutions, newsItems, discussionItems } from "@/lib/data";
 import { getPage, paginate, PAGE_SIZE, filterInstitutionsByIk, searchInstitutions, sortInstitutions, getWd } from "@/lib/filters";
 import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
+import { FilterRow, type FilterOption } from "@/components/FilterRow";
 
 interface Props {
   searchParams: Promise<{ ik?: string; wd?: string; ob?: string; od?: string; page?: string }>;
 }
 
-const institutionTypes = [
-  { label: "全部", value: "", active: true },
+const institutionTypes: FilterOption[] = [
+  { label: "全部", value: "" },
   { label: "国有银行", value: "socb" },
   { label: "商业银行", value: "jscb" },
   { label: "消费金融", value: "cfc" },
@@ -40,6 +41,10 @@ export default async function InstitutionsPage({ searchParams }: Props) {
 
   const { items, currentPage, totalPages } = paginate(filtered, page, PAGE_SIZE);
 
+  const buildHref = (_param: string, val: string) => {
+    return val ? `/institutions?ik=${encodeURIComponent(val)}` : "/institutions";
+  };
+
   return (
     <>
       <Banner />
@@ -47,16 +52,7 @@ export default async function InstitutionsPage({ searchParams }: Props) {
         <div className="layui-row layui-col-space16">
           <div className="layui-col-md9">
             <div className="ley-filter ley-radius org-filter-panel">
-              <div className="row">
-                <div className="title">机构类型：</div>
-                <ul className="list">
-                  {institutionTypes.map((opt) => (
-                    <a key={opt.value} href={opt.value ? `/institutions?ik=${opt.value}` : "/institutions"}>
-                      <li className={`item ${(!ik && !opt.value) || ik === opt.value ? "active" : ""}`}>{opt.label}</li>
-                    </a>
-                  ))}
-                </ul>
-              </div>
+              <FilterRow title="机构类型：" param="ik" value={ik} options={institutionTypes} buildHref={buildHref} />
               <div className="row org-filter-row-order">
                 <div className="title">产品排序：</div>
                 <ul className="list">
