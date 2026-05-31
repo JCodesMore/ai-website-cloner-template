@@ -38,6 +38,7 @@ export const institutions = pgTable("institutions", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 200 }).notNull(),
   fullName: text("full_name").default(""),
+  shortName: varchar("short_name", { length: 200 }).default(""),
   logo: text("logo").default(""),
   website: varchar("website", { length: 500 }).default(""),
   introHtml: text("intro_html").default(""),
