@@ -19,17 +19,15 @@ export default function ProductCard({ product, variant = "default" }: ProductCar
           alt={product.name}
           className="h-10 w-10 shrink-0 rounded-lg border border-slate-100 object-cover"
         />
-        <h3
-          className="truncate text-base font-semibold text-slate-900 transition-colors duration-200 group-hover:text-yellow-600"
-          title={product.name}
-        >
-          {product.name}
-        </h3>
-      </div>
-
-      <div className="mb-3 flex items-center gap-3 text-sm text-slate-500">
-        <span>评：<strong className="text-slate-700">{product.commentCount}</strong></span>
-        <span>机构：{product.institution}</span>
+        <div className="min-w-0">
+          <div className="text-sm font-medium text-slate-500">{product.institution}</div>
+          <h3
+            className="truncate text-base font-semibold text-slate-900 transition-colors duration-200 group-hover:text-yellow-600"
+            title={product.name}
+          >
+            {product.name}
+          </h3>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-x-3 gap-y-2">
