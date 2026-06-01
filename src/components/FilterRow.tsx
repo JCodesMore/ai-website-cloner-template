@@ -15,7 +15,7 @@ export function FilterRow({ title, options, param, value, buildHref }: FilterRow
   return (
     <div className="mb-3 flex items-start gap-3 last:mb-0">
       <span className="mt-1.5 shrink-0 text-sm text-slate-500">{title}</span>
-      <div className="flex flex-wrap gap-1.5">
+      <div className="flex gap-1.5 overflow-x-auto pb-1 sm:flex-wrap">
         {options.map((opt) => {
           const active = (!value && !opt.value) || value === opt.value;
           return (
