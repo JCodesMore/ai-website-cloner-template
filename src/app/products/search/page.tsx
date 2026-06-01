@@ -33,9 +33,14 @@ export default async function SearchPage({ searchParams }: Props) {
   const productSearchText = new Map<number, string>();
   for (const p of allProducts) {
     const parts = [p.name, p.institution];
-    // Find matching institution to add its fullName and shortName
+    // Find matching institution by substring match (product institution may be
+    // truncated like "中国邮政储蓄银行" while institution table has
+    // "中国邮政储蓄银行股份有限公司")
+    const pInst = p.institution.toLowerCase();
     const inst = allInstitutions.find(
-      (i) => i.name === p.institution || i.fullName === p.institution || (i as any).shortName === p.institution,
+      (i) => i.name.toLowerCase().includes(pInst) || pInst.includes(i.name.toLowerCase())
+          || (i.fullName || "").toLowerCase().includes(pInst) || pInst.includes((i.fullName || "").toLowerCase())
+          || ((i as any).shortName || "").toLowerCase().includes(pInst) || pInst.includes(((i as any).shortName || "").toLowerCase()),
     );
     if (inst) {
       if (inst.fullName) parts.push(inst.fullName);
