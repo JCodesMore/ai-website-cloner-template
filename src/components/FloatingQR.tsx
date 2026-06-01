@@ -7,11 +7,11 @@ interface Props {
   pagePath?: string;
   source?: string;
   productId?: number;
-  wecomUrl?: string;
 }
 
-export default function FloatingQR({ pagePath, source = "floating", productId, wecomUrl }: Props) {
+export default function FloatingQR({ pagePath, source = "floating", productId }: Props) {
   const [open, setOpen] = useState(false);
+  const wecomUrl = process.env.NEXT_PUBLIC_WECOM_URL;
 
   const handleOpen = () => {
     setOpen(true);
