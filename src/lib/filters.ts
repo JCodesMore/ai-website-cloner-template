@@ -34,7 +34,7 @@ export function getInstitutionType(name: string, fullName?: string): string {
   if (socbKeywords.some((k) => text.includes(k))) return "socb";
   if (jscbKeywords.some((k) => text.includes(k))) return "jscb";
   if (cfcKeywords.some((k) => text.includes(k))) return "cfc";
-  if (/(担保|咨询|科技|服务|信息|商务|小贷|小额贷款|租赁|金融|车融|典当)/.test(text)) return "lmc";
+  if (/(担保|咨询|科技|服务|信息|商务|小贷|小额贷款|租赁|金融|车融|典当|网络|数科|支付|保险|普惠|金科|出行|贸易|网贷|融担|数字|互联|易融|汇|消费|平台)/.test(text)) return "lmc";
   return "other";
 }
 
