@@ -60,8 +60,6 @@ export default async function SearchPage({ searchParams }: Props) {
         return text ? text.includes(wd.toLowerCase()) : false;
       })
     : [];
-      })
-    : [];
 
   const { items: pageItems, currentPage, totalPages, total } = paginate(filtered, page, PAGE_SIZE);
 
