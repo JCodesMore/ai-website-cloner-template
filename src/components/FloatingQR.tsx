@@ -1,9 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { QrCode, X } from "lucide-react";
+import { QrCode, X, MessageCircle } from "lucide-react";
 
-export default function FloatingQR({ pagePath }: { pagePath?: string }) {
+interface Props {
+  pagePath?: string;
+  source?: string;
+  productId?: number;
+  wecomUrl?: string;
+}
+
+export default function FloatingQR({ pagePath, source = "floating", productId, wecomUrl }: Props) {
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => {
@@ -11,7 +18,11 @@ export default function FloatingQR({ pagePath }: { pagePath?: string }) {
     fetch("/api/qr/scan", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pagePath: pagePath || window.location.pathname }),
+      body: JSON.stringify({
+        pagePath: pagePath || window.location.pathname,
+        source,
+        productId,
+      }),
       keepalive: true,
     }).catch(() => {});
   };
@@ -48,6 +59,17 @@ export default function FloatingQR({ pagePath }: { pagePath?: string }) {
               className="mx-auto h-52 w-52 rounded-lg border border-slate-100 object-cover"
             />
             <p className="mt-3 text-xs text-slate-400">微信扫一扫 或 长按识别</p>
+            {wecomUrl && (
+              <a
+                href={wecomUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-green-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-green-700 transition-colors"
+              >
+                <MessageCircle className="h-4 w-4" />
+                企业微信在线客服
+              </a>
+            )}
           </div>
         </div>
       )}

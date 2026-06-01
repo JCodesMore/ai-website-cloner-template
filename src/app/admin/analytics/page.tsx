@@ -4,12 +4,19 @@ import { useEffect, useState } from "react";
 import { Card, AreaChart, Title, Table, TableHead, TableRow, TableHeaderCell, TableBody, TableCell } from "@tremor/react";
 import { Eye, Share2, Scan, TrendingUp } from "lucide-react";
 
+function sourceLabel(s: string) {
+  const map: Record<string, string> = { floating: "右下角浮动", footer: "页面底部", "product-card": "产品卡片", unknown: "未知" };
+  return map[s] || s;
+}
+
 interface Summary {
   totalViews: number;
   totalShares: number;
   totalScans: number;
   shareRate: string;
   dailyViews: { date: string; count: number }[];
+  scanBySource: { source: string; count: number }[];
+  dailyScans: { date: string; count: number }[];
 }
 
 interface TopArticle {
@@ -131,6 +138,45 @@ export default function AnalyticsDashboard() {
                   </div>
                 ))}
               </div>
+            </Card>
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
+            <Card>
+              <Title>扫码趋势（近 {days} 天）</Title>
+              <AreaChart
+                className="mt-4 h-48"
+                data={summary?.dailyScans || []}
+                index="date"
+                categories={["count"]}
+                colors={["emerald"]}
+                valueFormatter={(v) => v.toLocaleString()}
+                showLegend={false}
+              />
+            </Card>
+            <Card>
+              <Title>扫码来源分布</Title>
+              <Table className="mt-4">
+                <TableHead>
+                  <TableRow>
+                    <TableHeaderCell>来源</TableHeaderCell>
+                    <TableHeaderCell>次数</TableHeaderCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {(summary?.scanBySource || []).map((s) => (
+                    <TableRow key={s.source}>
+                      <TableCell>{sourceLabel(s.source)}</TableCell>
+                      <TableCell>{s.count.toLocaleString()}</TableCell>
+                    </TableRow>
+                  ))}
+                  {(summary?.scanBySource || []).length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={2} className="text-center text-slate-400">暂无数据</TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
             </Card>
           </div>
 

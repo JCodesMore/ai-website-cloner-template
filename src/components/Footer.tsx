@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 
 const footerLinks = [
@@ -52,8 +54,27 @@ export default function Footer() {
               src="/images/wechat-qr.png"
               alt="微信二维码"
               className="mb-2 h-24 w-24 rounded-lg border border-slate-700 object-cover"
+              onClick={() => {
+                fetch("/api/qr/scan", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ pagePath: window.location.pathname, source: "footer" }),
+                  keepalive: true,
+                }).catch(() => {});
+              }}
+              style={{ cursor: "pointer" }}
             />
             <p className="text-xs text-slate-500">扫码添加微信</p>
+            {process.env.NEXT_PUBLIC_WECOM_URL && (
+              <a
+                href={process.env.NEXT_PUBLIC_WECOM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 inline-flex items-center gap-1.5 rounded bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700 transition-colors"
+              >
+                企业微信客服
+              </a>
+            )}
           </div>
         </div>
       </div>

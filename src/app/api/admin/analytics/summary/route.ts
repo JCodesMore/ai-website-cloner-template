@@ -30,11 +30,31 @@ export async function GET(req: NextRequest) {
     .groupBy(sql`to_char(${schema.articleAnalytics.createdAt}, 'YYYY-MM-DD')`)
     .orderBy(sql`to_char(${schema.articleAnalytics.createdAt}, 'YYYY-MM-DD')`);
 
+  const scanBySource = await db.select({
+    source: schema.qrScans.source,
+    count: sql<number>`count(*)::int`,
+  })
+    .from(schema.qrScans)
+    .where(sql`${schema.qrScans.createdAt} > NOW() - INTERVAL '${sql.raw(String(days))} days'`)
+    .groupBy(schema.qrScans.source)
+    .orderBy(sql`count(*) DESC`);
+
+  const dailyScans = await db.select({
+    date: sql<string>`to_char(${schema.qrScans.createdAt}, 'YYYY-MM-DD')`,
+    count: sql<number>`count(*)::int`,
+  })
+    .from(schema.qrScans)
+    .where(sql`${schema.qrScans.createdAt} > NOW() - INTERVAL '${sql.raw(String(days))} days'`)
+    .groupBy(sql`to_char(${schema.qrScans.createdAt}, 'YYYY-MM-DD')`)
+    .orderBy(sql`to_char(${schema.qrScans.createdAt}, 'YYYY-MM-DD')`);
+
   return NextResponse.json({
     totalViews: views?.count || 0,
     totalShares: shares?.count || 0,
     totalScans: scans?.count || 0,
     shareRate: views?.count ? ((shares?.count || 0) / views.count * 100).toFixed(1) : "0",
     dailyViews,
+    scanBySource,
+    dailyScans,
   });
 }

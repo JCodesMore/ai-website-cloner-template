@@ -127,6 +127,8 @@ export const articleShares = pgTable("article_shares", {
 export const qrScans = pgTable("qr_scans", {
   id: serial("id").primaryKey(),
   pagePath: varchar("page_path", { length: 500 }).notNull(),
+  source: varchar("source", { length: 20 }).default("unknown"),
+  productId: integer("product_id"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
