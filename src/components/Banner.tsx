@@ -5,9 +5,10 @@ import { type FormEvent, useState } from "react";
 
 interface BannerProps {
   productCount?: number;
+  commentCount?: number;
 }
 
-export default function Banner({ productCount = 816 }: BannerProps) {
+export default function Banner({ productCount = 816, commentCount = 0 }: BannerProps) {
   const router = useRouter();
   const [wd, setWd] = useState("");
 
@@ -26,6 +27,15 @@ export default function Banner({ productCount = 816 }: BannerProps) {
             {productCount.toLocaleString()}
           </strong>{" "}
           个贷款产品
+          {commentCount > 0 && (
+            <span className="text-slate-400">
+              ，基于{" "}
+              <strong className="font-semibold text-amber-400">
+                {commentCount.toLocaleString()}
+              </strong>{" "}
+              条真实用户评论
+            </span>
+          )}
         </p>
         <p className="mt-2 text-sm text-slate-400">
           用数据说话，用口碑导航 — 找贷款先查银脉圈

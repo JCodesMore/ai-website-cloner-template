@@ -2,6 +2,7 @@ import Banner from "@/components/Banner";
 import Sidebar from "@/components/Sidebar";
 import ProductCard from "@/components/ProductCard";
 import Pagination from "@/components/Pagination";
+import { comments } from "@/lib/data";
 import type { Product, NewsItem } from "@/types";
 import type { ReactNode } from "react";
 
@@ -39,7 +40,7 @@ export default function ProductListPage({
 }: ProductListPageProps) {
   return (
     <>
-      <Banner />
+      <Banner commentCount={comments.length} />
       <div className="mx-auto max-w-7xl px-4 py-6">
         <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
           <div>
