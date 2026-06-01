@@ -36,7 +36,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "data:check": "npx tsx --env-file=.env scripts/data-check.ts",
-    "data:scrape": "node scripts/scrape-article-bodies.cjs",
+    "data:scrape": "node scripts/scrape-articles-full.cjs",
     "compare:capture": "node scripts/compare-capture.mjs",
     "compare:pixel": "node scripts/compare-pixel.mjs",
     "compare:dom": "node scripts/compare-dom.mjs",
