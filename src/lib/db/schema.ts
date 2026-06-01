@@ -34,6 +34,13 @@ export const products = pgTable("products", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const productCategories = pgTable("product_categories", {
+  productId: integer("product_id").notNull().references(() => products.id, { onDelete: "cascade" }),
+  category: varchar("category", { length: 20 }).notNull(),
+}, (table) => [
+  uniqueIndex("uq_product_category").on(table.productId, table.category),
+]);
+
 export const institutions = pgTable("institutions", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 200 }).notNull(),

@@ -15,17 +15,37 @@ export async function getAllProducts(): Promise<Product[]> {
 }
 
 export async function getProductsByCategory(category: string): Promise<Product[]> {
-  try {
-    const rows = await db.select().from(schema.products)
-      .where(eq(schema.products.category, category))
-      .orderBy(desc(schema.products.sortOrder));
-    if (rows.length > 0) return rows.map(mapProduct);
-  } catch {
-    // If no products match the category column (e.g., legacy data),
-    // fall back to filtering all products in memory
-  }
-  const all = await getAllProducts();
-  return all.filter((p: any) => p.category === category);
+  const rows = await db.select({
+    id: schema.products.id,
+    name: schema.products.name,
+    image: schema.products.image,
+    institution: schema.products.institution,
+    maxAmount: schema.products.maxAmount,
+    term: schema.products.term,
+    rate: schema.products.rate,
+    repayment: schema.products.repayment,
+    sortOrder: schema.products.sortOrder,
+  })
+    .from(schema.products)
+    .innerJoin(schema.productCategories, eq(schema.products.id, schema.productCategories.productId))
+    .where(eq(schema.productCategories.category, category))
+    .orderBy(desc(schema.products.sortOrder));
+  return rows.map(row => mapProductFromJoin(row));
+}
+
+function mapProductFromJoin(row: any): Product {
+  return {
+    id: row.id,
+    name: row.name,
+    image: row.image || "",
+    institution: row.institution || "",
+    maxAmount: row.maxAmount || "",
+    term: row.term || "",
+    rate: row.rate || "",
+    repayment: row.repayment || "",
+    commentCount: 0,
+    href: `/products/detail/${row.id}`,
+  };
 }
 
 export async function getProductById(id: string): Promise<ProductDetail | null> {
@@ -60,7 +80,7 @@ export async function getAllComments(): Promise<Comment[]> {
 // ── Articles ──
 
 export async function getArticlesByCategory(categoryId: number): Promise<NewsItem[]> {
-  const rows = await db.select().from(schema.articles).where(eq(schema.articles.categoryId, categoryId));
+  const rows = await db.select().from(schema.articles).where(eq(schema.articles.categoryId, categoryId)).orderBy(desc(schema.articles.date));
   return rows.map(mapArticle);
 }
 
