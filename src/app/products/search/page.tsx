@@ -1,10 +1,12 @@
 import { getAllProducts, getAllInstitutions } from "@/lib/repository";
 import { getWd, paginate, PAGE_SIZE } from "@/lib/filters";
 import Banner from "@/components/Banner";
+import EmptyState from "@/components/EmptyState";
 import ProductCard from "@/components/ProductCard";
 import Pagination from "@/components/Pagination";
 import Sidebar from "@/components/Sidebar";
 import { newsItems, discussionItems, opinionItems, faqItems } from "@/lib/data";
+import { Search } from "lucide-react";
 
 interface Props {
   searchParams: Promise<{ wd?: string; page?: string }>;
@@ -60,14 +62,21 @@ export default async function SearchPage({ searchParams }: Props) {
               </h2>
               {wd && <p className="mb-4 text-sm text-slate-500">共找到 {total} 个相关产品</p>}
 
-              {!wd && <p className="py-10 text-center text-slate-400">请在搜索框中输入产品名称或机构名称</p>}
+              {!wd && (
+                <EmptyState
+                  icon={<Search className="h-10 w-10" />}
+                  title="请输入搜索关键词"
+                  description="搜索产品名称或机构名称，查找贷款产品"
+                />
+              )}
               {wd && filtered.length === 0 && (
-                <div className="py-10 text-center">
-                  <p className="text-slate-400">未找到与"{wd}"相关的产品，请尝试其他关键词</p>
-                  <a href="/products/fast" className="mt-3 inline-block text-sm text-yellow-600 hover:underline">
-                    浏览全部产品
-                  </a>
-                </div>
+                <EmptyState
+                  icon={<Search className="h-10 w-10" />}
+                  title={`未找到与"${wd}"相关的产品`}
+                  description="请尝试其他关键词"
+                  actionHref="/products/fast"
+                  actionLabel="浏览全部产品"
+                />
               )}
 
               {pageItems.length > 0 && (
