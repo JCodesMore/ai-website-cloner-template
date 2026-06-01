@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     if (!phone || !/^1[3-9]\d{9}$/.test(phone)) {
       return NextResponse.json({ ok: false, message: "请输入正确的手机号码" }, { status: 400 });
     }
-    const validAmounts = ["5万以下", "5-10万", "10-30万", "30-50万", "50-100万", "100万以上", "未填写", ""];
+    const validAmounts = ["5万以下", "5-10万", "10-20万", "20-50万", "50-100万", "100-300万", "300-500万", "500-1000万", "1000万以上", "未填写", ""];
     if (amount && !validAmounts.includes(amount)) {
       return NextResponse.json({ ok: false, message: "请选择有效的期望金额" }, { status: 400 });
     }
