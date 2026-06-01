@@ -136,12 +136,13 @@ function mapInstitution(row: any): Institution {
     id: row.id,
     name: row.name,
     fullName: row.fullName || "",
+    shortName: row.shortName || "",
     logo: row.logo || "",
     initial: row.name.charAt(0),
     productCount: (row.products || []).length,
     href: `/institutions/${row.id}`,
     products: row.products || [],
-  };
+  } as any;
 }
 
 function mapInstitutionDetail(row: any): InstitutionDetail {
