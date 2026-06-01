@@ -48,7 +48,10 @@ export default async function SearchPage({ searchParams }: Props) {
           || (instShort && instShort.includes(pInst)) || (instShort && pInst.includes(instShort));
     });
     if (inst) {
-      if (inst.fullName) parts.push(inst.fullName);
+      // fullName may contain scraped boilerplate like "统一社会信用代码：..." or
+      // "（依据工商登记信息）" — strip that noise before adding to search text
+      const cleanFull = (inst.fullName || "").replace(/[（(]?(统一社会信用代码|依据).*/g, "").trim();
+      if (cleanFull) parts.push(cleanFull);
       if ((inst as any).shortName) parts.push((inst as any).shortName);
     }
     productSearchText.set(p.id, parts.filter(Boolean).join(" ").toLowerCase());
