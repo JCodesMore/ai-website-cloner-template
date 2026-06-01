@@ -20,6 +20,9 @@ export default async function PledgePage({ searchParams }: Props) {
 
   const { items, currentPage, totalPages, total } = paginate(filtered, page, PAGE_SIZE);
 
+  const activeParams = new URLSearchParams();
+  if (ik) activeParams.set("ik", ik);
+
   return (
     <ProductListPage
       title="抵押贷款"
@@ -30,6 +33,7 @@ export default async function PledgePage({ searchParams }: Props) {
       total={total}
       filterBar={<PledgeFilterBar />}
       sidebar={{ newsItems, discussionItems, opinionItems, faqItems }}
+      searchParams={activeParams.toString()}
     />
   );
 }

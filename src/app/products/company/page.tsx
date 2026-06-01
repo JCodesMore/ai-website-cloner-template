@@ -26,6 +26,11 @@ export default async function CompanyPage({ searchParams }: Props) {
 
   const { items, currentPage, totalPages, total } = paginate(filtered, page, PAGE_SIZE);
 
+  const activeParams = new URLSearchParams();
+  if (ik) activeParams.set("ik", ik);
+  if (tag) activeParams.set("tag", tag);
+  if (adv) activeParams.set("adv", adv);
+
   return (
     <ProductListPage
       title="企业贷款"
@@ -36,6 +41,7 @@ export default async function CompanyPage({ searchParams }: Props) {
       total={total}
       filterBar={<CompanyFilterBar />}
       sidebar={{ newsItems, discussionItems, opinionItems, faqItems }}
+      searchParams={activeParams.toString()}
     />
   );
 }

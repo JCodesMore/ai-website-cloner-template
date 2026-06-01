@@ -23,6 +23,7 @@ interface ProductListPageProps {
     opinionItems: NewsItem[];
     faqItems: NewsItem[];
   };
+  searchParams?: string;
 }
 
 export default function ProductListPage({
@@ -37,6 +38,7 @@ export default function ProductListPage({
   variant,
   gridClass = "grid gap-4 sm:grid-cols-2 lg:grid-cols-3",
   sidebar,
+  searchParams = "",
 }: ProductListPageProps) {
   return (
     <>
@@ -61,7 +63,7 @@ export default function ProductListPage({
                 ))}
               </div>
               {totalPages > 1 && (
-                <Pagination currentPage={currentPage} totalPages={totalPages} baseHref={baseHref} />
+                <Pagination currentPage={currentPage} totalPages={totalPages} baseHref={baseHref} extraParams={searchParams} />
               )}
             </div>
           </div>

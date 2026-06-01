@@ -23,6 +23,10 @@ export default async function PersonPage({ searchParams }: Props) {
 
   const { items, currentPage, totalPages, total } = paginate(filtered, page, PAGE_SIZE);
 
+  const activeParams = new URLSearchParams();
+  if (ik) activeParams.set("ik", ik);
+  if (adv) activeParams.set("adv", adv);
+
   return (
     <ProductListPage
       title="个人贷款"
@@ -33,6 +37,7 @@ export default async function PersonPage({ searchParams }: Props) {
       total={total}
       filterBar={<PersonFilterBar />}
       sidebar={{ newsItems, discussionItems, opinionItems, faqItems }}
+      searchParams={activeParams.toString()}
     />
   );
 }
