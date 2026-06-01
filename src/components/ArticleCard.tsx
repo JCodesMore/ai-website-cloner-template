@@ -2,10 +2,6 @@ import Link from "next/link";
 import type { NewsItem } from "@/types";
 import { Clock } from "lucide-react";
 
-function formatDate(dateStr: string): string {
-  return dateStr.split(" ")[0];
-}
-
 interface ArticleCardProps {
   article: NewsItem;
 }
@@ -26,7 +22,7 @@ export default function ArticleCard({ article }: ArticleCardProps) {
         {article.date && (
           <div className="mt-2 flex items-center gap-1 text-xs text-slate-400">
             <Clock className="h-3 w-3" />
-            {formatDate(article.date)}
+            发布于 {article.date}
           </div>
         )}
       </div>

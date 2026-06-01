@@ -16,6 +16,7 @@ export interface Institution {
   id: number;
   name: string;
   fullName?: string;
+  shortName?: string;
   logo?: string;
   initial: string;
   productCount: number;

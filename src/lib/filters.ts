@@ -125,10 +125,8 @@ export function sortInstitutions(
   ob: string,
   od: string,
 ): Institution[] {
-  if (ob === "productNum") {
-    return [...items].sort((a, b) =>
-      od === "asc" ? a.productCount - b.productCount : b.productCount - a.productCount,
-    );
-  }
-  return items;
+  const order = ob === "productNum" && od === "asc" ? "asc" : "desc";
+  return [...items].sort((a, b) =>
+    order === "asc" ? a.productCount - b.productCount : b.productCount - a.productCount,
+  );
 }
