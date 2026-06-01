@@ -21,18 +21,29 @@ export default async function ProfilePage() {
     .orderBy(desc(schema.followedProducts.createdAt));
 
   const productIds = followRows.map((r) => r.productId);
-  const products = productIds.length > 0
+  const productRows = productIds.length > 0
     ? await db
         .select({ id: schema.products.id, name: schema.products.name, institution: schema.products.institution })
         .from(schema.products)
         .where(inArray(schema.products.id, productIds))
     : [];
-  const productMap = new Map(products.map((p) => [p.id, p]));
 
+  // Fetch categories for followed products
+  const catRows = productIds.length > 0
+    ? await db
+        .select({ productId: schema.productCategories.productId, category: schema.productCategories.category })
+        .from(schema.productCategories)
+        .where(inArray(schema.productCategories.productId, productIds))
+    : [];
+  const catMap = new Map<string, string>();
+  for (const c of catRows) catMap.set(String(c.productId), c.category);
+
+  const productMap = new Map(productRows.map((p) => [p.id, p]));
   const follows = followRows.map((r) => ({
     productId: r.productId,
     productName: productMap.get(r.productId)?.name || "未知",
     institution: productMap.get(r.productId)?.institution || "",
+    category: catMap.get(String(r.productId)) || "",
   }));
 
   const comments = await db

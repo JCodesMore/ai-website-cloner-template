@@ -6,7 +6,7 @@ import { Loader2, Eye, EyeOff, User, Lock, Heart, MessageSquare, Calendar, Check
 
 interface Props {
   user: { username: string; phone: string; createdAt: string | null };
-  follows: { productId: number; productName: string; institution: string }[];
+  follows: { productId: number; productName: string; institution: string; category: string }[];
   comments: { id: number; content: string; productName: string; date: string }[];
 }
 
@@ -171,7 +171,7 @@ function PasswordTab() {
 }
 
 /* ---- Follows Tab ---- */
-function FollowsTab({ follows }: { follows: { productId: number; productName: string; institution: string }[] }) {
+function FollowsTab({ follows }: { follows: { productId: number; productName: string; institution: string; category: string }[] }) {
   return (
     <div>
       <div className="mb-6 flex items-center gap-2.5">
@@ -186,7 +186,7 @@ function FollowsTab({ follows }: { follows: { productId: number; productName: st
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
           {follows.map((f) => (
-            <Link key={f.productId} href={`/products/detail/${f.productId}`} className="flex items-center gap-3 rounded-lg border border-slate-200 p-4 transition-all duration-200 hover:border-amber-300 hover:bg-amber-50/50">
+            <Link key={f.productId} href={`/products/${f.category || "person"}/${f.productId}`} className="flex items-center gap-3 rounded-lg border border-slate-200 p-4 transition-all duration-200 hover:border-amber-300 hover:bg-amber-50/50">
               <div className="flex-1 min-w-0">
                 <div className="truncate font-medium text-sm text-slate-900">{f.productName}</div>
                 <div className="mt-0.5 truncate text-xs text-slate-400">{f.institution}</div>

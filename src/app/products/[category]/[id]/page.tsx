@@ -137,7 +137,7 @@ export default async function ProductDetailPage({ params }: Props) {
           <Sidebar newsItems={newsItems} discussionItems={discussionItems} opinionItems={opinionItems} faqItems={faqItems} />
         </div>
       </div>
-      <ShareButton url={`/products/detail/${id}`} title={product.name} variant="product" />
+      <ShareButton url={`/products/${category}/${id}`} title={product.name} variant="product" />
     </>
   );
 }
