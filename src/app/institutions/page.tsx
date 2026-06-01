@@ -1,4 +1,5 @@
 import Banner from "@/components/Banner";
+import EmptyState from "@/components/EmptyState";
 import Pagination from "@/components/Pagination";
 import { getAllInstitutions } from "@/lib/repository";
 import { newsItems, discussionItems, opinionItems, faqItems } from "@/lib/data";
@@ -62,7 +63,7 @@ export default async function InstitutionsPage({ searchParams }: Props) {
 
               <div className="flex items-start gap-3">
                 <span className="mt-1.5 shrink-0 text-sm text-slate-500">排序</span>
-                <div className="flex flex-wrap gap-1.5">
+                <div className="flex gap-1.5 overflow-x-auto pb-1 sm:flex-wrap">
                   {[
                     { label: "产品最多", ob: "productNum", od: "desc" },
                     { label: "产品最少", ob: "productNum", od: "asc" },
@@ -144,6 +145,15 @@ export default async function InstitutionsPage({ searchParams }: Props) {
                 </Link>
               ))}
             </div>
+
+            {filtered.length === 0 && ik && (
+              <EmptyState
+                title="该类型暂未收录机构"
+                description="换个筛选条件试试，或浏览全部机构"
+                actionHref="/institutions"
+                actionLabel="查看全部机构"
+              />
+            )}
 
             {totalPages > 1 && (
               <Pagination currentPage={currentPage} totalPages={totalPages} baseHref="/institutions" />
