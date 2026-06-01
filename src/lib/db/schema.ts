@@ -93,6 +93,36 @@ export const followedProducts = pgTable("followed_products", {
   uniqueIndex("uq_follow_user_product").on(table.username, table.productId),
 ]);
 
+export const articleAnalytics = pgTable("article_analytics", {
+  id: serial("id").primaryKey(),
+  articleId: integer("article_id").notNull().references(() => articles.id),
+  ipHash: varchar("ip_hash", { length: 64 }).notNull(),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const articleReads = pgTable("article_reads", {
+  id: serial("id").primaryKey(),
+  articleId: integer("article_id").notNull().references(() => articles.id),
+  ipHash: varchar("ip_hash", { length: 64 }).notNull(),
+  durationSeconds: integer("duration_seconds").default(30),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const articleShares = pgTable("article_shares", {
+  id: serial("id").primaryKey(),
+  articleId: integer("article_id").notNull().references(() => articles.id),
+  channel: varchar("channel", { length: 20 }).default("unknown"),
+  deviceType: varchar("device_type", { length: 20 }).default("unknown"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const qrScans = pgTable("qr_scans", {
+  id: serial("id").primaryKey(),
+  pagePath: varchar("page_path", { length: 500 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Indexes (T6 from eng review) — deferred: drizzle-orm v0.45 index() API
 // requires runtime column introspection that fails with JSON.parse("undefined").
 // Re-enable after upgrading drizzle-orm or verifying index() compatibility.
