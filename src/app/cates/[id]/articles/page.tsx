@@ -2,6 +2,7 @@ import type { NewsItem } from "@/types";
 import { getArticlesByCategory } from "@/lib/repository";
 import { newsItems, discussionItems, opinionItems, faqItems } from "@/lib/data";
 import ArticleCard from "@/components/ArticleCard";
+import EmptyState from "@/components/EmptyState";
 import Pagination from "@/components/Pagination";
 import Sidebar from "@/components/Sidebar";
 import { getPage, paginate, PAGE_SIZE } from "@/lib/filters";
@@ -43,7 +44,7 @@ export default async function ArticleCategoryPage(props: { params: Promise<{ id:
     <>
       <div className="border-b border-slate-200 bg-white">
         <div className="mx-auto max-w-7xl px-4 py-3 text-sm text-slate-500">
-          <Link href="/" className="hover:text-blue-600 transition-colors duration-200">首页</Link>
+          <Link href="/" className="hover:text-yellow-600 transition-colors duration-200">首页</Link>
           <span className="mx-2">/</span>
           <span>{meta.title}</span>
         </div>
@@ -52,14 +53,22 @@ export default async function ArticleCategoryPage(props: { params: Promise<{ id:
       <div className="mx-auto max-w-7xl px-4 py-6">
         <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
           <div>
-            <p className="mb-4 text-sm text-slate-500">{meta.title} — 共 {articles.length} 篇</p>
-            <div className="space-y-3">
-              {items.map((article) => (
-                <ArticleCard key={article.id} article={article} />
-              ))}
-            </div>
-            {totalPages > 1 && (
-              <Pagination currentPage={currentPage} totalPages={totalPages} baseHref={`/cates/${categoryId}/articles`} />
+            <h2 className="text-xl font-bold text-slate-900">{meta.title}</h2>
+            <p className="mt-1 text-sm text-slate-500">{meta.description}</p>
+            <p className="mb-4 mt-2 text-sm text-slate-400">共 {articles.length} 篇</p>
+            {articles.length === 0 ? (
+              <EmptyState title="暂无文章" description="该分类下还没有文章，请稍后再来" actionHref="/" actionLabel="返回首页" />
+            ) : (
+              <>
+                <div className="space-y-3">
+                  {items.map((article) => (
+                    <ArticleCard key={article.id} article={article} />
+                  ))}
+                </div>
+                {totalPages > 1 && (
+                  <Pagination currentPage={currentPage} totalPages={totalPages} baseHref={`/cates/${categoryId}/articles`} />
+                )}
+              </>
             )}
           </div>
           <Sidebar newsItems={newsItems} discussionItems={discussionItems} opinionItems={opinionItems} faqItems={faqItems} />

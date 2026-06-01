@@ -2,6 +2,10 @@ import Link from "next/link";
 import type { NewsItem } from "@/types";
 import { Clock } from "lucide-react";
 
+function formatDate(dateStr: string): string {
+  return dateStr.split(" ")[0];
+}
+
 interface ArticleCardProps {
   article: NewsItem;
 }
@@ -16,13 +20,13 @@ export default function ArticleCard({ article }: ArticleCardProps) {
       )}
       <div className="flex min-w-0 flex-1 flex-col justify-between">
         <div>
-          <h3 className="mb-1.5 line-clamp-2 text-base font-semibold text-slate-900 group-hover:text-blue-600 transition-colors duration-200">{article.title}</h3>
+          <h3 className="mb-1.5 line-clamp-2 text-base font-semibold text-slate-900 group-hover:text-yellow-600 transition-colors duration-200">{article.title}</h3>
           {article.description && <p className="line-clamp-1 text-sm text-slate-500">{article.description}</p>}
         </div>
         {article.date && (
           <div className="mt-2 flex items-center gap-1 text-xs text-slate-400">
             <Clock className="h-3 w-3" />
-            {article.date}
+            {formatDate(article.date)}
           </div>
         )}
       </div>
