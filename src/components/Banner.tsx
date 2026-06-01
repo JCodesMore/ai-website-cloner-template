@@ -27,6 +27,9 @@ export default function Banner({ productCount = 816 }: BannerProps) {
           </strong>{" "}
           个贷款产品
         </p>
+        <p className="mt-2 text-sm text-slate-400">
+          用数据说话，用口碑导航 — 找贷款先查银脉圈
+        </p>
         <form
           className="mx-auto mt-6 flex max-w-xl items-center"
           onSubmit={handleSubmit}
