@@ -26,7 +26,7 @@ export function paginate<T>(items: T[], page: number, perPage: number) {
 
 // ── Institution type detection ──────────────────────────
 const socbKeywords = ["工商银行", "建设银行", "农业银行", "中国银行", "交通银行", "邮储银行", "邮储", "邮政储蓄", "开发银行", "进出口银行", "农业发展银行"];
-const jscbKeywords = ["招商银行", "浦发银行", "中信银行", "光大银行", "华夏银行", "民生银行", "广发银行", "兴业银行", "平安", "浙商银行", "渤海银行", "恒丰银行", "北京银行", "上海银行", "南京银行", "宁波银行"];
+const jscbKeywords = ["招商银行", "浦发银行", "中信银行", "光大银行", "华夏银行", "民生银行", "广发银行", "兴业银行", "平安", "浙商银行", "渤海银行", "恒丰银行", "北京银行", "上海银行", "南京银行", "宁波银行", "中原银行", "新网银行", "吉林银行", "天津银行", "盛京银行", "长安银行", "华兴银行", "微众银行"];
 const cfcKeywords = ["消费金融", "消金", "捷信", "马上消费", "招联"];
 
 export function getInstitutionType(name: string, fullName?: string): string {
@@ -34,7 +34,7 @@ export function getInstitutionType(name: string, fullName?: string): string {
   if (socbKeywords.some((k) => text.includes(k))) return "socb";
   if (jscbKeywords.some((k) => text.includes(k))) return "jscb";
   if (cfcKeywords.some((k) => text.includes(k))) return "cfc";
-  if (/(担保|咨询|科技|服务|信息|商务|小贷|小额贷款)/.test(text)) return "lmc";
+  if (/(担保|咨询|科技|服务|信息|商务|小贷|小额贷款|租赁|金融|车融|典当)/.test(text)) return "lmc";
   return "other";
 }
 
