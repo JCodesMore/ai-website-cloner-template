@@ -33,15 +33,20 @@ export default async function SearchPage({ searchParams }: Props) {
   const productSearchText = new Map<number, string>();
   for (const p of allProducts) {
     const parts = [p.name, p.institution];
-    // Find matching institution by substring match (product institution may be
-    // truncated like "中国邮政储蓄银行" while institution table has
-    // "中国邮政储蓄银行股份有限公司")
+    // Find matching institution by substring match. Product institution may be
+    // truncated (e.g., "中国邮政储蓄银行" vs "中国邮政储蓄银行股份有限公司").
+    // Use includes() in both directions: (institution field contains product inst)
+    // OR (product inst contains institution field — catches abbreviation matches).
+    // IMPORTANT: empty strings always match includes(""), so filter them out first.
     const pInst = p.institution.toLowerCase();
-    const inst = allInstitutions.find(
-      (i) => i.name.toLowerCase().includes(pInst) || pInst.includes(i.name.toLowerCase())
-          || (i.fullName || "").toLowerCase().includes(pInst) || pInst.includes((i.fullName || "").toLowerCase())
-          || ((i as any).shortName || "").toLowerCase().includes(pInst) || pInst.includes(((i as any).shortName || "").toLowerCase()),
-    );
+    const inst = allInstitutions.find((i) => {
+      const instName = i.name.toLowerCase();
+      const instFull = (i.fullName || "").toLowerCase();
+      const instShort = ((i as any).shortName || "").toLowerCase();
+      return (instName && instName.includes(pInst)) || (instName && pInst.includes(instName))
+          || (instFull && instFull.includes(pInst)) || (instFull && pInst.includes(instFull))
+          || (instShort && instShort.includes(pInst)) || (instShort && pInst.includes(instShort));
+    });
     if (inst) {
       if (inst.fullName) parts.push(inst.fullName);
       if ((inst as any).shortName) parts.push((inst as any).shortName);
