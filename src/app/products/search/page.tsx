@@ -26,14 +26,17 @@ export default async function SearchPage({ searchParams }: Props) {
     getAllInstitutions(),
   ]);
 
-  // Build institution search lookup: id → combined searchable text
-  const instSearch = new Map<number, string>();
+  // Build institution search lookup: institution name → combined searchable text
+  // Keyed by name (not id) because product.institution holds the name string,
+  // and product ID != institution ID (they're different tables with overlapping IDs).
+  const instSearch = new Map<string, string>();
   for (const inst of allInstitutions) {
-    instSearch.set(inst.id, [
-      inst.name,
-      inst.fullName,
-      (inst as any).shortName || "",
-    ].filter(Boolean).join(" ").toLowerCase());
+    const text = [inst.name, inst.fullName, (inst as any).shortName || ""]
+      .filter(Boolean).join(" ").toLowerCase();
+    instSearch.set(inst.name.toLowerCase(), text);
+    // Also index by shortName and fullName so products with any variant can match
+    if (inst.fullName) instSearch.set(inst.fullName.toLowerCase(), text);
+    if ((inst as any).shortName) instSearch.set((inst as any).shortName.toLowerCase(), text);
   }
 
   const filtered = wd
@@ -42,7 +45,7 @@ export default async function SearchPage({ searchParams }: Props) {
           const q = wd.toLowerCase();
           if (p.name.toLowerCase().includes(q)) return true;
           if (p.institution.toLowerCase().includes(q)) return true;
-          const instText = instSearch.get(p.id);
+          const instText = instSearch.get(p.institution.toLowerCase());
           return instText ? instText.includes(q) : false;
         },
       )
