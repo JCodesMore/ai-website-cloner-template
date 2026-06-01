@@ -41,21 +41,22 @@ export default async function ProductDetailPage({ params }: Props) {
   const listing = allProducts.find(x => x.id === pid);
   if (!detail && !listing) notFound();
 
-  const product = detail || {
+  // Merge listing fields (name, image, rate, etc.) with detail fields (introHtml, summary, advantages)
+  const product = {
     id: pid,
     category,
-    name: listing!.name,
-    image: listing!.image,
-    institution: listing!.institution,
-    institutionFullName: listing!.institution,
-    institutionHref: "/institutions",
-    maxAmount: listing!.maxAmount,
-    term: listing!.term,
-    rate: listing!.rate,
-    repayment: listing!.repayment,
-    advantages: [],
-    summary: `${listing!.name} - 由${listing!.institution}提供`,
-    introHtml: `<p>${listing!.name}是${listing!.institution}旗下贷款产品。最高额度${listing!.maxAmount}，还款期限${listing!.term}，参考利率${listing!.rate}，还款方式${listing!.repayment}。</p>`,
+    name: listing?.name || "",
+    image: listing?.image || "",
+    institution: listing?.institution || "",
+    institutionFullName: detail?.institutionFullName || listing?.institution || "",
+    institutionHref: detail?.institutionHref || "/institutions",
+    maxAmount: listing?.maxAmount || "",
+    term: listing?.term || "",
+    rate: listing?.rate || "",
+    repayment: listing?.repayment || "",
+    advantages: detail?.advantages || [],
+    summary: detail?.summary || `${listing?.name || ""} - 由${listing?.institution || ""}提供`,
+    introHtml: detail?.introHtml || `<p>${listing?.name || ""}是${listing?.institution || ""}旗下贷款产品。最高额度${listing?.maxAmount || ""}，还款期限${listing?.term || ""}，参考利率${listing?.rate || ""}，还款方式${listing?.repayment || ""}。</p>`,
   };
 
   return (
@@ -100,7 +101,7 @@ export default async function ProductDetailPage({ params }: Props) {
                   </tbody>
                 </table>
               </div>
-              {detail && product.advantages.length > 0 && (
+              {product.advantages.length > 0 && (
                 <div className="rounded-lg bg-slate-50 p-4">
                   <p className="mb-3 text-sm text-slate-600">{product.summary}</p>
                   <div className="flex items-start gap-3">
