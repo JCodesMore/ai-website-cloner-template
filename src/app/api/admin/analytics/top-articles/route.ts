@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db, schema } from "@/lib/db";
 import { sql, desc } from "drizzle-orm";
+import { requireAdmin } from "@/lib/admin-auth";
 
 export async function GET(req: NextRequest) {
+  const username = await requireAdmin();
+  if (!username) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { searchParams } = new URL(req.url);
   const days = Math.max(1, Math.min(365, parseInt(searchParams.get("days") || "30", 10)));
   const limit = Math.max(1, Math.min(100, parseInt(searchParams.get("limit") || "20", 10)));
