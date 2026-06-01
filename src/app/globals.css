@@ -129,4 +129,9 @@
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
+  :focus-visible {
+    outline: 2px solid #CA8A04;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
 }
