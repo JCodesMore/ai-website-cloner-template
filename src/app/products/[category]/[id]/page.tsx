@@ -26,7 +26,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     if (listing) return { title: `${listing.name} - 银脉圈` };
   }
   const title = p ? `${p.institution} "${p.name}"，最高额度${p.maxAmount} - 银脉圈-贷款随心选-yinmaiquan.com` : "产品 - 银脉圈";
-  return { title, description: p?.summary || DEFAULT_DESC };
+  const description = p?.summary || DEFAULT_DESC;
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "article",
+      images: p?.image ? [{ url: p.image, width: 800, height: 600 }] : [],
+    },
+  };
 }
 
 export default async function ProductDetailPage({ params }: Props) {
