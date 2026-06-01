@@ -4,7 +4,9 @@ import Sidebar from "@/components/Sidebar";
 import { getArticleById } from "@/lib/repository";
 import { newsItems, discussionItems, opinionItems, faqItems } from "@/lib/data";
 import type { Metadata } from "next";
-import { Clock, Eye, Share2 } from "lucide-react";
+import { Clock, Eye } from "lucide-react";
+import ShareButton from "@/components/ShareButton";
+import ArticleTracker from "@/components/ArticleTracker";
 
 interface Props { params: Promise<{ id: string }> }
 
@@ -37,11 +39,14 @@ export default async function ArticleDetailPage({ params }: Props) {
             <div className="mb-6 flex flex-wrap items-center gap-4 text-sm text-slate-400">
               <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> {article.date}</span>
               <span className="flex items-center gap-1"><Eye className="h-3.5 w-3.5" /> {article.viewCount} 阅读</span>
-              <button className="flex items-center gap-1 rounded-full border border-slate-200 px-3 py-1 text-slate-500 transition-colors duration-200 hover:bg-slate-50 cursor-pointer">
-                <Share2 className="h-3.5 w-3.5" /> 分享
-              </button>
+              <ShareButton
+                url={`/articles/${id}`}
+                title={article.title}
+                variant="article"
+              />
             </div>
             <div className="prose prose-slate max-w-none text-sm leading-relaxed text-slate-700" dangerouslySetInnerHTML={{ __html: article.body }} />
+            <ArticleTracker articleId={Number(id)} />
           </div>
           <Sidebar newsItems={newsItems} discussionItems={discussionItems} opinionItems={opinionItems} faqItems={faqItems} />
         </div>
