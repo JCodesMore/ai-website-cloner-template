@@ -45,7 +45,19 @@ export default async function SearchPage({ searchParams }: Props) {
           const q = wd.toLowerCase();
           if (p.name.toLowerCase().includes(q)) return true;
           if (p.institution.toLowerCase().includes(q)) return true;
-          const instText = instSearch.get(p.institution.toLowerCase());
+          let instText = instSearch.get(p.institution.toLowerCase());
+          // Fallback: product's institution name may not exactly match any institution
+          // name/fullName/shortName (e.g., product has "中国邮政储蓄银行" but institution
+          // has "中国邮政储蓄银行股份有限公司"). Try to find via substring match.
+          if (!instText) {
+            for (const [key, text] of instSearch) {
+              if (key.includes(p.institution.toLowerCase()) || p.institution.toLowerCase().includes(key)) {
+                instText = text;
+                instSearch.set(p.institution.toLowerCase(), text); // cache for next lookup
+                break;
+              }
+            }
+          }
           return instText ? instText.includes(q) : false;
         },
       )
