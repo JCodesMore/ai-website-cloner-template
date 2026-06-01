@@ -1,72 +1,59 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Share2, Smartphone, Copy, Check } from "lucide-react";
+import { useState } from "react";
+import { Share2, Copy, Check } from "lucide-react";
 
 interface ShareButtonProps {
-  productId: string;
-  productName: string;
-  rate?: string;
-  amount?: string;
-  term?: string;
-  repayment?: string;
+  url: string;
+  title: string;
+  variant?: "product" | "article";
+  onShare?: () => void;
 }
 
-export default function ShareButton({ productId }: ShareButtonProps) {
-  const [origin, setOrigin] = useState("");
+export default function ShareButton({ url, title, variant = "article", onShare }: ShareButtonProps) {
   const [copied, setCopied] = useState(false);
 
-  useEffect(() => {
-    setOrigin(window.location.origin);
-  }, []);
+  const detectDevice = (): string => {
+    if (typeof navigator === "undefined") return "desktop";
+    return /Android|iPhone|iPad/i.test(navigator.userAgent) ? "mobile" : "desktop";
+  };
 
-  const productUrl = origin
-    ? `${origin}/products/detail/${productId}`
-    : `/products/detail/${productId}`;
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(productUrl)}`;
+  const handleShare = async () => {
+    const deviceType = detectDevice();
 
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(productUrl);
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, url: `${window.location.origin}${url}` });
+        recordShare("web_share", deviceType);
+        return;
+      } catch {}
+    }
+
+    await navigator.clipboard.writeText(`${window.location.origin}${url}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+    recordShare("copy_link", deviceType);
+  };
+
+  const recordShare = (channel: string, deviceType: string) => {
+    const articleId = url.split("/").pop();
+    fetch(`/api/articles/${articleId}/share`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ channel, deviceType }),
+      keepalive: true,
+    }).catch(() => {});
+    onShare?.();
   };
 
   return (
-    <div className="fixed left-[calc(50%-660px)] top-1/2 z-10 -translate-y-1/2">
-      <button
-        className="group flex w-14 flex-col items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white py-3 shadow-lg transition-shadow duration-200 hover:shadow-xl cursor-pointer"
-        type="button"
-        onMouseEnter={(e) => {
-          const popover = e.currentTarget.nextElementSibling as HTMLElement;
-          if (popover) popover.style.display = "block";
-        }}
-        onMouseLeave={(e) => {
-          const popover = e.currentTarget.nextElementSibling as HTMLElement;
-          if (popover) popover.style.display = "none";
-        }}
-      >
-        <Share2 className="h-5 w-5 text-slate-600 group-hover:text-blue-600 transition-colors duration-200" />
-        <span className="text-xs font-semibold text-slate-600">分享</span>
-      </button>
-      <div
-        className="absolute left-16 top-1/2 z-50 hidden w-[280px] -translate-y-1/2 rounded-xl border border-slate-200 bg-white p-5 text-center shadow-xl"
-        onMouseEnter={(e) => { e.currentTarget.style.display = "block"; }}
-        onMouseLeave={(e) => { e.currentTarget.style.display = "none"; }}
-      >
-        <p className="mb-3 text-sm font-semibold text-slate-900">分享本产品</p>
-        <img src={qrUrl} alt="qrcode" className="mx-auto mb-2 h-[130px] w-[130px]" />
-        <p className="mb-3 flex items-center justify-center gap-1 text-xs text-slate-400">
-          <Smartphone className="h-3.5 w-3.5" /> 微信扫码，分享给好友
-        </p>
-        <button
-          type="button"
-          onClick={handleCopy}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-yellow-600 px-4 py-1.5 text-xs font-medium text-white transition-colors duration-200 hover:bg-yellow-700 cursor-pointer"
-        >
-          {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-          {copied ? "已复制" : "复制链接"}
-        </button>
-      </div>
-    </div>
+    <button
+      onClick={handleShare}
+      className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 px-3 py-1.5 text-sm text-slate-500 transition-colors duration-200 hover:bg-slate-50 hover:text-yellow-600 cursor-pointer"
+      type="button"
+    >
+      {copied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Share2 className="h-3.5 w-3.5" />}
+      {copied ? "已复制" : "分享"}
+    </button>
   );
 }

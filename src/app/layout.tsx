@@ -3,6 +3,7 @@ import { IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
+import FloatingQR from "@/components/FloatingQR";
 
 const ibmPlexSans = IBM_Plex_Sans({
   variable: "--font-sans",
@@ -34,6 +35,7 @@ export default function RootLayout({
         <Nav />
         <main className="min-h-[calc(100vh-64px-300px)] pt-16">{children}</main>
         <Footer />
+        <FloatingQR />
       </body>
     </html>
   );

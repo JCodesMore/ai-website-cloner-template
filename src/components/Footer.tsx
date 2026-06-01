@@ -12,7 +12,7 @@ export default function Footer() {
   return (
     <footer className="mt-16 bg-slate-900 text-white">
       <div className="mx-auto max-w-7xl px-4 py-12">
-        <div className="grid gap-10 md:grid-cols-[1fr_200px]">
+        <div className="grid gap-10 md:grid-cols-[1fr_200px_150px]">
           <div className="space-y-3 text-sm text-slate-400">
             <div className="mb-4 flex items-center gap-2">
               <span className="text-3xl font-bold tracking-wide text-white">银脉圈</span>
@@ -45,6 +45,15 @@ export default function Footer() {
                 </li>
               ))}
             </ul>
+          </div>
+          <div>
+            <h4 className="mb-3 text-sm font-semibold text-white">微信咨询</h4>
+            <img
+              src="/images/wechat-qr.png"
+              alt="微信二维码"
+              className="mb-2 h-24 w-24 rounded-lg border border-slate-700 object-cover"
+            />
+            <p className="text-xs text-slate-500">扫码添加微信</p>
           </div>
         </div>
       </div>
