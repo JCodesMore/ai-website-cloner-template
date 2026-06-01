@@ -62,7 +62,12 @@ export default async function SearchPage({ searchParams }: Props) {
 
               {!wd && <p className="py-10 text-center text-slate-400">请在搜索框中输入产品名称或机构名称</p>}
               {wd && filtered.length === 0 && (
-                <p className="py-10 text-center text-slate-400">未找到与"{wd}"相关的产品，请尝试其他关键词</p>
+                <div className="py-10 text-center">
+                  <p className="text-slate-400">未找到与"{wd}"相关的产品，请尝试其他关键词</p>
+                  <a href="/products/fast" className="mt-3 inline-block text-sm text-yellow-600 hover:underline">
+                    浏览全部产品
+                  </a>
+                </div>
               )}
 
               {pageItems.length > 0 && (
