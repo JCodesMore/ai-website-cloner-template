@@ -26,41 +26,29 @@ export default async function SearchPage({ searchParams }: Props) {
     getAllInstitutions(),
   ]);
 
-  // Build institution search lookup: institution name → combined searchable text
-  // Keyed by name (not id) because product.institution holds the name string,
-  // and product ID != institution ID (they're different tables with overlapping IDs).
-  const instSearch = new Map<string, string>();
-  for (const inst of allInstitutions) {
-    const text = [inst.name, inst.fullName, (inst as any).shortName || ""]
-      .filter(Boolean).join(" ").toLowerCase();
-    instSearch.set(inst.name.toLowerCase(), text);
-    // Also index by shortName and fullName so products with any variant can match
-    if (inst.fullName) instSearch.set(inst.fullName.toLowerCase(), text);
-    if ((inst as any).shortName) instSearch.set((inst as any).shortName.toLowerCase(), text);
+  // Build per-product searchable text: product name + institution + matched
+  // institution name/fullName/shortName. Single text per product, single check.
+  // This avoids the previous three-path OR matching that caused inconsistent results
+  // for short search terms (e.g. "工商" matching products via orphaned institution lookups).
+  const productSearchText = new Map<number, string>();
+  for (const p of allProducts) {
+    const parts = [p.name, p.institution];
+    // Find matching institution to add its fullName and shortName
+    const inst = allInstitutions.find(
+      (i) => i.name === p.institution || i.fullName === p.institution || (i as any).shortName === p.institution,
+    );
+    if (inst) {
+      if (inst.fullName) parts.push(inst.fullName);
+      if ((inst as any).shortName) parts.push((inst as any).shortName);
+    }
+    productSearchText.set(p.id, parts.filter(Boolean).join(" ").toLowerCase());
   }
 
   const filtered = wd
-    ? allProducts.filter(
-        (p) => {
-          const q = wd.toLowerCase();
-          if (p.name.toLowerCase().includes(q)) return true;
-          if (p.institution.toLowerCase().includes(q)) return true;
-          let instText = instSearch.get(p.institution.toLowerCase());
-          // Fallback: product's institution name may not exactly match any institution
-          // name/fullName/shortName (e.g., product has "中国邮政储蓄银行" but institution
-          // has "中国邮政储蓄银行股份有限公司"). Try to find via substring match.
-          if (!instText) {
-            for (const [key, text] of instSearch) {
-              if (key.includes(p.institution.toLowerCase()) || p.institution.toLowerCase().includes(key)) {
-                instText = text;
-                instSearch.set(p.institution.toLowerCase(), text); // cache for next lookup
-                break;
-              }
-            }
-          }
-          return instText ? instText.includes(q) : false;
-        },
-      )
+    ? allProducts.filter((p) => {
+        const text = productSearchText.get(p.id);
+        return text ? text.includes(wd.toLowerCase()) : false;
+      })
     : [];
 
   const { items: pageItems, currentPage, totalPages, total } = paginate(filtered, page, PAGE_SIZE);
