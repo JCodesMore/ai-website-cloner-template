@@ -77,7 +77,10 @@ export default async function ProductDetailPage({ params }: Props) {
             <div className="rounded-lg border border-slate-200 bg-white p-6">
               <div className="mb-6 flex items-start justify-between">
                 <h1 className="text-2xl font-bold text-slate-900">{product.name}</h1>
-                <FollowButton productId={id} />
+                <div className="flex items-center gap-2">
+                  <ShareButton url={`/products/${category}/${id}`} title={product.name} variant="product" />
+                  <FollowButton productId={id} />
+                </div>
               </div>
               <div className="mb-6 flex items-start gap-6">
                 <img className="h-16 w-16 shrink-0 rounded-xl border border-slate-100 object-cover" src={product.image} alt={product.name} />
@@ -137,7 +140,6 @@ export default async function ProductDetailPage({ params }: Props) {
           <Sidebar newsItems={newsItems} discussionItems={discussionItems} opinionItems={opinionItems} faqItems={faqItems} />
         </div>
       </div>
-      <ShareButton url={`/products/${category}/${id}`} title={product.name} variant="product" />
     </>
   );
 }
