@@ -50,8 +50,6 @@ async function scrapeProduct(page, id) {
         summary: summary.replace(/\s+/g, " ").trim(),
         advantages,
         introHtml: introHTML,
-        // category will be filled in by import step
-        category: "",
       };
     });
 
@@ -80,13 +78,14 @@ async function main() {
     console.log("No existing productDetails.json — starting fresh");
   }
 
-  // Load all product IDs from the product JSON files
+  // Load all product IDs and category mappings from the product JSON files
   const allIds = new Set();
+  const catMap = new Map();
   const categories = ["fast", "company", "person", "pledge"];
   for (const cat of categories) {
     try {
       const data = require(`../src/data/${cat}Products.json`);
-      data.forEach(p => allIds.add(p.id));
+      data.forEach(p => { allIds.add(p.id); catMap.set(p.id, cat); });
     } catch (e) {
       console.log(`  Skipping ${cat}: ${e.message}`);
     }
@@ -110,6 +109,7 @@ async function main() {
 
     for (const result of results) {
       if (result) {
+        result.category = catMap.get(result.id) || "";
         if (existingMap.has(result.id)) {
           Object.assign(existingMap.get(result.id), result);
         } else {

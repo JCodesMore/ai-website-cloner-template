@@ -1,13 +1,19 @@
 // Malformed introHtml patterns from scraper failures (e.g. ".product-intro-wrap" template not matched)
 const BROKEN_PREFIX_RE = /^product-intro-wrap">\s*/;
 
-/** Sanitize introHtml: strip known scraper-corruption patterns before rendering. */
+/** Sanitize introHtml: strip XSS vectors from scraped content before rendering. */
 export function sanitizeIntroHtml(html: string): string {
-  const trimmed = html.trim();
-  if (BROKEN_PREFIX_RE.test(trimmed)) {
-    return '<div class="product-intro-wrap">' + trimmed.replace(BROKEN_PREFIX_RE, "");
+  let out = html.trim();
+  if (BROKEN_PREFIX_RE.test(out)) {
+    out = '<div class="product-intro-wrap">' + out.replace(BROKEN_PREFIX_RE, "");
   }
-  return html;
+  // Strip script/style/iframe tags and inline event handlers
+  out = out
+    .replace(/<script[\s\S]*?<\/script>/gi, "")
+    .replace(/<style[\s\S]*?<\/style>/gi, "")
+    .replace(/<iframe[\s\S]*?<\/iframe>/gi, "")
+    .replace(/\s(on\w+)=/gi, " data-removed-$1=");
+  return out;
 }
 
 export const categoryNames: Record<string, string> = {
