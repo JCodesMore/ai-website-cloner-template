@@ -9,6 +9,19 @@ export async function register() {
     }
 
     await seedAllTables();
+    await runDataGuard();
+  }
+}
+
+async function runDataGuard() {
+  try {
+    const { validateAndRepair, printDataReport } = await import("@/lib/data-guard/runner");
+    const report = await validateAndRepair();
+    if (report.totalAutoFixed > 0 || report.totalWarnings > 0) {
+      printDataReport(report);
+    }
+  } catch (e) {
+    console.error("[data-guard] Validation failed:", (e as Error).message);
   }
 }
 
@@ -19,6 +32,23 @@ async function seedAllTables() {
     institutions, comments,
     industryArticles, discussionArticles, opinionArticles, faqArticles,
   } = await import("@/lib/data");
+  const { default: articleDetails } = await import("@/data/articleDetails.json") as any;
+
+  // Build article detail lookup for full body content
+  const detailMap = new Map<number, any>();
+  if (Array.isArray(articleDetails)) {
+    (articleDetails as any[]).forEach((d: any) => detailMap.set(Number(d.id), d));
+  }
+
+  const sanitizeBody = (raw: string): string => {
+    if (!raw) return "";
+    return raw
+      .replace(/<style>[\s\S]*?<\/style>/g, "")
+      .replace(/^rich-text-content"\s+style="[^"]*"\s*>/g, "")
+      .replace(/yinmaiquan-keyword/g, "ymq-keyword")
+      .replace(/^[\s\n\r]+/, "")
+      .trim();
+  };
 
   const toInsert = [
     {
@@ -34,11 +64,17 @@ async function seedAllTables() {
     {
       table: schema.articles, key: "articles", rows: [
         ...industryArticles, ...discussionArticles, ...opinionArticles, ...faqArticles,
-      ].map((a: any) => ({
-        id: a.id, title: a.title, body: a.description || "", date: a.date || "",
-        viewCount: 0, categoryId: a.categoryId || 1, image: a.image || "",
-        description: a.description || "", createdAt: new Date(), updatedAt: new Date(),
-      })),
+      ].map((a: any) => {
+        const detail = detailMap.get(a.id);
+        const rawBody = detail?.body || a.description || "";
+        const body = sanitizeBody(rawBody);
+        return {
+          id: a.id, title: a.title, body, date: detail?.date || a.date || "",
+          viewCount: detail?.viewCount || 0, categoryId: a.categoryId || 1,
+          image: a.image || "", description: a.description || "",
+          createdAt: new Date(), updatedAt: new Date(),
+        };
+      }),
     },
   ];
 
