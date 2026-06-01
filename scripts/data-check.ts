@@ -1,4 +1,4 @@
-// Usage: npx tsx scripts/data-check.ts
+// Usage: npx tsx --env-file=.env scripts/data-check.ts
 // Read-only data integrity check. Exit code 1 if errors found.
 
 import { validateAndRepair, printDataReport } from "../src/lib/data-guard/runner";

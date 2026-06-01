@@ -35,7 +35,7 @@
     "check": "npm run lint && npm run typecheck && npm run build",
     "test": "vitest run",
     "test:watch": "vitest",
-    "data:check": "npx tsx scripts/data-check.ts",
+    "data:check": "npx tsx --env-file=.env scripts/data-check.ts",
     "data:scrape": "node scripts/scrape-article-bodies.cjs",
     "compare:capture": "node scripts/compare-capture.mjs",
     "compare:pixel": "node scripts/compare-pixel.mjs",
