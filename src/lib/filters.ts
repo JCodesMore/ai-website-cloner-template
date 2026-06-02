@@ -50,50 +50,20 @@ export function filterInstitutionsByIk(items: Institution[], ik: string): Instit
   return items.filter((inst) => getInstitutionType(inst.name, inst.fullName) === ik);
 }
 
-// ── Tag filter (company page — promo field) ─────────────
-const tagPromoMap: Record<string, string[]> = {
-  "24": ["专精特新"],
-  "25": ["国高新"],
-  "26": ["科技类"],
-  "27": ["创新类"],
-  "29": ["涉农类"],
-  "37": ["小巨人"],
-  "38": ["专利贷"],
-};
+// ── Tag/Adv filter (static ID mapping primary, keyword fallback) ──
+import { productDetails } from "@/lib/data";
+import { getFilteredProductIds } from "@/lib/filter-maps";
 
 export function filterByTag<T extends { id: number }>(items: T[], tagId: string): T[] {
-  if (!tagId || !tagPromoMap[tagId]) return items;
-  const keywords = tagPromoMap[tagId];
+  if (!tagId) return items;
   return items.filter((p) => {
+    const ids = getFilteredProductIds("company", tagId, "");
+    if (ids) return ids.has(p.id);
     const detail = productDetails.find((d) => d.id === p.id);
     const advs = detail?.advantages || [];
-    return keywords.some((k) => advs.some((a: string) => a.includes(k)));
+    return advs.some((a: string) => a.includes(tagId));
   });
 }
-
-// ── Advantage filter (cross-ref with productDetails) ────
-import { productDetails } from "@/lib/data";
-
-const companyAdvMap: Record<string, string[]> = {
-  "35": ["3-5年"],
-  "40": ["国有银行"],
-  "41": ["先息后本"],
-  "42": ["法人不连带"],
-  "44": ["法人不占股"],
-  "51": ["轻视征信"],
-  "58": ["负债高"],
-  "60": ["线下"],
-};
-
-const personAdvMap: Record<string, string[]> = {
-  "45": ["极速下款"],
-  "46": ["社保公积金"],
-  "53": ["征信宽松"],
-  "54": ["3-5年"],
-  "55": ["先息后本"],
-  "61": ["线下"],
-  "62": ["消费分期"],
-};
 
 export function filterByAdv<T extends { id: number }>(
   items: T[],
@@ -101,17 +71,37 @@ export function filterByAdv<T extends { id: number }>(
   category: string,
 ): T[] {
   if (!advId) return items;
-  const advMap = category === "person" ? personAdvMap : companyAdvMap;
-  const keywords = advMap[advId];
-  if (!keywords) return items;
-
   return items.filter((p) => {
+    const ids = getFilteredProductIds(category, "", advId);
+    if (ids) return ids.has(p.id);
     const detail = productDetails.find(
       (d) => d.id === p.id && d.category === category,
     );
     if (!detail) return false;
-    return keywords.some((k) => detail.advantages.some((a) => a.includes(k)));
+    return detail.advantages.some((a: string) => a.includes(advId));
   });
+}
+
+// Combined tag+adv filter using static mapping, with intersection fallback
+export function filterByTagAndAdv<T extends { id: number }>(
+  items: T[],
+  tagId: string,
+  advId: string,
+  category: string,
+): T[] {
+  if (!tagId && !advId) return items;
+
+  // Try static combo mapping first
+  const comboIds = getFilteredProductIds(category, tagId, advId);
+  if (comboIds) {
+    return items.filter((p) => comboIds.has(p.id));
+  }
+
+  // Fallback: chain individual filters
+  let result = items;
+  if (tagId) result = filterByTag(result, tagId);
+  if (advId) result = filterByAdv(result, advId, category);
+  return result;
 }
 
 // ── Institution search ──────────────────────────────────

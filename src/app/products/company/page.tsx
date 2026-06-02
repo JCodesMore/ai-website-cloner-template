@@ -1,7 +1,7 @@
 import ProductListPage from "@/components/ProductListPage";
 import CompanyFilterBar from "./CompanyFilterBar";
 import { getProductsByCategory, getSidebarNews, getSidebarDiscussions, getSidebarOpinions, getSidebarFaq } from "@/lib/repository";
-import { getPage, paginate, PAGE_SIZE, filterByIk, filterByTag, filterByAdv } from "@/lib/filters";
+import { getPage, paginate, PAGE_SIZE, filterByIk, filterByTag, filterByAdv, filterByTagAndAdv } from "@/lib/filters";
 
 interface Props { searchParams: Promise<{ ik?: string; tag?: string; adv?: string; page?: string }> }
 
@@ -26,8 +26,12 @@ export default async function CompanyPage({ searchParams }: Props) {
     getSidebarFaq(),
   ]);
   filtered = filterByIk(filtered, ik);
-  filtered = filterByTag(filtered, tag);
-  filtered = filterByAdv(filtered, adv, "company");
+  if (tag && adv) {
+    filtered = filterByTagAndAdv(filtered, tag, adv, "company");
+  } else {
+    filtered = filterByTag(filtered, tag);
+    filtered = filterByAdv(filtered, adv, "company");
+  }
 
   const { items, currentPage, totalPages, total } = paginate(filtered, page, PAGE_SIZE);
 
