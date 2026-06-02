@@ -135,3 +135,29 @@
     border-radius: 2px;
   }
 }
+
+/* === Product intro reading optimization === */
+.product-intro {
+  color: #334155;
+  font-size: 0.9375rem;
+  line-height: 1.8;
+}
+
+.product-intro p {
+  margin-bottom: 1rem;
+}
+
+.product-intro img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+}
+
+@media (max-width: 640px) {
+  .product-intro {
+    font-size: 0.875rem;
+    line-height: 1.75;
+  }
+}

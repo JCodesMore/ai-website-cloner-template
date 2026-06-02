@@ -143,7 +143,7 @@ export default async function ProductDetailPage({ params }: Props) {
             </div>
             <div className="rounded-lg border border-slate-200 bg-white p-6">
               <h2 className="mb-4 text-lg font-semibold text-slate-900">产品介绍</h2>
-              <div className="prose prose-slate max-w-none text-sm leading-relaxed text-slate-600" dangerouslySetInnerHTML={{ __html: sanitizeIntroHtml(product.introHtml) }} />
+              <div className="product-intro" dangerouslySetInnerHTML={{ __html: sanitizeIntroHtml(product.introHtml) }} />
             </div>
             <ProductComments productId={id} productName={product.name} />
           </div>
