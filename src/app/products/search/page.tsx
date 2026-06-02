@@ -57,10 +57,37 @@ export default async function SearchPage({ searchParams }: Props) {
     productSearchText.set(p.id, parts.filter(Boolean).join(" ").toLowerCase());
   }
 
+  // Bank abbreviation → full name mapping for fuzzy search
+  const BANK_ABBREV: Record<string, string> = {
+    "建行": "建设银行", "工行": "工商银行", "农行": "农业银行",
+    "中行": "中国银行", "交行": "交通银行", "招行": "招商银行",
+    "邮储": "邮政储蓄", "邮政": "邮政储蓄", "华夏": "华夏银行",
+    "平安": "平安银行", "民生": "民生银行", "光大": "光大银行",
+    "中信": "中信银行", "浦发": "浦发银行", "兴业": "兴业银行",
+    "广发": "广发银行", "盛京": "盛京银行",
+    "国开行": "国家开发银行", "进出口": "中国进出口银行",
+    "农发行": "中国农业发展银行", "汇丰": "汇丰银行",
+    "渣打": "渣打银行", "花旗": "花旗银行", "东亚": "东亚银行",
+    "恒生": "恒生银行", "大华": "大华银行", "华侨": "华侨银行",
+    "天府": "四川天府银行", "新网": "四川新网银行",
+    "农商": "农村商业银行", "村镇": "村镇银行",
+  };
+
+  function expandQuery(q: string): string[] {
+    const terms = [q];
+    const ql = q.toLowerCase();
+    for (const [abbr, full] of Object.entries(BANK_ABBREV)) {
+      if (ql.includes(abbr.toLowerCase())) terms.push(full);
+    }
+    return terms;
+  }
+
   const filtered = wd
     ? allProducts.filter((p) => {
         const text = productSearchText.get(p.id);
-        return text ? text.includes(wd.toLowerCase()) : false;
+        if (!text) return false;
+        const queries = expandQuery(wd);
+        return queries.some((q) => text.includes(q.toLowerCase()));
       })
     : [];
 

@@ -117,7 +117,7 @@ export default async function InstitutionsPage({ searchParams }: Props) {
               )}
 
               {totalPages > 1 && (
-                <Pagination currentPage={currentPage} totalPages={totalPages} baseHref="/institutions" />
+                <Pagination currentPage={currentPage} totalPages={totalPages} baseHref="/institutions" extraParams={new URLSearchParams({ ...(ik ? { ik } : {}), ...(wd ? { wd } : {}), ...(ob ? { ob } : {}), ...(od ? { od } : {}) }).toString()} />
               )}
             </div>
           </div>

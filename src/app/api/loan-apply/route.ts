@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
   if (!rl.ok) return NextResponse.json({ ok: false, message: "请求过于频繁，请稍后再试" }, { status: 429 });
 
   try {
-    const { type, phone, amount } = await request.json();
+    const { type, phone, amount, name, purpose, city } = await request.json();
 
     if (!phone || !/^1[3-9]\d{9}$/.test(phone)) {
       return NextResponse.json({ ok: false, message: "请输入正确的手机号码" }, { status: 400 });
@@ -22,19 +22,29 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: false, message: "请选择有效的期望金额" }, { status: 400 });
     }
 
+    const extra: Record<string, string> = {};
+    if (name) extra.name = name.slice(0, 20);
+    if (purpose) extra.purpose = purpose;
+    if (city) extra.city = city;
+
     // Save to PostgreSQL
     await db.insert(schema.loanApplications).values({
       loanType: type || "person",
       phone,
       amount: amount || "未填写",
       status: "new",
+      notes: Object.keys(extra).length > 0 ? JSON.stringify(extra) : undefined,
       createdAt: new Date(),
     });
 
     // Send push notification via webhook (if configured)
     const webhookUrl = process.env.NOTIFY_WEBHOOK_URL;
     if (webhookUrl) {
-      const msg = `📞 新贷款申请\n类型: ${type === "company" ? "企业" : "个人"}\n手机: ${phone}\n金额: ${amount || "未填写"}\n时间: ${new Date().toLocaleString("zh-CN")}`;
+      let msg = `📞 新贷款申请\n类型: ${type === "company" ? "企业" : "个人"}\n手机: ${phone}\n金额: ${amount || "未填写"}`;
+      if (name) msg += `\n称呼: ${name}`;
+      if (purpose) msg += `\n用途: ${purpose}`;
+      if (city) msg += `\n城市: ${city}`;
+      msg += `\n时间: ${new Date().toLocaleString("zh-CN")}`;
       try {
         await fetch(webhookUrl, {
           method: "POST",
