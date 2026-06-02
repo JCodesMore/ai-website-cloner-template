@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, type FormEvent } from "react";
-import { Building2, Users, Loader2, CheckCircle, Clock, Phone, MapPin, Shield, ArrowRight } from "lucide-react";
+import { Building2, Users, Loader2, CheckCircle, MapPin, Shield, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 const AMOUNT_OPTIONS = ["", "5万以下", "5-10万", "10-20万", "20-50万", "50-100万", "100-300万", "300-500万", "500-1000万", "1000万以上"];
@@ -128,24 +128,44 @@ export default function LoanForm() {
 
   if (done) {
     return (
-      <div className="rounded-lg border border-emerald-200 bg-gradient-to-br from-emerald-50 to-teal-50 p-6">
-        <div className="flex flex-col items-center gap-3 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100">
-            <CheckCircle className="h-7 w-7 text-emerald-600" />
+      <div className="rounded-xl border border-emerald-200 bg-white p-6 shadow-sm">
+        <div className="mb-5 flex items-center gap-3">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 ring-4 ring-emerald-50">
+            <CheckCircle className="h-8 w-8 text-emerald-600" />
           </div>
-          <p className="text-sm font-semibold text-emerald-800">申请已提交成功</p>
-          <div className="space-y-2 text-xs text-emerald-700">
-            <div className="flex items-center gap-1.5">
-              <Clock className="h-3.5 w-3.5 shrink-0" />
-              <span>客户经理将在<strong>1个工作日内</strong>通过您提供的手机号与您联系</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Phone className="h-3.5 w-3.5 shrink-0" />
-              <span>请保持手机畅通，注意接听<strong>028区域</strong>来电</span>
-            </div>
+          <div>
+            <p className="text-base font-bold text-slate-900">提交成功</p>
+            <p className="text-sm text-slate-500">客户经理稍后与您联系</p>
           </div>
-          <p className="mt-1 text-xs text-emerald-500">如有疑问，可拨打客服热线 028-96633</p>
         </div>
+
+        <div className="space-y-3 rounded-lg bg-slate-50 p-4">
+          <div className="flex items-start gap-3">
+            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-bold text-emerald-700">1</span>
+            <div>
+              <p className="text-sm font-medium text-slate-800">等待联系</p>
+              <p className="text-xs text-slate-500">客户经理将在1个工作日内拨打您的手机，请注意接听</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-200 text-xs font-bold text-slate-500">2</span>
+            <div>
+              <p className="text-sm font-medium text-slate-800">沟通需求</p>
+              <p className="text-xs text-slate-500">说明您的贷款需求，客户经理为您匹配最合适的产品</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-200 text-xs font-bold text-slate-500">3</span>
+            <div>
+              <p className="text-sm font-medium text-slate-800">完成申请</p>
+              <p className="text-xs text-slate-500">在客户经理指导下完成正式贷款申请</p>
+            </div>
+          </div>
+        </div>
+
+        <p className="mt-4 text-center text-xs text-slate-400">
+          如有疑问，可拨打 <a href="tel:18584835676" className="font-medium text-emerald-600 hover:underline">18584835676</a>
+        </p>
       </div>
     );
   }

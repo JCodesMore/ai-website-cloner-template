@@ -72,8 +72,11 @@ export default function AdminLoansPage() {
             <tr className="border-b border-slate-100 bg-slate-50">
               <th className="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">ID</th>
               <th className="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">类型</th>
+              <th className="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">称呼</th>
               <th className="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">手机号</th>
               <th className="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">金额</th>
+              <th className="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">用途</th>
+              <th className="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">城市</th>
               <th className="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">状态</th>
               <th className="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">跟进备注</th>
               <th className="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">时间</th>
@@ -81,9 +84,9 @@ export default function AdminLoansPage() {
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={7} className="px-4 py-10 text-center text-sm text-slate-400">加载中...</td></tr>
+              <tr><td colSpan={10} className="px-4 py-10 text-center text-sm text-slate-400">加载中...</td></tr>
             ) : items.length === 0 ? (
-              <tr><td colSpan={7} className="px-4 py-10 text-center text-sm text-slate-400">暂无数据</td></tr>
+              <tr><td colSpan={10} className="px-4 py-10 text-center text-sm text-slate-400">暂无数据</td></tr>
             ) : (
               items.map((a) => {
                 const status = STATUSES.find((s) => s.value === a.status) || STATUSES[0];
@@ -91,8 +94,11 @@ export default function AdminLoansPage() {
                   <tr key={a.id} className={`border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors duration-150 ${a.status === "new" ? "bg-emerald-50/30" : ""}`}>
                     <td className="px-3 py-3 text-sm text-slate-400">{a.id}</td>
                     <td className="px-3 py-3 text-sm text-slate-600">{a.loanType === "company" ? "企业" : "个人"}</td>
+                    <td className="px-3 py-3 text-sm text-slate-600">{a.customerName || "-"}</td>
                     <td className="px-3 py-3 text-sm font-semibold text-emerald-600">{a.phone}</td>
                     <td className="px-3 py-3 text-sm text-slate-600">{a.amount}</td>
+                    <td className="px-3 py-3 text-sm text-slate-600">{a.customerPurpose || "-"}</td>
+                    <td className="px-3 py-3 text-sm text-slate-600">{a.customerCity || "-"}</td>
                     <td className="px-3 py-3">
                       <select value={a.status} onChange={(e) => updateStatus(a.id, e.target.value)}
                         className={`cursor-pointer rounded-full px-2.5 py-1 text-xs font-semibold border-0 outline-none ${status.bg} ${status.color}`}>

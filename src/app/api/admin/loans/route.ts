@@ -24,8 +24,20 @@ export async function GET(req: NextRequest) {
     db.select({ count: sql<number>`count(*)` }).from(schema.loanApplications).where(where),
   ]);
 
+  const parsed = items.map((item) => {
+    let extra: Record<string, string> = {};
+    try { if (item.notes) extra = JSON.parse(item.notes); } catch {}
+    return {
+      ...item,
+      customerName: extra.name || "",
+      customerPurpose: extra.purpose || "",
+      customerCity: extra.city || "",
+      notes: extra.name ? item.notes : (item.notes || ""), // keep raw notes if no extra fields
+    };
+  });
+
   return NextResponse.json({
-    items,
+    items: parsed,
     total: Number(countResult[0]?.count) || 0,
     page,
     totalPages: Math.ceil((Number(countResult[0]?.count) || 0) / limit),

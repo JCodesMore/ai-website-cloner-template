@@ -41,17 +41,62 @@ export async function invalidateAllSessions(): Promise<void> {
 
 // ── Admin credentials ──
 
-export async function validateAdminCredentials(username: string, password: string): Promise<boolean> {
+export async function validateAdminCredentials(username: string, password: string, ip?: string): Promise<boolean> {
   try {
+    // Check lockout
+    const lockRows = await db.select({ value: schema.settings.value })
+      .from(schema.settings)
+      .where(eq(schema.settings.key, `admin_lockout:${username}`));
+    if (lockRows.length > 0) {
+      const lock = JSON.parse(lockRows[0].value);
+      if (lock.lockedUntil && Date.now() < lock.lockedUntil) {
+        await auditLog("admin_login_blocked", `user=${username} ip=${ip || "unknown"} until=${new Date(lock.lockedUntil).toISOString()}`);
+        return "locked" as any;
+      }
+    }
+
     const rows = await db.select({ password: schema.users.password, role: schema.users.role })
       .from(schema.users)
       .where(eq(schema.users.username, username));
-    if (rows.length === 0) return false;
-    if (rows[0].role !== "admin") return false;
-    return verifyPassword(password, rows[0].password);
+    if (rows.length === 0 || rows[0].role !== "admin") {
+      await recordAdminLoginFailure(username, ip);
+      return false;
+    }
+    const ok = verifyPassword(password, rows[0].password);
+    if (ok) {
+      await clearAdminLoginFailures(username);
+      await auditLog("admin_login_ok", `user=${username} ip=${ip || "unknown"}`);
+    } else {
+      await recordAdminLoginFailure(username, ip);
+    }
+    return ok;
   } catch {
     return false;
   }
+}
+
+async function recordAdminLoginFailure(username: string, ip?: string): Promise<void> {
+  try {
+    const key = `admin_lockout:${username}`;
+    const rows = await db.select({ value: schema.settings.value }).from(schema.settings).where(eq(schema.settings.key, key));
+    let attempts = 0;
+    if (rows.length > 0) {
+      const lock = JSON.parse(rows[0].value);
+      attempts = lock.attempts || 0;
+    }
+    attempts++;
+    const lockedUntil = attempts >= 5 ? Date.now() + 30 * 60 * 1000 : 0; // 5 failures = 30 min lockout
+    await db.insert(schema.settings)
+      .values({ key, value: JSON.stringify({ attempts, lockedUntil }) })
+      .onConflictDoUpdate({ target: schema.settings.key, set: { value: JSON.stringify({ attempts, lockedUntil }) } });
+    await auditLog("admin_login_fail", `user=${username} ip=${ip || "unknown"} attempt=${attempts}${lockedUntil ? " LOCKED" : ""}`);
+  } catch { /* non-critical */ }
+}
+
+async function clearAdminLoginFailures(username: string): Promise<void> {
+  try {
+    await db.delete(schema.settings).where(eq(schema.settings.key, `admin_lockout:${username}`));
+  } catch { /* non-critical */ }
 }
 
 export async function requireAdmin(): Promise<string | null> {

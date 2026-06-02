@@ -25,7 +25,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "请输入账号和密码" }, { status: 400 });
   }
 
-  if (!(await validateAdminCredentials(username, password))) {
+  const valid = await validateAdminCredentials(username, password, ip);
+  if (valid === "locked") {
+    return NextResponse.json({ ok: false, error: "账号已被锁定，请30分钟后重试" }, { status: 423 });
+  }
+  if (!valid) {
     return NextResponse.json({ ok: false, error: "账号或密码错误" }, { status: 401 });
   }
 
