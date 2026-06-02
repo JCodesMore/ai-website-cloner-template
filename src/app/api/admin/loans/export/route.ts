@@ -8,15 +8,12 @@ export async function GET(req: NextRequest) {
   if (auth) return auth;
 
   const url = new URL(req.url);
-  const page = Math.max(1, parseInt(url.searchParams.get("page") || "1", 10));
   const statusFilter = url.searchParams.get("status") || "";
   const search = url.searchParams.get("search") || "";
   const cityFilter = url.searchParams.get("city") || "";
   const purposeFilter = url.searchParams.get("purpose") || "";
   const dateFrom = url.searchParams.get("dateFrom") || "";
   const dateTo = url.searchParams.get("dateTo") || "";
-  const limit = 20;
-  const offset = (page - 1) * limit;
 
   const conditions = [];
   if (statusFilter) conditions.push(eq(schema.loanApplications.status, statusFilter));
@@ -27,27 +24,31 @@ export async function GET(req: NextRequest) {
   if (dateTo) conditions.push(sql`created_at::date <= ${dateTo}::date`);
   const where = conditions.length > 0 ? and(...conditions) : undefined;
 
-  const [items, countResult] = await Promise.all([
-    db.select().from(schema.loanApplications).where(where).limit(limit).offset(offset).orderBy(sql`created_at desc`),
-    db.select({ count: sql<number>`count(*)` }).from(schema.loanApplications).where(where),
-  ]);
+  const items = await db.select().from(schema.loanApplications).where(where).orderBy(sql`created_at desc`).limit(5000);
 
-  const parsed = items.map((item) => {
+  const STATUS_LABELS: Record<string, string> = { new: "待联系", contacted: "已联系", followup: "跟进中", done: "已成交", rejected: "已拒绝" };
+
+  const header = "ID,类型,称呼,手机号,金额,用途,城市,状态,备注,时间";
+  const rows = items.map((item) => {
     let extra: Record<string, string> = {};
     try { if (item.notes) extra = JSON.parse(item.notes); } catch {}
-    return {
-      ...item,
-      customerName: extra.name || "",
-      customerPurpose: extra.purpose || "",
-      customerCity: extra.city || "",
-      notes: extra.name ? item.notes : (item.notes || ""), // keep raw notes if no extra fields
-    };
+    const type = item.loanType === "company" ? "企业" : "个人";
+    const name = extra.name || "";
+    const purpose = extra.purpose || "";
+    const city = extra.city || "";
+    const status = STATUS_LABELS[item.status || ""] || item.status || "";
+    const notes = (item.notes || "").replace(/"/g, '""');
+    const time = item.createdAt ? new Date(item.createdAt).toLocaleString("zh-CN") : "";
+    return `${item.id},${type},${name},${item.phone},${item.amount},${purpose},${city},${status},"${notes}",${time}`;
   });
 
-  return NextResponse.json({
-    items: parsed,
-    total: Number(countResult[0]?.count) || 0,
-    page,
-    totalPages: Math.ceil((Number(countResult[0]?.count) || 0) / limit),
+  const bom = "﻿";
+  const csv = bom + header + "\n" + rows.join("\n");
+
+  return new NextResponse(csv, {
+    headers: {
+      "Content-Type": "text/csv; charset=utf-8",
+      "Content-Disposition": `attachment; filename="loan-applications-${new Date().toISOString().slice(0, 10)}.csv"`,
+    },
   });
 }

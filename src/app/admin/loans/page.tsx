@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Pagination from "@/components/Pagination";
-import { Search } from "lucide-react";
+import { Search, Download } from "lucide-react";
 
 const STATUSES = [
   { value: "new", label: "待联系", color: "text-emerald-700", bg: "bg-emerald-50" },
@@ -17,15 +17,16 @@ export default function AdminLoansPage() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [filters, setFilters] = useState({ status: "", search: "" });
+  const [filters, setFilters] = useState<Record<string, string>>({ status: "", search: "" });
   const [editingNote, setEditingNote] = useState<number | null>(null);
   const [noteText, setNoteText] = useState("");
 
   useEffect(() => {
     setLoading(true);
     const p = new URLSearchParams({ page: String(page) });
-    if (filters.status) p.set("status", filters.status);
-    if (filters.search) p.set("search", filters.search);
+    for (const [k, v] of Object.entries(filters)) {
+      if (v) p.set(k, v);
+    }
     fetch(`/api/admin/loans?${p}`)
       .then((r) => r.json()).then((d) => { setItems(d.items || []); setTotalPages(d.totalPages || 1); })
       .finally(() => setLoading(false));
@@ -51,19 +52,38 @@ export default function AdminLoansPage() {
     <div>
       <h1 className="mb-5 text-xl font-bold text-slate-900">CRM · 客户跟进</h1>
 
-      <div className="mb-4 flex flex-wrap items-center gap-3">
-        <div className="relative max-w-[200px]">
-          <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
-          <input type="text" placeholder="搜索手机号..." value={filters.search}
-            onChange={(e) => { setFilters({ ...filters, search: e.target.value }); setPage(1); }}
-            className="h-9 w-full rounded-md border border-slate-200 pl-8 pr-3 text-sm outline-none transition-colors duration-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20" />
+      <div className="mb-4 space-y-2">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative max-w-[180px]">
+            <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
+            <input type="text" placeholder="搜索手机号..." value={filters.search}
+              onChange={(e) => { setFilters({ ...filters, search: e.target.value }); setPage(1); }}
+              className="h-9 w-full rounded-md border border-slate-200 pl-8 pr-3 text-sm outline-none transition-colors duration-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20" />
+          </div>
+          <select value={filters.status} onChange={(e) => { setFilters({ ...filters, status: e.target.value }); setPage(1); }}
+            className="h-9 rounded-md border border-slate-200 px-2 text-sm outline-none">
+            <option value="">全部状态</option>
+            {STATUSES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+          </select>
+          <input type="text" placeholder="城市" value={filters.city || ""}
+            onChange={(e) => { setFilters({ ...filters, city: e.target.value }); setPage(1); }}
+            className="h-9 w-20 rounded-md border border-slate-200 px-2 text-sm outline-none transition-colors duration-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20" />
+          <input type="text" placeholder="用途" value={filters.purpose || ""}
+            onChange={(e) => { setFilters({ ...filters, purpose: e.target.value }); setPage(1); }}
+            className="h-9 w-20 rounded-md border border-slate-200 px-2 text-sm outline-none transition-colors duration-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20" />
+          <input type="date" value={filters.dateFrom || ""}
+            onChange={(e) => { setFilters({ ...filters, dateFrom: e.target.value }); setPage(1); }}
+            className="h-9 rounded-md border border-slate-200 px-2 text-sm outline-none transition-colors duration-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20" />
+          <span className="text-xs text-slate-400">至</span>
+          <input type="date" value={filters.dateTo || ""}
+            onChange={(e) => { setFilters({ ...filters, dateTo: e.target.value }); setPage(1); }}
+            className="h-9 rounded-md border border-slate-200 px-2 text-sm outline-none transition-colors duration-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20" />
+          <a href={`/api/admin/loans/export?${new URLSearchParams(filters as any).toString()}`}
+            className="ml-auto inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-2 text-xs text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer">
+            <Download className="h-3.5 w-3.5" />导出CSV
+          </a>
         </div>
-        <select value={filters.status} onChange={(e) => { setFilters({ ...filters, status: e.target.value }); setPage(1); }}
-          className="h-9 rounded-md border border-slate-200 px-2 text-sm outline-none">
-          <option value="">全部状态</option>
-          {STATUSES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-        </select>
-        <div className="ml-auto text-sm text-slate-500">共 {items.length} 条记录</div>
+        <div className="text-sm text-slate-500">共 {items.length} 条记录</div>
       </div>
 
       <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
