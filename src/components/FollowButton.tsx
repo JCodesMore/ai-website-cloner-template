@@ -3,24 +3,36 @@
 import { useState, useEffect } from "react";
 import { Heart, Loader2 } from "lucide-react";
 
-export default function FollowButton({ productId }: { productId: string }) {
+interface Props {
+  productId?: string;
+  institutionId?: string;
+}
+
+export default function FollowButton({ productId, institutionId }: Props) {
+  const type = institutionId ? "institution" : "product";
+  const id = institutionId || productId || "";
+  const apiPath = institutionId
+    ? `/api/institutions/${institutionId}/follow`
+    : `/api/products/${productId}/follow`;
+
   const [following, setFollowing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [acting, setActing] = useState(false);
 
   useEffect(() => {
-    fetch(`/api/products/${productId}/follow`)
+    if (!id) return;
+    fetch(apiPath)
       .then((r) => r.json())
       .then((d) => setFollowing(d.following))
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, [productId]);
+  }, [apiPath, id]);
 
   async function toggle() {
     setActing(true);
     try {
       const method = following ? "DELETE" : "POST";
-      const res = await fetch(`/api/products/${productId}/follow`, { method });
+      const res = await fetch(apiPath, { method });
       const d = await res.json();
       if (d.error && d.error.includes("登录")) {
         window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
@@ -35,6 +47,10 @@ export default function FollowButton({ productId }: { productId: string }) {
   }
 
   if (loading) return <div className="h-9 w-20 animate-pulse rounded-lg bg-slate-100" />;
+
+  const label = type === "institution"
+    ? (following ? "已关注" : "关注机构")
+    : (following ? "已关注" : "关注产品");
 
   return (
     <button
@@ -51,7 +67,7 @@ export default function FollowButton({ productId }: { productId: string }) {
       ) : (
         <Heart className={`h-4 w-4 ${following ? "fill-amber-500 text-amber-500" : ""}`} />
       )}
-      {following ? "已关注" : "关注产品"}
+      {label}
     </button>
   );
 }

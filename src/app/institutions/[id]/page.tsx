@@ -5,6 +5,8 @@ import { getInstitutionById } from "@/lib/repository";
 import { productDetails, newsItems, discussionItems, opinionItems, faqItems } from "@/lib/data";
 import type { Metadata } from "next";
 import { ExternalLink, ChevronRight } from "lucide-react";
+import ShareButton from "@/components/ShareButton";
+import FollowButton from "@/components/FollowButton";
 
 interface Props { params: Promise<{ id: string }> }
 
@@ -48,6 +50,8 @@ export default async function InstitutionDetailPage({ params }: Props) {
               <div className="flex-1">
                 <div className="mb-2 flex items-center gap-3">
                   <h1 className="text-xl font-bold text-slate-900">{inst.fullName}</h1>
+                  <ShareButton url={`/institutions/${id}`} title={inst.fullName} variant="product" />
+                  <FollowButton institutionId={id} />
                 </div>
                 {inst.website && (
                   <a href={"http://" + inst.website} target="_blank" rel="noopener" className="inline-flex items-center gap-1 text-sm text-blue-600 hover:underline">

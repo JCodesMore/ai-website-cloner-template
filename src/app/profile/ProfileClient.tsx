@@ -2,24 +2,26 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Loader2, Eye, EyeOff, User, Lock, Heart, MessageSquare, Calendar, Check } from "lucide-react";
+import { Loader2, Eye, EyeOff, User, Lock, Heart, MessageSquare, Calendar, Check, Building2 } from "lucide-react";
 
 interface Props {
   user: { username: string; phone: string; createdAt: string | null };
   follows: { productId: number; productName: string; institution: string; category: string }[];
+  followedInstitutions: { institutionId: number; institutionName: string; institutionFullName: string }[];
   comments: { id: number; content: string; productName: string; date: string }[];
 }
 
-type Tab = "info" | "password" | "follows" | "comments";
+type Tab = "info" | "password" | "follows" | "instFollows" | "comments";
 
 const tabs: { key: Tab; label: string; icon: typeof User }[] = [
   { key: "info", label: "基本资料", icon: User },
   { key: "password", label: "修改密码", icon: Lock },
   { key: "follows", label: "关注的产品", icon: Heart },
+  { key: "instFollows", label: "关注的机构", icon: Building2 },
   { key: "comments", label: "我的评论", icon: MessageSquare },
 ];
 
-export default function ProfileClient({ user, follows, comments }: Props) {
+export default function ProfileClient({ user, follows, followedInstitutions, comments }: Props) {
   const [active, setActive] = useState<Tab>("info");
 
   return (
@@ -45,6 +47,11 @@ export default function ProfileClient({ user, follows, comments }: Props) {
                   {follows.length}
                 </span>
               )}
+              {t.key === "instFollows" && followedInstitutions.length > 0 && (
+                <span className="ml-auto rounded-full bg-slate-200 px-1.5 py-0.5 text-xs text-slate-600">
+                  {followedInstitutions.length}
+                </span>
+              )}
               {t.key === "comments" && comments.length > 0 && (
                 <span className="ml-auto rounded-full bg-slate-200 px-1.5 py-0.5 text-xs text-slate-600">
                   {comments.length}
@@ -59,6 +66,7 @@ export default function ProfileClient({ user, follows, comments }: Props) {
           {active === "info" && <InfoTab user={user} />}
           {active === "password" && <PasswordTab />}
           {active === "follows" && <FollowsTab follows={follows} />}
+          {active === "instFollows" && <InstFollowsTab followedInstitutions={followedInstitutions} />}
           {active === "comments" && <CommentsTab comments={comments} />}
         </div>
       </div>
@@ -230,6 +238,37 @@ function CommentsTab({ comments }: { comments: { id: number; content: string; pr
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+/* ---- Institutions Follow Tab ---- */
+function InstFollowsTab({ followedInstitutions }: { followedInstitutions: { institutionId: number; institutionName: string; institutionFullName: string }[] }) {
+  return (
+    <div>
+      <div className="mb-6 flex items-center gap-2.5">
+        <Building2 className="h-5 w-5 text-amber-500" />
+        <h2 className="text-lg font-semibold text-slate-900">关注的机构</h2>
+        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500">{followedInstitutions.length}</span>
+      </div>
+      {followedInstitutions.length === 0 ? (
+        <p className="py-12 text-center text-sm text-slate-400">
+          暂无关注，去<a href="/institutions" className="text-amber-600 hover:underline">机构列表</a>看看吧
+        </p>
+      ) : (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {followedInstitutions.map((f) => (
+            <Link key={f.institutionId} href={`/institutions/${f.institutionId}`} className="flex items-center gap-3 rounded-lg border border-slate-200 p-4 transition-all duration-200 hover:border-amber-300 hover:bg-amber-50/50">
+              <div className="flex-1 min-w-0">
+                <div className="truncate font-medium text-sm text-slate-900">{f.institutionName}</div>
+                {f.institutionFullName && (
+                  <div className="mt-0.5 truncate text-xs text-slate-400">{f.institutionFullName}</div>
+                )}
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

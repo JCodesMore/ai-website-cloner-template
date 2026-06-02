@@ -100,6 +100,15 @@ export const followedProducts = pgTable("followed_products", {
   uniqueIndex("uq_follow_user_product").on(table.username, table.productId),
 ]);
 
+export const followedInstitutions = pgTable("followed_institutions", {
+  id: serial("id").primaryKey(),
+  username: varchar("username", { length: 100 }).notNull(),
+  institutionId: integer("institution_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  uniqueIndex("uq_follow_user_inst").on(table.username, table.institutionId),
+]);
+
 export const articleAnalytics = pgTable("article_analytics", {
   id: serial("id").primaryKey(),
   articleId: integer("article_id").notNull().references(() => articles.id),

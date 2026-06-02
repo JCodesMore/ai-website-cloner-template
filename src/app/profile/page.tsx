@@ -46,6 +46,27 @@ export default async function ProfilePage() {
     category: catMap.get(String(r.productId)) || "",
   }));
 
+  // Followed institutions
+  const instFollowRows = await db
+    .select()
+    .from(schema.followedInstitutions)
+    .where(eq(schema.followedInstitutions.username, username))
+    .orderBy(desc(schema.followedInstitutions.createdAt));
+
+  const instIds = instFollowRows.map((r) => r.institutionId);
+  const instRows = instIds.length > 0
+    ? await db
+        .select({ id: schema.institutions.id, name: schema.institutions.name, fullName: schema.institutions.fullName })
+        .from(schema.institutions)
+        .where(inArray(schema.institutions.id, instIds))
+    : [];
+  const instMap = new Map(instRows.map((i) => [i.id, i]));
+  const followedInstitutions = instFollowRows.map((r) => ({
+    institutionId: r.institutionId,
+    institutionName: instMap.get(r.institutionId)?.name || "未知",
+    institutionFullName: instMap.get(r.institutionId)?.fullName || "",
+  }));
+
   const comments = await db
     .select()
     .from(schema.comments)
@@ -60,6 +81,7 @@ export default async function ProfilePage() {
         createdAt: u.createdAt?.toISOString() || null,
       }}
       follows={follows}
+      followedInstitutions={followedInstitutions}
       comments={comments.map((c) => ({
         id: c.id,
         content: c.content,
