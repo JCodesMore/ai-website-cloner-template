@@ -7,13 +7,13 @@ const BASE = process.argv[2] || "http://localhost:3000";
 const checks = [
   {
     path: "/products/company?tag=29&adv=35",
-    expected: ["惠农贷", "信用快贷", "善担贷", "创业担保贷", "惠农e贷", "科技e贷", "裕农快贷", "微捷贷"],
-    desc: "涉农类 + 3-5年",
+    expected: ["惠农贷", "信用快贷", "善担贷", "创业担保贷", "科技e贷", "裕农快贷", "微捷贷"],
+    desc: "涉农类 + 3-5年 (7 products)",
   },
   {
     path: "/products/company?tag=29&adv=41",
-    expected: ["惠农贷", "振兴贷", "信用快贷", "善担贷", "创业担保贷", "惠农e贷", "科技e贷", "裕农快贷", "微捷贷"],
-    desc: "涉农类 + 先息后本",
+    expected: ["惠农贷", "振兴贷", "信用快贷", "善担贷", "创业担保贷", "科技e贷", "裕农快贷", "微捷贷", "云税贷", "建行惠懂你", "科创e贷", "银税贷"],
+    desc: "涉农类 + 先息后本 (12 products)",
   },
 ];
 
