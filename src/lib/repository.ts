@@ -75,7 +75,21 @@ export async function getAllInstitutions(): Promise<Institution[]> {
 
 export async function getInstitutionById(id: string): Promise<InstitutionDetail | null> {
   const rows = await db.select().from(schema.institutions).where(eq(schema.institutions.id, parseInt(id, 10)));
-  return rows.length > 0 ? mapInstitutionDetail(rows[0]) : null;
+  if (rows.length === 0) return null;
+  const inst = rows[0];
+  // Fetch ALL products for this institution from products table
+  const prods = await db.select({
+    id: schema.products.id,
+    name: schema.products.name,
+    image: schema.products.image,
+  }).from(schema.products).where(eq(schema.products.institution, inst.name));
+  const productList = prods.map((p) => ({
+    id: p.id,
+    name: p.name,
+    href: `/products/detail/${p.id}`,
+    icon: p.image || "",
+  }));
+  return mapInstitutionDetail(inst, productList);
 }
 
 // ── Comments ──
@@ -173,7 +187,7 @@ function mapInstitution(row: any, realProductCount?: number): Institution {
   } as any;
 }
 
-function mapInstitutionDetail(row: any): InstitutionDetail {
+function mapInstitutionDetail(row: any, products?: { id: number; name: string; href: string; icon: string }[]): InstitutionDetail {
   return {
     id: row.id,
     name: row.name,
@@ -181,7 +195,7 @@ function mapInstitutionDetail(row: any): InstitutionDetail {
     logo: row.logo || "",
     website: row.website || "",
     introHtml: row.introHtml || "",
-    products: row.products || [],
+    products: products || row.products || [],
   };
 }
 
