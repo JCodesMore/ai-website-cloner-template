@@ -45,7 +45,14 @@ export default async function ArticleDetailPage({ params }: Props) {
                 variant="article"
               />
             </div>
-            <div className="prose prose-slate max-w-none text-sm leading-relaxed text-slate-700" dangerouslySetInnerHTML={{ __html: article.body }} />
+            {article.body ? (
+              <div className="prose prose-slate max-w-none text-sm leading-relaxed text-slate-700" dangerouslySetInnerHTML={{ __html: article.body }} />
+            ) : (
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <p className="text-lg font-semibold text-slate-400">文章内容即将上线</p>
+                <p className="mt-2 text-sm text-slate-400">我们正在准备原创内容，敬请期待</p>
+              </div>
+            )}
             <ArticleTracker articleId={Number(id)} />
           </div>
           <Sidebar newsItems={newsItems} discussionItems={discussionItems} opinionItems={opinionItems} faqItems={faqItems} />

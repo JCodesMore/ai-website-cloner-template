@@ -2,7 +2,7 @@
   {
     "id": 197,
     "name": "招捷贷",
-    "image": "https://www.bbxin.com/storage/2025/08/dc7zcxe46rneh9l3rs.jpg",
+    "image": "",
     "institution": "招商银行",
     "maxAmount": "2000万元",
     "term": "最长3年期",
@@ -15,7 +15,7 @@
   {
     "id": 375,
     "name": "华兴快贷",
-    "image": "https://www.bbxin.com/storage/2025/09/dcuud0bk3p1nz9fue2.jpg",
+    "image": "",
     "institution": "华兴银行",
     "maxAmount": "2500万元",
     "term": "最长10年期",
@@ -28,7 +28,7 @@
   {
     "id": 125,
     "name": "随房e借",
-    "image": "https://www.bbxin.com/storage/2025/08/dc7yc0lv8u29pzbmgn.jpg",
+    "image": "",
     "institution": "工商银行",
     "maxAmount": "1000万元",
     "term": "最长10年",
@@ -41,7 +41,7 @@
   {
     "id": 135,
     "name": "抵押e贷",
-    "image": "https://www.bbxin.com/storage/2025/08/dc7zej3ggszn1t2dvk.jpg",
+    "image": "",
     "institution": "农业银行",
     "maxAmount": "1000万元",
     "term": "最长10年",
@@ -54,7 +54,7 @@
   {
     "id": 148,
     "name": "房贷通",
-    "image": "https://www.bbxin.com/storage/2025/08/dc7zr6ji979zabctgd.jpg",
+    "image": "",
     "institution": "华夏银行",
     "maxAmount": "3000万元",
     "term": "最长30年",
@@ -67,7 +67,7 @@
   {
     "id": 516,
     "name": "车主融",
-    "image": "https://www.bbxin.com/storage/2026/03/dhchnn5hywtf1782ue.png",
+    "image": "",
     "institution": "拍拍车融",
     "maxAmount": "100万元",
     "term": "最长1年期",
@@ -80,7 +80,7 @@
   {
     "id": 203,
     "name": "车主贷",
-    "image": "https://www.bbxin.com/storage/2025/08/dc81l68ql8rjuthcfz.jpg",
+    "image": "",
     "institution": "平安银行",
     "maxAmount": "100万元",
     "term": "最长4年期",
@@ -93,7 +93,7 @@
   {
     "id": 169,
     "name": "房抵经营贷款",
-    "image": "https://www.bbxin.com/storage/2025/08/dc7zr6ji979zabctgd.jpg",
+    "image": "",
     "institution": "华夏银行",
     "maxAmount": "3000万元",
     "term": "最长10年",
@@ -106,7 +106,7 @@
   {
     "id": 61,
     "name": "永续贷",
-    "image": "https://www.bbxin.com/storage/2025/08/dc81nja7paltrv5fp4.jpg",
+    "image": "",
     "institution": "中原银行",
     "maxAmount": "1000万元",
     "term": "最长30年",
@@ -119,7 +119,7 @@
   {
     "id": 209,
     "name": "吉房贷",
-    "image": "https://www.bbxin.com/storage/2025/08/dc81qjuezg58panu13.jpg",
+    "image": "",
     "institution": "吉林银行",
     "maxAmount": "500万元",
     "term": "最长15年期",
@@ -132,7 +132,7 @@
   {
     "id": 244,
     "name": "宅抵e贷",
-    "image": "https://www.bbxin.com/storage/2025/08/dc6xfoql3c0ewsfyqf.jpg",
+    "image": "",
     "institution": "天津银行",
     "maxAmount": "500万元",
     "term": "最长3年期",
@@ -145,7 +145,7 @@
   {
     "id": 215,
     "name": "邮车贷",
-    "image": "https://www.bbxin.com/storage/2025/08/dc7y9yjru7swjbss02.jpg",
+    "image": "",
     "institution": "邮储银行",
     "maxAmount": "150万元",
     "term": "最长5年期",
@@ -158,7 +158,7 @@
   {
     "id": 270,
     "name": "优房e贷",
-    "image": "https://www.bbxin.com/storage/2025/08/dcc6q2jpz2nfq4per6.jpg",
+    "image": "",
     "institution": "长安银行",
     "maxAmount": "500万元",
     "term": "最长10年期",
@@ -171,7 +171,7 @@
   {
     "id": 299,
     "name": "房易贷",
-    "image": "https://www.bbxin.com/storage/2025/08/dc83aat76i7t9v3xgv.jpg",
+    "image": "",
     "institution": "盛京银行",
     "maxAmount": "1000万元",
     "term": "最长3年期",
@@ -184,7 +184,7 @@
   {
     "id": 620,
     "name": "车极星",
-    "image": "https://www.bbxin.com/storage/2026/04/dhnojfks9zqoyarrax.jpg",
+    "image": "",
     "institution": "杭州浩渤",
     "maxAmount": "100万元",
     "term": "最长3年期",
@@ -197,7 +197,7 @@
   {
     "id": 211,
     "name": "车抵贷",
-    "image": "https://www.bbxin.com/storage/2025/08/dc7wvt3dl8w8luddav.jpg",
+    "image": "",
     "institution": "京东消金",
     "maxAmount": "20万元",
     "term": "最长4年期",
@@ -210,7 +210,7 @@
   {
     "id": 267,
     "name": "锦享贷",
-    "image": "https://www.bbxin.com/storage/2025/08/dcag5zhfdkg0iletcu.jpg",
+    "image": "",
     "institution": "锦程消费金融",
     "maxAmount": "20万元",
     "term": "最长5年期",
@@ -223,7 +223,7 @@
   {
     "id": 201,
     "name": "车来财",
-    "image": "https://www.bbxin.com/storage/2025/08/dc81tkufbtgjrrurp8.jpg",
+    "image": "",
     "institution": "易鑫金融",
     "maxAmount": "100万元",
     "term": "最长1年期",
@@ -236,7 +236,7 @@
   {
     "id": 208,
     "name": "车主贷",
-    "image": "https://www.bbxin.com/storage/2025/08/dc80gxe46o6rcnfkmt.jpg",
+    "image": "",
     "institution": "微众银行",
     "maxAmount": "20万元",
     "term": "最长2年期",
@@ -249,7 +249,7 @@
   {
     "id": 213,
     "name": "车抵贷",
-    "image": "https://www.bbxin.com/storage/2025/08/dc80wpuly75fkawjxr.jpg",
+    "image": "",
     "institution": "携程金融",
     "maxAmount": "100万元",
     "term": "最长5年期",
@@ -262,7 +262,7 @@
   {
     "id": 204,
     "name": "好车贷",
-    "image": "https://www.bbxin.com/storage/2025/08/dc7y67x5rhsqngmfj6.jpg",
+    "image": "",
     "institution": "新网银行",
     "maxAmount": "150万元",
     "term": "最长4年期",
@@ -275,7 +275,7 @@
   {
     "id": 229,
     "name": "民车融",
-    "image": "https://www.bbxin.com/storage/2025/08/dc81v2cmqomessbv0j.jpg",
+    "image": "",
     "institution": "民生易租",
     "maxAmount": "100万元",
     "term": "最长2年期",
@@ -288,7 +288,7 @@
   {
     "id": 250,
     "name": "车主融",
-    "image": "https://www.bbxin.com/storage/2025/08/dc2v1obbpkv9iscdux.jpg",
+    "image": "",
     "institution": "狮桥租赁",
     "maxAmount": "100万元",
     "term": "最长4年期",
@@ -301,7 +301,7 @@
   {
     "id": 251,
     "name": "车主贷",
-    "image": "https://www.bbxin.com/storage/2025/08/dc9uzj3zohgnmvndue.jpg",
+    "image": "",
     "institution": "长安新生",
     "maxAmount": "50万元",
     "term": "最长3年期",
@@ -314,7 +314,7 @@
   {
     "id": 786,
     "name": "当点钱",
-    "image": "https://www.bbxin.com/storage/2026/04/dhtru1i4rydswdcucc.png",
+    "image": "",
     "institution": "东京典当",
     "maxAmount": "20万元",
     "term": "最长1年期",
