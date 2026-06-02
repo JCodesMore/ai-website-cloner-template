@@ -1,5 +1,5 @@
 import { db, schema } from "@/lib/db";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 import type { Product, Institution, Comment, NewsItem, ArticleDetail, ProductDetail, InstitutionDetail, Counselor } from "@/types";
 
 // Sidebar data — static content, not DB-backed
@@ -62,7 +62,13 @@ export async function getAllProductDetails(): Promise<ProductDetail[]> {
 
 export async function getAllInstitutions(): Promise<Institution[]> {
   const rows = await db.select().from(schema.institutions);
-  return rows.map(mapInstitution);
+  // Compute per-institution product count from products table
+  const prodCounts = await db
+    .select({ institution: schema.products.institution, count: sql\`count(*)::int\` })
+    .from(schema.products)
+    .groupBy(schema.products.institution);
+  const countMap = new Map(prodCounts.map((c) => [c.institution, c.count]));
+  return rows.map((row) => mapInstitution(row, countMap.get(row.name) || 0));
 }
 
 export async function getInstitutionById(id: string): Promise<InstitutionDetail | null> {
@@ -151,7 +157,7 @@ function mapProductDetail(row: any): ProductDetail {
   };
 }
 
-function mapInstitution(row: any): Institution {
+function mapInstitution(row: any, realProductCount?: number): Institution {
   return {
     id: row.id,
     name: row.name,
@@ -159,7 +165,7 @@ function mapInstitution(row: any): Institution {
     shortName: row.shortName || "",
     logo: row.logo || "",
     initial: row.name.charAt(0),
-    productCount: (row.products || []).length,
+    productCount: realProductCount ?? (row.products || []).length,
     href: `/institutions/${row.id}`,
     products: row.products || [],
   } as any;
