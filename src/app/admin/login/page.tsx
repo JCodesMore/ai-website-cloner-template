@@ -61,9 +61,9 @@ export default function AdminLoginPage() {
         <p className="mb-8 text-center text-sm text-slate-400">请使用管理员账号登录</p>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input type="text" name="username" required placeholder="管理员账号"
-            className="h-11 w-full rounded-lg border border-slate-200 px-3 text-sm outline-none transition-colors duration-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20" />
+            className="h-11 w-full rounded-lg border border-slate-200 px-3 text-sm outline-none transition-colors duration-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20" />
           <input type="password" name="password" required placeholder="管理员密码"
-            className="h-11 w-full rounded-lg border border-slate-200 px-3 text-sm outline-none transition-colors duration-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20" />
+            className="h-11 w-full rounded-lg border border-slate-200 px-3 text-sm outline-none transition-colors duration-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20" />
           {error && <p className="text-sm text-red-500">{error}</p>}
           <button type="submit" disabled={loading}
             className="h-11 w-full rounded-lg bg-slate-900 text-sm font-medium text-white transition-colors duration-200 hover:bg-slate-800 disabled:opacity-60 cursor-pointer">

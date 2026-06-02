@@ -58,7 +58,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50">
         <div className="text-center">
-          <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-3 border-slate-200 border-t-yellow-600" />
+          <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-3 border-slate-200 border-t-emerald-600" />
           <p className="text-sm text-slate-400">加载中...</p>
         </div>
       </div>
@@ -72,7 +72,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <h2 className="mb-3 text-xl font-bold text-slate-900">页面加载异常</h2>
           <p className="mb-5 text-sm text-slate-500">请稍后重试</p>
           <button onClick={() => window.location.href = "/admin/login"}
-            className="rounded-lg bg-yellow-600 px-8 py-2.5 text-sm font-medium text-white transition-colors duration-200 hover:bg-yellow-700 cursor-pointer">
+            className="rounded-lg bg-emerald-600 px-8 py-2.5 text-sm font-medium text-white transition-colors duration-200 hover:bg-emerald-700 cursor-pointer">
             重新加载
           </button>
         </div>
@@ -84,7 +84,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="flex min-h-screen bg-slate-50">
       <aside className="flex w-[220px] shrink-0 flex-col border-r border-slate-200 bg-white">
         <div className="border-b border-slate-100 px-5 py-5">
-          <Link href="/admin" className="text-lg font-bold text-slate-900 hover:text-yellow-600 transition-colors duration-200">
+          <Link href="/admin" className="text-lg font-bold text-slate-900 hover:text-emerald-600 transition-colors duration-200">
             银脉圈 · 后台
           </Link>
           <p className="mt-1 text-xs text-slate-400">{username}</p>
@@ -98,7 +98,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <Link key={item.href} href={item.href}
                 className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors duration-200 ${
                   active
-                    ? "bg-amber-50 text-yellow-700 font-semibold"
+                    ? "bg-emerald-50 text-emerald-700 font-semibold"
                     : "text-slate-600 hover:bg-slate-50"
                 }`}>
                 <item.icon className="h-4 w-4" />

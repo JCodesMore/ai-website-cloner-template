@@ -5,8 +5,8 @@ import Pagination from "@/components/Pagination";
 import { Search } from "lucide-react";
 
 const STATUSES = [
-  { value: "new", label: "待联系", color: "text-amber-700", bg: "bg-amber-50" },
-  { value: "contacted", label: "已联系", color: "text-blue-700", bg: "bg-blue-50" },
+  { value: "new", label: "待联系", color: "text-emerald-700", bg: "bg-emerald-50" },
+  { value: "contacted", label: "已联系", color: "text-emerald-700", bg: "bg-emerald-50" },
   { value: "followup", label: "跟进中", color: "text-violet-700", bg: "bg-violet-50" },
   { value: "done", label: "已成交", color: "text-emerald-700", bg: "bg-emerald-50" },
   { value: "rejected", label: "已拒绝", color: "text-slate-600", bg: "bg-slate-100" },
@@ -56,7 +56,7 @@ export default function AdminLoansPage() {
           <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
           <input type="text" placeholder="搜索手机号..." value={filters.search}
             onChange={(e) => { setFilters({ ...filters, search: e.target.value }); setPage(1); }}
-            className="h-9 w-full rounded-md border border-slate-200 pl-8 pr-3 text-sm outline-none transition-colors duration-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20" />
+            className="h-9 w-full rounded-md border border-slate-200 pl-8 pr-3 text-sm outline-none transition-colors duration-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20" />
         </div>
         <select value={filters.status} onChange={(e) => { setFilters({ ...filters, status: e.target.value }); setPage(1); }}
           className="h-9 rounded-md border border-slate-200 px-2 text-sm outline-none">
@@ -88,10 +88,10 @@ export default function AdminLoansPage() {
               items.map((a) => {
                 const status = STATUSES.find((s) => s.value === a.status) || STATUSES[0];
                 return (
-                  <tr key={a.id} className={`border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors duration-150 ${a.status === "new" ? "bg-amber-50/30" : ""}`}>
+                  <tr key={a.id} className={`border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors duration-150 ${a.status === "new" ? "bg-emerald-50/30" : ""}`}>
                     <td className="px-3 py-3 text-sm text-slate-400">{a.id}</td>
                     <td className="px-3 py-3 text-sm text-slate-600">{a.loanType === "company" ? "企业" : "个人"}</td>
-                    <td className="px-3 py-3 text-sm font-semibold text-blue-600">{a.phone}</td>
+                    <td className="px-3 py-3 text-sm font-semibold text-emerald-600">{a.phone}</td>
                     <td className="px-3 py-3 text-sm text-slate-600">{a.amount}</td>
                     <td className="px-3 py-3">
                       <select value={a.status} onChange={(e) => updateStatus(a.id, e.target.value)}
@@ -104,7 +104,7 @@ export default function AdminLoansPage() {
                         <div className="flex gap-1">
                           <input autoFocus value={noteText} onChange={(e) => setNoteText(e.target.value)}
                             onKeyDown={(e) => { if (e.key === "Enter") saveNote(a.id); if (e.key === "Escape") setEditingNote(null); }}
-                            className="h-8 flex-1 rounded border border-slate-200 px-2 text-xs outline-none focus:border-blue-600" />
+                            className="h-8 flex-1 rounded border border-slate-200 px-2 text-xs outline-none focus:border-emerald-600" />
                           <button onClick={() => saveNote(a.id)}
                             className="rounded bg-slate-900 px-2 text-xs text-white transition-colors duration-200 hover:bg-slate-800 cursor-pointer">保存</button>
                         </div>

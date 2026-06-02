@@ -31,7 +31,7 @@ function SideCard({
         </div>
         <Link
           href={moreHref}
-          className="flex items-center gap-0.5 text-xs text-slate-400 transition-colors duration-200 hover:text-blue-600"
+          className="flex items-center gap-0.5 text-xs text-slate-400 transition-colors duration-200 hover:text-emerald-600"
         >
           更多 <ChevronRight className="h-3 w-3" />
         </Link>
@@ -44,7 +44,7 @@ function SideCard({
               <Link
                 href={item.href}
                 target="_blank"
-                className="text-sm leading-relaxed text-slate-600 transition-colors duration-200 hover:text-blue-600"
+                className="text-sm leading-relaxed text-slate-600 transition-colors duration-200 hover:text-emerald-600"
               >
                 {item.title}
               </Link>

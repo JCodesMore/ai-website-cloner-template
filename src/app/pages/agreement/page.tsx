@@ -14,7 +14,7 @@ export default function AgreementPage() {
     <>
       <div className="border-b border-slate-200 bg-white">
         <div className="mx-auto max-w-7xl px-4 py-3 text-sm text-slate-500">
-          <Link href="/" className="hover:text-blue-600 transition-colors duration-200">首页</Link>
+          <Link href="/" className="hover:text-emerald-600 transition-colors duration-200">首页</Link>
           <span className="mx-2">/</span>
           <span>使用协议</span>
         </div>
@@ -27,7 +27,7 @@ export default function AgreementPage() {
               <ul>
                 {sidebarItems.map((item) => (
                   <li key={item.href}>
-                    <Link href={item.href} className={`flex items-center gap-2 px-4 py-2.5 text-sm transition-colors duration-200 ${item.active ? "bg-blue-50 text-blue-700 font-medium" : "text-slate-600 hover:bg-slate-50"}`}>
+                    <Link href={item.href} className={`flex items-center gap-2 px-4 py-2.5 text-sm transition-colors duration-200 ${item.active ? "bg-emerald-50 text-emerald-700 font-medium" : "text-slate-600 hover:bg-slate-50"}`}>
                       <ChevronRight className="h-3.5 w-3.5" /> {item.label}
                     </Link>
                   </li>
@@ -49,7 +49,7 @@ export default function AgreementPage() {
               <p><strong>4、账户安全</strong></p>
               <p>您应妥善保管账号及密码信息，因您自身原因导致的账户被盗用或信息泄露，银脉圈不承担责任。</p>
               <p><strong>5、用户信息保护</strong></p>
-              <p>详见<a href="/pages/privacy" className="text-blue-600 hover:underline">《银脉圈隐私保护》</a>。</p>
+              <p>详见<a href="/pages/privacy" className="text-emerald-600 hover:underline">《银脉圈隐私保护》</a>。</p>
               <p><strong>6、知识产权</strong></p>
               <p>银脉圈所有内容（包括但不限于文字、图片、设计、程序）的知识产权归内江银脉圈企业管理咨询有限公司所有，未经许可不得转载或用于商业用途。</p>
               <p><strong>7、法律适用</strong></p>

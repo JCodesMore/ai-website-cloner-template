@@ -58,14 +58,14 @@ export default function FollowButton({ productId, institutionId }: Props) {
       disabled={acting}
       className={`inline-flex items-center gap-1.5 rounded-lg border px-4 py-2 text-sm font-medium transition-all duration-200 disabled:opacity-60 ${
         following
-          ? "border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100"
-          : "border-slate-200 text-slate-600 hover:border-amber-300 hover:text-amber-700"
+          ? "border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+          : "border-slate-200 text-slate-600 hover:border-emerald-300 hover:text-emerald-700"
       }`}
     >
       {acting ? (
         <Loader2 className="h-4 w-4 animate-spin" />
       ) : (
-        <Heart className={`h-4 w-4 ${following ? "fill-amber-500 text-amber-500" : ""}`} />
+        <Heart className={`h-4 w-4 ${following ? "fill-emerald-500 text-emerald-500" : ""}`} />
       )}
       {label}
     </button>

@@ -73,9 +73,9 @@ export default async function ProductDetailPage({ params }: Props) {
     <>
       <div className="border-b border-slate-200 bg-white">
         <div className="mx-auto max-w-7xl px-4 py-3 text-sm text-slate-500">
-          <Link href="/" className="hover:text-blue-600 transition-colors duration-200">首页</Link>
+          <Link href="/" className="hover:text-emerald-600 transition-colors duration-200">首页</Link>
           <span className="mx-2">/</span>
-          <Link href={`/products/${category}`} className="hover:text-blue-600 transition-colors duration-200">{categoryNames[category] || category}</Link>
+          <Link href={`/products/${category}`} className="hover:text-emerald-600 transition-colors duration-200">{categoryNames[category] || category}</Link>
           <span className="mx-2">/</span>
           <span>{product.name}</span>
         </div>
@@ -108,7 +108,7 @@ export default async function ProductDetailPage({ params }: Props) {
                       <td className="py-2.5 pr-4 text-slate-500">还款方式</td><td className="py-2.5 font-medium text-slate-900">{product.repayment}</td>
                       <td className="py-2.5 pr-4 text-slate-500">所属机构</td>
                       <td className="py-2.5 font-medium">
-                        <a href={product.institutionHref} className="text-blue-600 hover:underline" target="_blank">{product.institutionFullName}</a>
+                        <a href={product.institutionHref} className="text-emerald-600 hover:underline" target="_blank">{product.institutionFullName}</a>
                       </td>
                     </tr>
                   </tbody>
@@ -121,7 +121,7 @@ export default async function ProductDetailPage({ params }: Props) {
                     <span className="mt-0.5 shrink-0 text-sm text-slate-500">产品优势</span>
                     <div className="flex flex-wrap gap-1.5">
                       {product.advantages.map((a: any, i: number) => (
-                        <span key={i} className="rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700">{a}</span>
+                        <span key={i} className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700">{a}</span>
                       ))}
                     </div>
                   </div>
@@ -133,7 +133,7 @@ export default async function ProductDetailPage({ params }: Props) {
                 <div className="flex-1">
                   <h3 className="mb-1 text-lg font-semibold text-slate-900">快速申请</h3>
                   <p className="mb-4 text-sm text-slate-500">优先推荐网页直达申请，扫码可在微信中继续办理。</p>
-                  <a className="inline-flex items-center rounded-lg bg-yellow-600 px-8 py-3 text-sm font-medium text-white transition-colors duration-200 hover:bg-yellow-700" href={`/api/products/${id}/jump?source=click`} target="_blank" rel="nofollow noopener">立即申请</a>
+                  <a className="inline-flex items-center rounded-lg bg-emerald-600 px-8 py-3 text-sm font-medium text-white transition-colors duration-200 hover:bg-emerald-700" href={`/api/products/${id}/jump?source=click`} target="_blank" rel="nofollow noopener">立即申请</a>
                 </div>
                 <div className="shrink-0 text-center">
                   <p className="mb-2 text-xs text-slate-400">微信扫码申请</p>

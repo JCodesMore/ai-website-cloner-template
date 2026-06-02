@@ -42,7 +42,7 @@ export default function AdminArticlesPage() {
           <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
           <input type="text" placeholder="搜索文章..." value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="h-9 w-full rounded-md border border-slate-200 pl-8 pr-3 text-sm outline-none transition-colors duration-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20" />
+            className="h-9 w-full rounded-md border border-slate-200 pl-8 pr-3 text-sm outline-none transition-colors duration-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20" />
         </div>
       </div>
       {error && <div className="mb-4 rounded-lg bg-red-50 p-4 text-sm text-red-700">{error}</div>}
@@ -71,7 +71,7 @@ export default function AdminArticlesPage() {
                   <td className="px-4 py-3 text-sm whitespace-nowrap text-slate-400">{a.date || "-"}</td>
                   <td className="px-4 py-3">
                     <div className="flex gap-3">
-                      <Link href={`/admin/articles/${a.id}`} className="text-sm text-blue-600 hover:underline">编辑</Link>
+                      <Link href={`/admin/articles/${a.id}`} className="text-sm text-emerald-600 hover:underline">编辑</Link>
                       <button onClick={() => deleteItem(a.id)} className="text-sm text-red-500 hover:underline cursor-pointer">删除</button>
                     </div>
                   </td>

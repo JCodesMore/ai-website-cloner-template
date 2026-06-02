@@ -14,7 +14,7 @@ export default function AboutPage() {
     <>
       <div className="border-b border-slate-200 bg-white">
         <div className="mx-auto max-w-7xl px-4 py-3 text-sm text-slate-500">
-          <Link href="/" className="hover:text-blue-600 transition-colors duration-200">首页</Link>
+          <Link href="/" className="hover:text-emerald-600 transition-colors duration-200">首页</Link>
           <span className="mx-2">/</span>
           <span>关于我们</span>
         </div>
@@ -32,7 +32,7 @@ export default function AboutPage() {
                       href={item.href}
                       className={`flex items-center gap-2 px-4 py-2.5 text-sm transition-colors duration-200 ${
                         item.active
-                          ? "bg-blue-50 text-blue-700 font-medium"
+                          ? "bg-emerald-50 text-emerald-700 font-medium"
                           : "text-slate-600 hover:bg-slate-50"
                       }`}
                     >

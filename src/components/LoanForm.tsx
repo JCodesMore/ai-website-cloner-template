@@ -71,7 +71,7 @@ export default function LoanForm() {
               type="radio"
               checked={kind === "company"}
               onChange={() => setKind("company")}
-              className="accent-yellow-500"
+              className="accent-emerald-500"
             />
             <Building2 className="h-3.5 w-3.5" />
             <span className={kind === "company" ? "font-medium text-slate-900" : "text-slate-500"}>
@@ -83,7 +83,7 @@ export default function LoanForm() {
               type="radio"
               checked={kind === "person"}
               onChange={() => setKind("person")}
-              className="accent-yellow-500"
+              className="accent-emerald-500"
             />
             <Users className="h-3.5 w-3.5" />
             <span className={kind === "person" ? "font-medium text-slate-900" : "text-slate-500"}>
@@ -105,7 +105,7 @@ export default function LoanForm() {
             className={`h-11 w-full rounded-lg border px-3 text-sm outline-none transition-colors duration-200 ${
               error
                 ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
-                : "border-slate-200 focus:border-yellow-600 focus:ring-2 focus:ring-yellow-600/20"
+                : "border-slate-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20"
             }`}
           />
           {error && <p className="mt-1.5 text-xs text-red-500">{error}</p>}
@@ -114,7 +114,7 @@ export default function LoanForm() {
           <select
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className="h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none transition-colors duration-200 focus:border-yellow-600 focus:ring-2 focus:ring-yellow-600/20"
+            className="h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none transition-colors duration-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20"
           >
             {amountOptions.map((opt) => (
               <option key={opt} value={opt}>
@@ -126,7 +126,7 @@ export default function LoanForm() {
         <button
           type="submit"
           disabled={loading}
-          className="flex h-11 w-full items-center justify-center rounded-lg bg-yellow-600 text-sm font-medium text-white transition-colors duration-200 hover:bg-yellow-700 disabled:cursor-not-allowed disabled:opacity-60"
+          className="flex h-11 w-full items-center justify-center rounded-lg bg-emerald-600 text-sm font-medium text-white transition-colors duration-200 hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "免费申请"}
         </button>

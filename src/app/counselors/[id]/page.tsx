@@ -44,15 +44,15 @@ export default async function CounselorPage({ params }: Props) {
             </div>
             <h3 className="mb-1 font-medium text-slate-900">微信咨询</h3>
             <p className="mb-3 text-sm text-slate-500">金融难题随时在线解答</p>
-            <button className="rounded-lg bg-yellow-600 px-4 py-1.5 text-sm text-white transition-colors duration-200 hover:bg-yellow-700 cursor-pointer">查看</button>
+            <button className="rounded-lg bg-emerald-600 px-4 py-1.5 text-sm text-white transition-colors duration-200 hover:bg-emerald-700 cursor-pointer">查看</button>
           </div>
           <div className="rounded-lg border border-slate-200 p-5 text-center">
-            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blue-50">
+            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50">
               <Phone className="h-6 w-6 text-slate-700" />
             </div>
             <h3 className="mb-1 font-medium text-slate-900">电话咨询</h3>
             <p className="mb-3 text-sm text-slate-500">电话高效沟通，快速解答疑惑</p>
-            <button className="rounded-lg bg-yellow-600 px-4 py-1.5 text-sm text-white transition-colors duration-200 hover:bg-yellow-700 cursor-pointer">查看</button>
+            <button className="rounded-lg bg-emerald-600 px-4 py-1.5 text-sm text-white transition-colors duration-200 hover:bg-emerald-700 cursor-pointer">查看</button>
           </div>
         </div>
       </div>

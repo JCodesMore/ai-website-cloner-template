@@ -52,11 +52,11 @@ export default async function InstitutionsPage({ searchParams }: Props) {
                   name="wd"
                   placeholder="搜索机构名称"
                   defaultValue={wd}
-                  className="h-10 flex-1 rounded-lg border border-slate-200 px-3 text-sm outline-none transition-colors duration-200 focus:border-yellow-600 focus:ring-2 focus:ring-yellow-600/20"
+                  className="h-10 flex-1 rounded-lg border border-slate-200 px-3 text-sm outline-none transition-colors duration-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20"
                 />
                 <button
                   type="submit"
-                  className="flex h-10 items-center gap-1.5 rounded-lg bg-yellow-600 px-4 text-sm font-medium text-white transition-colors duration-200 hover:bg-yellow-700 cursor-pointer"
+                  className="flex h-10 items-center gap-1.5 rounded-lg bg-emerald-600 px-4 text-sm font-medium text-white transition-colors duration-200 hover:bg-emerald-700 cursor-pointer"
                 >
                   <Search className="h-4 w-4" /> 搜索
                 </button>
@@ -83,7 +83,7 @@ export default async function InstitutionsPage({ searchParams }: Props) {
                       </div>
                     )}
                     <div className="min-w-0 flex-1">
-                      <h3 className="font-semibold text-slate-900 transition-colors duration-200 group-hover:text-yellow-600">
+                      <h3 className="font-semibold text-slate-900 transition-colors duration-200 group-hover:text-emerald-600">
                         {inst.name}
                       </h3>
                       {inst.fullName && (

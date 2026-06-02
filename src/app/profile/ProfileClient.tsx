@@ -36,7 +36,7 @@ export default function ProfileClient({ user, follows, followedInstitutions, com
               onClick={() => setActive(t.key)}
               className={`flex w-full items-center gap-2.5 rounded-lg px-4 py-3 text-sm font-medium transition-colors duration-150 ${
                 active === t.key
-                  ? "bg-amber-50 text-amber-700"
+                  ? "bg-emerald-50 text-emerald-700"
                   : "text-slate-600 hover:bg-slate-50"
               }`}
             >
@@ -93,7 +93,7 @@ function InfoTab({ user }: { user: { username: string; phone: string; createdAt:
   return (
     <div>
       <div className="mb-6 flex items-center gap-2.5">
-        <User className="h-5 w-5 text-amber-500" />
+        <User className="h-5 w-5 text-emerald-500" />
         <h2 className="text-lg font-semibold text-slate-900">基本资料</h2>
       </div>
       <div className="space-y-5 max-w-md">
@@ -113,8 +113,8 @@ function InfoTab({ user }: { user: { username: string; phone: string; createdAt:
         <div>
           <label className="text-xs text-slate-500">手机号</label>
           <div className="mt-1 flex gap-2">
-            <input className="h-11 flex-1 rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20" placeholder="输入手机号" value={phone} onChange={(e) => { setPhone(e.target.value); setMsg(null); }} />
-            <button onClick={save} disabled={saving} className="flex h-11 items-center gap-1.5 rounded-lg bg-amber-500 px-5 text-sm font-medium text-black hover:bg-amber-400 disabled:opacity-60">
+            <input className="h-11 flex-1 rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20" placeholder="输入手机号" value={phone} onChange={(e) => { setPhone(e.target.value); setMsg(null); }} />
+            <button onClick={save} disabled={saving} className="flex h-11 items-center gap-1.5 rounded-lg bg-emerald-500 px-5 text-sm font-medium text-black hover:bg-emerald-400 disabled:opacity-60">
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
               {saving ? "保存中" : "绑定"}
             </button>
@@ -150,7 +150,7 @@ function PasswordTab() {
   function input(name: "cur" | "n" | "c", field: "current" | "newPass" | "confirm", placeholder: string) {
     return (
       <div className="relative">
-        <input type={show[name] ? "text" : "password"} className="h-11 w-full rounded-lg border border-slate-200 px-3 pr-10 text-sm outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20" placeholder={placeholder} value={form[field]} onChange={(e) => { setForm({ ...form, [field]: e.target.value }); setMsg(null); }} />
+        <input type={show[name] ? "text" : "password"} className="h-11 w-full rounded-lg border border-slate-200 px-3 pr-10 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20" placeholder={placeholder} value={form[field]} onChange={(e) => { setForm({ ...form, [field]: e.target.value }); setMsg(null); }} />
         <button type="button" onClick={() => setShow({ ...show, [name]: !show[name] })} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
           {show[name] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
         </button>
@@ -161,7 +161,7 @@ function PasswordTab() {
   return (
     <div>
       <div className="mb-6 flex items-center gap-2.5">
-        <Lock className="h-5 w-5 text-amber-500" />
+        <Lock className="h-5 w-5 text-emerald-500" />
         <h2 className="text-lg font-semibold text-slate-900">修改密码</h2>
       </div>
       <div className="max-w-sm space-y-3">
@@ -183,18 +183,18 @@ function FollowsTab({ follows }: { follows: { productId: number; productName: st
   return (
     <div>
       <div className="mb-6 flex items-center gap-2.5">
-        <Heart className="h-5 w-5 text-amber-500" />
+        <Heart className="h-5 w-5 text-emerald-500" />
         <h2 className="text-lg font-semibold text-slate-900">关注的产品</h2>
         <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500">{follows.length}</span>
       </div>
       {follows.length === 0 ? (
         <p className="py-12 text-center text-sm text-slate-400">
-          暂无关注，去<a href="/products/fast" className="text-amber-600 hover:underline">产品列表</a>看看吧
+          暂无关注，去<a href="/products/fast" className="text-emerald-600 hover:underline">产品列表</a>看看吧
         </p>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
           {follows.map((f) => (
-            <Link key={f.productId} href={`/products/${f.category || "person"}/${f.productId}`} className="flex items-center gap-3 rounded-lg border border-slate-200 p-4 transition-all duration-200 hover:border-amber-300 hover:bg-amber-50/50">
+            <Link key={f.productId} href={`/products/${f.category || "person"}/${f.productId}`} className="flex items-center gap-3 rounded-lg border border-slate-200 p-4 transition-all duration-200 hover:border-emerald-300 hover:bg-emerald-50/50">
               <div className="flex-1 min-w-0">
                 <div className="truncate font-medium text-sm text-slate-900">{f.productName}</div>
                 <div className="mt-0.5 truncate text-xs text-slate-400">{f.institution}</div>
@@ -213,7 +213,7 @@ function CommentsTab({ comments }: { comments: { id: number; content: string; pr
     return (
       <div>
         <div className="mb-6 flex items-center gap-2.5">
-          <MessageSquare className="h-5 w-5 text-amber-500" />
+          <MessageSquare className="h-5 w-5 text-emerald-500" />
           <h2 className="text-lg font-semibold text-slate-900">我的评论</h2>
         </div>
         <p className="py-12 text-center text-sm text-slate-400">暂无评论</p>
@@ -223,7 +223,7 @@ function CommentsTab({ comments }: { comments: { id: number; content: string; pr
   return (
     <div>
       <div className="mb-6 flex items-center gap-2.5">
-        <MessageSquare className="h-5 w-5 text-amber-500" />
+        <MessageSquare className="h-5 w-5 text-emerald-500" />
         <h2 className="text-lg font-semibold text-slate-900">我的评论</h2>
         <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500">{comments.length}</span>
       </div>
@@ -232,7 +232,7 @@ function CommentsTab({ comments }: { comments: { id: number; content: string; pr
           <div key={c.id} className="rounded-lg border border-slate-100 p-4 transition-colors duration-200 hover:bg-slate-50">
             <p className="mb-2 text-sm leading-relaxed text-slate-700">{c.content}</p>
             <div className="flex items-center gap-4 text-xs text-slate-400">
-              {c.productName && <span className="inline-flex items-center gap-1"><span className="h-1 w-1 rounded-full bg-amber-400" />产品：{c.productName}</span>}
+              {c.productName && <span className="inline-flex items-center gap-1"><span className="h-1 w-1 rounded-full bg-emerald-400" />产品：{c.productName}</span>}
               <span>{c.date}</span>
             </div>
           </div>
@@ -247,18 +247,18 @@ function InstFollowsTab({ followedInstitutions }: { followedInstitutions: { inst
   return (
     <div>
       <div className="mb-6 flex items-center gap-2.5">
-        <Building2 className="h-5 w-5 text-amber-500" />
+        <Building2 className="h-5 w-5 text-emerald-500" />
         <h2 className="text-lg font-semibold text-slate-900">关注的机构</h2>
         <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500">{followedInstitutions.length}</span>
       </div>
       {followedInstitutions.length === 0 ? (
         <p className="py-12 text-center text-sm text-slate-400">
-          暂无关注，去<a href="/institutions" className="text-amber-600 hover:underline">机构列表</a>看看吧
+          暂无关注，去<a href="/institutions" className="text-emerald-600 hover:underline">机构列表</a>看看吧
         </p>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
           {followedInstitutions.map((f) => (
-            <Link key={f.institutionId} href={`/institutions/${f.institutionId}`} className="flex items-center gap-3 rounded-lg border border-slate-200 p-4 transition-all duration-200 hover:border-amber-300 hover:bg-amber-50/50">
+            <Link key={f.institutionId} href={`/institutions/${f.institutionId}`} className="flex items-center gap-3 rounded-lg border border-slate-200 p-4 transition-all duration-200 hover:border-emerald-300 hover:bg-emerald-50/50">
               <div className="flex-1 min-w-0">
                 <div className="truncate font-medium text-sm text-slate-900">{f.institutionName}</div>
                 {f.institutionFullName && (

@@ -40,13 +40,13 @@ export default function ProductComments({ productId, productName }: { productId:
       <h3 className="mb-4 text-lg font-semibold text-slate-900">评论 ({comments.length})</h3>
 
       {!user ? (
-        <div className="mb-4 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          请先 <a href={`/login?redirect=${encodeURIComponent(window.location.pathname)}`} className="font-semibold text-amber-600 hover:underline">登录</a> 后发表评论
+        <div className="mb-4 rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+          请先 <a href={`/login?redirect=${encodeURIComponent(window.location.pathname)}`} className="font-semibold text-emerald-600 hover:underline">登录</a> 后发表评论
         </div>
       ) : (
         <div className="mb-4">
           <textarea value={text} onChange={e => setText(e.target.value)} placeholder="写下你的评论..."
-            className="h-20 w-full resize-y rounded-lg border border-slate-200 px-3 py-2.5 text-sm outline-none transition-colors duration-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20" />
+            className="h-20 w-full resize-y rounded-lg border border-slate-200 px-3 py-2.5 text-sm outline-none transition-colors duration-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20" />
           <div className="mt-2 flex items-center justify-between">
             <span className="text-xs text-slate-400">以 {user} 的身份评论</span>
             <button disabled={submitting || !text.trim()} onClick={submit}
@@ -66,13 +66,13 @@ export default function ProductComments({ productId, productName }: { productId:
           {comments.map((c: any) => (
             <div key={c.id} className="rounded-lg border border-slate-100 p-4">
               <div className="mb-2 flex items-center gap-2">
-                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-amber-50 text-xs font-bold text-amber-600">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-50 text-xs font-bold text-emerald-600">
                   {c.author[0]}
                 </span>
                 <span className="text-sm font-semibold text-slate-900">{c.author}</span>
                 <span className="text-xs text-slate-400">{c.date}</span>
                 {c.status === "pending" && (
-                  <span className="rounded-full bg-amber-50 px-2 py-0.5 text-xs text-amber-700">审核中</span>
+                  <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs text-emerald-700">审核中</span>
                 )}
               </div>
               <p className="text-sm leading-relaxed text-slate-700">{c.content}</p>

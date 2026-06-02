@@ -46,7 +46,7 @@ export default function AdminUsersPage() {
                   <td className="px-4 py-3 text-sm font-medium text-slate-900">{u.username}</td>
                   <td className="px-4 py-3 text-sm text-slate-600">{u.phone || "未绑定"}</td>
                   <td className="px-4 py-3">
-                    <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${u.role === "admin" ? "bg-amber-50 text-amber-700" : "bg-slate-100 text-slate-600"}`}>
+                    <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${u.role === "admin" ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-600"}`}>
                       {u.role === "admin" ? "管理员" : "用户"}
                     </span>
                   </td>

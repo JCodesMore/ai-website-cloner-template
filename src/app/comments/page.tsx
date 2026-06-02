@@ -59,7 +59,7 @@ export default async function CommentsPage({ searchParams }: Props) {
                         <span className="font-medium text-slate-900">{comment.author}</span>
                         <span className="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-500">评论</span>
                         {comment.productName && (
-                          <a href={comment.productHref || "#"} target="_blank" className="flex items-center gap-1 rounded bg-blue-50 px-1.5 py-0.5 text-xs text-blue-600 hover:underline">
+                          <a href={comment.productHref || "#"} target="_blank" className="flex items-center gap-1 rounded bg-emerald-50 px-1.5 py-0.5 text-xs text-emerald-600 hover:underline">
                             {comment.productIcon && <img src={comment.productIcon} alt={comment.productName} className="h-3.5 w-3.5 rounded-full" />}
                             {comment.productName}
                           </a>
@@ -75,7 +75,7 @@ export default async function CommentsPage({ searchParams }: Props) {
                       )}
                       <div className="flex items-center gap-4 text-xs text-slate-400">
                         <span>{comment.date}</span>
-                        <a href="/login" className="hover:text-blue-600 transition-colors duration-200">回复</a>
+                        <a href="/login" className="hover:text-emerald-600 transition-colors duration-200">回复</a>
                       </div>
                     </div>
                   </div>

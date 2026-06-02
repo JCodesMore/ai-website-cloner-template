@@ -58,7 +58,7 @@ export default function LoginPage() {
     `h-11 w-full rounded-lg border px-3 pr-10 text-sm outline-none transition-colors duration-200 ${
       errors[field]
         ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
-        : "border-slate-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
+        : "border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
     }`;
 
   return (
@@ -112,7 +112,7 @@ export default function LoginPage() {
             </button>
           </form>
           <p className="mt-4 text-center text-sm text-slate-500">
-            还没有账户？<Link href="/register" className="text-amber-600 hover:underline">立即注册</Link>
+            还没有账户？<Link href="/register" className="text-emerald-600 hover:underline">立即注册</Link>
           </p>
         </div>
       </div>

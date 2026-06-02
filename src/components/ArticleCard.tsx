@@ -16,7 +16,7 @@ export default function ArticleCard({ article }: ArticleCardProps) {
       )}
       <div className="flex min-w-0 flex-1 flex-col justify-between">
         <div>
-          <h3 className="mb-1.5 line-clamp-2 text-base font-semibold text-slate-900 group-hover:text-yellow-600 transition-colors duration-200">{article.title}</h3>
+          <h3 className="mb-1.5 line-clamp-2 text-base font-semibold text-slate-900 group-hover:text-emerald-600 transition-colors duration-200">{article.title}</h3>
           {article.description && <p className="line-clamp-1 text-sm text-slate-500">{article.description}</p>}
         </div>
         {article.date && (

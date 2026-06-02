@@ -26,7 +26,7 @@ export default async function ArticleDetailPage({ params }: Props) {
     <>
       <div className="border-b border-slate-200 bg-white">
         <div className="mx-auto max-w-7xl px-4 py-3 text-sm text-slate-500">
-          <Link href="/" className="hover:text-blue-600 transition-colors duration-200">首页</Link>
+          <Link href="/" className="hover:text-emerald-600 transition-colors duration-200">首页</Link>
           <span className="mx-2">/</span>
           <span>文章详情</span>
         </div>

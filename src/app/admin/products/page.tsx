@@ -52,7 +52,7 @@ export default function AdminProductsPage() {
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <input type="text" placeholder="搜索产品名或机构名..."
             value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="h-10 w-full rounded-lg border border-slate-200 pl-9 pr-3 text-sm outline-none transition-colors duration-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20" />
+            className="h-10 w-full rounded-lg border border-slate-200 pl-9 pr-3 text-sm outline-none transition-colors duration-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20" />
         </div>
       </div>
 
@@ -85,7 +85,7 @@ export default function AdminProductsPage() {
                   <td className="px-4 py-3 text-sm text-slate-600">{p.rate}</td>
                   <td className="px-4 py-3">
                     <div className="flex gap-3">
-                      <Link href={`/admin/products/${p.id}`} className="text-sm text-blue-600 hover:underline">编辑</Link>
+                      <Link href={`/admin/products/${p.id}`} className="text-sm text-emerald-600 hover:underline">编辑</Link>
                       <button onClick={async () => {
                         if (!confirm("确定删除该产品？")) return;
                         const res = await fetch(`/api/admin/products/${p.id}`, { method: "DELETE" });

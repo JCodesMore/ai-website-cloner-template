@@ -22,7 +22,7 @@ export default function ProductCard({ product, variant = "default" }: ProductCar
         <div className="min-w-0">
           <div className="text-sm font-medium text-slate-500">{product.institution}</div>
           <h3
-            className="truncate text-base font-semibold text-slate-900 transition-colors duration-200 group-hover:text-yellow-600"
+            className="truncate text-base font-semibold text-slate-900 transition-colors duration-200 group-hover:text-emerald-600"
             title={product.name}
           >
             {product.name}
@@ -51,13 +51,13 @@ export default function ProductCard({ product, variant = "default" }: ProductCar
 
       <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-3">
         {product.promo ? (
-          <span className="rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-yellow-700">
+          <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700">
             {product.promo}
           </span>
         ) : (
           <span />
         )}
-        <span className="rounded-md bg-yellow-600 px-3 py-1 text-sm font-medium text-white transition-colors duration-200 hover:bg-yellow-700">
+        <span className="rounded-md bg-emerald-600 px-3 py-1 text-sm font-medium text-white transition-colors duration-200 hover:bg-emerald-700">
           立即申请
         </span>
       </div>

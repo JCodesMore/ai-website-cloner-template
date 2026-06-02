@@ -30,7 +30,7 @@ export default function Banner({ productCount = 816, commentCount = 0 }: BannerP
           {commentCount > 0 && (
             <span className="text-slate-400">
               ，基于{" "}
-              <strong className="font-semibold text-amber-400">
+              <strong className="font-semibold text-emerald-400">
                 {commentCount.toLocaleString()}
               </strong>{" "}
               条真实用户评论
@@ -45,7 +45,7 @@ export default function Banner({ productCount = 816, commentCount = 0 }: BannerP
           onSubmit={handleSubmit}
         >
           <input
-            className="h-11 flex-1 rounded-l-lg border border-slate-700 bg-slate-800 px-4 text-sm text-white outline-none placeholder:text-slate-500 focus:border-blue-500"
+            className="h-11 flex-1 rounded-l-lg border border-slate-700 bg-slate-800 px-4 text-sm text-white outline-none placeholder:text-slate-500 focus:border-emerald-500"
             type="text"
             name="wd"
             value={wd}
@@ -53,7 +53,7 @@ export default function Banner({ productCount = 816, commentCount = 0 }: BannerP
             placeholder="请输入产品名称或机构名称"
           />
           <button
-            className="flex h-11 items-center gap-1.5 rounded-r-lg bg-yellow-600 px-6 text-sm font-medium text-white transition-colors duration-200 hover:bg-yellow-700 cursor-pointer"
+            className="flex h-11 items-center gap-1.5 rounded-r-lg bg-emerald-600 px-6 text-sm font-medium text-white transition-colors duration-200 hover:bg-emerald-700 cursor-pointer"
             type="submit"
           >
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

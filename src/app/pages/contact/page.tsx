@@ -14,7 +14,7 @@ export default function ContactPage() {
     <>
       <div className="border-b border-slate-200 bg-white">
         <div className="mx-auto max-w-7xl px-4 py-3 text-sm text-slate-500">
-          <Link href="/" className="hover:text-blue-600 transition-colors duration-200">首页</Link>
+          <Link href="/" className="hover:text-emerald-600 transition-colors duration-200">首页</Link>
           <span className="mx-2">/</span>
           <span>联系我们</span>
         </div>
@@ -27,7 +27,7 @@ export default function ContactPage() {
               <ul>
                 {sidebarItems.map((item) => (
                   <li key={item.href}>
-                    <Link href={item.href} className={`flex items-center gap-2 px-4 py-2.5 text-sm transition-colors duration-200 ${item.active ? "bg-blue-50 text-blue-700 font-medium" : "text-slate-600 hover:bg-slate-50"}`}>
+                    <Link href={item.href} className={`flex items-center gap-2 px-4 py-2.5 text-sm transition-colors duration-200 ${item.active ? "bg-emerald-50 text-emerald-700 font-medium" : "text-slate-600 hover:bg-slate-50"}`}>
                       <ChevronRight className="h-3.5 w-3.5" /> {item.label}
                     </Link>
                   </li>

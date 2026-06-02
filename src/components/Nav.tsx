@@ -61,7 +61,7 @@ export default function Nav() {
               <Link
                 href={item.href}
                 className={`rounded-md px-3 py-2 transition-colors duration-200 hover:bg-white/10 ${
-                  isActive(item.href) ? "bg-white/10 text-yellow-400" : "text-slate-200"
+                  isActive(item.href) ? "bg-white/10 text-emerald-400" : "text-slate-200"
                 }`}
               >
                 {item.label}
@@ -117,7 +117,7 @@ export default function Nav() {
               </Link>
               <Link
                 href="/register"
-                className="rounded-lg bg-yellow-600 px-4 py-1.5 text-white transition-colors duration-200 hover:bg-yellow-700"
+                className="rounded-lg bg-emerald-600 px-4 py-1.5 text-white transition-colors duration-200 hover:bg-emerald-700"
               >
                 注册
               </Link>

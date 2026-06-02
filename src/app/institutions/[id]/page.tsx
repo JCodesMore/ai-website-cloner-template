@@ -28,9 +28,9 @@ export default async function InstitutionDetailPage({ params }: Props) {
     <>
       <div className="border-b border-slate-200 bg-white">
         <div className="mx-auto max-w-7xl px-4 py-3 text-sm text-slate-500">
-          <Link href="/" className="hover:text-blue-600 transition-colors duration-200">首页</Link>
+          <Link href="/" className="hover:text-emerald-600 transition-colors duration-200">首页</Link>
           <span className="mx-2">/</span>
-          <Link href="/institutions" className="hover:text-blue-600 transition-colors duration-200">机构产品</Link>
+          <Link href="/institutions" className="hover:text-emerald-600 transition-colors duration-200">机构产品</Link>
           <span className="mx-2">/</span>
           <span>{inst.name}</span>
         </div>
@@ -54,7 +54,7 @@ export default async function InstitutionDetailPage({ params }: Props) {
                   <FollowButton institutionId={id} />
                 </div>
                 {inst.website && (
-                  <a href={"http://" + inst.website} target="_blank" rel="noopener" className="inline-flex items-center gap-1 text-sm text-blue-600 hover:underline">
+                  <a href={"http://" + inst.website} target="_blank" rel="noopener" className="inline-flex items-center gap-1 text-sm text-emerald-600 hover:underline">
                     <ExternalLink className="h-3.5 w-3.5" /> 访问官网
                   </a>
                 )}
@@ -89,7 +89,7 @@ export default async function InstitutionDetailPage({ params }: Props) {
                         <img src={p.icon} alt="" className="mt-0.5 h-8 w-8 shrink-0 rounded-lg object-cover" />
                       ) : null}
                       <div className="min-w-0 flex-1">
-                        <h3 className="mb-1.5 text-sm font-semibold text-slate-900 transition-colors duration-200 group-hover:text-yellow-600">
+                        <h3 className="mb-1.5 text-sm font-semibold text-slate-900 transition-colors duration-200 group-hover:text-emerald-600">
                           {detail ? detail.name : (p.name.split(/\s+/)[0] || p.name)}
                         </h3>
                         {detail && (
@@ -104,7 +104,7 @@ export default async function InstitutionDetailPage({ params }: Props) {
                             <div className="text-xs font-medium text-slate-700">{detail.repayment}</div>
                           </div>
                         )}
-                        <div className="mt-2 flex items-center gap-1 text-xs text-yellow-600">
+                        <div className="mt-2 flex items-center gap-1 text-xs text-emerald-600">
                           查看详情 <ChevronRight className="h-3 w-3" />
                         </div>
                       </div>

@@ -127,7 +127,7 @@ export default function AnalyticsDashboard() {
                   <div key={a.id} className="flex items-start gap-2">
                     <span className="mt-0.5 text-xs font-bold text-slate-400 w-5">{i + 1}</span>
                     <div className="min-w-0 flex-1">
-                      <a href={`/articles/${a.id}`} target="_blank" className="text-sm text-slate-700 hover:text-yellow-600 line-clamp-1 transition-colors">
+                      <a href={`/articles/${a.id}`} target="_blank" className="text-sm text-slate-700 hover:text-emerald-600 line-clamp-1 transition-colors">
                         {a.title}
                       </a>
                       <div className="mt-0.5 flex gap-3 text-xs text-slate-400">
@@ -195,7 +195,7 @@ export default function AnalyticsDashboard() {
                 {(topArticles || []).map((a) => (
                   <TableRow key={a.id}>
                     <TableCell>
-                      <a href={`/articles/${a.id}`} target="_blank" className="text-slate-700 hover:text-yellow-600 transition-colors line-clamp-1 max-w-md block">
+                      <a href={`/articles/${a.id}`} target="_blank" className="text-slate-700 hover:text-emerald-600 transition-colors line-clamp-1 max-w-md block">
                         {a.title}
                       </a>
                     </TableCell>

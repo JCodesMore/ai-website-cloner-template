@@ -60,27 +60,27 @@
   --secondary-foreground: #0F172A;
   --muted: #F1F5F9;
   --muted-foreground: #475569;
-  --accent: #EFF6FF;
-  --accent-foreground: #2563EB;
+  --accent: #ECFDF5;
+  --accent-foreground: #059669;
   --destructive: #DC2626;
   --destructive-foreground: #F8FAFC;
   --border: #E2E8F0;
   --input: #E2E8F0;
-  --ring: #2563EB;
+  --ring: #059669;
   --radius: 0.5rem;
-  --chart-1: #2563EB;
-  --chart-2: #059669;
+  --chart-1: #059669;
+  --chart-2: #0F172A;
   --chart-3: #D97706;
   --chart-4: #0369A1;
-  --chart-5: #0F172A;
+  --chart-5: #64748B;
   --sidebar: #F8FAFC;
   --sidebar-foreground: #020617;
-  --sidebar-primary: #0F172A;
+  --sidebar-primary: #1E293B;
   --sidebar-primary-foreground: #F8FAFC;
-  --sidebar-accent: #F1F5F9;
-  --sidebar-accent-foreground: #0F172A;
+  --sidebar-accent: #ECFDF5;
+  --sidebar-accent-foreground: #059669;
   --sidebar-border: #E2E8F0;
-  --sidebar-ring: #2563EB;
+  --sidebar-ring: #059669;
 
   --color-success: #059669;
   --color-warning: #D97706;
@@ -99,26 +99,26 @@
   --secondary-foreground: #F8FAFC;
   --muted: #1E293B;
   --muted-foreground: #94A3B8;
-  --accent: #1E3A5F;
-  --accent-foreground: #60A5FA;
+  --accent: #064E3B;
+  --accent-foreground: #34D399;
   --destructive: #7F1D1D;
   --destructive-foreground: #F8FAFC;
   --border: #1E293B;
   --input: #1E293B;
-  --ring: #3B82F6;
-  --chart-1: #3B82F6;
-  --chart-2: #34D399;
+  --ring: #34D399;
+  --chart-1: #34D399;
+  --chart-2: #059669;
   --chart-3: #FBBF24;
   --chart-4: #38BDF8;
   --chart-5: #F8FAFC;
   --sidebar: #0F172A;
   --sidebar-foreground: #F8FAFC;
-  --sidebar-primary: #3B82F6;
-  --sidebar-primary-foreground: #F8FAFC;
-  --sidebar-accent: #1E293B;
-  --sidebar-accent-foreground: #F8FAFC;
+  --sidebar-primary: #34D399;
+  --sidebar-primary-foreground: #0F172A;
+  --sidebar-accent: #064E3B;
+  --sidebar-accent-foreground: #34D399;
   --sidebar-border: #1E293B;
-  --sidebar-ring: #3B82F6;
+  --sidebar-ring: #34D399;
 }
 
 @layer base {
@@ -130,7 +130,7 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
   :focus-visible {
-    outline: 2px solid #CA8A04;
+    outline: 2px solid #059669;
     outline-offset: 2px;
     border-radius: 2px;
   }

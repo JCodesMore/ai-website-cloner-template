@@ -31,7 +31,7 @@ export default function FloatingQR({ pagePath, source = "floating", productId }:
     <>
       <button
         onClick={handleOpen}
-        className="fixed bottom-6 right-6 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-yellow-600 text-white shadow-lg transition-all duration-200 hover:bg-yellow-700 hover:shadow-xl cursor-pointer"
+        className="fixed bottom-6 right-6 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-600 text-white shadow-lg transition-all duration-200 hover:bg-emerald-700 hover:shadow-xl cursor-pointer"
         type="button"
         aria-label="微信联系"
       >

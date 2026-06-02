@@ -64,7 +64,7 @@ export default function RegisterPage() {
     `h-11 w-full rounded-lg border px-3 pr-10 text-sm outline-none transition-colors duration-200 ${
       errors[field]
         ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
-        : "border-slate-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
+        : "border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
     }`;
 
   function clearErr(field: keyof typeof errors) {
@@ -138,12 +138,12 @@ export default function RegisterPage() {
                   type="checkbox"
                   checked={agree}
                   onChange={(e) => { setAgree(e.target.checked); clearErr("agree"); }}
-                  className="accent-amber-500"
+                  className="accent-emerald-500"
                 />
                 已阅读并同意
-                <Link href="/pages/agreement" target="_blank" className="text-amber-600 hover:underline">《使用协议》</Link>
+                <Link href="/pages/agreement" target="_blank" className="text-emerald-600 hover:underline">《使用协议》</Link>
                 和
-                <Link href="/pages/privacy" target="_blank" className="text-amber-600 hover:underline">《隐私政策》</Link>
+                <Link href="/pages/privacy" target="_blank" className="text-emerald-600 hover:underline">《隐私政策》</Link>
               </label>
               {errors.agree && <p className="mt-1 text-xs text-red-500">{errors.agree}</p>}
             </div>
@@ -157,7 +157,7 @@ export default function RegisterPage() {
             </button>
           </form>
           <p className="mt-4 text-center text-sm text-slate-500">
-            已有账户？<Link href="/login" className="text-amber-600 hover:underline">立即登录</Link>
+            已有账户？<Link href="/login" className="text-emerald-600 hover:underline">立即登录</Link>
           </p>
         </div>
       </div>
