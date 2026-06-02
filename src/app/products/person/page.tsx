@@ -1,7 +1,6 @@
 import ProductListPage from "@/components/ProductListPage";
 import PersonFilterBar from "./PersonFilterBar";
-import { newsItems, discussionItems, opinionItems, faqItems } from "@/lib/data";
-import { getProductsByCategory } from "@/lib/repository";
+import { getProductsByCategory, getSidebarNews, getSidebarDiscussions, getSidebarOpinions, getSidebarFaq } from "@/lib/repository";
 import { getPage, paginate, PAGE_SIZE, filterByIk, filterByAdv } from "@/lib/filters";
 
 interface Props { searchParams: Promise<{ ik?: string; adv?: string; page?: string }> }
@@ -17,7 +16,13 @@ export default async function PersonPage({ searchParams }: Props) {
   const adv = params.get("adv") || "";
   const page = getPage(params);
 
-  let filtered = await getProductsByCategory("person");
+  let [filtered, newsItems, discussionItems, opinionItems, faqItems] = await Promise.all([
+    getProductsByCategory("person"),
+    getSidebarNews(),
+    getSidebarDiscussions(),
+    getSidebarOpinions(),
+    getSidebarFaq(),
+  ]);
   filtered = filterByIk(filtered, ik);
   filtered = filterByAdv(filtered, adv, "person");
 

@@ -9,8 +9,10 @@ export default function ProductComments({ productId, productName }: { productId:
   const [text, setText] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [msg, setMsg] = useState("");
+  const [pathname, setPathname] = useState("");
 
   useEffect(() => {
+    setPathname(window.location.pathname);
     fetch("/api/auth/me").then(r => r.json()).then(d => { if (d.username) setUser(d.username); });
     fetch(`/api/products/${productId}/comments`).then(r => r.json()).then(d => setComments(d.comments || []));
   }, [productId]);
@@ -24,7 +26,7 @@ export default function ProductComments({ productId, productName }: { productId:
     });
     const d = await res.json();
     if (d.error && d.error.includes("登录")) {
-      window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
+      window.location.href = `/login?redirect=${encodeURIComponent(pathname)}`;
       return;
     }
     if (d.ok) {
@@ -41,7 +43,7 @@ export default function ProductComments({ productId, productName }: { productId:
 
       {!user ? (
         <div className="mb-4 rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-          请先 <a href={`/login?redirect=${encodeURIComponent(window.location.pathname)}`} className="font-semibold text-emerald-600 hover:underline">登录</a> 后发表评论
+          请先 <a href={`/login?redirect=${encodeURIComponent(pathname)}`} className="font-semibold text-emerald-600 hover:underline">登录</a> 后发表评论
         </div>
       ) : (
         <div className="mb-4">

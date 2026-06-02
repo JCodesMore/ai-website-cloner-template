@@ -1,6 +1,5 @@
 import type { NewsItem } from "@/types";
-import { getArticlesByCategory } from "@/lib/repository";
-import { newsItems, discussionItems, opinionItems, faqItems } from "@/lib/data";
+import { getArticlesByCategory, getSidebarNews, getSidebarDiscussions, getSidebarOpinions, getSidebarFaq } from "@/lib/repository";
 import ArticleCard from "@/components/ArticleCard";
 import EmptyState from "@/components/EmptyState";
 import Pagination from "@/components/Pagination";
@@ -37,7 +36,10 @@ export default async function ArticleCategoryPage(props: { params: Promise<{ id:
     );
   }
 
-  const articles = await getArticlesByCategory(categoryId);
+  const [articles, newsItems, discussionItems, opinionItems, faqItems] = await Promise.all([
+    getArticlesByCategory(categoryId),
+    getSidebarNews(), getSidebarDiscussions(), getSidebarOpinions(), getSidebarFaq(),
+  ]);
   const { items, currentPage, totalPages } = paginate(articles, page, PAGE_SIZE);
 
   return (

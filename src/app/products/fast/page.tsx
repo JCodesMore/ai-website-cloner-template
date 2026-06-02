@@ -1,6 +1,5 @@
 import ProductListPage from "@/components/ProductListPage";
-import { newsItems, discussionItems, opinionItems, faqItems } from "@/lib/data";
-import { getProductsByCategory } from "@/lib/repository";
+import { getProductsByCategory, getSidebarNews, getSidebarDiscussions, getSidebarOpinions, getSidebarFaq } from "@/lib/repository";
 import { getPage, paginate, PAGE_SIZE_FAST } from "@/lib/filters";
 
 interface Props { searchParams: Promise<{ page?: string }> }
@@ -10,8 +9,14 @@ export default async function FastPage({ searchParams }: Props) {
   const params = new URLSearchParams();
   if (sp.page) params.set("page", sp.page);
   const page = getPage(params);
-  const fastProducts = await getProductsByCategory("fast");
-  const { items, currentPage, totalPages, total } = paginate(fastProducts, page, PAGE_SIZE_FAST);
+  const [products, newsItems, discussionItems, opinionItems, faqItems] = await Promise.all([
+    getProductsByCategory("fast"),
+    getSidebarNews(),
+    getSidebarDiscussions(),
+    getSidebarOpinions(),
+    getSidebarFaq(),
+  ]);
+  const { items, currentPage, totalPages, total } = paginate(products, page, PAGE_SIZE_FAST);
 
   return (
     <ProductListPage

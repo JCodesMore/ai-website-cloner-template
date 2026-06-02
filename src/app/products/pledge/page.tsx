@@ -1,7 +1,6 @@
 import ProductListPage from "@/components/ProductListPage";
 import PledgeFilterBar from "./PledgeFilterBar";
-import { newsItems, discussionItems, opinionItems, faqItems } from "@/lib/data";
-import { getProductsByCategory } from "@/lib/repository";
+import { getProductsByCategory, getSidebarNews, getSidebarDiscussions, getSidebarOpinions, getSidebarFaq } from "@/lib/repository";
 import { getPage, paginate, PAGE_SIZE, filterByIk } from "@/lib/filters";
 
 interface Props { searchParams: Promise<{ ik?: string; page?: string }> }
@@ -15,7 +14,13 @@ export default async function PledgePage({ searchParams }: Props) {
   const ik = params.get("ik") || "";
   const page = getPage(params);
 
-  let filtered = await getProductsByCategory("pledge");
+  let [filtered, newsItems, discussionItems, opinionItems, faqItems] = await Promise.all([
+    getProductsByCategory("pledge"),
+    getSidebarNews(),
+    getSidebarDiscussions(),
+    getSidebarOpinions(),
+    getSidebarFaq(),
+  ]);
   filtered = filterByIk(filtered, ik);
 
   const { items, currentPage, totalPages, total } = paginate(filtered, page, PAGE_SIZE);

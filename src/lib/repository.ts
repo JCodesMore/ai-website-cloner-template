@@ -77,17 +77,24 @@ export async function getInstitutionById(id: string): Promise<InstitutionDetail 
   const rows = await db.select().from(schema.institutions).where(eq(schema.institutions.id, parseInt(id, 10)));
   if (rows.length === 0) return null;
   const inst = rows[0];
-  // Fetch ALL products for this institution from products table
   const prods = await db.select({
     id: schema.products.id,
     name: schema.products.name,
     image: schema.products.image,
+    maxAmount: schema.products.maxAmount,
+    rate: schema.products.rate,
+    term: schema.products.term,
+    repayment: schema.products.repayment,
   }).from(schema.products).where(eq(schema.products.institution, inst.name));
   const productList = prods.map((p) => ({
     id: p.id,
     name: p.name,
     href: `/products/detail/${p.id}`,
     icon: p.image || "",
+    maxAmount: p.maxAmount || "",
+    rate: p.rate || "",
+    term: p.term || "",
+    repayment: p.repayment || "",
   }));
   return mapInstitutionDetail(inst, productList);
 }

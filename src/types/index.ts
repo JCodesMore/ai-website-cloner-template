@@ -92,7 +92,7 @@ export interface InstitutionDetail {
   logo: string;
   website: string;
   introHtml: string;
-  products: { name: string; href: string; icon?: string }[];
+  products: { name: string; href: string; icon?: string; maxAmount?: string; rate?: string; term?: string; repayment?: string }[];
 }
 
 export interface Counselor {

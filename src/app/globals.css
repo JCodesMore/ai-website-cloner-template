@@ -136,28 +136,28 @@
   }
 }
 
-/* === Product intro reading optimization === */
-.product-intro {
-  color: #334155;
+/* === Product intro (component-based) === */
+.product-intro section:last-child {
+  margin-bottom: 0;
+}
+
+/* Apply section - rendered HTML fragments */
+.product-intro h3 {
   font-size: 0.9375rem;
-  line-height: 1.8;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 1.25rem 0 0.5rem;
 }
 
-.product-intro p {
-  margin-bottom: 1rem;
-}
-
-.product-intro img {
-  display: block;
-  max-width: 100%;
-  height: auto;
-  border-radius: 0.5rem;
-  margin: 1rem 0;
+.product-intro pre {
+  font-family: "IBM Plex Mono", "Consolas", monospace;
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  overflow-x: auto;
 }
 
 @media (max-width: 640px) {
-  .product-intro {
-    font-size: 0.875rem;
-    line-height: 1.75;
+  .product-intro pre {
+    font-size: 0.625rem;
   }
 }

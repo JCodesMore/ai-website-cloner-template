@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
-import { getInstitutionById } from "@/lib/repository";
-import { productDetails, newsItems, discussionItems, opinionItems, faqItems } from "@/lib/data";
+import { getInstitutionById, getSidebarNews, getSidebarDiscussions, getSidebarOpinions, getSidebarFaq } from "@/lib/repository";
 import type { Metadata } from "next";
 import { ExternalLink, ChevronRight } from "lucide-react";
 import ShareButton from "@/components/ShareButton";
@@ -16,12 +15,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: (inst?.name || "机构") + " - 银脉圈", description: inst?.fullName };
 }
 
-// Build lookup from productDetails for clean metric data
-const detailMap = new Map(productDetails.map((d) => [String(d.id), d]));
-
 export default async function InstitutionDetailPage({ params }: Props) {
   const { id } = await params;
-  const inst = await getInstitutionById(id);
+  const [inst, newsItems, discussionItems, opinionItems, faqItems] = await Promise.all([
+    getInstitutionById(id),
+    getSidebarNews(), getSidebarDiscussions(), getSidebarOpinions(), getSidebarFaq(),
+  ]);
   if (!inst) notFound();
 
   return (
@@ -77,8 +76,6 @@ export default async function InstitutionDetailPage({ params }: Props) {
               </h2>
               <div className="grid gap-3 sm:grid-cols-2">
                 {inst.products.map((p, i) => {
-                  const pid = p.href.split("/").pop() || "";
-                  const detail = detailMap.get(pid);
                   return (
                     <Link
                       key={i}
@@ -90,20 +87,18 @@ export default async function InstitutionDetailPage({ params }: Props) {
                       ) : null}
                       <div className="min-w-0 flex-1">
                         <h3 className="mb-1.5 text-sm font-semibold text-slate-900 transition-colors duration-200 group-hover:text-emerald-600">
-                          {detail ? detail.name : (p.name.split(/\s+/)[0] || p.name)}
+                          {p.name}
                         </h3>
-                        {detail && (
-                          <div className="grid grid-cols-2 gap-x-3 gap-y-1">
-                            <div className="text-xs text-slate-400">最高额度</div>
-                            <div className="text-xs text-slate-400">参考利率</div>
-                            <div className="text-xs font-medium text-slate-700">{detail.maxAmount}</div>
-                            <div className="text-xs font-medium text-slate-700">{detail.rate}</div>
-                            <div className="text-xs text-slate-400 mt-1">还款期限</div>
-                            <div className="text-xs text-slate-400 mt-1">还款方式</div>
-                            <div className="text-xs font-medium text-slate-700">{detail.term}</div>
-                            <div className="text-xs font-medium text-slate-700">{detail.repayment}</div>
-                          </div>
-                        )}
+                        <div className="grid grid-cols-2 gap-x-3 gap-y-1">
+                          <div className="text-xs text-slate-400">最高额度</div>
+                          <div className="text-xs text-slate-400">参考利率</div>
+                          <div className="text-xs font-medium text-slate-700">{p.maxAmount}</div>
+                          <div className="text-xs font-medium text-slate-700">{p.rate}</div>
+                          <div className="text-xs text-slate-400 mt-1">还款期限</div>
+                          <div className="text-xs text-slate-400 mt-1">还款方式</div>
+                          <div className="text-xs font-medium text-slate-700">{p.term}</div>
+                          <div className="text-xs font-medium text-slate-700">{p.repayment}</div>
+                        </div>
                         <div className="mt-2 flex items-center gap-1 text-xs text-emerald-600">
                           查看详情 <ChevronRight className="h-3 w-3" />
                         </div>

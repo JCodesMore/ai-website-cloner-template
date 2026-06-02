@@ -4,29 +4,23 @@ import Sidebar from "@/components/Sidebar";
 import FollowButton from "@/components/FollowButton";
 import ShareButton from "@/components/ShareButton";
 import ProductComments from "@/components/ProductComments";
-import { productDetails, newsItems, discussionItems, opinionItems, faqItems, fastProducts, companyProducts, personProducts, pledgeProducts } from "@/lib/data";
-import { sanitizeIntroHtml } from "@/lib/product-utils";
+import { getProductById, getSidebarNews, getSidebarDiscussions, getSidebarOpinions, getSidebarFaq } from "@/lib/repository";
+import ProductIntro from "@/components/ProductIntro";
 import { WECHAT_QR_URL } from "@/lib/constants";
 import type { Metadata } from "next";
 
 const categoryNames: Record<string, string> = { person: "个人贷款", company: "企业贷款", fast: "极速贷款", pledge: "抵押贷款" };
-const allProducts = [...fastProducts, ...companyProducts, ...personProducts, ...pledgeProducts];
 
 interface Props { params: Promise<{ category: string; id: string }> }
 
 const DEFAULT_DESC = "找贷款，查询\"银脉圈-贷款随心选-yinmaiquan.com\"，找贷款先查贷款产品口碑，贷款产品好坏一查便知。收录全网贷款产品，聚合贷款人口碑反馈，提供贷款产品查询、比对，贷款路上规避风险，\"银脉圈-贷款随心选\"致力于为个人和企业提供全面详实的信贷产品口碑信息！";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { category, id } = await params;
-  const pid = Number(id);
-  let p = productDetails.find(x => x.category === category && x.id === pid);
-  if (!p) p = productDetails.find(x => x.id === pid);
-  if (!p) {
-    const listing = allProducts.find(x => x.id === pid);
-    if (listing) return { title: `${listing.name} - 银脉圈` };
-  }
-  const title = p ? `${p.institution} "${p.name}"，最高额度${p.maxAmount} - 银脉圈-贷款随心选-yinmaiquan.com` : "产品 - 银脉圈";
-  const description = p?.summary || DEFAULT_DESC;
+  const { id } = await params;
+  const product = await getProductById(id);
+  if (!product) return { title: "产品 - 银脉圈" };
+  const title = `${product.institution} "${product.name}"，最高额度${product.maxAmount} - 银脉圈-贷款随心选-yinmaiquan.com`;
+  const description = product.summary || DEFAULT_DESC;
   return {
     title,
     description,
@@ -34,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description,
       type: "article",
-      images: p?.image ? [{ url: p.image, width: 800, height: 600 }] : [],
+      images: product.image ? [{ url: product.image, width: 800, height: 600 }] : [],
     },
   };
 }
@@ -42,32 +36,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ProductDetailPage({ params }: Props) {
   const { category, id } = await params;
   const pid = Number(id);
+  if (isNaN(pid)) notFound();
 
-  // Try to find full detail first
-  let detail = productDetails.find(x => x.category === category && x.id === pid);
-  if (!detail) detail = productDetails.find(x => x.id === pid);
+  const product = await getProductById(id);
+  if (!product) notFound();
 
-  // Fallback: build minimal info from listing data
-  const listing = allProducts.find(x => x.id === pid);
-  if (!detail && !listing) notFound();
-
-  // Merge listing fields (name, image, rate, etc.) with detail fields (introHtml, summary, advantages)
-  const product = {
-    id: pid,
-    category,
-    name: listing?.name || "",
-    image: listing?.image || "",
-    institution: listing?.institution || "",
-    institutionFullName: detail?.institutionFullName || listing?.institution || "",
-    institutionHref: detail?.institutionHref || "/institutions",
-    maxAmount: listing?.maxAmount || "",
-    term: listing?.term || "",
-    rate: listing?.rate || "",
-    repayment: listing?.repayment || "",
-    advantages: detail?.advantages || [],
-    summary: detail?.summary || `${listing?.name || ""} - 由${listing?.institution || ""}提供`,
-    introHtml: detail?.introHtml || `<p>${listing?.name || ""}是${listing?.institution || ""}旗下贷款产品。最高额度${listing?.maxAmount || ""}，还款期限${listing?.term || ""}，参考利率${listing?.rate || ""}，还款方式${listing?.repayment || ""}。</p>`,
-  };
+  const [newsItems, discussionItems, opinionItems, faqItems] = await Promise.all([
+    getSidebarNews(), getSidebarDiscussions(), getSidebarOpinions(), getSidebarFaq(),
+  ]);
 
   return (
     <>
@@ -143,7 +119,7 @@ export default async function ProductDetailPage({ params }: Props) {
             </div>
             <div className="rounded-lg border border-slate-200 bg-white p-6">
               <h2 className="mb-4 text-lg font-semibold text-slate-900">产品介绍</h2>
-              <div className="product-intro" dangerouslySetInnerHTML={{ __html: sanitizeIntroHtml(product.introHtml) }} />
+              <ProductIntro introHtml={product.introHtml} />
             </div>
             <ProductComments productId={id} productName={product.name} />
           </div>

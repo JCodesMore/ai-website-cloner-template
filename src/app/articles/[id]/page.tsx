@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
-import { getArticleById } from "@/lib/repository";
-import { newsItems, discussionItems, opinionItems, faqItems } from "@/lib/data";
+import { getArticleById, getSidebarNews, getSidebarDiscussions, getSidebarOpinions, getSidebarFaq } from "@/lib/repository";
 import type { Metadata } from "next";
 import { Clock, Eye } from "lucide-react";
 import ShareButton from "@/components/ShareButton";
@@ -19,7 +18,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ArticleDetailPage({ params }: Props) {
   const { id } = await params;
-  const article = await getArticleById(Number(id));
+  const [article, newsItems, discussionItems, opinionItems, faqItems] = await Promise.all([
+    getArticleById(Number(id)),
+    getSidebarNews(), getSidebarDiscussions(), getSidebarOpinions(), getSidebarFaq(),
+  ]);
   if (!article) notFound();
 
   return (

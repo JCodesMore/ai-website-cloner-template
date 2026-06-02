@@ -2,8 +2,7 @@ import Banner from "@/components/Banner";
 import EmptyState from "@/components/EmptyState";
 import Pagination from "@/components/Pagination";
 import InstitutionFilterBar from "./InstitutionFilterBar";
-import { getAllInstitutions } from "@/lib/repository";
-import { newsItems, discussionItems, opinionItems, faqItems } from "@/lib/data";
+import { getAllInstitutions, getSidebarNews, getSidebarDiscussions, getSidebarOpinions, getSidebarFaq } from "@/lib/repository";
 import { getPage, paginate, PAGE_SIZE, filterInstitutionsByIk, searchInstitutions, sortInstitutions, getWd } from "@/lib/filters";
 import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
@@ -28,7 +27,10 @@ export default async function InstitutionsPage({ searchParams }: Props) {
   const od = params.get("od") || "";
   const page = getPage(params);
 
-  let filtered = await getAllInstitutions();
+  let [filtered, newsItems, discussionItems, opinionItems, faqItems] = await Promise.all([
+    getAllInstitutions(),
+    getSidebarNews(), getSidebarDiscussions(), getSidebarOpinions(), getSidebarFaq(),
+  ]);
   filtered = filterInstitutionsByIk(filtered, ik);
   filtered = searchInstitutions(filtered, wd);
   filtered = sortInstitutions(filtered, ob, od);

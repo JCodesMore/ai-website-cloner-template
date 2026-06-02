@@ -1,11 +1,10 @@
-import { getAllProducts, getAllInstitutions } from "@/lib/repository";
+import { getAllProducts, getAllInstitutions, getSidebarNews, getSidebarDiscussions, getSidebarOpinions, getSidebarFaq } from "@/lib/repository";
 import { getWd, paginate, PAGE_SIZE } from "@/lib/filters";
 import Banner from "@/components/Banner";
 import EmptyState from "@/components/EmptyState";
 import ProductCard from "@/components/ProductCard";
 import Pagination from "@/components/Pagination";
 import Sidebar from "@/components/Sidebar";
-import { newsItems, discussionItems, opinionItems, faqItems } from "@/lib/data";
 import { Search } from "lucide-react";
 
 interface Props {
@@ -21,9 +20,10 @@ export default async function SearchPage({ searchParams }: Props) {
   const wd = getWd(params);
   const page = Math.max(1, parseInt(sp.page || "1", 10) || 1);
 
-  const [allProducts, allInstitutions] = await Promise.all([
+  const [allProducts, allInstitutions, newsItems, discussionItems, opinionItems, faqItems] = await Promise.all([
     getAllProducts(),
     getAllInstitutions(),
+    getSidebarNews(), getSidebarDiscussions(), getSidebarOpinions(), getSidebarFaq(),
   ]);
 
   // Build per-product searchable text: product name + institution + matched
