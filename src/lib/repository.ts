@@ -1,5 +1,5 @@
 import { db, schema } from "@/lib/db";
-import { eq, desc, sql } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import type { Product, Institution, Comment, NewsItem, ArticleDetail, ProductDetail, InstitutionDetail, Counselor } from "@/types";
 
 // Sidebar data — static content, not DB-backed
@@ -63,11 +63,11 @@ export async function getAllProductDetails(): Promise<ProductDetail[]> {
 export async function getAllInstitutions(): Promise<Institution[]> {
   const rows = await db.select().from(schema.institutions);
   // Compute per-institution product count from products table
-  const prodCounts = await db
-    .select({ institution: schema.products.institution, count: sql\`count(*)::int\` })
-    .from(schema.products)
-    .groupBy(schema.products.institution);
-  const countMap = new Map(prodCounts.map((c) => [c.institution, c.count]));
+  const prodCounts = await db.select({
+    institution: schema.products.institution,
+    cnt: db.fn.count(),
+  }).from(schema.products).groupBy(schema.products.institution);
+  const countMap = new Map(prodCounts.map((c: any) => [c.institution, parseInt(c.cnt)]));
   return rows.map((row) => mapInstitution(row, countMap.get(row.name) || 0));
 }
 
