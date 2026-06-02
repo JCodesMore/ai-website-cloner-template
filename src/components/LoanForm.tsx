@@ -172,38 +172,47 @@ export default function LoanForm() {
         </div>
 
         <div className="mb-3">
+          <label className="mb-1 block text-xs font-medium text-slate-500">称呼</label>
           <input type="text" maxLength={20} value={name} onChange={(e) => setName(e.target.value)}
-            placeholder="您的称呼（选填）" autoComplete="name"
-            className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none transition-colors duration-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20"
+            placeholder="选填" autoComplete="name"
+            className="h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none transition-colors duration-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20"
           />
         </div>
 
         <div className="mb-3">
+          <label className="mb-1 block text-xs font-medium text-slate-700">手机号码 <span className="text-red-400">*</span></label>
           <input type="tel" maxLength={11} value={phone}
             onChange={(e) => { setPhone(e.target.value.replace(/\D/g, "")); if (error) setError(""); }}
-            placeholder="手机号码 *" autoComplete="tel"
-            className={`h-10 w-full rounded-lg border px-3 text-sm outline-none transition-colors duration-200 ${error ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-500/20" : "border-slate-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20"}`}
+            placeholder="请输入11位手机号" autoComplete="tel"
+            className={`h-11 w-full rounded-lg border px-3 text-sm outline-none transition-colors duration-200 ${error ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-500/20" : "border-slate-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20"}`}
           />
         </div>
 
         <div className="mb-3 grid grid-cols-2 gap-3">
-          <select value={amount} onChange={(e) => setAmount(e.target.value)}
-            className="h-10 w-full rounded-lg border border-slate-200 bg-white px-2.5 text-sm text-slate-700 outline-none transition-colors duration-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20"
-          >
-            {AMOUNT_OPTIONS.map((opt) => (<option key={opt} value={opt}>{opt || "期望金额（选填）"}</option>))}
-          </select>
-          <select value={purpose} onChange={(e) => setPurpose(e.target.value)}
-            className="h-10 w-full rounded-lg border border-slate-200 bg-white px-2.5 text-sm text-slate-700 outline-none transition-colors duration-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20"
-          >
-            {PURPOSE_OPTIONS.map((opt) => (<option key={opt} value={opt}>{opt || "贷款用途（选填）"}</option>))}
-          </select>
+          <div>
+            <label className="mb-1 block text-xs font-medium text-slate-500">期望金额</label>
+            <select value={amount} onChange={(e) => setAmount(e.target.value)}
+              className="h-11 w-full rounded-lg border border-slate-200 bg-white px-2.5 text-sm text-slate-700 outline-none transition-colors duration-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20"
+            >
+              {AMOUNT_OPTIONS.map((opt) => (<option key={opt} value={opt}>{opt || "选填"}</option>))}
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-medium text-slate-500">贷款用途</label>
+            <select value={purpose} onChange={(e) => setPurpose(e.target.value)}
+              className="h-11 w-full rounded-lg border border-slate-200 bg-white px-2.5 text-sm text-slate-700 outline-none transition-colors duration-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20"
+            >
+              {PURPOSE_OPTIONS.map((opt) => (<option key={opt} value={opt}>{opt || "选填"}</option>))}
+            </select>
+          </div>
         </div>
 
         <div className="mb-4">
+          <label className="mb-1 block text-xs font-medium text-slate-500">所在城市</label>
           <div className="relative">
             <input type="text" maxLength={20} value={city} onChange={(e) => setCity(e.target.value)}
-              placeholder={cityDetecting ? "正在定位..." : "所在城市（自动获取，可修改）"}
-              className="h-10 w-full rounded-lg border border-slate-200 bg-white pl-8 pr-3 text-sm text-slate-700 outline-none transition-colors duration-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20"
+              placeholder={cityDetecting ? "正在定位..." : "自动获取，可修改"}
+              className="h-11 w-full rounded-lg border border-slate-200 bg-white pl-8 pr-3 text-sm text-slate-700 outline-none transition-colors duration-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20"
             />
             <MapPin className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
           </div>

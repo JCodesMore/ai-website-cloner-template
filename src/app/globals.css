@@ -161,3 +161,10 @@
     font-size: 0.625rem;
   }
 }
+
+/* Tablet: 768px+ optimize reading width */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .product-intro {
+    max-width: 680px;
+  }
+}

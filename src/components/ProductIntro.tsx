@@ -144,7 +144,7 @@ function OverviewSection({ id, content }: { id: string; content: string }) {
             />
           </div>
         )}
-        <p className="text-sm leading-relaxed text-slate-600">{stripMarkdown(text)}</p>
+        <p className="text-base leading-relaxed text-slate-600">{stripMarkdown(text)}</p>
       </div>
     </SectionWrap>
   );
@@ -162,7 +162,7 @@ function ParamsSection({ id, content }: { id: string; content: string }) {
                 <td className="w-28 px-4 py-2.5 text-xs font-medium uppercase tracking-wider text-slate-400">
                   {row.key}
                 </td>
-                <td className="px-4 py-2.5 text-sm text-slate-700">{row.value}</td>
+                <td className="px-4 py-2.5 text-base text-slate-700">{row.value}</td>
               </tr>
             ))}
           </tbody>
@@ -186,8 +186,8 @@ function FeaturesSection({ id, content }: { id: string; content: string }) {
               key={i}
               className="rounded-lg border border-emerald-100 bg-gradient-to-br from-emerald-50/40 to-white p-4"
             >
-              {title && <p className="mb-1 text-sm font-semibold text-emerald-800">{title}</p>}
-              <p className="text-sm leading-relaxed text-slate-600">{desc}</p>
+              {title && <p className="mb-1 text-base font-semibold text-emerald-800">{title}</p>}
+              <p className="text-base leading-relaxed text-slate-600">{desc}</p>
             </div>
           );
         })}
@@ -204,7 +204,7 @@ function AudienceSection({ id, content }: { id: string; content: string }) {
         {items.map((item, i) => (
           <div
             key={i}
-            className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 shadow-sm"
+            className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-base text-slate-700 shadow-sm"
           >
             <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100 text-xs font-bold text-emerald-700">
               {i + 1}
@@ -238,18 +238,18 @@ function ApplySection({ id, content }: { id: string; content: string }) {
           }
           // Render markdown text with basic formatting
           const html = part
-            .replace(/^### (.+)$/gm, '<h3 class="text-sm font-semibold text-slate-800 mt-4 mb-2">$1</h3>')
+            .replace(/^### (.+)$/gm, '<h3 class="text-base font-semibold text-slate-800 mt-4 mb-2">$1</h3>')
             .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-            .replace(/^- (.+)$/gm, '<li class="ml-4 mb-1 text-sm text-slate-600">$1</li>')
-            .replace(/\n\n/g, "</p><p class='mb-2 text-sm text-slate-600'>")
+            .replace(/^- (.+)$/gm, '<li class="ml-4 mb-1 text-base text-slate-600">$1</li>')
+            .replace(/\n\n/g, "</p><p class='mb-2 text-base text-slate-600'>")
             .replace(/\n/g, "<br/>");
 
           return (
             <div
               key={i}
-              className="text-sm leading-relaxed text-slate-600"
+              className="text-base leading-relaxed text-slate-600"
               dangerouslySetInnerHTML={{
-                __html: `<p class='mb-2 text-sm text-slate-600'>${html}</p>`,
+                __html: `<p class='mb-2 text-base text-slate-600'>${html}</p>`,
               }}
             />
           );
@@ -272,7 +272,7 @@ function GenericSection({ id, title, content }: { id: string; title: string; con
   return (
     <SectionWrap id={id} title={title}>
       <div
-        className="prose text-sm leading-relaxed text-slate-600"
+        className="prose text-base leading-relaxed text-slate-600"
         dangerouslySetInnerHTML={{ __html: content }}
       />
     </SectionWrap>
