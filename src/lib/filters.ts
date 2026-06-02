@@ -61,10 +61,14 @@ const tagPromoMap: Record<string, string[]> = {
   "38": ["专利贷"],
 };
 
-export function filterByTag<T extends { promo?: string }>(items: T[], tagId: string): T[] {
+export function filterByTag<T extends { id: number }>(items: T[], tagId: string): T[] {
   if (!tagId || !tagPromoMap[tagId]) return items;
   const keywords = tagPromoMap[tagId];
-  return items.filter((p) => p.promo && keywords.some((k) => p.promo!.includes(k)));
+  return items.filter((p) => {
+    const detail = productDetails.find((d) => d.id === p.id);
+    const advs = detail?.advantages || [];
+    return keywords.some((k) => advs.some((a: string) => a.includes(k)));
+  });
 }
 
 // ── Advantage filter (cross-ref with productDetails) ────
