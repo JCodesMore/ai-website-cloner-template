@@ -71,11 +71,17 @@ export default async function InstitutionsPage({ searchParams }: Props) {
                     href={inst.href}
                     className="group flex items-center gap-4 rounded-lg border border-slate-200 bg-white p-4 transition-shadow duration-200 hover:shadow-md cursor-pointer"
                   >
-                    <img
-                      src={inst.logo || inst.products[0]?.icon || ""}
-                      alt={inst.name}
-                      className="h-12 w-12 shrink-0 rounded-lg object-cover"
-                    />
+                    {(inst.logo || inst.products[0]?.icon) ? (
+                      <img
+                        src={inst.logo || inst.products[0]?.icon}
+                        alt={inst.name}
+                        className="h-12 w-12 shrink-0 rounded-lg object-cover"
+                      />
+                    ) : (
+                      <div className="h-12 w-12 shrink-0 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 text-xs font-bold">
+                        {inst.name.charAt(0)}
+                      </div>
+                    )}
                     <div className="min-w-0 flex-1">
                       <h3 className="font-semibold text-slate-900 transition-colors duration-200 group-hover:text-yellow-600">
                         {inst.name}

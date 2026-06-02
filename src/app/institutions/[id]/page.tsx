@@ -38,7 +38,13 @@ export default async function InstitutionDetailPage({ params }: Props) {
         <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
           <div className="space-y-6">
             <div className="flex items-start gap-5 rounded-lg border border-slate-200 bg-white p-6">
-              <img src={inst.logo} alt={inst.name} className="h-16 w-16 shrink-0 rounded-xl border border-slate-100 object-cover" />
+              {inst.logo ? (
+                <img src={inst.logo} alt={inst.name} className="h-16 w-16 shrink-0 rounded-xl border border-slate-100 object-cover" />
+              ) : (
+                <div className="h-16 w-16 shrink-0 rounded-xl border border-slate-100 bg-slate-50 flex items-center justify-center text-slate-400 text-lg font-bold">
+                  {inst.name.charAt(0)}
+                </div>
+              )}
               <div className="flex-1">
                 <div className="mb-2 flex items-center gap-3">
                   <h1 className="text-xl font-bold text-slate-900">{inst.fullName}</h1>
@@ -75,9 +81,9 @@ export default async function InstitutionDetailPage({ params }: Props) {
                       href={p.href}
                       className="group flex items-start gap-3 rounded-lg border border-slate-200 bg-white p-4 transition-shadow duration-200 hover:shadow-md cursor-pointer"
                     >
-                      {p.icon && (
+                      {p.icon ? (
                         <img src={p.icon} alt="" className="mt-0.5 h-8 w-8 shrink-0 rounded-lg object-cover" />
-                      )}
+                      ) : null}
                       <div className="min-w-0 flex-1">
                         <h3 className="mb-1.5 text-sm font-semibold text-slate-900 transition-colors duration-200 group-hover:text-yellow-600">
                           {detail ? detail.name : (p.name.split(/\s+/)[0] || p.name)}
