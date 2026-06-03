@@ -81,6 +81,10 @@ export default function Footer() {
       <div className="border-t border-slate-800">
         <div className="mx-auto max-w-7xl px-4 py-6 text-center text-xs text-slate-500">
           Copyright &copy; 2025 内江银脉圈企业管理咨询有限公司版权所有 www.yinmaiquan.com
+          <br />
+          <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" className="hover:text-slate-400">
+            蜀ICP备XXXXXXXX号
+          </a>
         </div>
       </div>
     </footer>

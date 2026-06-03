@@ -47,14 +47,19 @@ export default function AboutPage() {
 
           <div className="rounded-lg border border-slate-200 bg-white p-6 md:p-8">
             <h1 className="mb-6 text-2xl font-bold text-slate-900">关于我们</h1>
-            <div className="prose prose-slate max-w-none text-sm leading-relaxed text-slate-700">
+            <div className="prose prose-slate max-w-none text-base leading-relaxed text-slate-700">
               <p className="text-center"><img src="/images/products/58efa73697da.jpg" alt="" className="mx-auto max-w-full rounded-lg" /></p>
-              <p><strong>关于我们</strong></p>
+              <h2 className="mt-6 mb-3 text-lg font-semibold text-slate-900">关于我们</h2>
               <p>银脉圈（yinmaiquan.com）是国内领先的贷款产品口碑查询与智能推荐平台。我们聚合全网信贷产品信息，通过用户真实评价和数据分析，帮助每一位借款人找到最适合自己的融资方案。</p>
               <p>银脉圈由内江银脉圈企业管理咨询有限公司运营，核心团队深耕金融信息服务领域多年，致力于用互联网技术打破信贷信息不对称，让贷款选择更加透明、高效、个性化。</p>
+
+              <h2 className="mt-6 mb-3 text-lg font-semibold text-slate-900">我们的使命</h2>
               <p>我们的使命：让每个人都能根据自身条件，在万千产品中精准找到对的贷款，省时、省心、省成本。</p>
               <p>我们的定位：不隶属于任何金融机构，不向用户收取推荐费用，以中立第三方的身份为借贷双方搭建信息桥梁。平台通过严格的产品筛选机制和用户口碑反馈体系，帮助优质信贷产品脱颖而出，也帮助用户规避劣质产品风险。</p>
               <p>我们欢迎合规金融机构入驻展示产品，共同推动普惠金融发展，让更多人享受到公平、便捷的信贷服务。</p>
+
+              <h2 className="mt-6 mb-3 text-lg font-semibold text-slate-900">经营资质</h2>
+              <p>本平台由内江银脉圈企业管理咨询有限公司运营，已在工业和信息化部完成 ICP 备案，依法取得增值电信业务经营许可。平台依法经营，接受社会监督。关于平台的具体法律声明，请参阅<a href="/pages/statement" className="text-emerald-600 hover:underline">《免责声明》</a>。</p>
             </div>
           </div>
         </div>

@@ -37,23 +37,23 @@ export default function AgreementPage() {
           </aside>
           <div className="rounded-lg border border-slate-200 bg-white p-6 md:p-8">
             <h1 className="mb-6 text-2xl font-bold text-slate-900">使用协议</h1>
-            <div className="prose prose-slate max-w-none text-sm leading-relaxed text-slate-700">
-              <p><strong>使用协议</strong></p>
+            <div className="prose prose-slate max-w-none text-base leading-relaxed text-slate-700">
               <p>欢迎使用银脉圈（yinmaiquan.com）。本协议是您与内江银脉圈企业管理咨询有限公司之间关于使用银脉圈服务的有效协议。</p>
-              <p><strong>1、声明与承诺</strong></p>
+              <h2 className="mt-6 mb-3 text-lg font-semibold text-slate-900">一、声明与承诺</h2>
               <p>银脉圈网站的所有权和运作权归内江银脉圈企业管理咨询有限公司所有。用户接受并使用本平台服务，即视为已完整阅读、理解并同意本协议的全部内容。</p>
-              <p><strong>2、服务内容</strong></p>
+              <h2 className="mt-6 mb-3 text-lg font-semibold text-slate-900">二、服务内容</h2>
               <p>银脉圈向用户提供贷款产品口碑查询、产品信息比较、信贷资讯浏览及用户评论发布等服务。</p>
-              <p><strong>3、服务条款变更</strong></p>
+              <h2 className="mt-6 mb-3 text-lg font-semibold text-slate-900">三、服务条款变更</h2>
               <p>银脉圈有权依据法律法规及运营需要对本协议进行修订，并在官网予以公告。如您继续使用本平台服务，视为接受修订后的协议。</p>
-              <p><strong>4、账户安全</strong></p>
+              <h2 className="mt-6 mb-3 text-lg font-semibold text-slate-900">四、账户安全</h2>
               <p>您应妥善保管账号及密码信息，因您自身原因导致的账户被盗用或信息泄露，银脉圈不承担责任。</p>
-              <p><strong>5、用户信息保护</strong></p>
+              <h2 className="mt-6 mb-3 text-lg font-semibold text-slate-900">五、用户信息保护</h2>
               <p>详见<a href="/pages/privacy" className="text-emerald-600 hover:underline">《银脉圈隐私保护》</a>。</p>
-              <p><strong>6、知识产权</strong></p>
+              <h2 className="mt-6 mb-3 text-lg font-semibold text-slate-900">六、知识产权</h2>
               <p>银脉圈所有内容（包括但不限于文字、图片、设计、程序）的知识产权归内江银脉圈企业管理咨询有限公司所有，未经许可不得转载或用于商业用途。</p>
-              <p><strong>7、法律适用</strong></p>
-              <p>本协议的订立、执行和解释适用中华人民共和国法律。银脉圈保留本协议的最终解释权。</p>
+              <h2 className="mt-6 mb-3 text-lg font-semibold text-slate-900">七、法律适用与争议解决</h2>
+              <p>本协议的订立、执行和解释适用中华人民共和国法律。</p>
+              <p>因本协议产生的或与本协议有关的任何争议，双方应友好协商解决；协商不成的，任何一方均有权向内江银脉圈企业管理咨询有限公司所在地有管辖权的人民法院提起诉讼。</p>
             </div>
           </div>
         </div>
