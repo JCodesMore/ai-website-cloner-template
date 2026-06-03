@@ -1,0 +1,12 @@
+@font-face{font-family:layui-icon;src:url(../font/iconfont.eot?v=282);src:url(../font/iconfont.eot?v=282#iefix) format('embedded-opentype'),url(../font/iconfont.woff2?v=282) format('woff2'),url(../font/iconfont.woff?v=282) format('woff'),url(../font/iconfont.ttf?v=282) format('truetype'),url(../font/iconfont.svg?v=282#layui-icon) format('svg')}
+.layui-icon{font-family:layui-icon!important;font-size:16px;font-style:normal;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+.layui-icon-share:before{content:"\e641"}
+.layui-icon-cellphone:before{content:"\e678"}
+.layui-icon-time:before{content:"\e68d"}
+.layui-icon-read:before{content:"\e705"}
+.layui-icon-search:before{content:"\e615"}
+.layui-icon-link:before{content:"\e64c"}
+.layui-icon-dialogue:before{content:"\e63a"}
+.layui-icon-right:before{content:"\e602"}
+.layui-icon-rmb:before{content:"\e65e"}
+.layui-icon-close-fill:before{content:"\1007"}

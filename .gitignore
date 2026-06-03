@@ -47,3 +47,4 @@ next-env.d.ts
 
 # Local temp files
 temp/
+.gstack/
