@@ -1,4 +1,5 @@
 import type { Product } from "@/types";
+import { getAvatarColor, getAvatarInitial } from "@/lib/avatar";
 
 interface ProductCardProps {
   product: Product;
@@ -7,6 +8,7 @@ interface ProductCardProps {
 
 export default function ProductCard({ product, variant = "default" }: ProductCardProps) {
   const isFast = variant === "fast";
+  const avatar = getAvatarColor(product.institution || product.name);
 
   return (
     <a
@@ -14,11 +16,17 @@ export default function ProductCard({ product, variant = "default" }: ProductCar
       className="group block cursor-pointer rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
     >
       <div className="mb-3 flex items-center gap-3">
-        <img
-          src={product.image}
-          alt={product.name}
-          className="h-10 w-10 shrink-0 rounded-lg border border-slate-100 object-cover"
-        />
+        {product.image ? (
+          <img
+            src={product.image}
+            alt={product.name}
+            className="h-10 w-10 shrink-0 rounded-lg border border-slate-100 object-cover"
+          />
+        ) : (
+          <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${avatar.bg} text-sm font-bold ${avatar.text}`}>
+            {getAvatarInitial(product.institution || product.name)}
+          </div>
+        )}
         <div className="min-w-0">
           <div className="text-sm font-medium text-slate-500">{product.institution}</div>
           <h3
@@ -33,19 +41,19 @@ export default function ProductCard({ product, variant = "default" }: ProductCar
       <div className="grid grid-cols-2 gap-x-3 gap-y-2">
         <div>
           <div className="text-xs text-slate-400">最高额度</div>
-          <div className="text-sm font-semibold text-slate-900">{product.maxAmount}</div>
+          <div className="text-base font-semibold text-slate-900">{product.maxAmount}</div>
         </div>
         <div>
           <div className="text-xs text-slate-400">还款期限</div>
-          <div className="text-sm font-semibold text-slate-900">{product.term}</div>
+          <div className="text-base font-semibold text-slate-900">{product.term}</div>
         </div>
         <div>
           <div className="text-xs text-slate-400">参考利率</div>
-          <div className="text-sm font-semibold text-slate-900">{product.rate}</div>
+          <div className="text-base font-semibold text-slate-900">{product.rate}</div>
         </div>
         <div>
           <div className="text-xs text-slate-400">还款方式</div>
-          <div className="text-sm font-semibold text-slate-900">{product.repayment}</div>
+          <div className="text-base font-semibold text-slate-900">{product.repayment}</div>
         </div>
       </div>
 

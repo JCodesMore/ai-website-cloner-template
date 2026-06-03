@@ -138,7 +138,11 @@ export async function auditLog(action: string, detail?: string): Promise<void> {
 
 export async function seedAdminUser(): Promise<void> {
   const username = process.env.ADMIN_USERNAME || "admin";
-  const password = process.env.ADMIN_PASSWORD || "bbxin2026";
+  const password = process.env.ADMIN_PASSWORD;
+  if (!password) {
+    console.error("[admin-auth] ADMIN_PASSWORD 环境变量未设置，跳过管理员种子");
+    return;
+  }
   try {
     const rows = await db.select({ username: schema.users.username, password: schema.users.password })
       .from(schema.users)
