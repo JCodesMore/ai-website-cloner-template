@@ -2,6 +2,24 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* Dr. Kegel quiz brand tokens */
+:root {
+  --kegel-text: #111113;
+  --kegel-bg: #ffffff;
+  --kegel-option-bg: #f1f3f9;
+  --kegel-option-selected: #111113;
+  --kegel-option-selected-text: #ffffff;
+  --kegel-dark-bg: #111113;
+  --kegel-accent-orange: #fe9b1a;
+  --kegel-accent-red: #e44240;
+  --kegel-green: #53cc58;
+  --kegel-blue: #5773d6;
+  --kegel-progress-active: #e44240;
+  --kegel-progress-inactive: #333e51;
+  --kegel-border-radius: 9px;
+  --kegel-max-width: 600px;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -123,8 +141,36 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-roboto), Roboto, sans-serif;
+    color: var(--kegel-text);
   }
   html {
-    @apply font-sans;
+    font-family: var(--font-roboto), Roboto, sans-serif;
   }
+}
+
+.kegel-gradient-text {
+  background: linear-gradient(90deg, #fe9b1a, #e44240);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.quiz-page-enter {
+  animation: fadeIn 0.25s ease forwards;
+}
+
+@keyframes loadingDot {
+  0%, 80%, 100% { opacity: 0.3; }
+  40% { opacity: 1; }
+}
+
+@keyframes progressFill {
+  from { width: 0%; }
+  to { width: var(--progress-width); }
 }
