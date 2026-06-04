@@ -122,7 +122,7 @@ export const QUIZ_STEPS: QuizStep[] = [
       { label: "Mais de 3 anos" },
       { label: "Prefiro não responder" },
     ],
-    nextStep: null,
+    nextStep: null, // null = fim do quiz → vai para /pt-br/enter-email
   },
 ];
 

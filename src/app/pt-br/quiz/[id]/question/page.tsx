@@ -30,7 +30,7 @@ function QuestionContent() {
         router.push(`/pt-br/quiz/${nextStep}/${nextStepData.type}?age=${age}`);
       }
     } else {
-      router.push(`/pt-br/result?age=${age}`);
+      router.push(`/pt-br/enter-email?age=${age}`);
     }
   };
 
