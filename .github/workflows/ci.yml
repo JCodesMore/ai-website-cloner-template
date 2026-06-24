@@ -34,3 +34,34 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  sync:
+    name: Generated files in sync
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Regenerate agent rules and platform skills
+        run: |
+          bash scripts/sync-agent-rules.sh
+          node scripts/sync-skills.mjs
+
+      - name: Verify generated files are committed
+        run: |
+          if ! git diff --quiet; then
+            echo "::error::Generated files are out of sync with their sources (AGENTS.md / SKILL.md)."
+            echo "Run the sync scripts locally and commit the result:"
+            echo "  bash scripts/sync-agent-rules.sh"
+            echo "  node scripts/sync-skills.mjs"
+            git diff --stat
+            exit 1
+          fi
+          echo "All generated files are in sync with their sources."
