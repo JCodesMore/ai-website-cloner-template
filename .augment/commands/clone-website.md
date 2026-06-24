@@ -118,6 +118,17 @@ The spec file is not optional. It is not a nice-to-have. If you dispatch a build
 
 Every builder agent must verify `npx tsc --noEmit` passes before finishing. After merging worktrees, you verify `npm run build` passes. A broken build is never acceptable, even temporarily.
 
+### 10. Graceful Degradation Beats Total Failure
+
+When a site is saturated with dynamic effects — heavy scroll-driven timelines, WebGL/canvas scenes, particle systems, dozens of staggered entrance animations — trying to reproduce every one of them perfectly in a single pass is how a clone goes from "almost done" to "completely broken." The motion chase introduces runtime errors, layout thrash, and an un-compilable build, and the user is left with nothing. Treat motion as a **layer on top of a correct static clone**, never as a prerequisite for it:
+
+1. **Build the static skeleton first.** Get the DOM structure, exact CSS (in the element's resting/final state), real content, and assets correct so the page is visually accurate and the build is green — with zero animation. A static-but-pixel-accurate clone is a shippable success. A half-animated clone that doesn't compile is a failure.
+2. **Layer motion back in priority order**, verifying the build after each addition: (a) effects essential to the layout being readable (sticky headers, reveal-on-scroll that controls visibility), (b) prominent hero/brand animations the user notices immediately, (c) decorative micro-interactions. Stop when the budget is spent.
+3. **Use fallbacks for effects that can't be faithfully rebuilt.** A WebGL shader scene, a chained GSAP timeline, or a Lottie sequence is usually not worth reimplementing pixel-for-pixel. Capture it as a looping muted `<video>` or a high-res screenshot and place that in the layout. A convincing fallback beats a broken reimplementation.
+4. **Record what was deferred or substituted** in `docs/research/BEHAVIORS.md` and the completion report. Never silently drop an effect — the user decides whether it's worth a second pass.
+
+**Motion budget rule:** Cap reimplemented-from-scratch animations at roughly one significant effect per section. If a section needs more than that to feel right, the extra effects are fallback candidates, not build-from-scratch candidates. This keeps the build green and the clone shippable instead of chasing an unbounded animation surface until it collapses.
+
 ## Phase 1: Reconnaissance
 
 Navigate to the target URL with browser MCP.
@@ -165,6 +176,29 @@ This is a dedicated pass AFTER screenshots and BEFORE anything else. Its purpose
 - At each width, note which sections change layout (column → stack, sidebar disappears, etc.) and at approximately which breakpoint the change occurs.
 
 Save all findings to `docs/research/BEHAVIORS.md`. This is your behavior bible — reference it when writing every component spec.
+
+### Motion Complexity Triage
+
+Right after the interaction sweep — before mapping topology — classify how much dynamic effect the page carries and pick a strategy. This is the step that keeps an effect-saturated site from collapsing the whole clone (see Principle 10).
+
+**Detect the animation stack.** Check the DOM and network/bundle for these signals and record each in `BEHAVIORS.md`:
+
+| Signal | Library / technique | Default strategy |
+|---|---|---|
+| `data-framer-*`, `framer-motion` in bundles | Framer Motion | Reimplement (already React-friendly) |
+| `gsap`, `ScrollTrigger`, `data-scroll` pins | GSAP / ScrollTrigger | Reimplement simple tweens; **fallback** complex pinned timelines |
+| `.lenis`, `.locomotive-scroll` | Smooth scroll | Reimplement (Lenis is a small dep) |
+| `<canvas>`, `three`, WebGL context | Three.js / WebGL / canvas | **Fallback to looping video or screenshot** — do not rebuild |
+| `.lottie`, `lottie-web`, `dotlottie` | Lottie | Reuse the original `.json`/`.lottie` asset via `lottie-react`, or fallback video |
+| many particles / cursor trails / shader bg | Custom canvas / particles | **Fallback** — decorative, not worth rebuilding |
+| `<video autoplay loop muted>` as background | Native video | Download and reuse directly |
+
+**Pick a tier** and record it at the top of `BEHAVIORS.md`:
+- **Light** (a few CSS transitions, hover states): reproduce everything inline as you build.
+- **Moderate** (scroll reveals, sticky header, a carousel, one hero animation): static skeleton first, then layer motion per section.
+- **Heavy** (WebGL/canvas scenes, chained GSAP timelines, dozens of staggered animations): **static-first is mandatory.** Build the whole page static and green, then add only budgeted effects (Principle 10) and substitute fallbacks for the rest.
+
+When unsure of a site's tier, treat it as one level heavier — it is cheaper to add an animation back than to debug why an over-animated build won't compile.
 
 ### Page Topology
 Map out every distinct section of the page from top to bottom. Give each a working name. Document:
@@ -460,6 +494,8 @@ These are lessons from previous failed clones — each one cost hours of rework:
 - **Don't bundle unrelated sections into one agent.** A CTA section and a footer are different components with different designs — don't hand them both to one agent and hope for the best.
 - **Don't skip responsive extraction.** If you only inspect at desktop width, the clone will break at tablet and mobile. Test at 1440, 768, and 390 during extraction.
 - **Don't forget smooth scroll libraries.** Check for Lenis (`.lenis` class), Locomotive Scroll, or similar. Default browser scrolling feels noticeably different and the user will spot it immediately.
+- **Don't chase animations until the build breaks.** On effect-heavy sites, get a static, compiling, pixel-accurate clone first, then layer motion back in priority order (Principle 10). A static-but-correct clone ships; a half-animated one that won't compile does not.
+- **Don't reimplement WebGL/canvas/complex GSAP scenes from scratch.** Capture them as a looping muted video or screenshot and document the substitution in the spec and `BEHAVIORS.md`. A convincing fallback beats a broken reimplementation.
 - **Don't dispatch builders without a spec file.** The spec file forces exhaustive extraction and creates an auditable artifact. Skipping it means the builder gets whatever you can fit in a prompt from memory.
 
 ## Completion
@@ -471,4 +507,5 @@ When done, report:
 - Total assets downloaded (images, videos, SVGs, fonts)
 - Build status (`npm run build` result)
 - Visual QA results (any remaining discrepancies)
+- Motion tier (light / moderate / heavy) and any animations deferred or substituted with fallbacks
 - Any known gaps or limitations
