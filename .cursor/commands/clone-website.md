@@ -29,6 +29,12 @@ If the user provides additional instructions (specific fidelity level, customiza
 4. Create the output directories if they don't exist: `docs/research/`, `docs/research/components/`, `docs/design-references/`, `scripts/`. For multiple clones, also prepare per-site folders like `docs/research/<hostname>/` and `docs/design-references/<hostname>/`.
 5. When working with multiple sites in one command, optionally confirm whether to run them in parallel (recommended, if resources allow) or sequentially to avoid overload.
 
+## Alternative Browser Backend: Playwright MCP
+
+The default browser MCP flow above is unchanged. If the user asks to use Playwright, or if Playwright MCP is the available/preferred browser tool, drive the same extraction workflow through the Playwright MCP server (`@playwright/mcp`) instead of the default Chrome/browser MCP. Use it for navigation, viewport changes, screenshots, DOM evaluation, computed-style extraction, asset enumeration, and interaction sweeps.
+
+Playwright MCP is only an alternative browser automation backend for this skill. Do not add a separate scraping backend service or modify application/runtime code just to use it. No extra `.env` variables are required for Playwright MCP itself; configure it in the user's MCP-capable agent/client, for example with a command such as `npx @playwright/mcp@latest`, then run the normal clone workflow unchanged.
+
 ## Guiding Principles
 
 These are the truths that separate a successful clone from a "close enough" mess. Internalize them — they should inform every decision you make.
