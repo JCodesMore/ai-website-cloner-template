@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- First-class Kiro support — `/clone-website` available as a Kiro skill (`.kiro/skills/clone-website/SKILL.md`), a `.kiro/steering/project.md` pointer to `AGENTS.md`, a "Using Kiro" guide in the README, and Kiro added to the Supported Platforms table
+- Kiro wired into `scripts/sync-skills.mjs` so its skill regenerates from the same source of truth as every other platform
+
 ### Changed
 - Raised the project Node.js baseline to 24 across local development, CI, Docker, and contributor-facing documentation
 

@@ -68,8 +68,84 @@ Point it at a URL, run `/clone-website`, and your AI agent will inspect the site
 | [Roo Code](https://github.com/RooCodeInc/Roo-Code)            | Supported                  |
 | [Continue](https://continue.dev/)                             | Supported                  |
 | [Amazon Q](https://aws.amazon.com/q/developer/)               | Supported                  |
+| [Kiro](https://kiro.dev/)                                     | Supported                  |
 | [Augment Code](https://www.augmentcode.com/)                  | Supported                  |
 | [Aider](https://aider.chat/)                                  | Supported                  |
+
+## Using Kiro
+
+[Kiro](https://kiro.dev/) is an agentic IDE (with a companion CLI) built around **steering**, **specs**, and **skills**. This template ships first-class Kiro support: Kiro reads `AGENTS.md` automatically, a steering pointer keeps the project rules in view, and the `/clone-website` skill is available as a Kiro skill.
+
+### Install Kiro
+
+1. Download Kiro for your operating system (Windows, macOS, or Linux) from [kiro.dev](https://kiro.dev/).
+2. Open the downloaded file and follow the installer for your platform.
+3. Launch Kiro and sign in.
+
+> Prefer the terminal? The Kiro CLI (`kiro-cli`) uses the same `.kiro/` configuration described below.
+
+### Open the project in Kiro
+
+After creating your repository from this template (see [Quick Start](#quick-start)) and cloning it locally, open the project folder in Kiro (**File → Open Folder**, or `kiro-cli chat` from the project root). Kiro loads the workspace configuration from `.kiro/` and the project instructions from `AGENTS.md` automatically.
+
+### Required setup
+
+1. **Install dependencies:** `npm install` (Node.js 24+ — see [Prerequisites](#prerequisites)).
+2. **Add a browser automation MCP server.** The `/clone-website` skill inspects live sites and cannot run without one. Configure a browser MCP server (Chrome MCP, Playwright MCP, Puppeteer MCP, or Browserbase MCP) in `.kiro/settings/mcp.json` for this workspace, or globally in `~/.kiro/settings/mcp.json`. Chrome MCP is preferred when multiple are available.
+
+   ```json
+   {
+     "mcpServers": {
+       "chrome": {
+         "command": "npx",
+         "args": ["-y", "your-browser-mcp-server"]
+       }
+     }
+   }
+   ```
+
+   Replace `your-browser-mcp-server` with the package for the browser MCP you use. The CLI equivalent is `kiro-cli mcp add`.
+
+### Recommended settings
+
+- **Model:** use a strong model for extraction and code generation. In the CLI: `kiro-cli settings chat.defaultModel "<model-id>"`; in the IDE, pick the model from the chat panel.
+- **Tool trust:** the clone pipeline reads, writes, and runs `npm`/`git` frequently. Auto-approving read/write/shell and your browser MCP avoids repeated prompts — see Kiro's trust configuration (agent `allowedTools`, or `kiro-cli chat --trust-tools=...`). Grant only what you're comfortable with.
+- **Keep steering lean:** the provided `.kiro/steering/project.md` is a thin pointer to `AGENTS.md`; leave detailed rules in `AGENTS.md` so context stays small.
+
+### Using the provided Kiro resources
+
+- **`.kiro/steering/project.md`** — an always-included steering pointer to `AGENTS.md`, the single source of truth for project conventions (tech stack, code style, structure).
+- **`.kiro/skills/clone-website/SKILL.md`** — the full `/clone-website` pipeline as a Kiro skill. Ask Kiro to clone a site (for example, "clone https://example.com") and it loads the skill on demand, or invoke it directly from the chat.
+
+Both files are generated/maintained from the same sources as every other platform — see [Updating for Other Platforms](#updating-for-other-platforms).
+
+### Example workflows
+
+**Clone a single site**
+
+1. Open the project in Kiro with a browser MCP configured.
+2. In chat: `/clone-website https://example.com` (or "clone https://example.com").
+3. Kiro runs reconnaissance, builds the foundation, writes component specs, dispatches builders, and assembles the page.
+4. Run `npm run dev` to preview and `npm run check` to validate.
+
+**Clone multiple sites at once**
+
+```
+/clone-website https://site-one.com https://site-two.com
+```
+
+Each site's extraction artifacts are kept isolated under `docs/research/<hostname>/`.
+
+**Customize after cloning**
+
+Once the base clone builds, ask Kiro to adjust content, colors, or layout — the steering rules and `AGENTS.md` keep changes consistent with the project's conventions.
+
+### Troubleshooting
+
+- **Skill doesn't trigger:** confirm `.kiro/skills/clone-website/SKILL.md` exists. Regenerate it with `node scripts/sync-skills.mjs`.
+- **"Browser automation is required":** no browser MCP server is reachable. Add one under `.kiro/settings/mcp.json` (see [Required setup](#required-setup)) and reload the workspace.
+- **Project rules ignored:** ensure `AGENTS.md` is at the workspace root and `.kiro/steering/project.md` is present. In the CLI, `/context show` lists the loaded steering files.
+- **Build fails:** run `npm install` and verify Node.js 24+ (`node --version`), then `npm run check`.
 
 ## Prerequisites
 
@@ -131,6 +207,7 @@ scripts/
 AGENTS.md           # Agent instructions (single source of truth)
 CLAUDE.md           # Claude Code config (imports AGENTS.md)
 GEMINI.md           # Gemini CLI config (imports AGENTS.md)
+.kiro/              # Kiro steering pointer + /clone-website skill
 ```
 
 ## Commands
