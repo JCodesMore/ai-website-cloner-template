@@ -25,9 +25,44 @@ The target is whatever page `$ARGUMENTS` resolves to. Clone exactly what's visib
 
 If the user provides additional instructions (specific fidelity level, customizations, extra context), honor those over the defaults.
 
+## Browser Backend (pick one)
+
+This skill needs a way to drive a real browser — take screenshots, run `getComputedStyle` extraction, click, scroll, hover. Two backends work, and **the extraction scripts in this document are identical for both** — only *how you execute a snippet* differs. Pick one in Pre-Flight and use it consistently.
+
+### Option A — Browser MCP (default)
+
+Any browser automation MCP: Chrome MCP, Playwright MCP, Browserbase MCP, Puppeteer MCP, etc. (prefer Chrome MCP if several exist). This is what the rest of the document assumes wherever it says "via browser MCP" — evaluate a snippet with the MCP's evaluate tool, screenshot with its screenshot tool, and so on. No changes needed; read straight through.
+
+### Option B — ego-browser (opt-in — far fewer tool calls, much less token)
+
+[ego-browser](https://lite.ego.app/) (ego lite) drives a real, logged-in Chromium through a Node runtime. If it's installed (a `/ego-browser` skill, or `ego-browser` on PATH), you may use it instead. Because it composes multi-step browser work as **one JavaScript pass and returns only the fields you built** — instead of re-dumping a full DOM/accessibility tree into context every round — extraction runs with far fewer tool calls and dramatically less token.
+
+Run everything through a `Bash` heredoc:
+
+```bash
+ego-browser nodejs <<'EOF'
+const task = await useOrCreateTaskSpace('clone <hostname>')   // reuse this SAME space every round
+await openOrReuseTab('<url>', { wait: true, timeout: 25 })    // timeout is in SECONDS
+const data = await js(String.raw`(() => { /* the SAME extraction JS this doc shows */ return obj })()`)
+cliLog(JSON.stringify(data, null, 2))                          // cliLog is the only output channel
+EOF
+```
+
+**Translation table** — wherever the rest of this document says "via browser MCP", use the ego-browser equivalent:
+
+| This doc says (browser MCP) | ego-browser equivalent |
+| --- | --- |
+| evaluate a snippet | `await js(...)` with a `String.raw` template — returns a real JS value; **do not `JSON.stringify` inside** the snippet, serialize in the Node body via `cliLog` |
+| take a screenshot | `await captureScreenshot()` → returns a **temp PNG path** (string, not base64); `cp` it into `docs/design-references/` |
+| set viewport (1440 / 768 / 390) | `await cdp('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor, mobile })`; clear with `Emulation.clearDeviceMetricsOverride` |
+| click / hover / scroll | `await click('@N' or 'css')` / `await hover(...)` / `await scrollBy(px)` |
+| observe page / get element refs | `await snapshotText()`, `await pageInfo()` |
+
+ego-browser notes: `wait`/`timeout` are in **seconds**; the Node runtime keeps no state between heredocs, so start every round with `useOrCreateTaskSpace(<id>)` and reuse the open tab; a top-level `return` inside `js()` is auto-wrapped in an IIFE; close with `await completeTaskSpace(<id>, { keep: false })` when the clone is done. Builder agents (Phase 3 Step 3) never touch the browser — ego-browser is only for your (the foreman's) extraction and QA.
+
 ## Pre-Flight
 
-1. **Browser automation is required.** Check for available browser MCP tools (Chrome MCP, Playwright MCP, Browserbase MCP, Puppeteer MCP, etc.). Use whichever is available — if multiple exist, prefer Chrome MCP. If none are detected, ask the user which browser tool they have and how to connect it. This skill cannot work without browser automation.
+1. **Browser automation is required.** Pick a backend (see [Browser Backend](#browser-backend-pick-one)): if ego-browser is installed, it's recommended (far fewer tool calls, much less token); otherwise use any browser MCP (Chrome MCP, Playwright MCP, Browserbase MCP, Puppeteer MCP — prefer Chrome MCP). If neither is available, ask the user which browser tool they have and how to connect it. This skill cannot work without browser automation.
 2. Parse `$ARGUMENTS` as one or more URLs. Normalize and validate each URL; if any are invalid, ask the user to correct them before proceeding. For each valid URL, verify it is accessible via your browser MCP tool.
 3. Verify the base project builds: `npm run build`. The Next.js + shadcn/ui + Tailwind v4 scaffold should already be in place. If not, tell the user to set it up first.
 4. Create the output directories if they don't exist: `docs/research/`, `docs/research/components/`, `docs/design-references/`, `scripts/`. For multiple clones, also prepare per-site folders like `docs/research/<hostname>/` and `docs/design-references/<hostname>/`.
