@@ -1,20 +1,38 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Poppins } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const poppins = Poppins({
+  variable: "--font-poppins",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const halTimezone = localFont({
+  variable: "--font-hal-timezone",
+  src: [
+    {
+      path: "../../public/fonts/HALTimezone-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/HALTimezone-Italic.woff2",
+      weight: "400",
+      style: "italic",
+    },
+  ],
 });
 
 export const metadata: Metadata = {
-  title: "Website Clone",
-  description: "Pixel-perfect website clone",
+  title: "Onday : le nouveau standard du bien-être",
+  description:
+    "Complément alimentaire tout-en-un à base de vitamines, minéraux, plantes et probiotiques : votre nouvelle routine bien-être complète, simple et efficace.",
+  icons: {
+    icon: "/seo/favicon.png",
+    apple: "/seo/favicon.png",
+  },
 };
 
 export default function RootLayout({
@@ -24,8 +42,8 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      lang="fr"
+      className={`${poppins.variable} ${halTimezone.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
