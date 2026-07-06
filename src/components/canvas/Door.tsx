@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import { Text } from "@react-three/drei";
 import { createOutlineMaterial } from "./materials/sketchMaterial";
 import { useSketchMaterial } from "@/hooks/useSketchMaterial";
+import { CAVEAT_FONT_URL } from "@/lib/fonts";
 
 const DOOR_WIDTH = 1.2;
 const DOOR_HEIGHT = 2.2;
@@ -54,6 +56,17 @@ export function Door({ position, label, isActive, onEnter }: DoorProps) {
         <planeGeometry args={[1.4, 0.35]} />
         <meshBasicMaterial color={DOOR_OUTLINE_COLOR} transparent opacity={0.85} />
       </mesh>
+      <Text
+        font={CAVEAT_FONT_URL}
+        position={[0, 1.4, -0.01]}
+        rotation={[0, Math.PI, 0]}
+        fontSize={0.22}
+        color="#f5f5f5"
+        anchorX="center"
+        anchorY="middle"
+      >
+        {label}
+      </Text>
     </group>
   );
 }

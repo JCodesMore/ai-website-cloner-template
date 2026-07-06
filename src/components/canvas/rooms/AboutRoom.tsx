@@ -1,7 +1,9 @@
 "use client";
 
+import { Text } from "@react-three/drei";
 import { content } from "@/data/content";
 import { useSketchMaterial } from "@/hooks/useSketchMaterial";
+import { CAVEAT_FONT_URL } from "@/lib/fonts";
 
 const SKILL_SPHERE_SPACING = 0.9;
 const SKILL_SPHERE_WAVE_AMPLITUDE = 0.6;
@@ -20,6 +22,17 @@ export function AboutRoom() {
       <mesh material={cloudMaterial} position={[0, 0, 0]}>
         <sphereGeometry args={[SELF_SPHERE_RADIUS, SPHERE_SEGMENTS, SPHERE_SEGMENTS]} />
       </mesh>
+      <Text
+        font={CAVEAT_FONT_URL}
+        position={[0, SELF_SPHERE_RADIUS + 0.4, 0]}
+        rotation={[0, Math.PI, 0]}
+        fontSize={0.4}
+        anchorX="center"
+        anchorY="middle"
+        color="#222222"
+      >
+        {content.profile.name}
+      </Text>
       {skills.map((skill, index) => (
         <mesh
           key={typeof skill === "string" ? skill : skill.name}
