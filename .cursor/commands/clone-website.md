@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED from .claude/skills/clone-website/SKILL.md — do not edit directly.
-     Run `node scripts/sync-skills.mjs` to regenerate. -->
+     Run `npm run sync:skills` to regenerate. -->
 
 
 # Clone Website

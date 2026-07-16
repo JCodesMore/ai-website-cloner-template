@@ -4,6 +4,9 @@
  * Generates clone-website command/skill files for all supported AI coding platforms.
  * Source of truth: .claude/skills/clone-website/SKILL.md
  *
+ * Format-aware reference implementation (TOML/JSON envelopes, argument substitution).
+ * Preferred on Windows for byte propagation: npm run sync:skills (bin/sync-skills.exe)
+ *
  * Usage: node scripts/sync-skills.mjs
  */
 

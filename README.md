@@ -75,6 +75,7 @@ Point it at a URL, run `/clone-website`, and your AI agent will inspect the site
 
 - [Node.js](https://nodejs.org/) 24+
 - An AI coding agent (see [Supported Platforms](#supported-platforms))
+- **Optional (native sync tools):** [NASM](https://www.nasm.us/) + MSVC Build Tools — see [docs/research/ASSEMBLY.md](docs/research/ASSEMBLY.md)
 
 ## Tech Stack
 
@@ -82,6 +83,8 @@ Point it at a URL, run `/clone-website`, and your AI agent will inspect the site
 - **shadcn/ui** — Radix primitives + Tailwind CSS v4
 - **Tailwind CSS v4** — oklch design tokens
 - **Lucide React** — default icons (replaced by extracted SVGs during cloning)
+- **WebAssembly** — `cn()` class merge and homepage copy (`asm/wasm/*.wat`)
+- **x86-64 assembly** — Windows sync CLIs (`asm/native/*.asm` → `bin/*.exe`)
 
 ## How It Works
 
@@ -115,19 +118,29 @@ src/
   components/       # React components
     ui/             # shadcn/ui primitives
     icons.tsx       # Extracted SVG icons
-  lib/utils.ts      # cn() utility
+  lib/
+    utils.ts        # cn() host ABI → WebAssembly
+    page-message.ts # Homepage copy from WASM
+    generated/      # Emitted WASM byte arrays
   types/            # TypeScript interfaces
   hooks/            # Custom React hooks
+asm/
+  wasm/             # Hand-written .wat modules
+  native/           # Windows x86-64 NASM sources
+bin/                # Built sync-skills.exe / sync-agent-rules.exe
 public/
+  wasm/             # Compiled .wasm binaries
   images/           # Downloaded images from target
   videos/           # Downloaded videos from target
   seo/              # Favicons, OG images
 docs/
-  research/         # Extraction output & component specs
+  research/         # Extraction output, component specs, ASSEMBLY.md
   design-references/ # Screenshots
 scripts/
-  sync-agent-rules.sh  # Regenerate agent instruction files
-  sync-skills.mjs      # Regenerate /clone-website for all platforms
+  build-wasm.mjs       # Compile .wat → .wasm + TS
+  build-asm.ps1        # Assemble/link native PE tools
+  sync-agent-rules.sh  # Format-aware AGENTS.md sync (reference)
+  sync-skills.mjs      # Format-aware skill sync (reference)
 AGENTS.md           # Agent instructions (single source of truth)
 CLAUDE.md           # Claude Code config (imports AGENTS.md)
 GEMINI.md           # Gemini CLI config (imports AGENTS.md)
@@ -136,11 +149,15 @@ GEMINI.md           # Gemini CLI config (imports AGENTS.md)
 ## Commands
 
 ```bash
-npm run dev    # Start dev server
-npm run build  # Production build
-npm run lint   # ESLint check
-npm run typecheck # TypeScript check
-npm run check  # Run lint + typecheck + build
+npm run dev           # Start dev server
+npm run build:wasm    # Compile WebAssembly modules
+npm run build:asm     # Assemble Windows sync CLIs (NASM + MSVC)
+npm run build         # Production Next.js build (runs build:wasm first)
+npm run lint          # ESLint check
+npm run typecheck     # TypeScript check
+npm run check         # Run lint + typecheck + build
+npm run sync:skills   # Native PE: propagate SKILL.md
+npm run sync:rules    # Native PE: propagate AGENTS.md
 ```
 
 ### If using docker
@@ -154,12 +171,12 @@ docker compose up dev --build # run the app in dev mode on port 3001
 
 Two source-of-truth files power all platform support. Edit the source, then run the sync script:
 
-| What                   | Source of truth                         | Sync command                       |
-| ---------------------- | --------------------------------------- | ---------------------------------- |
-| Project instructions   | `AGENTS.md`                             | `bash scripts/sync-agent-rules.sh` |
-| `/clone-website` skill | `.claude/skills/clone-website/SKILL.md` | `node scripts/sync-skills.mjs`     |
+| What                   | Source of truth                         | Sync command                    |
+| ---------------------- | --------------------------------------- | ------------------------------- |
+| Project instructions   | `AGENTS.md`                             | `npm run sync:rules`            |
+| `/clone-website` skill | `.claude/skills/clone-website/SKILL.md` | `npm run sync:skills`           |
 
-Each script regenerates the platform-specific copies automatically. Agents that read the source files natively need no regeneration.
+`sync:skills` / `sync:rules` run WebAssembly text transforms via thin Node I/O hosts. PE byte-copy tools: `sync:skills:pe` / `sync:rules:pe`. See [docs/research/ASSEMBLY.md](docs/research/ASSEMBLY.md).
 
 
 ## Star History

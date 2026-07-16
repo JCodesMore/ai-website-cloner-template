@@ -4,10 +4,13 @@
 #
 # AGENTS.md is the single source of truth. This script creates copies
 # for agents that don't read AGENTS.md natively (Cline, Continue,
-# Amazon Q, GitHub Copilot Chat).
+# Amazon Q, GitHub Copilot Chat), resolving @file imports.
+#
+# Preferred on Windows for byte propagation: npm run sync:rules (bin/sync-agent-rules.exe)
 #
 # Usage:
 #   bash scripts/sync-agent-rules.sh
+#   npm run sync:rules:sh
 #
 # Agents that DON'T need generated files (they read AGENTS.md natively):
 #   Codex CLI, OpenCode, Cursor, Windsurf, Copilot Coding Agent,

@@ -8,6 +8,7 @@ node_modules/
 out/
 build/
 dist/
+bin/obj/
 
 # Environment
 .env
