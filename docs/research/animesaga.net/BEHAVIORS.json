@@ -1,0 +1,31 @@
+{
+  "cardHoverBefore": {
+    "classes": "AnimeRow-module__qS1Haq__cardLink",
+    "tag": "A",
+    "transform": "none",
+    "transition": "all",
+    "boxShadow": "none"
+  },
+  "moreInfoModal": {
+    "classes": "AnimeDetailClient-module__usjKYW__detailLayout",
+    "rect": {
+      "w": 1360,
+      "h": 2066,
+      "top": 72,
+      "left": 80
+    },
+    "bg": "rgba(0, 0, 0, 0)",
+    "backdropFilter": "none",
+    "borderRadius": "0px",
+    "border": "0px none rgb(241, 245, 249)",
+    "boxShadow": "none",
+    "text": "Score8.70Rank#—Popularity732KFavourites—TypeTVEpisodes?Duration24 minStatusRELEASINGAiredFALL 1999GenresActionAdventureComedyDramaFantasyStudiosToei AnimationTrack OnAniListMALAniDBKitsuAnime-PlanetTagsPiratesTravelEnsemble CastShounenSuper PowerFound FamilyMale ProtagonistConspiracyTragedyShipsExte",
+    "controls": [
+      "Add to List",
+      "Share"
+    ]
+  },
+  "episodeUI": {
+    "error": "no episode UI visible"
+  }
+}

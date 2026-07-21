@@ -1,0 +1,832 @@
+{
+  "imgs": [
+    {
+      "src": "https://www.animesaga.net/logo.png",
+      "alt": "ANIMESAGA Logo",
+      "w": 128,
+      "h": 128,
+      "parentClasses": "",
+      "position": "static",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/81797/backgrounds/616009a8bd688.jpg",
+      "alt": "ONE PIECE",
+      "w": 1920,
+      "h": 1080,
+      "parentClasses": "SpotlightCarousel-module__MuRfDW__bannerWrapper",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/81797/clearlogo/611b6189d88b6.png",
+      "alt": "ONE PIECE",
+      "w": 800,
+      "h": 310,
+      "parentClasses": "SpotlightCarousel-module__MuRfDW__logoContainer",
+      "position": "static",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx178789-hNXjKFzUq7mk.jpg",
+      "alt": "Mushoku Tensei: Jobless Reincarnation Season 3",
+      "w": 230,
+      "h": 324,
+      "parentClasses": "",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx21-ELSYx3yMPcKM.jpg",
+      "alt": "ONE PIECE",
+      "w": 230,
+      "h": 345,
+      "parentClasses": "",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx185542-6a9LCWlLHa0T.jpg",
+      "alt": "Skeleton Knight in Another World Season 2",
+      "w": 230,
+      "h": 326,
+      "parentClasses": "",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx169583-0ZTdBGrKNIbe.jpg",
+      "alt": "Oh Boy, Was I Wrong About Her",
+      "w": 230,
+      "h": 324,
+      "parentClasses": "",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx199111-gBSuBG61ElcW.jpg",
+      "alt": "Grand Blue Dreaming Season 3",
+      "w": 230,
+      "h": 326,
+      "parentClasses": "",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx202269-7KNj8s2fSsJJ.jpg",
+      "alt": "Love Unseen Beneath the Clear Night Sky",
+      "w": 230,
+      "h": 325,
+      "parentClasses": "",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/467401/posters/6a44c319cdea4.jpg",
+      "alt": "Oh Boy, Was I Wrong About Her",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "Hero-module__ZARIfG__posterCol",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/467401/clearlogo/6a544a9179bc5.png",
+      "alt": "Oh Boy, Was I Wrong About Her",
+      "w": 800,
+      "h": 310,
+      "parentClasses": "Hero-module__ZARIfG__logoContainer",
+      "position": "static",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/467401/backgrounds/6a4bcf0d73596.jpg",
+      "alt": "",
+      "w": 1920,
+      "h": 1080,
+      "parentClasses": "Hero-module__ZARIfG__artCol",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/series/371310/posters/5feb3674d5e53.jpg",
+      "alt": "Mushoku Tensei: Jobless Reincarnation Season 3",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/series/81797/posters/5eec847d52a04.jpg",
+      "alt": "ONE PIECE",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/401279/posters/6182b2ee0797a.jpg",
+      "alt": "Skeleton Knight in Another World Season 2",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/467401/posters/6a44c319cdea4.jpg",
+      "alt": "Oh Boy, Was I Wrong About Her",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/posters/5b49502f8101d.jpg",
+      "alt": "Grand Blue Dreaming Season 3",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/470520/posters/6a476892cf4da.jpg",
+      "alt": "Love Unseen Beneath the Clear Night Sky",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/476185/posters/6a4766445736b.jpg",
+      "alt": "The Insipid Prince's Furtive Grab for the Throne",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/467005/posters/6a4766f89443c.jpg",
+      "alt": "A Livid Lady’s Guide to Getting Even: How I Crushed My Homeland with My Mighty Grimoires",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/452711/posters/69c2c7e088d68.jpg",
+      "alt": "Daemons of the Shadow Realm",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/posters/74796-3.jpg",
+      "alt": "Bleach",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/457078/posters/6a4a58b5ce87f.jpg",
+      "alt": "You and I Are Polar Opposites Season 2",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/467209/posters/69d42b2b5cbe1.jpg",
+      "alt": "LIAR GAME",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/posters/5bb2b28057ade.jpg",
+      "alt": "That Time I Got Reincarnated as a Slime Season 4",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/473018/posters/6a27e45606b3c.jpg",
+      "alt": "The World Is Dancing",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/432050/posters/6523172743a81.jpg",
+      "alt": "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You Season 3",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/461194/posters/6a22d01ca7ab6.jpg",
+      "alt": "BLACK TORCH",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/450228/posters/6a4e5de9761ac.jpg",
+      "alt": "Goodbye, Lara",
+      "w": 0,
+      "h": 0,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/407704/posters/6a483e529c702.jpg",
+      "alt": "Sparks of Tomorrow",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/series/81797/posters/5eec847d52a04.jpg",
+      "alt": "ONE PIECE",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/series/371310/posters/5feb3674d5e53.jpg",
+      "alt": "Mushoku Tensei: Jobless Reincarnation Season 3",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/305089/posters/60aa37d7c847b.jpg",
+      "alt": "Re:ZERO -Starting Life in Another World- Season 4",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/452711/posters/69c2c7e088d68.jpg",
+      "alt": "Daemons of the Shadow Realm",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/posters/5bb2b28057ade.jpg",
+      "alt": "That Time I Got Reincarnated as a Slime Season 4",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/465973/posters/696a1e695b916.jpg",
+      "alt": "Smoking Behind the Supermarket with You",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/315500/posters/60d1cf343f374.jpg",
+      "alt": "Saga of Tanya the Evil Season 2",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/posters/72454-12.jpg",
+      "alt": "Detective Conan",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/473423/posters/6a47d620236ce.jpg",
+      "alt": "Chainsmoker Cat",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/461194/posters/6a22d01ca7ab6.jpg",
+      "alt": "BLACK TORCH",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/457078/posters/6a4a58b5ce87f.jpg",
+      "alt": "You and I Are Polar Opposites Season 2",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/460899/posters/6a460deebd442.jpg",
+      "alt": "I Want to Love You Till Your Dying Day",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/407704/posters/6a483e529c702.jpg",
+      "alt": "Sparks of Tomorrow",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/453028/posters/6a47dcd1db4e5.jpg",
+      "alt": "The Exiled Heavy Knight Knows How to Game the System",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/412826/posters/647aef9961953.jpg",
+      "alt": "Trapped in a Dating Sim: The World of Otome Games is Tough for Mobs Season 2",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/450475/posters/6a4ed17b2c96a.jpg",
+      "alt": "THE GHOST IN THE SHELL",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/467209/posters/69d42b2b5cbe1.jpg",
+      "alt": "LIAR GAME",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/369144/posters/622232e70bc41.jpg",
+      "alt": "Welcome to Demon School! Iruma-kun Season 4",
+      "w": 0,
+      "h": 0,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/posters/267440-2.jpg",
+      "alt": "Attack on Titan",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/348545/posters/60908d475f49a.jpg",
+      "alt": "Demon Slayer: Kimetsu no Yaiba",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/377543/posters/609cbb5bd37d8.jpg",
+      "alt": "JUJUTSU KAISEN",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/posters/79481-11.jpg",
+      "alt": "Death Note",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/posters/305074-11.jpg",
+      "alt": "My Hero Academia",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/252322/posters/60808e76cd16f.jpg",
+      "alt": "Hunter x Hunter (2011)",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/293088/posters/60a38fe89e639.jpg",
+      "alt": "One-Punch Man",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/series/81797/posters/5eec847d52a04.jpg",
+      "alt": "ONE PIECE",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/posters/281249-7.jpg",
+      "alt": "Tokyo Ghoul",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/posters/267440-2.jpg",
+      "alt": "Attack on Titan Season 2",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/posters/85249-7.jpg",
+      "alt": "Fullmetal Alchemist: Brotherhood",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/v4/series/78857/posters/6069f97b9bad8.jpg",
+      "alt": "Naruto",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/series/259640/posters/603f4ffcec25e.jpg",
+      "alt": "Sword Art Online",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx20954-sYRfE5jQRtSB.jpg",
+      "alt": "A Silent Voice",
+      "w": 460,
+      "h": 651,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx21519-SUo3ZQuCbYhJ.png",
+      "alt": "Your Name.",
+      "w": 460,
+      "h": 690,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/posters/267440-2.jpg",
+      "alt": "Attack on Titan Season 3",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/posters/305074-11.jpg",
+      "alt": "My Hero Academia Season 2",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://artworks.thetvdb.com/banners/posters/267440-2.jpg",
+      "alt": "Attack on Titan Final Season",
+      "w": 680,
+      "h": 1000,
+      "parentClasses": "AnimeRow-module__qS1Haq__posterWrap",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx169582-quL8VMg45fcu.png",
+      "alt": "The Insipid Prince's Furtive Grab for the Throne",
+      "w": 230,
+      "h": 325,
+      "parentClasses": "AiringSchedule-module__jZfsGG__thumbnailWrapper",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx202269-7KNj8s2fSsJJ.jpg",
+      "alt": "Love Unseen Beneath the Clear Night Sky",
+      "w": 230,
+      "h": 325,
+      "parentClasses": "AiringSchedule-module__jZfsGG__thumbnailWrapper",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx206521-ecJuDgjth84C.png",
+      "alt": "The World Is Dancing",
+      "w": 230,
+      "h": 345,
+      "parentClasses": "AiringSchedule-module__jZfsGG__thumbnailWrapper",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx185542-6a9LCWlLHa0T.jpg",
+      "alt": "Skeleton Knight in Another World Season 2",
+      "w": 230,
+      "h": 326,
+      "parentClasses": "AiringSchedule-module__jZfsGG__thumbnailWrapper",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx199408-ocRWG4pRWl8f.png",
+      "alt": "A Livid Lady’s Guide to Getting Even: How I Crushed My Homeland with My Mighty Grimoires",
+      "w": 230,
+      "h": 325,
+      "parentClasses": "AiringSchedule-module__jZfsGG__thumbnailWrapper",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx209504-yRxHWxKuNGtg.jpg",
+      "alt": "The Forsaken Saintess and Her Foodie Roadtrip in Another World",
+      "w": 230,
+      "h": 320,
+      "parentClasses": "AiringSchedule-module__jZfsGG__thumbnailWrapper",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx195833-h7x6i3NQWROA.jpg",
+      "alt": "Flaming Dodgeball Girl Danko",
+      "w": 230,
+      "h": 325,
+      "parentClasses": "AiringSchedule-module__jZfsGG__thumbnailWrapper",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx169583-0ZTdBGrKNIbe.jpg",
+      "alt": "Oh Boy, Was I Wrong About Her",
+      "w": 230,
+      "h": 324,
+      "parentClasses": "AiringSchedule-module__jZfsGG__thumbnailWrapper",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx199111-gBSuBG61ElcW.jpg",
+      "alt": "Grand Blue Dreaming Season 3",
+      "w": 230,
+      "h": 326,
+      "parentClasses": "AiringSchedule-module__jZfsGG__thumbnailWrapper",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx197754-Q5KqcUhIdypp.png",
+      "alt": "LIAR GAME",
+      "w": 230,
+      "h": 325,
+      "parentClasses": "AiringSchedule-module__jZfsGG__thumbnailWrapper",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx140842-T0geOCa3zS0A.jpg",
+      "alt": "Chiikawa",
+      "w": 230,
+      "h": 325,
+      "parentClasses": "AiringSchedule-module__jZfsGG__thumbnailWrapper",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx213188-zwmmMVqqUjh8.png",
+      "alt": "Jueshi Zhan Hun 2",
+      "w": 230,
+      "h": 279,
+      "parentClasses": "AiringSchedule-module__jZfsGG__thumbnailWrapper",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx155723-hM261Imc5yfd.png",
+      "alt": "Wushen Zhuzai: Da Wei Pian",
+      "w": 230,
+      "h": 323,
+      "parentClasses": "AiringSchedule-module__jZfsGG__thumbnailWrapper",
+      "position": "absolute",
+      "zIndex": "auto"
+    },
+    {
+      "src": "https://www.animesaga.net/logo.png",
+      "alt": "AnimeSaga Logo",
+      "w": 128,
+      "h": 128,
+      "parentClasses": "Footer-module__S6Hkya__brandLink",
+      "position": "static",
+      "zIndex": "auto"
+    }
+  ],
+  "bgs": [],
+  "videos": [],
+  "fonts": [
+    "Inter, -apple-system, BlinkMacSystemFont, sans-serif",
+    "Outfit, Inter, sans-serif"
+  ],
+  "favicons": [
+    {
+      "rel": "manifest",
+      "href": "https://www.animesaga.net/manifest.json",
+      "sizes": ""
+    },
+    {
+      "rel": "icon",
+      "href": "https://www.animesaga.net/icon.png?icon.1an1s2g85k_e9.png",
+      "sizes": "128x128"
+    },
+    {
+      "rel": "apple-touch-icon",
+      "href": "https://www.animesaga.net/icons/apple-touch-icon.png",
+      "sizes": ""
+    }
+  ],
+  "meta": {
+    "title": "ANIMESAGA — Immerse in Anime & Manga",
+    "description": "Stream anime, read manga, and immerse yourself in the ultimate anime experience. Discover trending titles, curated collections, and a community of passionate fans.",
+    "ogImage": ""
+  },
+  "palette": {
+    "body": {
+      "color": "rgb(241, 245, 249)",
+      "bg": "rgb(4, 5, 8)",
+      "font": "Inter, -apple-system, BlinkMacSystemFont, sans-serif",
+      "size": "16px",
+      "weight": "400"
+    },
+    "h1": null,
+    "h2": {
+      "color": "rgb(241, 245, 249)",
+      "bg": "rgba(0, 0, 0, 0)",
+      "font": "Outfit, Inter, sans-serif",
+      "size": "24px",
+      "weight": "800"
+    },
+    "h3": {
+      "color": "rgb(241, 245, 249)",
+      "bg": "rgba(0, 0, 0, 0)",
+      "font": "Outfit, Inter, sans-serif",
+      "size": "13.6px",
+      "weight": "700"
+    },
+    "a": {
+      "color": "rgb(241, 245, 249)",
+      "bg": "rgba(0, 0, 0, 0)",
+      "font": "Inter, -apple-system, BlinkMacSystemFont, sans-serif",
+      "size": "16px",
+      "weight": "400"
+    },
+    "button": {
+      "color": "rgb(148, 163, 184)",
+      "bg": "rgba(0, 0, 0, 0)",
+      "font": "Inter, -apple-system, BlinkMacSystemFont, sans-serif",
+      "size": "13.3333px",
+      "weight": "400"
+    },
+    "header": null,
+    "nav": {
+      "color": "rgb(241, 245, 249)",
+      "bg": "rgba(0, 0, 0, 0)",
+      "font": "Inter, -apple-system, BlinkMacSystemFont, sans-serif",
+      "size": "16px",
+      "weight": "400"
+    }
+  },
+  "scripts": [
+    "https://www.animesaga.net/_next/static/chunks/39wg2qkod1snt.js",
+    "https://www.animesaga.net/_next/static/chunks/3peubv2924kx4.js",
+    "https://www.animesaga.net/_next/static/chunks/1_zmgipypuk59.js",
+    "https://www.animesaga.net/_next/static/chunks/27jktro2p5rq9.js",
+    "https://www.animesaga.net/_next/static/chunks/turbopack-3ue0yt63pvr5a.js",
+    "https://www.animesaga.net/_next/static/chunks/0m_75bqyhz4uc.js",
+    "https://www.animesaga.net/_next/static/chunks/2gerj217e93c-.js",
+    "https://www.animesaga.net/_next/static/chunks/14mrh2-p_w84d.js",
+    "https://www.animesaga.net/_next/static/chunks/37chzs_w5cz68.js",
+    "https://www.animesaga.net/_next/static/chunks/2vicjgkerwnv1.js",
+    "https://www.animesaga.net/_next/static/chunks/12_05kxnavtj3.js",
+    "https://www.animesaga.net/_next/static/chunks/0cz1d0mv5g_q7.js",
+    "https://www.animesaga.net/246765421164bf47/script.js",
+    "https://www.animesaga.net/_next/static/chunks/2poytk2wbx2m5.js",
+    "https://www.animesaga.net/_next/static/chunks/1a-75ntdphwlw.js",
+    "https://www.animesaga.net/_next/static/chunks/3c0xexah2ks2h.js",
+    "https://www.animesaga.net/_next/static/chunks/0acein3wf_er5.js",
+    "https://www.animesaga.net/_next/static/chunks/0z757zjo2xnkn.js",
+    "https://www.animesaga.net/_next/static/chunks/0o8k16r6c6e0r.js",
+    "https://www.animesaga.net/_next/static/chunks/29id-wtxqdt4b.js",
+    "https://www.animesaga.net/_next/static/chunks/2sg66755axjq6.js",
+    "https://www.animesaga.net/_next/static/chunks/1bcophu_wfxmt.js",
+    "https://www.animesaga.net/_next/static/chunks/0zr2r-x_ibbz9.js",
+    "https://www.animesaga.net/_next/static/chunks/395t_g2h9gmc6.js",
+    "https://www.animesaga.net/_next/static/chunks/2zjueh7t2vecu.js",
+    "https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496"
+  ],
+  "smoothScroll": {
+    "lenis": false,
+    "locomotive": false
+  },
+  "svgCount": 112,
+  "pageHeight": 3780
+}
