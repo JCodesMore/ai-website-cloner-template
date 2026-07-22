@@ -1,0 +1,58 @@
+/* HUOAD 移动端黑色顶条 — 桌面隐藏，≤768px sticky 顶部。
+   规格 1:1 对齐原站 header-mobile-module（docs/research/huoad.com/mobile-spec.md）：
+   56px 高 / padding 12px 16px / logo 撑满内容高(32px) / 品牌字 20px。 */
+
+/* 样式无条件写死、只在桌面宽度隐藏，这样 /vcc/m、/proxy/m 的移动样式表
+   能用 .huoad-mheader 钩子把它显示回来（那两条路由不看视口宽度）。 */
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 56px;
+  padding: 12px 16px;
+  background: #000;
+  color: #fff;
+  line-height: 1.4; /* 原站全局行高（品牌字 20→28，语言区 14→19.6） */
+}
+
+@media (min-width: 769px) {
+  .bar {
+    display: none;
+  }
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  color: #fff;
+  text-decoration: none;
+}
+
+.logo img {
+  height: 100%;
+  width: auto;
+}
+
+.logo strong {
+  margin-left: 8px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.lang {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+}

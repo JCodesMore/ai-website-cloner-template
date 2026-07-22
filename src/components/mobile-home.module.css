@@ -1,0 +1,366 @@
+/* 首页移动版（≤768px）— 结构/尺寸 1:1 对齐原站 UA 分流出的 *-mobile 模块，
+   规格来源 docs/research/huoad.com/mobile-spec.md。桌面隐藏。 */
+
+.root {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .root {
+    display: block;
+    /* 原站用 JS 把 --full-height 设为 window.innerHeight（见 MobileHome 的 effect）：
+       iOS Safari 的 100vh 不含底部工具条，真机上比可视区大，会把内容撑高 */
+    min-height: var(--full-height, 100vh);
+    background: #f5f5f5;
+    font-family: Geist, "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.4; /* 原站全局 1.4（12px→16.8 / 14px→19.6），非 Tailwind 的 1.5 */
+    color: rgba(0, 0, 0, 0.88);
+  }
+}
+
+/* ── 内容区（page-content-mobile） ── */
+
+.content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: calc(var(--full-height, 100vh) - 56px - 64px);
+  padding: 16px;
+  gap: 16px;
+  margin-bottom: 64px; /* 固定底栏高度 */
+}
+
+/* ── 置顶分类（category-mobile pin_categories） ── */
+
+.pinCats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.pinCat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: inherit;
+  text-decoration: none;
+}
+
+.pinCat img {
+  height: 60px;
+  border: 2px solid #e8e8e8;
+  border-radius: 50%;
+}
+
+.pinCatActive img {
+  border-color: #fa6b1f;
+}
+
+.pinCat p {
+  margin: 8px 0 0;
+  font-size: 12px;
+}
+
+.more {
+  cursor: pointer;
+}
+
+.moreIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  font-size: 32px;
+  background: #e5e7eb;
+  border-radius: 50%;
+}
+
+/* ── 搜索框（search-mobile，antd 圆角 16 outlined 输入框） ── */
+
+.search {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 40px; /* antd controlHeight 40（实测原站 40，非桌面版 36） */
+  padding: 0 11px;
+  background: #fff;
+  border: 1px solid #d9d9d9;
+  border-radius: 16px;
+}
+
+.search input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  font-family: inherit;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.search input::placeholder {
+  color: rgb(106, 114, 130);
+}
+
+.search svg {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+/* ── 标签筛选（filter-tag-mobile） ── */
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 16px 0;
+  border-top: 1px solid #e9e9e9;
+  border-bottom: 1px solid #e9e9e9;
+  list-style: none;
+}
+
+.tags li {
+  padding: 8px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 24px;
+  font-weight: 500;
+  list-style: none;
+  cursor: pointer;
+}
+
+.tagSelected {
+  background: #fa6b1f;
+  color: #fff;
+  border-color: transparent !important;
+}
+
+/* ── 商品双列网格（product-mobile） ── */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  color: inherit;
+  text-decoration: none;
+}
+
+.item:active {
+  background: #fbfbfb;
+}
+
+.cover {
+  display: block;
+  width: 100%;
+}
+
+.fav {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  font-size: 16px;
+  color: #e7000b;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 50%;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 12px;
+}
+
+.name {
+  margin: 0;
+  color: #161616;
+  font-weight: 500;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ptags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 0;
+  padding: 0;
+}
+
+.ptags li {
+  list-style: none;
+  padding: 2px 8px;
+  font-size: 10px;
+  color: #fff;
+  background: #fa6b1f;
+  border-radius: 4px;
+}
+
+.blank {
+  flex: 1;
+}
+
+.price {
+  margin: 8px 0 0;
+  color: #d40924;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.money {
+  display: inline-flex;
+  gap: 2px;
+  white-space: nowrap;
+}
+
+.stockRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stock {
+  margin: 0;
+  font-size: 12px;
+}
+
+.stockOk {
+  display: inline-flex;
+  align-items: center;
+  color: #00a63e;
+}
+
+.stockOk::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 5px;
+  background: #00a63e;
+  border-radius: 50%;
+}
+
+.cartBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px; /* antd icon-only 默认尺寸（实测原站 40×40） */
+  height: 40px;
+  color: #fff;
+  background: #fa6b1f;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  box-shadow: 0 2px 0 rgba(255, 130, 5, 0.08);
+  cursor: pointer;
+}
+
+.cfooter {
+  padding: 8px 12px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.shopName {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: #155dfc;
+  text-decoration: none;
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  font-size: 10px;
+  color: #fff;
+  background: #fa6b1f;
+  border-radius: 50%;
+}
+
+/* ── 底部导航（navbar-mobile，fixed 64px） ── */
+
+.navbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  background: #fff;
+  border-top: 1px solid #e0e0e0;
+}
+
+.navbar a {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 100%;
+  font-size: 12px;
+  color: #636363;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.navbar a.navActive {
+  color: #fa6b1f;
+  background: #fff7ed;
+  font-weight: 600;
+}
+
+.badgeWrap {
+  position: relative;
+  display: inline-flex;
+  height: 19px; /* antd Badge 容器实测 19px：图标顶对齐比无徽标格高 1px，文字随之低 1px */
+}
+
+/* antd Badge count 同款（实测原站：18px 圆 radius 9 无内衬，zoom .95 → 17.1px） */
+.badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(50%, -50%);
+  min-width: 18px;
+  height: 18px;
+  padding: 0;
+  font-size: 12px;
+  line-height: 18px;
+  text-align: center;
+  color: #fff;
+  background: #ff4d4f;
+  border-radius: 9px;
+  box-shadow: 0 0 0 1px #fff;
+  zoom: 0.95;
+}

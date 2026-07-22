@@ -1,0 +1,237 @@
+/* 虚拟卡（商户端仪表盘）嵌入 HUOAD 站点骨架：
+   左侧 HUOAD 风格白卡侧边栏（四项），右侧注入 Faorbit 仪表盘内容。
+   本文件在 site.css / merchant.css 之后加载。 */
+
+/* ── 页面骨架（同 HUOAD 头部的 1320px 容器）─────────────── */
+
+.huoad-merchant-page {
+  background: #f5f5f5;
+  min-height: 100vh;
+  padding: 163px 0 20px; /* 143px 固定头部 + 20px 间距；页底留白 20 与原站一致 */
+}
+
+.huoad-merchant-inner {
+  width: 100%;
+  min-width: 1200px;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+/* ── 左侧白卡侧边栏（精致化配方，与 /proxy 的 .hp-side 段完全一致：
+   px-3 容器 + space-y-1 药丸 + 渐变主橙实色选中 + 底部客服行）── */
+
+.huoad-merchant-side {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  width: 256px;
+  /* 原站分类卡 fixed top:163 bottom:20 满高；sticky+定高等效且免去居中计算 */
+  height: calc(100vh - 183px);
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  position: sticky;
+  top: 163px;
+  /* site.css 的 body 字体不外溢到 HUOAD 风格侧栏 */
+  font-family: Geist, "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
+}
+
+.huoad-merchant-side nav {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+}
+
+.huoad-merchant-side nav a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 42px;
+  padding: 0 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: #4a5565;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.huoad-merchant-side nav a svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+
+.huoad-merchant-side nav a:hover {
+  background: #f9fafb;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.huoad-merchant-side nav a.on,
+.huoad-merchant-side nav a.on:hover {
+  background: linear-gradient(135deg, #ff8a3d, #fa6b1f);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 2px 5px rgba(250, 107, 31, 0.3);
+}
+
+.huoad-merchant-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── 注入的仪表盘：去掉自带深色侧栏，改为单列内容卡 ───────── */
+
+/* 去掉仪表盘的整片底板层：模块小卡直接浮在 #f5f5f5 页面上（同原站） */
+.huoad-merchant-content .dash,
+.huoad-merchant-content .merchant-surface .dash {
+  display: block;
+  min-height: 0;
+  background: transparent;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.huoad-merchant-content .dash-main,
+.huoad-merchant-content .merchant-surface .dash-main {
+  background: transparent;
+}
+
+.huoad-merchant-content .dash-body,
+.huoad-merchant-content .merchant-surface .dash-body {
+  padding: 0;
+}
+
+.huoad-merchant-content .dash-side,
+.huoad-merchant-content .merchant-surface .dash-side {
+  display: none;
+}
+
+/* 仪表盘自带顶栏（标题/问候/搜索/铃铛/开新卡）按用户要求整体隐藏 */
+.huoad-merchant-content .dash-top,
+.huoad-merchant-content .merchant-surface .dash-top {
+  display: none;
+}
+
+/* 交易记录视图顶部的工具条（导出 CSV）按用户要求隐藏 */
+.huoad-merchant-content [data-view-panel="transactions"] > .view-head {
+  display: none;
+}
+
+/* ── 合成一块：右侧内容整体一张白卡（同左侧栏），
+   内部模块保留 huoad-skin 的细线小卡（10px 圆角 / #f0f0f0 描边），
+   各部分边界清晰、又同在一块面板里 ── */
+
+.huoad-merchant-content {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px 24px;
+  min-height: calc(100vh - 183px); /* 与左侧栏等高 */
+}
+
+/* merchant-surface 自带的整片灰底会盖住白卡，这里置透明 */
+.huoad-merchant-content .merchant-surface {
+  background: transparent;
+}
+
+/* 模块小卡的描边加深一档：#f0f0f0 在白卡上几乎不可见；
+   内层分隔线（表格行、面板头、nc-group）保持 --line 细灰，层次不变 */
+.huoad-merchant-content .merchant-surface .kpi,
+.huoad-merchant-content .merchant-surface .panel,
+.huoad-merchant-content .merchant-surface .form-card,
+.huoad-merchant-content .merchant-surface .wcard,
+.huoad-merchant-content .merchant-surface .vc,
+.huoad-merchant-content .merchant-surface .fs-card,
+.huoad-merchant-content .merchant-surface .set-grid {
+  border-color: #e3e3e3;
+}
+
+/* 开新卡底部结算区：去掉灰底条，与表单同在一块白板上（同仪表盘处理） */
+.huoad-merchant-content .merchant-surface .nc-foot {
+  background: transparent;
+}
+
+/* 结算摘要小票式：去外框直接坐在白板上，费用行放宽，
+   合计行细线分隔 + 主橙大字，与下方确认按钮呼应（开新卡/充值共用） */
+.huoad-merchant-content .merchant-surface .summary {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+  margin: 0 0 18px;
+}
+
+.huoad-merchant-content .merchant-surface .summary .sr {
+  padding: 7px 0;
+}
+
+.huoad-merchant-content .merchant-surface .summary .sr.total {
+  margin-top: 10px;
+  padding-top: 14px;
+  border-top: 1px solid #e3e3e3;
+}
+
+.huoad-merchant-content .merchant-surface .summary .sr.total span {
+  color: var(--ink);
+}
+
+.huoad-merchant-content .merchant-surface .summary .sr.total b {
+  font-size: 20px;
+  color: var(--blue);
+  letter-spacing: -0.02em;
+}
+
+/* ── 支出分布：嵌入后右栏仅 ~320px，横排会把品牌名压没；
+   改为环图居中在上、清单铺满在下 ── */
+
+.huoad-merchant-content .spend-layout {
+  grid-template-columns: 1fr;
+  justify-items: center;
+  gap: 6px;
+}
+
+.huoad-merchant-content .spend-list {
+  width: 100%;
+}
+
+/* ── 我的卡片 / 交易记录：筛选按钮行并入表格卡，成为卡头工具条 ── */
+
+.huoad-merchant-content [data-view-panel="cards"],
+.huoad-merchant-content [data-view-panel="transactions"] {
+  gap: 0;
+}
+
+.huoad-merchant-content .merchant-surface [data-view-panel="cards"] .fchips,
+.huoad-merchant-content .merchant-surface [data-view-panel="transactions"] .fchips {
+  margin: 0;
+  padding: 14px 16px;
+  background: #fff;
+  border: 1px solid #e3e3e3;
+  border-bottom: 0;
+  border-radius: 10px 10px 0 0;
+}
+
+/* 下方表格卡与卡头拼合：去上圆角，自身上边线充当分隔 */
+.huoad-merchant-content .merchant-surface [data-view-panel="cards"] .fchips ~ .panel,
+.huoad-merchant-content .merchant-surface [data-view-panel="transactions"] .fchips ~ .panel {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+/* ── 移动端（≤768px）：黑色顶条 + 底部五格 tab 栏 ─────────────
+   桌面三层头部与左侧栏隐藏；内容单列铺满，设计稿自带的
+   760/520px 断点负责卡片单列与表格横滚。tab 栏前四格是
+   data-view 视图切换，与左侧栏共用 [data-huoad-merchant-nav] 高亮同步。 */
+
+.huoad-mtab {
+  display: none;
+}

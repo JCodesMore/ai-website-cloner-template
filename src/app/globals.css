@@ -4,6 +4,34 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Self-hosted Geist Mono, patched so the default "0" is the plain ss09 glyph.
+   The Google-served build ships a slashed zero as the default glyph and its
+   subsets strip the ss09 feature, so no font-feature-settings can undo it —
+   the plain zero must come from the font file itself. */
+@font-face {
+  font-family: "Geist Mono";
+  src: url("./fonts/GeistMono-plain0.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* LamaProxy dashboard palette — `primary-*` aliased to Tailwind indigo,
+   matching the target site's compiled utilities exactly. */
+/* v4 @theme registers the primary scale so bg/text/border/ring-primary-* generate. */
+@theme {
+  --color-primary-50: #eef2ff;
+  --color-primary-100: #e0e7ff;
+  --color-primary-200: #c7d2fe;
+  --color-primary-300: #a5b4fc;
+  --color-primary-400: #818cf8;
+  --color-primary-500: #6366f1;
+  --color-primary-600: #4f46e5;
+  --color-primary-700: #4338ca;
+  --color-primary-800: #3730a3;
+  --color-primary-900: #312e81;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

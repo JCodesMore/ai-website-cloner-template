@@ -1,0 +1,2707 @@
+/* 全球 IP 代理板块 — HUOAD 站点骨架内的自建购买页（无注入设计稿，纯自绘）。
+   页面骨架数值与 merchant-embed.css 保持一致：1320px 容器 / 256px 白卡侧栏 /
+   #f5f5f5 页面底 / 143px 固定头部 + 20px 间距。设计语言同 huoad-skin：
+   10px 白卡 · #e3e3e3 细线 · 主橙 #fa6b1f · 橙-50 #fff7ed · 药丸按钮 · Geist。 */
+
+.hp-page {
+  background: #f5f5f5;
+  min-height: 100vh;
+  padding: 163px 0 20px;
+  font-family: Geist, "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
+  /* 原站 huoad.com 全站行高 1.4（19.6/14、28/20），覆盖 Tailwind 预设的 1.5 */
+  line-height: 1.4;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.hp-inner {
+  width: 100%;
+  min-width: 1200px;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+/* ── 左侧白卡侧栏（同 /merchant 的 HUOAD 分类卡配方）───────── */
+
+.hp-side {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  width: 256px;
+  height: calc(100vh - 183px);
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  position: sticky;
+  top: 163px;
+}
+
+/* 精致化对齐 LamaProxy 原站侧栏配方（px-3 容器 + space-y-1 药丸 +
+   实色选中），色彩仍走 HUOAD 主橙；字号降到 14px 中等字重，
+   与右侧 category-sidebar 的次级项字阶一致 */
+.hp-side nav {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+}
+
+.hp-side nav a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 42px;
+  padding: 0 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: #4a5565;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.hp-side nav a svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+
+.hp-side nav a:hover {
+  background: #f9fafb;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.hp-side nav a.on,
+.hp-side nav a.on:hover {
+  background: linear-gradient(135deg, #ff8a3d, #fa6b1f);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 2px 5px rgba(250, 107, 31, 0.3);
+}
+
+/* ── 右侧内容整体一张白卡（与左侧栏等高对齐）───────────── */
+
+.hp-content {
+  flex: 1;
+  min-width: 0;
+  background: #fff;
+  border-radius: 10px;
+  padding: 24px;
+  min-height: calc(100vh - 183px);
+}
+
+.hp-head {
+  margin: 0 0 20px;
+}
+
+.hp-head h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.hp-head p {
+  margin: 3px 0 0;
+  font-size: 13px;
+  color: #4b5563;
+}
+
+/* ── 通用小卡 / 面板 ─────────────────────────────────── */
+
+.hp-panel {
+  border: 1px solid #e3e3e3;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.hp-panel + .hp-panel {
+  margin-top: 16px;
+}
+
+.hp-panel-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.hp-panel-body {
+  padding: 16px;
+}
+
+.hp-hint {
+  margin: 12px 2px 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* ── 概览：KPI 行（/merchant 仪表盘配方：白卡 + 右上图标章，
+      余额卡同钱包卡橙调渐变高亮）───────────────────────── */
+
+/* 四卡一行（同 /merchant KPI 行：四卡等分，minmax(0) 防换行） */
+.hp-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.hp-kpi {
+  --kpi-tint: #fa6b1f;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e3e3e3;
+  border-radius: 10px;
+  background: #fff;
+  padding: 12px 14px 11px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.hp-kpi:hover {
+  border-color: color-mix(in srgb, var(--kpi-tint) 30%, transparent);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+/* 余额卡：huoad-skin 钱包 KPI 同款暖调渐变 + 橙描边 */
+.hp-kpi.main {
+  border-color: rgba(250, 107, 31, 0.28);
+  background:
+    radial-gradient(circle at 100% 0, rgba(255, 178, 107, 0.16), transparent 38%),
+    linear-gradient(145deg, #ffffff, #fff7ed);
+}
+
+/* 各产品线专属色（同「需要关注」类型徽章色系）：图标章、进度条、
+   悬停描边随卡着色，与快速购买卡一一对应；余额卡保持品牌橙 */
+.hp-kpi.residential {
+  --kpi-tint: #059669;
+}
+
+.hp-kpi.mobile {
+  --kpi-tint: #0891b2;
+}
+
+.hp-kpi.ips {
+  --kpi-tint: #2563eb;
+}
+
+.hp-kpi-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 500;
+  color: #4b5563;
+}
+
+.hp-kpi-ic {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--kpi-tint) 8%, transparent);
+  color: var(--kpi-tint);
+}
+
+.hp-kpi-ic svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* 数字效果同 /merchant 仪表盘 KPI（merchant.css 的 .kpi .v）：
+   650 字重、-0.045em、行高 1.05，货币符号/单位与数字同级同色 */
+.hp-kpi-v {
+  margin: 8px 0 8px;
+  font-size: 24px;
+  font-weight: 650;
+  line-height: 1.05;
+  letter-spacing: -0.045em;
+  font-variant-numeric: tabular-nums;
+}
+
+.hp-kpi-v i {
+  font-style: normal;
+}
+
+.hp-kpi-v em {
+  font-style: normal;
+  margin-left: 4px;
+}
+
+/* 底部说明行贴底对齐：余额卡的「可用于购买代理 + 充值」与
+   流量卡的「已用 x / y GB + 进度条」在三张卡间保持同一水平线 */
+.hp-kpi-sub {
+  display: flex;
+  align-items: center;
+  min-height: 22px;
+  margin-top: auto;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.hp-kpi-bar {
+  height: 6px;
+  margin-top: 8px;
+  border-radius: 999px;
+  background: #f0f0f0;
+  overflow: hidden;
+}
+
+.hp-kpi-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--kpi-tint);
+}
+
+.hp-kpi-topup {
+  margin-left: auto;
+  flex: none;
+  border: 0;
+  border-radius: 999px;
+  padding: 5px 11px;
+  background: #fa6b1f;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(250, 107, 31, 0.35);
+  transition: background-color 0.12s, box-shadow 0.12s;
+}
+
+.hp-kpi-topup:hover {
+  background: #ea580c;
+  box-shadow: 0 2px 6px rgba(250, 107, 31, 0.4);
+}
+
+/* ── 概览：需要关注（到期 IP + 流量告急，通栏面板）────── */
+
+.hp-exp-panel {
+  margin-bottom: 16px;
+}
+
+.hp-head-sub {
+  font-size: 11.5px;
+  font-weight: 400;
+  color: #6b7280;
+}
+
+/* 「设为默认」：面板头右侧的描边小药丸；当前选择已是默认时禁用 */
+.hp-setdef {
+  margin-left: auto;
+  border: 1px solid #e3e3e3;
+  border-radius: 999px;
+  padding: 5px 13px;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  line-height: 1;
+  color: #4b5563;
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s;
+}
+
+.hp-setdef:hover:not(:disabled) {
+  border-color: #fa6b1f;
+  color: #fa6b1f;
+}
+
+.hp-setdef:disabled {
+  border-color: #f0f0f0;
+  color: #c4c9d0;
+  cursor: default;
+}
+
+/* 需要关注：行即按钮，到期行去列表续费，流量告急行去套餐页续购 */
+.hp-exp {
+  padding: 6px 8px;
+}
+
+.hp-exp-row {
+  display: grid;
+  /* 各列按内容定宽，剩余空间由 space-between 均分到列间——每列等间隔，无中部空洞 */
+  grid-template-columns: 64px 104px 176px 60px 88px 74px;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 9px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  font-family: inherit;
+  font-size: 12.5px;
+  text-align: left;
+  color: rgba(0, 0, 0, 0.88);
+  cursor: pointer;
+  transition: background-color 0.12s;
+}
+
+.hp-exp-row:hover {
+  background: #fafafa;
+}
+
+.hp-exp-row + .hp-exp-row {
+  border-top: 1px solid #f7f7f7;
+}
+
+/* 「查看全部」弹窗（复用 hp-modal-wide 外壳）：行列表内部滚动，
+   负边距抵消行自带内边距，行文字与弹窗标题左对齐 */
+.hp-expall {
+  flex: 1;
+  overflow-y: auto;
+  margin: 0 -8px;
+}
+
+/* 弹窗宽度有限（640px），行内列距收窄避免长 IP 被截断 */
+.hp-expall .hp-exp-row {
+  gap: 10px;
+  grid-template-columns: 64px 92px minmax(0, 1fr) 60px 82px 70px;
+}
+
+/* 行内「续费/续购」描边小药丸：默认灰线低调，悬停转橙（同 hp-setdef 配方） */
+.hp-exp-renew {
+  justify-self: center;
+  border: 1px solid #e3e3e3;
+  border-radius: 999px;
+  padding: 5px 12px;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  line-height: 1;
+  color: #4b5563;
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s;
+}
+
+.hp-exp-renew:hover {
+  border-color: #fa6b1f;
+  color: #fa6b1f;
+}
+
+/* 行内续费/续购跳到目标后的渐隐高亮：标记「就是这条」。
+   先保持橙底约 1.5s 再渐隐，保证落地后来得及看见 */
+@keyframes hp-flash-fade {
+  0%,
+  40% {
+    background-color: #fed7aa;
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.hp-table tr.hp-flash td {
+  animation: hp-flash-fade 3.6s ease-out both;
+}
+
+/* 续购目标卡：弹窗打开期间常亮橙描边（.focus），
+   关弹窗后滚到卡片位置并渐隐（.flash），节奏同上 */
+.hp-tp.focus {
+  border-color: #fa6b1f;
+  box-shadow: 0 0 0 3px rgba(250, 107, 31, 0.18);
+}
+
+@keyframes hp-flash-ring {
+  0%,
+  40% {
+    border-color: #fa6b1f;
+    box-shadow: 0 0 0 3px rgba(250, 107, 31, 0.18);
+  }
+  100% {
+    border-color: #e3e3e3;
+    box-shadow: none;
+  }
+}
+
+.hp-tp.flash {
+  animation: hp-flash-ring 3.6s ease-out both;
+}
+
+/* 类型徽标：ISP 蓝 / 数据中心紫 / 住宅绿 / 移动青，冷色系避免与橙红紧迫度徽标抢色 */
+.hp-exp-kind {
+  justify-self: start;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #f5f5f5;
+  color: #4b5563;
+}
+
+.hp-exp-kind.isp {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.hp-exp-kind.datacenter {
+  background: #f5f3ff;
+  color: #7c3aed;
+}
+
+.hp-exp-kind.residential {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.hp-exp-kind.mobile {
+  background: #ecfeff;
+  color: #0891b2;
+}
+
+.hp-exp-geo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.hp-exp-ip {
+  font-family: "Geist Mono", "Geist Mono Fallback", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  color: #4b5563;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hp-exp-date {
+  font-size: 12px;
+  color: #6b7280;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* 剩余天数徽标：常规灰 / 30 天内橙 / 7 天内红 */
+.hp-exp-days {
+  justify-self: end;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #f5f5f5;
+  color: #4b5563;
+  white-space: nowrap;
+}
+
+.hp-exp-days.warn {
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+.hp-exp-days.danger {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+/* 面板头「7 天内 N 条到期」徽标：沿用行内天数徽标的红色系 */
+.hp-exp-badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #fef2f2;
+  color: #dc2626;
+  white-space: nowrap;
+}
+
+/* 面板头「N 个套餐流量告急」徽标：与行内「剩 X GB」warn 徽标同橙色系 */
+.hp-exp-badge.warn {
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+/* 即将到期头部的「管理 IP」：沿用 hp-seeall 位置，保留橙色强调 */
+.hp-seeall.accent {
+  font-weight: 600;
+  color: #fa6b1f;
+}
+
+.hp-seeall.accent:hover {
+  color: #ea580c;
+}
+
+/* ── 概览：产品快速入口（图标居左的紧凑横卡）───────────── */
+
+.hp-quick-panel {
+  padding: 16px 18px 18px;
+  margin-bottom: 16px;
+}
+
+.hp-quick-title {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.hp-quick {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+/* 卡片即按钮：浅灰底 + 常驻右侧箭头，静止态即有可点感；
+   悬停整卡染上产品线色并轻微上浮 */
+.hp-qcard {
+  --q-tint: #fa6b1f;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 30px 12px 13px;
+  position: relative;
+  border: 1px solid #ececec;
+  border-radius: 10px;
+  background: #fafafa;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease,
+    box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.hp-qcard:hover {
+  background: #fff;
+  border-color: color-mix(in srgb, var(--q-tint) 35%, transparent);
+  box-shadow: 0 6px 16px -8px color-mix(in srgb, var(--q-tint) 40%, transparent);
+  transform: translateY(-1px);
+}
+
+/* 产品线专属色：与 KPI 卡、「需要关注」类型徽章同色系 */
+.hp-qcard.residential {
+  --q-tint: #059669;
+}
+
+.hp-qcard.mobile {
+  --q-tint: #0891b2;
+}
+
+.hp-qcard.isp {
+  --q-tint: #2563eb;
+}
+
+.hp-qcard.datacenter {
+  --q-tint: #7c3aed;
+}
+
+/* 图标章：产品线色软底，进一步提示这是入口而非展示卡 */
+.hp-qicon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--q-tint) 8%, transparent);
+  color: var(--q-tint);
+}
+
+.hp-qicon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.hp-qtxt {
+  min-width: 0;
+}
+
+.hp-qlabel {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f2937; /* gray-800 */
+  transition: color 0.15s ease;
+}
+
+.hp-qcard:hover .hp-qlabel {
+  color: var(--q-tint);
+}
+
+/* 右上角持有量角标：产品线色 8% 软底小药丸（同 hp-qicon 图标章色系），
+   IP 型显示有效 IP 数、流量型显示套餐数；悬停随卡加深 */
+.hp-qcount {
+  position: absolute;
+  top: 9px;
+  right: 10px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--q-tint) 8%, transparent);
+  color: var(--q-tint);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+}
+
+.hp-qcard:hover .hp-qcount {
+  background: color-mix(in srgb, var(--q-tint) 14%, transparent);
+}
+
+/* 常驻箭头：静止灰、垂直居中贴右；悬停染橙并右移 */
+.hp-qgo {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  display: flex;
+  color: #c4c9d0;
+  transform: translateY(-50%);
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.hp-qgo svg {
+  width: 14px;
+  height: 14px;
+}
+
+.hp-qcard:hover .hp-qgo {
+  color: var(--q-tint);
+  transform: translateY(-50%) translateX(2px);
+}
+
+.hp-qdesc {
+  display: block;
+  margin-top: 3px;
+  font-size: 12px;
+  line-height: 1.55;
+  color: #6b7280; /* gray-400 */
+}
+
+/* ── 概览：近期订单表 ───────────────────────────────── */
+
+.hp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.hp-table th {
+  padding: 11px 16px;
+  text-align: left;
+  font-weight: 500;
+  color: #4b5563;
+  white-space: nowrap;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.hp-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 42px 0 46px;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.hp-empty svg {
+  width: 28px;
+  height: 28px;
+  color: #d1d5db;
+}
+
+/* ── 订单列表：类型分栏页签（对齐原站「已购代理」页签行）── */
+
+.hp-ordertabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 26px;
+  padding: 0 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+/* 页签行右上角的日期搜索：空间不足时整体换行，不挤出屏幕 */
+.hp-ordertabs-search {
+  margin-left: auto;
+  align-self: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+}
+
+.hp-ordertab {
+  position: relative;
+  border: 0;
+  background: none;
+  padding: 13px 2px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  color: #4b5563;
+  cursor: pointer;
+  transition: color 0.12s;
+}
+
+.hp-ordertab:hover {
+  color: #fa6b1f;
+}
+
+.hp-ordertab.on {
+  color: #fa6b1f;
+  font-weight: 600;
+}
+
+.hp-ordertab.on::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: #fa6b1f;
+}
+
+/* ── 订单列表：日期区间搜索工具条 ─────────────────────── */
+
+.hp-orders-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+  padding: 13px 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+/* 分页器复用已购代理的 hp-pp-foot，靠右贴齐 */
+.hp-orders-bar .hp-pp-foot {
+  margin-left: auto;
+}
+
+/* 合并式日期区间控件：两个输入框 + 箭头收进同一个描边容器 */
+.hp-daterange {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 6px;
+  border: 1px solid #e3e3e3;
+  border-radius: 8px;
+  background: #fff;
+  transition: border-color 0.12s;
+}
+
+.hp-daterange:focus-within {
+  border-color: #fa6b1f;
+}
+
+.hp-daterange input {
+  width: 108px;
+  padding: 7px 2px 7px 4px;
+  border: 0;
+  font-size: 13px;
+  font-family: inherit;
+  color: rgba(0, 0, 0, 0.88);
+  background: none;
+  outline: none;
+}
+
+/* 日历图标贴紧日期文本，去掉浏览器默认的左侧大间距 */
+.hp-daterange input::-webkit-calendar-picker-indicator {
+  margin-left: 0;
+  padding: 0;
+}
+
+/* 空值时隐藏浏览器 "dd/mm/yyyy" 英文占位，叠加中文占位（聚焦编辑时恢复原生显示） */
+.hp-datebox {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.hp-datebox.empty input:not(:focus) {
+  color: transparent;
+  /* 空态收窄到「占位文字 + 日历图标」贴齐；聚焦或填值后回到全宽容纳完整日期 */
+  width: 80px;
+}
+
+.hp-datebox.empty input:not(:focus)::-webkit-datetime-edit {
+  color: transparent;
+}
+
+.hp-date-ph {
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  color: #9ca3af;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.hp-datebox input:focus + .hp-date-ph {
+  display: none;
+}
+
+.hp-daterange-sep {
+  color: #c4c4c4;
+  font-size: 12px;
+}
+
+.hp-orders-reset {
+  padding: 7px 16px;
+  border: 1px solid #e3e3e3;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  color: rgba(0, 0, 0, 0.7);
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s;
+}
+
+.hp-orders-reset:hover:not(:disabled) {
+  border-color: #fa6b1f;
+  color: #fa6b1f;
+}
+
+.hp-orders-reset:disabled {
+  color: #c4c4c4;
+  cursor: not-allowed;
+}
+
+/* ── 订单列表：数据行 + 状态徽章 ──────────────────────── */
+
+.hp-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f5f5f5;
+  color: rgba(0, 0, 0, 0.82);
+  white-space: nowrap;
+}
+
+.hp-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.hp-table tbody tr:hover td {
+  background: #fafafa;
+}
+
+.hp-mono {
+  font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: #4b5563;
+}
+
+.hp-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.hp-badge.done {
+  background: #e8f7ee;
+  color: #16a34a;
+}
+
+.hp-badge.failed {
+  background: #fdecec;
+  color: #ef4444;
+}
+
+/* ── 购买页：左主区 + 右「您的订单」───────────────────── */
+
+.hp-buy {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.hp-buy-main {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── 流量套餐卡（住宅 / 移动）───────────────────────── */
+
+.hp-plans {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.hp-plan {
+  display: block;
+  text-align: left;
+  border: 1px solid #e3e3e3;
+  border-radius: 10px;
+  background: #fff;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: border-color 0.12s, background-color 0.12s;
+}
+
+.hp-plan:hover {
+  border-color: #fdba74;
+}
+
+.hp-plan.on {
+  border-color: #fa6b1f;
+  background: #fff7ed;
+  box-shadow: inset 0 0 0 1px #fa6b1f;
+}
+
+.hp-plan b {
+  display: block;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.hp-plan span {
+  display: block;
+  margin-top: 3px;
+  font-size: 13px;
+  color: #4b5563;
+}
+
+.hp-plan i {
+  display: block;
+  margin-top: 8px;
+  font-style: normal;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fa6b1f;
+}
+
+/* ── IP 数量滑块 + 药丸（ISP / 数据中心）────────────────── */
+
+.hp-qslider {
+  border: 1px solid #eef0f3;
+  background: #fafafa;
+  border-radius: 12px;
+  padding: 14px 16px 10px;
+  margin-bottom: 18px;
+}
+
+.hp-qbubble-track {
+  position: relative;
+  height: 24px;
+}
+
+.hp-qbubble {
+  position: absolute;
+  bottom: 0;
+  background: #fff;
+  color: #fa6b1f;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid #ffe4cf;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  white-space: nowrap;
+}
+
+.hp-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  cursor: pointer;
+  outline: none;
+}
+
+.hp-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #fa6b1f;
+  box-shadow: 0 1px 4px rgba(250, 107, 31, 0.4);
+  cursor: pointer;
+}
+
+.hp-range::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #fa6b1f;
+  box-shadow: 0 1px 4px rgba(250, 107, 31, 0.4);
+  cursor: pointer;
+}
+
+.hp-qticks {
+  position: relative;
+  height: 22px;
+  margin-top: 8px;
+}
+
+.hp-qtick {
+  position: absolute;
+  top: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  padding: 2px 4px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.12s, background-color 0.12s;
+}
+
+.hp-qtick:hover {
+  color: #fa6b1f;
+  background: #fff;
+}
+
+.hp-qrow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.hp-qcustom {
+  display: inline-flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 14px;
+  border: 1px solid #e3e3e3;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.hp-qcustom.on {
+  border-color: #fa6b1f;
+  box-shadow: 0 0 0 3px rgba(250, 107, 31, 0.1);
+}
+
+.hp-qcustom input {
+  width: 72px;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.88);
+  padding: 0;
+}
+
+.hp-qcustom input::placeholder {
+  color: #c4c9d0;
+  font-weight: 400;
+}
+
+.hp-qpill {
+  position: relative;
+  height: 44px;
+  min-width: 64px;
+  padding: 0 18px;
+  border: 1px solid #e3e3e3;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.88);
+  cursor: pointer;
+  transition: border-color 0.12s, background-color 0.12s, color 0.12s, transform 0.12s;
+}
+
+.hp-qpill:hover {
+  border-color: #fdba74;
+  color: #fa6b1f;
+  transform: translateY(-1px);
+}
+
+.hp-qpill.on {
+  border-color: #fa6b1f;
+  background: #fa6b1f;
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(250, 107, 31, 0.22);
+}
+
+/* 折扣角标（数量 / 时长共用）*/
+.hp-off {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 3px 6px;
+  border-radius: 999px;
+  border: 1px solid #fff;
+  white-space: nowrap;
+}
+
+.hp-qpill.on .hp-off,
+.hp-durpill.on .hp-off {
+  background: #fff;
+  color: #fa6b1f;
+}
+
+/* ── 时长档 ─────────────────────────────────────────── */
+
+.hp-durrow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.hp-durpill {
+  position: relative;
+  padding: 14px 22px;
+  border: 2px solid #e3e3e3;
+  border-radius: 12px;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.88);
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s;
+}
+
+.hp-durpill:hover {
+  border-color: #fdba74;
+  color: #fa6b1f;
+}
+
+.hp-durpill.on {
+  border-color: #fa6b1f;
+  background: #fa6b1f;
+  color: #fff;
+}
+
+/* ── 国家单选 ───────────────────────────────────────── */
+
+.hp-alloc {
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 500;
+  color: #4b5563;
+}
+
+.hp-alloc b {
+  font-weight: 700;
+  color: #fa6b1f;
+}
+
+.hp-alloc.over,
+.hp-alloc.over b {
+  color: #ef4444;
+}
+
+.hp-csearch {
+  width: 100%;
+  max-width: 280px;
+  padding: 8px 12px;
+  border: 1px solid #e3e3e3;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 14px;
+  color: inherit;
+  background: #fff;
+  outline: none;
+  margin-bottom: 14px;
+  transition: border-color 0.12s;
+}
+
+.hp-csearch:focus {
+  border-color: #fa6b1f;
+}
+
+.hp-csearch:disabled {
+  background: #f7f7f8;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+.hp-cgrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px 10px;
+}
+
+.hp-cgrid.locked {
+  opacity: 0.55;
+}
+
+/* 收起态与「展开全部」按钮仅在移动端生效（见 @media 768px），桌面不受影响 */
+.hp-cmore {
+  display: none;
+}
+
+.hp-copt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.12s;
+}
+
+.hp-copt:hover {
+  background: #f7f7f8;
+}
+
+.hp-copt.on {
+  background: #fff7ed;
+}
+
+.hp-copt input {
+  accent-color: #fa6b1f;
+  flex: none;
+}
+
+.hp-copt .hp-flag {
+  font-size: 16px;
+  line-height: 1;
+  flex: none;
+}
+
+.hp-copt .hp-cn {
+  font-size: 14px;
+  color: #374151;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hp-copt.on .hp-cn {
+  color: #fa6b1f;
+  font-weight: 500;
+}
+
+.hp-copt.dis {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.hp-copt.dis .hp-cn {
+  color: #6b7280;
+}
+
+.hp-err {
+  margin: 12px 2px 0;
+  font-size: 12px;
+  color: #ef4444;
+}
+
+/* ── 您的订单 ───────────────────────────────────────── */
+
+.hp-order {
+  flex: none;
+  width: 300px;
+  position: sticky;
+  top: 183px;
+  border: 1px solid #e3e3e3;
+  border-radius: 10px;
+  padding: 16px 18px;
+}
+
+.hp-order h3 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.hp-or {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 0;
+  font-size: 14px;
+}
+
+.hp-or span {
+  color: #4b5563;
+}
+
+.hp-or b {
+  font-weight: 600;
+}
+
+.hp-or b.hp-disc {
+  color: #16a34a;
+}
+
+.hp-ods {
+  margin-top: 4px;
+  padding: 8px 0 2px;
+  border-top: 1px dashed #e3e3e3;
+}
+
+.hp-ods .hp-od {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+  font-size: 13px;
+  color: #4b5563;
+}
+
+.hp-ods .hp-od b {
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.hp-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  padding-top: 14px;
+  border-top: 1px solid #e3e3e3;
+  font-size: 14px;
+}
+
+.hp-total b {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+/* 选够条件、算出真实总价后才点亮橙色 */
+.hp-total b.on {
+  color: #fa6b1f;
+}
+
+.hp-checkout {
+  display: block;
+  width: 100%;
+  margin-top: 14px;
+  padding: 11px 0;
+  border: 0;
+  border-radius: 999px;
+  background: #fa6b1f;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.hp-checkout:hover {
+  background: #e85d12;
+}
+
+.hp-checkout:disabled {
+  background: #e5e7eb;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+.hp-order-note {
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: #6b7280;
+  text-align: center;
+}
+
+/* ── 黑 toast（同 huoad-skin 惯例）───────────────────── */
+
+.hp-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 40px;
+  z-index: 99;
+  transform: translateX(-50%);
+  background: rgba(17, 17, 17, 0.92);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-size: 14px;
+  white-space: nowrap;
+  animation: hpToastIn 0.18s ease-out;
+}
+
+@keyframes hpToastIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* ── 面板头「查看全部」链接（右贴齐）─────────────────── */
+
+.hp-seeall {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  border: 0;
+  background: none;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  color: #6b7280;
+  cursor: pointer;
+  transition: color 0.12s;
+}
+
+.hp-seeall svg {
+  width: 13px;
+  height: 13px;
+}
+
+.hp-seeall:hover {
+  color: #fa6b1f;
+}
+
+
+/* ── 空态「去购买」CTA ───────────────────────────────── */
+
+.hp-empty-cta {
+  margin-top: 6px;
+  border: 1px solid #e3e3e3;
+  border-radius: 999px;
+  background: #fff;
+  padding: 7px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fa6b1f;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.12s, background-color 0.12s;
+}
+
+.hp-empty-cta:hover {
+  border-color: #fa6b1f;
+  background: #fff7ed;
+}
+
+/* ── 订单侧栏「充值」小链接 ───────────────────────────── */
+
+.hp-topup-link {
+  margin-left: 8px;
+  border: 0;
+  background: none;
+  padding: 0;
+  color: #fa6b1f;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.hp-topup-link:hover {
+  text-decoration: underline;
+}
+
+/* ── 余额充值弹窗 ─────────────────────────────────────── */
+
+.hp-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgba(17, 17, 17, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hp-modal {
+  position: relative;
+  width: 360px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 22px 24px;
+  animation: hpPopIn 0.18s ease-out;
+}
+
+.hp-modal h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.hp-modal-sub {
+  margin: 4px 0 16px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.hp-modal-x {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  border: 0;
+  background: none;
+  font-size: 20px;
+  line-height: 1;
+  color: #6b7280;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.hp-modal-x:hover {
+  color: #4b5563;
+}
+
+.hp-amounts {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.hp-amount {
+  border: 1px solid #e3e3e3;
+  border-radius: 8px;
+  background: #fff;
+  padding: 9px 0;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  color: rgba(0, 0, 0, 0.88);
+  cursor: pointer;
+  transition: border-color 0.12s, background-color 0.12s, color 0.12s;
+}
+
+.hp-amount:hover {
+  border-color: #fdba74;
+}
+
+.hp-amount.on {
+  border-color: #fa6b1f;
+  background: #fff7ed;
+  color: #fa6b1f;
+  box-shadow: inset 0 0 0 1px #fa6b1f;
+}
+
+.hp-amount-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 9px 12px;
+  border: 1px solid #e3e3e3;
+  border-radius: 8px;
+  font: inherit;
+  color: inherit;
+  outline: none;
+  transition: border-color 0.12s;
+}
+
+.hp-amount-input:focus {
+  border-color: #fa6b1f;
+}
+
+/* ── 数据中心：已购买代理表 ───────────────────────────── */
+
+.hp-pp {
+  margin-bottom: 16px;
+}
+
+/* 搜索框贴右上角 */
+.hp-pp-search {
+  margin-left: auto;
+  width: 220px;
+  padding: 8px 12px;
+  border: 1px solid #e3e3e3;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 400;
+  font-family: inherit;
+  color: rgba(0, 0, 0, 0.88);
+  background: #fff;
+  outline: none;
+  transition: border-color 0.12s;
+}
+
+.hp-pp-search:focus {
+  border-color: #fa6b1f;
+}
+
+.hp-pp-search::placeholder {
+  color: #c4c9d0;
+}
+
+/* 6 列含两条完整凭证串，字号/间距略收以适应 954px 内容区；仍超宽时容器内横向滚动 */
+.hp-pp-scroll {
+  overflow-x: auto;
+}
+
+/* 固定列宽：ISP / 数据中心两页数据不同（国家名、凭据长短），
+   auto 布局会让列起点漂移；锁死后两页的列位置、间距完全一致 */
+.hp-pp .hp-table {
+  font-size: 12px;
+  table-layout: fixed;
+}
+
+.hp-pp .hp-table th:nth-child(2) {
+  width: 78px;
+}
+
+.hp-pp .hp-table th:last-child {
+  width: 94px;
+}
+
+/* 收紧图标间距，保证最窄布局（1200px 容器底线）下
+   数据中心 39 字符凭据 + 按钮也能收进固定列内 */
+.hp-cred .hp-icon-btn {
+  margin-left: 4px;
+}
+
+.hp-pp .hp-table th,
+.hp-pp .hp-table td {
+  padding: 11px 8px;
+}
+
+.hp-pp .hp-table th:first-child,
+.hp-pp .hp-table td:first-child {
+  padding-left: 14px;
+}
+
+.hp-pp .hp-table th:last-child,
+.hp-pp .hp-table td:last-child {
+  padding-right: 14px;
+}
+
+.hp-table .hp-pp-check {
+  width: 32px;
+  padding-right: 0;
+}
+
+.hp-pp-check input {
+  display: block;
+  width: 15px;
+  height: 15px;
+  accent-color: #fa6b1f;
+  cursor: pointer;
+}
+
+.hp-pp .hp-flag {
+  font-size: 16px;
+  margin-right: 2px;
+}
+
+/* 凭据单元格：文本区按全列最长凭据取宽（行内 minWidth，等宽字体），
+   复制按钮紧跟自己的凭据、各行垂直对齐，剩余空白留在按钮之后 */
+.hp-cred {
+  display: flex;
+  align-items: center;
+}
+
+.hp-icon-btn {
+  display: inline-flex;
+  border: 0;
+  background: none;
+  padding: 0;
+  margin-left: 6px;
+  color: #6b7280;
+  cursor: pointer;
+  vertical-align: -2px;
+  transition: color 0.12s;
+}
+
+.hp-icon-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.hp-icon-btn:hover {
+  color: #fa6b1f;
+}
+
+/* ── 已购买代理：分页页脚 ─────────────────────────────── */
+
+.hp-pp-foot {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 13px;
+  font-weight: 400;
+  color: #4b5563;
+}
+
+.hp-pp-footinfo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.hp-pp-total {
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+.hp-pp-size {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hp-pp-size select {
+  padding: 6px 26px 6px 10px;
+  border: 1px solid #e3e3e3;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  color: rgba(0, 0, 0, 0.88);
+  background: #fff
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>")
+    no-repeat right 8px center;
+  appearance: none;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.12s;
+}
+
+.hp-pp-size select:focus {
+  border-color: #fa6b1f;
+}
+
+.hp-pager {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hp-pager span {
+  font-variant-numeric: tabular-nums;
+}
+
+.hp-pager button {
+  padding: 6px 14px;
+  border: 1px solid #e3e3e3;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  color: rgba(0, 0, 0, 0.7);
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s;
+}
+
+.hp-pager button:hover:not(:disabled) {
+  border-color: #fa6b1f;
+  color: #fa6b1f;
+}
+
+.hp-pager button:disabled {
+  color: #c4c4c4;
+  cursor: not-allowed;
+}
+
+@keyframes hpPopIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── 流量套餐折扣角标 + 已购套餐卡（住宅 / 移动）─────────── */
+
+.hp-plan {
+  position: relative;
+}
+
+.hp-plan span s {
+  color: #b6b6b6;
+  margin-right: 5px;
+}
+
+.hp-plan-off {
+  position: absolute;
+  top: -8px;
+  right: -6px;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 3px 6px;
+  border-radius: 999px;
+  border: 1px solid #fff;
+}
+
+.hp-plan.on .hp-plan-off {
+  background: #fa6b1f;
+  color: #fff;
+}
+
+.hp-tp-list {
+  margin-top: 22px;
+}
+
+.hp-tp-h {
+  font-size: 15px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 14px;
+}
+
+.hp-tp {
+  padding: 20px;
+}
+
+.hp-tp + .hp-tp {
+  margin-top: 18px;
+}
+
+.hp-tp-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.hp-tp-id {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 2px;
+}
+
+.hp-tp-usage {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.02em;
+}
+
+.hp-tp-usage span {
+  font-size: 13px;
+  font-weight: 400;
+  color: #6b7280;
+  margin-left: 4px;
+}
+
+.hp-tp-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.hp-tp-btn {
+  border: 1px solid #e3e3e3;
+  background: #fff;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s;
+}
+
+.hp-tp-btn:hover {
+  border-color: #fa6b1f;
+  color: #fa6b1f;
+}
+
+.hp-tp-bar {
+  width: 100%;
+  height: 8px;
+  background: #f0f0f0;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.hp-tp-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: #fa6b1f;
+  transition: width 0.3s;
+}
+
+.hp-tp-fill.full {
+  background: #ef4444;
+}
+
+.hp-tp-fill.ok {
+  background: #16a34a;
+}
+
+.hp-tp-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 18px;
+}
+
+.hp-tp-meta .full {
+  color: #ef4444;
+}
+
+.hp-tp-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.hp-tp-box {
+  background: #fafafa;
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.hp-tp-box-h {
+  font-size: 12px;
+  font-weight: 600;
+  color: #4b5563;
+  margin-bottom: 10px;
+}
+
+.hp-tp-div {
+  border-top: 1px solid #ececec;
+  margin: 8px 0;
+}
+
+.hp-conn-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  padding: 2px 0;
+}
+
+.hp-conn-label {
+  color: #6b7280;
+  width: 72px;
+  flex-shrink: 0;
+}
+
+.hp-conn-val {
+  color: #374151;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hp-wl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.hp-tp-empty {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.hp-plist-wrap {
+  border-top: 1px solid #f0f0f0;
+  padding-top: 16px;
+}
+
+.hp-plist-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.hp-plist-tools h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.hp-plist-ctl {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #4b5563;
+}
+
+.hp-proto {
+  border: 1px solid #e3e3e3;
+  background: #fff;
+  color: #4b5563;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.12s, background-color 0.12s, color 0.12s;
+}
+
+.hp-proto:hover {
+  border-color: #fdba74;
+}
+
+.hp-proto.on {
+  border-color: #fa6b1f;
+  background: #fff7ed;
+  color: #fa6b1f;
+}
+
+.hp-plist-qty {
+  width: 84px;
+  border: 1px solid #e3e3e3;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 13px;
+  outline: none;
+}
+
+.hp-plist-qty:focus {
+  border-color: #fa6b1f;
+}
+
+.hp-plist-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.hp-plist-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.hp-plist-head h5 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.hp-plist-head span {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.hp-plist-area {
+  width: 100%;
+  min-height: 104px;
+  font-family: "Geist Mono", "Geist Mono Fallback", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  background: #0f172a;
+  color: #4ade80;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 14px;
+  resize: none;
+  outline: none;
+}
+
+.hp-plist-btns {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.hp-plist-copy,
+.hp-plist-dl {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: border-color 0.12s, background-color 0.12s, color 0.12s;
+}
+
+.hp-plist-copy {
+  background: #fff;
+  border-color: #e3e3e3;
+  color: #374151;
+}
+
+.hp-plist-copy:hover {
+  border-color: #fa6b1f;
+  color: #fa6b1f;
+}
+
+.hp-plist-dl {
+  background: #fa6b1f;
+  color: #fff;
+}
+
+.hp-plist-dl:hover {
+  background: #e85f14;
+}
+
+.hp-plist-dl svg {
+  width: 14px;
+  height: 14px;
+}
+
+@media (max-width: 900px) {
+  .hp-tp-grid,
+  .hp-plist-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── 代理配置 / 升级弹窗 ───────────────────────────────── */
+
+.hp-modal-wide {
+  width: 640px;
+  max-width: calc(100vw - 32px);
+  display: flex;
+  flex-direction: column;
+  max-height: min(88vh, 760px);
+}
+
+.hp-modal-wide .hp-modal-sub {
+  margin-bottom: 14px;
+  font-size: 11px;
+}
+
+.hp-cfg-body {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin: 0 -24px;
+  padding: 2px 24px 4px;
+}
+
+.hp-cfg-sec {
+  display: block;
+}
+
+.hp-cfg-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.hp-cfg-val {
+  margin-left: 8px;
+  color: #fa6b1f;
+  font-weight: 700;
+}
+
+.hp-cfg-count {
+  font-weight: 500;
+  color: #fa6b1f;
+  font-size: 12px;
+}
+
+.hp-cfg-ends {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 5px;
+}
+
+.hp-cfg-hint {
+  margin: 5px 0 0;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.hp-cfg-label + .hp-cfg-hint {
+  margin: -2px 0 8px;
+}
+
+.hp-cfg-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.hp-cfg-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 9px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  font-size: 12px;
+  color: #374151;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s;
+}
+
+.hp-cfg-chip:hover {
+  border-color: #fca5a5;
+  color: #ef4444;
+}
+
+.hp-cfg-search {
+  width: 100%;
+  padding: 7px 11px;
+  font-size: 13px;
+  font-family: inherit;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  outline: none;
+  margin-bottom: 8px;
+}
+
+.hp-cfg-search:focus {
+  border-color: #fa6b1f;
+}
+
+.hp-cfg-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.hp-cfg-acts {
+  display: inline-flex;
+  gap: 12px;
+}
+
+.hp-cfg-act {
+  border: 0;
+  background: none;
+  padding: 0;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: inherit;
+  color: #fa6b1f;
+  cursor: pointer;
+}
+
+.hp-cfg-act.muted {
+  color: #4b5563;
+}
+
+.hp-cfg-act:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.hp-cfg-act.muted:hover:not(:disabled) {
+  color: #ef4444;
+}
+
+.hp-cfg-act:disabled {
+  color: #d1d5db;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+.hp-cfg-list {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow-y: auto;
+  max-height: 192px;
+}
+
+.hp-cfg-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.hp-cfg-row:last-child {
+  border-bottom: 0;
+}
+
+.hp-cfg-row:hover {
+  background: #f9fafb;
+}
+
+.hp-cfg-row input {
+  accent-color: #fa6b1f;
+  cursor: pointer;
+}
+
+.hp-cfg-flag {
+  font-size: 15px;
+  line-height: 1;
+}
+
+.hp-cfg-name {
+  flex: 1;
+  font-size: 13px;
+  color: #1f2937;
+}
+
+.hp-cfg-code {
+  font-size: 11px;
+  color: #6b7280;
+  width: 22px;
+  text-align: right;
+}
+
+.hp-cfg-none {
+  text-align: center;
+  font-size: 11px;
+  color: #6b7280;
+  padding: 16px 0;
+  margin: 0;
+}
+
+.hp-cfg-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 16px;
+  margin-top: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.hp-cfg-ok {
+  font-size: 12px;
+  color: #16a34a;
+}
+
+.hp-cfg-btns {
+  display: flex;
+  gap: 8px;
+}
+
+.hp-cfg-save {
+  width: auto;
+  margin: 0;
+  padding: 7px 18px;
+  font-size: 13px;
+}
+
+/* 升级弹窗 */
+
+.hp-up-plans {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.hp-up-plan {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 14px;
+  background: #fff;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s;
+}
+
+.hp-up-plan:hover {
+  border-color: #fdba8c;
+}
+
+.hp-up-plan.on {
+  border-color: #fa6b1f;
+  background: #fff7ed;
+}
+
+.hp-up-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hp-up-gb {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+/* 折扣徽标：与购买卡 hp-plan-off 同语言（绿底百分比，选中转橙） */
+.hp-up-off {
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.hp-up-plan.on .hp-up-off {
+  background: #fa6b1f;
+  color: #fff;
+}
+
+/* 右侧两行：小计做主视觉，第二行划线原价 + 折后单价 + 省额 */
+.hp-up-price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.hp-up-price b {
+  font-size: 14px;
+  line-height: 1;
+  color: #1f2937;
+  font-weight: 700;
+}
+
+.hp-up-unit {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  line-height: 1;
+  color: #6b7280;
+}
+
+.hp-up-unit s {
+  color: #c4c4c4;
+}
+
+.hp-up-save {
+  font-style: normal;
+  font-weight: 600;
+  color: #15803d;
+}
+
+.hp-up-cancel,
+.hp-up-ok {
+  flex: 1;
+}
+
+.hp-up-ok {
+  width: auto;
+  margin: 0;
+  padding: 9px 0;
+  font-size: 13px;
+}
+
+.hp-cfg-num {
+  font-size: 11px;
+  color: #d1d5db;
+  width: 52px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── 已购买代理：续费条（勾选后出现在面板头，对齐原站）──── */
+
+.hp-pp .hp-panel-head {
+  flex-wrap: wrap;
+  row-gap: 10px;
+}
+
+.hp-renew {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.hp-renew-count {
+  font-size: 13px;
+  font-weight: 500;
+  color: #4b5563;
+  white-space: nowrap;
+}
+
+.hp-renew-count b {
+  color: #fa6b1f;
+  font-weight: 700;
+}
+
+.hp-renew-pill {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 42px;
+  padding: 4px 12px;
+  border: 1.5px solid #e3e3e3;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  line-height: 1.2;
+  color: rgba(0, 0, 0, 0.88);
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s;
+}
+
+.hp-renew-pill:hover {
+  border-color: #fdba74;
+  color: #fa6b1f;
+}
+
+.hp-renew-pill.on {
+  border-color: #fa6b1f;
+  background: #fa6b1f;
+  color: #fff;
+}
+
+/* 折扣内嵌为药丸第二行小字：不再悬浮角标，多档并排也不拥挤 */
+.hp-renew-off {
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  color: #15803d;
+}
+
+.hp-renew-pill.on .hp-renew-off {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* 总计 + 续费按钮成组换行，避免按钮被单独挤到下一行 */
+.hp-renew-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hp-renew-total {
+  font-size: 13px;
+  font-weight: 500;
+  color: #4b5563;
+  white-space: nowrap;
+}
+
+.hp-renew-total b {
+  color: #1f2937;
+  font-weight: 700;
+}
+
+.hp-renew-btn {
+  padding: 8px 18px;
+  border: 0;
+  border-radius: 8px;
+  background: #fa6b1f;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.hp-renew-btn:hover {
+  background: #e85d12;
+}
+
+/* ── 流量套餐用量状态（住宅 / 移动「已购套餐」卡：快用完 / 已用完）── */
+
+/* 套餐 ID 行内的状态徽标：沿用概览 hp-exp-days 色系 */
+.hp-tp-id .hp-exp-days {
+  display: inline-block;
+  margin-left: 8px;
+}
+
+/* 快用完 / 已用完时「升级」变橙色实心「续购」 */
+.hp-tp-btn.renew {
+  border-color: #fa6b1f;
+  background: #fa6b1f;
+  color: #fff;
+}
+
+.hp-tp-btn.renew:hover {
+  border-color: #e85d12;
+  background: #e85d12;
+  color: #fff;
+}
+
+/* 已用完横幅：红色浅底说明（续购入口只在右上角操作区，不重复放 CTA） */
+.hp-tp-out-bar {
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  background: #fef2f2;
+  font-size: 13px;
+  color: #b91c1c;
+}
+
+/* 已用完：用量条置灰，连接信息 / 白名单 / 代理列表整体停用 */
+.hp-tp.depleted .hp-tp-fill {
+  background: #d1d5db;
+}
+
+.hp-tp.depleted .hp-tp-grid,
+.hp-tp.depleted .hp-plist-wrap {
+  opacity: 0.55;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* 已购套餐标题行：标题右侧紧跟「全部 / 已用完」筛选药丸（复用 hp-proto 视觉） */
+.hp-tp-listhead {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.hp-tp-listhead .hp-tp-h {
+  margin-bottom: 0;
+}
+
+.hp-tp-filter {
+  display: flex;
+  gap: 8px;
+}
+
+/* ── 移动端（≤768px）：黑色顶条 + 底部五格 tab 栏（配方同 /vcc 的
+   merchant-embed.css 移动段）。桌面三层头部（.huoad-desktop-only 包裹）
+   与左侧栏隐藏；内容单列铺满；四卡网格降为两列/单列；
+   购买页右侧「您的订单」卡改为随文档流铺满；宽表格在 .hp-pp-scroll 内横滚。 */
+
+.hp-mtab {
+  display: none;
+}

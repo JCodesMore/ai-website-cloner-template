@@ -1,0 +1,43 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "cloner-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "/Users/mac/Desktop/clone",
+      "port": 3214,
+      "autoPort": true
+    },
+    {
+      "name": "cloner-dev-b",
+      "runtimeExecutable": "env",
+      "runtimeArgs": ["NEXT_DIST_DIR=.next-dev-b", "npm", "run", "dev"],
+      "cwd": "/Users/mac/Desktop/clone",
+      "port": 3215,
+      "autoPort": true
+    },
+    {
+      "name": "cloner-dev-c",
+      "runtimeExecutable": "env",
+      "runtimeArgs": ["NEXT_DIST_DIR=.next-dev-c", "npm", "run", "dev"],
+      "cwd": "/Users/mac/Desktop/clone",
+      "port": 3216,
+      "autoPort": true
+    },
+    {
+      "name": "cloner-dev-d",
+      "runtimeExecutable": "env",
+      "runtimeArgs": ["NEXT_DIST_DIR=.next-dev-d", "npm", "run", "dev"],
+      "cwd": "/Users/mac/Desktop/clone",
+      "port": 3217,
+      "autoPort": true
+    },
+    {
+      "name": "numo-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "/Users/mac/Desktop/接码平台/web", "run", "dev", "--", "--port", "5199", "--strictPort"],
+      "port": 5199
+    }
+  ]
+}

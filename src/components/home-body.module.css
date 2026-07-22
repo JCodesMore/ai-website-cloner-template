@@ -1,0 +1,413 @@
+/* 首页正文（huoad.com/zh 商品区）— 尺寸/配色见 docs/research/huoad.com/home-body-spec.md */
+
+.page {
+  min-height: 100vh;
+  padding-top: 143px; /* fixed header 高度，见 header-spec.md */
+  background: #f5f5f5;
+  font-family: Geist, "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
+}
+
+.container {
+  width: 100%;
+  min-width: 1200px;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* ≤768px 隐藏桌面正文 — 移动版由 mobile-home 接管（同原站 UA 分流） */
+@media (max-width: 768px) {
+  .page {
+    display: none;
+  }
+}
+
+/* 侧栏 fixed（静态位取 x），正文右移 256+20 */
+.right {
+  margin-left: 276px;
+  width: calc(100% - 276px);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── 标签筛选 ── */
+
+.filterCard {
+  background: #fff;
+  border-radius: 10px;
+  padding: 14px 20px 20px;
+}
+
+.filterTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #364153;
+}
+
+.clearTags {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 12px;
+  font-weight: 400;
+  color: #6a7282;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+.clearTags:hover {
+  color: #fa6b1f;
+}
+
+.tags {
+  margin-top: 13px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.tagPill {
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  background: #fff;
+  font-size: 13.6px;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  user-select: none;
+  transition: 0.2s;
+}
+
+.tagPill:hover {
+  background: #f9fafb;
+  border-color: #fa6b1f;
+  color: #fa6b1f;
+}
+
+.tagPill.selected,
+.tagPill.selected:hover {
+  background: #fa6b1f;
+  border-color: #e0e0e0;
+  color: #fff;
+}
+
+/* ── 排序工具栏 ── */
+
+.toolbar {
+  height: 54px;
+  background: #fff;
+  border-radius: 10px;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.count {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.toolbarRight {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.sortSelect {
+  width: 180px;
+  height: 34px;
+  padding: 0 11px;
+  border-radius: 8px;
+  border: 1px solid #d9d9d9;
+  background: #fff;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.88);
+  cursor: pointer;
+}
+
+.viewSwitch {
+  width: 70px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  display: flex;
+  overflow: hidden;
+}
+
+.viewBtn {
+  width: 34px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border: 0;
+  padding: 0;
+  color: rgba(0, 0, 0, 0.88);
+  cursor: pointer;
+}
+
+.viewBtn.viewOn {
+  background: #eee;
+  cursor: default;
+}
+
+/* ── 商品列表（list 视图，默认） ── */
+
+.productList {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+}
+
+.cover {
+  width: 100px;
+  height: 100px;
+  border-radius: 10px;
+  flex: none;
+  object-fit: cover;
+}
+
+.center {
+  flex: 1;
+  min-width: 0;
+}
+
+.link {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 21px;
+  color: #000;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.link:hover {
+  color: #fa6b1f;
+}
+
+.productInfo {
+  display: flex;
+  gap: 20px;
+  margin-top: 12px;
+  font-size: 13px;
+  color: #666;
+}
+
+.productInfo p {
+  margin: 0;
+}
+
+.shopName {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #155dfc;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.avatar {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fa6b1f;
+  color: #fff;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.stockOk {
+  color: #00a63e;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex: none;
+}
+
+.price {
+  font-size: 20px;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.money {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.buyBtn {
+  height: 36px;
+  padding: 0 15px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  background: #fa6b1f;
+  border: 1px solid transparent;
+  box-shadow: 0 2px 0 rgba(255, 130, 5, 0.08);
+  cursor: pointer;
+  transition: 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.buyBtn:hover {
+  background: #e55a0f;
+}
+
+.buyBtn:active {
+  background: #d44d0f;
+}
+
+/* ── 商品网格（grid 视图） ── */
+
+.productGrids {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.gridItem {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  background: #fff;
+  border-radius: 10px;
+}
+
+.gridItem .cover {
+  width: 70px;
+  height: 70px;
+}
+
+.gridItem .link {
+  height: 42px;
+}
+
+.gridItem .productInfo {
+  flex-wrap: wrap;
+  gap: 10px 20px;
+}
+
+.gridItem .footer {
+  justify-content: space-between;
+  gap: 0;
+}
+
+/* ── 空态（antd Empty 同款） ── */
+
+.empty {
+  margin: 32px 8px;
+  text-align: center;
+}
+
+.empty svg {
+  height: 112px;
+  /* Tailwind preflight 把 svg 设为 display:block，text-align 居中失效，改用 auto 边距 */
+  margin: 0 auto 8px;
+}
+
+.emptyDesc {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+/* ── 浮动按钮组 ── */
+
+.floating {
+  position: fixed;
+  right: 15px;
+  bottom: 198px;
+  width: 50px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.fab {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  cursor: pointer;
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.08),
+    0 3px 6px -4px rgba(0, 0, 0, 0.12),
+    0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s;
+}
+
+.fab:hover {
+  transform: scale(1.1);
+}
+
+.fabCart {
+  background: #fa6b1f;
+}
+
+.fabTg {
+  background: #0088cc;
+}
+
+.fabWa {
+  background: #25d366;
+}
+
+.fabChat {
+  background: #008aff;
+}
+
+.cartBadge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  transform: translate(50%, -50%);
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  background: #ff4d4f;
+  color: #fff;
+  font-size: 12px;
+  line-height: 18px;
+  text-align: center;
+  box-shadow: 0 0 0 1px #fff;
+}

@@ -1,0 +1,493 @@
+/* HUOAD 同源皮肤 — 把注入的 Faorbit 仪表盘换成 HUOAD 设计语言，
+   与站点头部/左侧白卡侧栏视觉统一（主橙 #fa6b1f、白卡 10px、细线 #f0f0f0、
+   药丸按钮、Geist 字体、黑色 toast 呼应黑色顶条）。
+   规格来源：docs/research/huoad.com/header-spec.md。
+   本文件在 merchant.css / merchant-embed.css 之后加载，只覆盖不改结构；
+   design-src/dashboard.html 与各 JS 保持原样（SVG 属性色用 CSS 覆盖）。 */
+
+/* ── 1. 设计 token 重映射（设计稿内联样式引用这些变量名，改值即全局生效）── */
+
+.merchant-surface {
+  --bg-2: #f5f5f5;
+  --surface-2: #f5f5f5;
+  --line: #f0f0f0;
+  --line-2: #d9d9d9;
+  --ink: rgba(0, 0, 0, 0.88);
+  --ink-2: #364153;
+  --ink-3: #6a7282;
+  --navy: #1a1a1a;
+  --blue: #fa6b1f;
+  --blue-2: #ff8b4d;
+  --orbit: #ffb26b;
+  --r: 10px;
+  --r-lg: 12px;
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.02);
+  --ff-disp: Geist, "Geist Fallback", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --ff-body: Geist, "Geist Fallback", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+/* ── 2. 卡片：HUOAD 白卡（10px 圆角、细线、几乎无投影，同左侧侧栏卡）── */
+
+.merchant-surface .kpi,
+.merchant-surface .panel,
+.merchant-surface .form-card,
+.merchant-surface .wcard,
+.merchant-surface .vc,
+.merchant-surface .fs-card,
+.merchant-surface .set-grid {
+  border-color: var(--line);
+  border-radius: 10px;
+  box-shadow: var(--shadow-card);
+}
+
+.merchant-surface .kpi:hover {
+  border-color: rgba(250, 107, 31, 0.3);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.merchant-surface .kpi .top .ic {
+  border-color: rgba(250, 107, 31, 0.14);
+  background: rgba(250, 107, 31, 0.08);
+  color: var(--blue);
+}
+
+/* 钱包 KPI 高亮卡：蓝青渐变 → 橙-50 暖调渐变 */
+.merchant-surface [data-view-panel="dashboard"] .kpi:has([data-kpi-wallet]),
+.merchant-surface [data-view-panel="dashboard"] .kpi:has([data-mkpi-avail]),
+.merchant-surface .kpi:has([data-kpi="wallet"]) {
+  border-color: rgba(250, 107, 31, 0.28);
+  background:
+    radial-gradient(circle at 100% 0, rgba(255, 178, 107, 0.16), transparent 38%),
+    linear-gradient(145deg, #ffffff, #fff7ed);
+}
+
+.merchant-surface .vc:hover {
+  border-color: rgba(250, 107, 31, 0.3);
+  box-shadow: 0 12px 24px -20px rgba(250, 107, 31, 0.4);
+}
+
+/* ── 3. 控件：HUOAD 药丸按钮（登录钮同款 radius 22 → 999、橙三态）── */
+
+.merchant-surface .btn {
+  border-radius: 999px;
+}
+
+.merchant-surface .btn-primary {
+  border-color: transparent;
+  background: var(--blue);
+  box-shadow: 0 2px 0 rgba(255, 130, 5, 0.08);
+}
+
+.merchant-surface .btn-primary:hover {
+  border-color: transparent;
+  background: #e55a0f;
+}
+
+.merchant-surface .btn-primary:active {
+  background: #d44d0f;
+}
+
+.merchant-surface .btn-soft {
+  border-color: var(--line-2);
+}
+
+.merchant-surface .btn-soft:hover {
+  border-color: var(--blue);
+  background: #fff;
+  color: var(--blue);
+}
+
+.merchant-surface .icon-btn {
+  border-color: var(--line-2);
+  border-radius: 999px;
+}
+
+.merchant-surface .icon-btn:hover {
+  border-color: var(--blue);
+  background: #fff;
+  color: var(--blue);
+}
+
+/* 输入类：HUOAD 搜索框同款 8px 圆角 + 橙 focus 环 */
+.merchant-surface .field input,
+.merchant-surface .field select,
+.merchant-surface .field textarea,
+.merchant-surface .alloc .field input,
+.merchant-surface .alloc .field select,
+.merchant-surface .alloc .field textarea,
+.merchant-surface .ldg-filters input,
+.merchant-surface .ldg-filters select {
+  border-radius: 8px;
+}
+
+.merchant-surface .field input:focus,
+.merchant-surface .field select:focus,
+.merchant-surface .field textarea:focus,
+.merchant-surface .alloc .field input:focus,
+.merchant-surface .alloc .field select:focus,
+.merchant-surface .alloc .field textarea:focus,
+.merchant-surface .ldg-filters input:focus,
+.merchant-surface .ldg-filters select:focus {
+  box-shadow: 0 0 0 3px rgba(250, 107, 31, 0.13);
+}
+
+.merchant-surface .switch.on {
+  background: var(--blue);
+}
+
+/* ── 4. 图表：折线/渐变面积/端点由蓝换橙（覆盖 SVG 属性色）── */
+
+.merchant-surface .linechart [data-line] {
+  stroke: var(--blue);
+}
+
+.merchant-surface .linechart [data-dot] {
+  fill: var(--blue);
+}
+
+.merchant-surface .linechart linearGradient stop {
+  stop-color: var(--blue);
+}
+
+.merchant-surface .linechart .grid {
+  stroke: #ededed;
+}
+
+/* 趋势区间切换（近7天/近30天）激活态点橙 */
+.merchant-surface .lang-tabs button.on {
+  color: var(--blue);
+}
+
+/* ── 5. 表格与标签 ─────────────────────────────────────── */
+
+.merchant-surface .dtable th,
+.merchant-surface .dtable td {
+  border-color: #f0f0f0;
+}
+
+.merchant-surface .dtable th {
+  background: #fafafa;
+  color: #6a7282;
+}
+
+.merchant-surface .dtable tbody tr:hover {
+  background: #f9fafb;
+}
+
+.merchant-surface .card-cell.clickable:hover {
+  background: rgba(250, 107, 31, 0.06);
+}
+
+.merchant-surface .pill.info,
+.merchant-surface .role.admin {
+  background: rgba(250, 107, 31, 0.1);
+  color: #d44d0f;
+}
+
+.merchant-surface .fchip {
+  border-radius: 999px;
+}
+
+.merchant-surface .fchip:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.merchant-surface .fchip.on {
+  border-color: var(--blue);
+  background: rgb(255, 247, 237);
+  color: #d44d0f;
+  box-shadow: none;
+}
+
+.merchant-surface .fchip.on .fchip-n {
+  background: rgba(250, 107, 31, 0.14);
+  color: #d44d0f;
+}
+
+/* ── 6. 选择项与表单区块 ───────────────────────────────── */
+
+.merchant-surface .pay-opt.on,
+.merchant-surface .bin-pill.on {
+  border-color: var(--blue);
+  background: rgb(255, 247, 237);
+  box-shadow: inset 0 0 0 1px var(--blue);
+}
+
+.merchant-surface .bin-pill .rec {
+  background: var(--blue);
+  box-shadow: 0 3px 10px -5px rgba(250, 107, 31, 0.75);
+}
+
+.merchant-surface .nc-foot,
+.merchant-surface .summary,
+.merchant-surface .fs-cell,
+.merchant-surface .set-nav {
+  background: #fafafa;
+}
+
+.merchant-surface .fs-cell.total {
+  border-color: rgba(250, 107, 31, 0.3);
+  background:
+    radial-gradient(circle at 100% 0, rgba(255, 178, 107, 0.18), transparent 42%),
+    linear-gradient(145deg, #fff7ed, #fff);
+}
+
+.merchant-surface [data-view-panel="wallet"] .wcard {
+  background:
+    radial-gradient(circle at 100% 0, rgba(255, 178, 107, 0.16), transparent 38%),
+    linear-gradient(145deg, #ffffff, #fff7ed);
+}
+
+.merchant-surface .alloc-note,
+.merchant-surface .plan-info-box {
+  border-color: rgba(250, 107, 31, 0.2);
+  background: rgb(255, 247, 237);
+}
+
+/* ── 7. 虚拟卡卡面：蓝紫青 → 暖色家族（主橙/石墨呼应黑顶条/琥珀/赭陶/铜棕/暖灰）── */
+
+.merchant-surface .vc .face.blue,
+.merchant-surface .dcard.blue {
+  background: linear-gradient(145deg, #fa6b1f, #c2470c);
+}
+
+.merchant-surface .vc .face.navy,
+.merchant-surface .dcard.navy {
+  background: linear-gradient(145deg, #3a3a3a, #0d0d0d);
+}
+
+.merchant-surface .vc .face.sky,
+.merchant-surface .dcard.sky {
+  background: linear-gradient(145deg, #f0a11c, #c07106);
+}
+
+.merchant-surface .vc .face.indigo,
+.merchant-surface .dcard.indigo {
+  background: linear-gradient(145deg, #c25231, #7e2b12);
+}
+
+.merchant-surface .vc .face.teal,
+.merchant-surface .dcard.teal {
+  background: linear-gradient(145deg, #8a6244, #503522);
+}
+
+.merchant-surface .vc .face.emerald,
+.merchant-surface .dcard.emerald {
+  background: linear-gradient(145deg, #6b6f5a, #383b2c);
+}
+
+/* ── 8. 抽屉、弹窗、空态、杂项 ─────────────────────────── */
+
+.merchant-surface .dw-act:hover {
+  border-color: rgba(250, 107, 31, 0.45);
+  color: var(--blue);
+}
+
+.merchant-surface .pp-modal .pi {
+  background: rgba(250, 107, 31, 0.1);
+  color: var(--blue);
+}
+
+.merchant-surface .merchant-empty::before {
+  border-color: rgba(250, 107, 31, 0.18);
+  background: rgba(250, 107, 31, 0.08);
+  color: var(--blue);
+}
+
+.merchant-surface .spend-empty-icon {
+  border-color: rgba(250, 107, 31, 0.14);
+  background: rgba(250, 107, 31, 0.08);
+  color: var(--blue);
+}
+
+.merchant-surface .menu,
+.merchant-surface .row-menu,
+.merchant-surface .wh-menu {
+  border-radius: 10px;
+}
+
+.merchant-surface .skeleton {
+  background: #eeeeee;
+}
+
+/* toast 换成 HUOAD 黑（呼应站点黑色顶条） */
+.merchant-surface .toast {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: #000;
+}
+
+/* ── 9. 虚拟卡精修：点缀与图标 ─────────────────────────────
+   残留的蓝色点缀（规则序号、BIN 徽章）收进主橙家族，
+   迷你卡面 swatch 与 §7 的暖色卡面同一色板。
+   （原「数字统一 Geist Mono」重映射已撤销，见 §11：与 huoad
+   全站比例字对齐，--ff-mono 回落到 :root 的 Geist。） */
+
+/* 迷你卡面（卡片列表 / 卡段 BIN）：冷蓝家族 → 暖色家族 */
+.merchant-surface .swatch.blue {
+  background: linear-gradient(140deg, #fa6b1f, #c2470c);
+}
+
+.merchant-surface .swatch.navy {
+  background: linear-gradient(140deg, #3a3a3a, #0d0d0d);
+}
+
+.merchant-surface .swatch.sky {
+  background: linear-gradient(140deg, #f0a11c, #c07106);
+}
+
+.merchant-surface .swatch.indigo {
+  background: linear-gradient(140deg, #c25231, #7e2b12);
+}
+
+.merchant-surface .swatch.teal {
+  background: linear-gradient(140deg, #8a6244, #503522);
+}
+
+.merchant-surface .swatch.emerald {
+  background: linear-gradient(140deg, #6b6f5a, #383b2c);
+}
+
+/* 卡片使用规则：序号圆点 / 面板头 BIN 徽章由蓝改主橙 */
+.merchant-surface .rules-list li .ri {
+  background: rgba(250, 107, 31, 0.1);
+  color: #d44d0f;
+}
+
+.merchant-surface .rules-card .rh .rb {
+  background: rgba(250, 107, 31, 0.1);
+  color: #d44d0f;
+}
+
+/* 状态药丸永不折行：卡片副标题（银行交易信息）较长时列宽收紧，
+   「活跃/已启用」若竖排会破相 */
+.merchant-surface .pill {
+  white-space: nowrap;
+}
+
+/* 按用户要求去掉全部头像：抽屉最近交易等处的 .uav 由设计稿脚本硬编码，
+   这里统一隐藏（表格里的头像已直接从注入数据中移除） */
+.merchant-surface .uav {
+  display: none;
+}
+
+/* 交易状态补充：被拒付（红），设计稿只带 ok/warn/info/off 四态 */
+.merchant-surface .pill.declined {
+  background: rgba(210, 59, 59, 0.09);
+  color: #c53030;
+}
+
+/* 卡段 BIN 选项：迷你卡面与文字的呼吸感，BIN 号用 tabular 数字 */
+.merchant-surface .bin-pill {
+  padding: 13px 15px;
+}
+
+.merchant-surface .bin-pill .bn {
+  font-feature-settings: "tnum" 1;
+  letter-spacing: 0.02em;
+}
+
+.merchant-surface .bin-pill .bn small {
+  letter-spacing: 0;
+}
+
+/* ── 10. 灰色文字可读性：次级文字整体加深一档，层级关系不变
+   --ink-3 #6a7282（对比度约 4.8:1）→ #4a5565（约 7.4:1），
+   表头、眉题小字同步；货币符号 #98a2b3 → #6a7282。 */
+
+.merchant-surface {
+  --ink-3: #4a5565;
+}
+
+/* site.css 的 :root --ink-3(#8a92ad，约 3.1:1)驱动顶栏通知、登录弹窗等
+   .merchant-surface 之外的次级文字，同步加深保持蓝灰色相。 */
+:root {
+  --ink-3: #68718e;
+}
+
+.merchant-surface .dtable th {
+  color: #4a5565;
+}
+
+.merchant-surface .nc-group-title,
+.merchant-surface .set-sub,
+.merchant-surface .plan-eyebrow {
+  color: #4a5565;
+}
+
+.merchant-surface .fs-sign {
+  color: #6a7282;
+}
+
+/* ── 11. 字体与 huoad.com 全站对齐 ─────────────────────────
+   实测 huoad.com（社交账号商品区）全站只用 Geist 比例字：
+   金额/日期/百分比均非等宽，无 letter-spacing，字重 400–600。
+   板块切换时的字体跳变来自两处：
+   ① site.css 的 :root 字体 token 还是 -apple-system/SF Pro 栈，
+     body、黑色顶条、通知弹层、登录弹窗都从这里继承 → 全部改指 Geist；
+   ② §9 曾把 --ff-mono 重映射为 Geist Mono，设计稿内联样式引用该
+     变量的金额/日期/BIN 全变等宽 → 已撤销，数字回比例字，列对齐
+     依赖 body 已开启的 "tnum"（tabular-nums）。
+   中文回退与 huoad 一致（Geist 无 CJK 字形，落到系统苹方/雅黑）。 */
+
+:root {
+  --ff-disp: Geist, "Geist Fallback", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --ff-body: Geist, "Geist Fallback", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --ff-mono: Geist, "Geist Fallback", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+/* merchant.css 在 .merchant-surface 上自带一份 --ff-mono(SFMono)，
+   元素自身声明优先于 :root 继承，须同级覆盖（同 §1 的 disp/body）。 */
+.merchant-surface {
+  --ff-mono: Geist, "Geist Fallback", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+/* ── 12. 抽屉关闭态防漏边 ─────────────────────────────────
+   site.css 的 .drawer 关闭态写死 right:-480px（按原 456px 宽设计），
+   merchant.css 把抽屉加宽到 488px（窄屏 min(100vw,560px)）后，超出
+   的部分连同左缘阴影常驻视口右缘（桌面漏 8px 白条，窄屏最多 80px）。
+   关闭态统一藏到 -640px（覆盖最大宽 560px + 阴影外扩 60px）；
+   开合两态成对覆盖，避免只压过 site.css 的关闭态。 */
+.merchant-surface .drawer {
+  right: -640px;
+}
+
+.merchant-surface .drawer.open {
+  right: 0;
+}
+
+/* ── 13. 排版紧致化：行高对齐 huoad.com / 全球 IP 代理页 ───────────
+   site.css 的 body 行高 1.6 松于 huoad 原站的全站 1.4（/proxy 已做
+   同款覆盖，见 proxy.css 的 .hp-page）。只收紧继承 1.6 的正文与表格；
+   设计稿内已显式声明的行高（KPI 数值 1.05、题注 1.35、提示 1.45 等）
+   不受影响。 */
+.huoad-merchant-page,
+.merchant-surface {
+  line-height: 1.4;
+}
+
+/* ── 14. 概览首行等高：消费趋势卡下方原本空一块（site.css 的 .grid-2
+   是 align-items:start，右侧支出分布卡更高）。改为整行等高拉伸，
+   趋势卡 .pb 变 flex 列、linechart（viewBox 640x220 + preserveAspectRatio
+   none，可自由拉伸）flex:1 纵向撑满 → 空白变成更大的绘图区，
+   周标签行仍贴卡底。 */
+.merchant-surface .grid-2 {
+  align-items: stretch;
+}
+
+.merchant-surface .grid-2 > .panel:first-child {
+  display: flex;
+  flex-direction: column;
+}
+
+.merchant-surface .grid-2 > .panel:first-child > .pb {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.merchant-surface .grid-2 > .panel:first-child .linechart {
+  flex: 1;
+  height: auto;
+  min-height: 200px;
+}

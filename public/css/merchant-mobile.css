@@ -1,0 +1,293 @@
+/** /vcc 移动版样式 — 原 merchant-embed.css 的 @media(max-width:768px) 段解包而来。
+ *  /vcc 用 <link media="(max-width:768px)"> 按宽度加载；/vcc/m 无条件加载（强制移动版）。
+ *  ≤520px 的窄屏微调仍是媒体查询，两条路由下都只对小屏生效。 */
+
+.huoad-desktop-only {
+  display: none;
+}
+
+/* 黑顶条：模块样式在 ≥769px 自隐，/vcc/m 靠这条显示回来 */
+.huoad-mheader {
+  display: flex;
+}
+
+.huoad-merchant-page {
+  /* 顶条改为 sticky 56px 占流式空间，无需再留顶部 padding */
+  padding: 0 0 calc(66px + env(safe-area-inset-bottom));
+}
+
+.huoad-merchant-inner {
+  display: block;
+  min-width: 0;
+  max-width: none;
+  padding: 0 10px;
+}
+
+.huoad-merchant-side {
+  display: none;
+}
+
+.huoad-merchant-content {
+  min-height: 0;
+  padding: 14px 12px 20px;
+}
+
+.huoad-mtab {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  display: flex;
+  background: #fff;
+  border-top: 1px solid #eee;
+  padding-bottom: env(safe-area-inset-bottom);
+  font-family: Geist, "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
+}
+
+.huoad-mtab a {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 54px;
+  font-size: 10.5px;
+  line-height: 1;
+  color: #333;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.huoad-mtab a svg {
+  width: 21px;
+  height: 21px;
+}
+
+.huoad-mtab a.on {
+  color: #fa6b1f;
+  background: #fff7f0;
+  font-weight: 600;
+}
+
+/* toast 默认 bottom:24px 会被固定 tab 栏盖住，抬到 tab 栏上方；
+   left:50% 定位会把 fixed 元素可用宽度压到半屏导致文案折行，
+   改为左右撑满、靠 align-items:center 居中 */
+.toast-wrap {
+  left: 12px;
+  right: 12px;
+  transform: none;
+  bottom: calc(74px + env(safe-area-inset-bottom));
+}
+
+/* ── 表格移动端融合：按视图砍低价值列，消除横向滚动 ────────
+   merchant.css 给 dtable 压了 760–920px 的 min-width，移动端整表
+   横滚，金额/状态全在屏外。砍列原则：信息在行内已有别处承载、
+   或属桌面团队管理概念的列去掉，全量信息一律点行进详情抽屉看：
+   · 我的卡片：去 归属成员(2)/卡号(3)/操作菜单(6)——后四位已印在
+     卡面缩略图上，kebab 菜单的充值/冻结/销卡抽屉里都有；
+   · 交易记录：去 交易成员(1)/卡片(3)/失败原因(7)——成员列是桌面
+     团队视角，失败原因已由状态 pill 表达；
+   · 概览-最近卡片：去 卡号(2)/本月消费(3)和整个表头——副标题
+     本就带最近一笔金额，去表头后成纯列表观感。
+   选择器带 :not([colspan]) 防误伤「暂无数据」整行单元格。
+   min-width 用四级链压过 merchant.css 的 .dtable:has(...) 特异度。 */
+.huoad-merchant-page .huoad-merchant-content .merchant-surface .dtable {
+  min-width: 0;
+  font-size: 13px;
+}
+
+.huoad-merchant-content .merchant-surface .dtable th,
+.huoad-merchant-content .merchant-surface .dtable td {
+  height: 48px;
+  padding: 10px 8px;
+}
+
+.huoad-merchant-content .merchant-surface .dtable th:first-child,
+.huoad-merchant-content .merchant-surface .dtable td:first-child {
+  padding-left: 12px;
+}
+
+.huoad-merchant-content .merchant-surface .dtable th:last-child,
+.huoad-merchant-content .merchant-surface .dtable td:last-child {
+  padding-right: 12px;
+}
+
+.huoad-merchant-content [data-cards-table] th:nth-child(2),
+.huoad-merchant-content [data-cards-table] td:nth-child(2):not([colspan]),
+.huoad-merchant-content [data-cards-table] th:nth-child(3),
+.huoad-merchant-content [data-cards-table] td:nth-child(3):not([colspan]),
+.huoad-merchant-content [data-cards-table] th:nth-child(6),
+.huoad-merchant-content [data-cards-table] td:nth-child(6):not([colspan]),
+.huoad-merchant-content [data-tx-table] th:nth-child(1),
+.huoad-merchant-content [data-tx-table] td:nth-child(1):not([colspan]),
+.huoad-merchant-content [data-tx-table] th:nth-child(3),
+.huoad-merchant-content [data-tx-table] td:nth-child(3):not([colspan]),
+.huoad-merchant-content [data-tx-table] th:nth-child(7),
+.huoad-merchant-content [data-tx-table] td:nth-child(7):not([colspan]),
+.huoad-merchant-content .dtable:has([data-recent-tbody]) thead,
+.huoad-merchant-content .dtable:has([data-recent-tbody]) td:nth-child(2):not([colspan]),
+.huoad-merchant-content .dtable:has([data-recent-tbody]) td:nth-child(3):not([colspan]) {
+  display: none;
+}
+
+/* 时间列内联 nowrap 用 !important 解除，「07-15 11:26」拆两行省宽；
+   金额加粗自带的行内 nowrap 在子元素上，不受影响 */
+.huoad-merchant-content [data-tx-table] td:nth-child(4) {
+  white-space: normal !important;
+}
+
+/* 余额列的 site.css min-width:112px 在窄屏是主要撑宽源 */
+.huoad-merchant-content .merchant-surface .spendcell {
+  min-width: 0;
+}
+
+/* 卡面小图与状态胶囊各缩一档，省出的宽度还给名称列 */
+.huoad-merchant-content .merchant-surface .dtable .swatch {
+  width: 44px;
+  height: 28px;
+}
+
+.huoad-merchant-content .merchant-surface .dtable .pill {
+  gap: 4px;
+  padding: 4px 7px;
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+
+/* 留下的首列名称/副题按余宽截断，不再把表格撑出容器；
+   上限按「其余列实测宽 + 内边距」倒推 */
+.huoad-merchant-content [data-cards-table] .cl-name,
+.huoad-merchant-content [data-cards-table] .cl-pan {
+  display: block;
+  max-width: 25vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.huoad-merchant-content [data-tx-table] .cl-name,
+.huoad-merchant-content [data-tx-table] .cl-pan {
+  display: block;
+  max-width: 23vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.huoad-merchant-content .dtable:has([data-recent-tbody]) .cl-name,
+.huoad-merchant-content .dtable:has([data-recent-tbody]) .cl-pan {
+  display: block;
+  max-width: 30vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 概览「消费趋势」折线图移动端压矮一档：桌面为首行等高把 linechart
+   设成 flex:1 + min-height:200px（huoad-skin 第 14 节），移动端 grid-2
+   已是单列、无需等高拉伸，收掉 flex 增长并解开 min-height 才压得下来。
+   svg 是 preserveAspectRatio="none"，降高即整体纵向缩放 */
+.huoad-merchant-content .merchant-surface .grid-2 > .panel:first-child .linechart {
+  flex: none;
+  height: 130px;
+  min-height: 0;
+}
+
+.huoad-merchant-content .merchant-surface .chart-x {
+  margin-top: 10px;
+}
+
+/* 「支出分布」图例列表移动端整体缩一档（site.css 基准 12.5/10.5/12px），
+   名称、百分比胶囊、金额同比例收，行距一并收紧免得列表显松 */
+.huoad-merchant-content .merchant-surface .spend-item {
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.huoad-merchant-content .merchant-surface .spend-item-name b {
+  font-size: 11.5px;
+}
+
+.huoad-merchant-content .merchant-surface .spend-item-name span {
+  font-size: 9.5px;
+  padding: 1px 4px;
+}
+
+.huoad-merchant-content .merchant-surface .spend-item > strong {
+  font-size: 11px;
+}
+
+/* 概览「最近卡片」列表整体缩一档：名称/卡号副题/状态胶囊/卡面缩略图
+   同比例收，行高一并压紧。只圈这张表（:has([data-recent-tbody])），
+   「我的卡片」「交易记录」两张全量表维持原尺寸。
+   纵向内边距只写上下，避开上面按首末列设的左右内缩。 */
+.huoad-merchant-content .merchant-surface .dtable:has([data-recent-tbody]) td {
+  height: 44px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.huoad-merchant-content .merchant-surface .dtable:has([data-recent-tbody]) .cl-name {
+  font-size: 13px;
+}
+
+.huoad-merchant-content .merchant-surface .dtable:has([data-recent-tbody]) .cl-pan {
+  font-size: 11.5px;
+}
+
+.huoad-merchant-content .merchant-surface .dtable:has([data-recent-tbody]) .pill {
+  font-size: 11px;
+  padding: 3px 6px;
+}
+
+.huoad-merchant-content .merchant-surface .dtable:has([data-recent-tbody]) .swatch {
+  width: 40px;
+  height: 25px;
+}
+
+.huoad-merchant-content .merchant-surface .dtable:has([data-recent-tbody]) .swatch .swn {
+  font-size: 8px;
+}
+
+/* ── 窄屏（≤520px）：概览四张 KPI 卡两个一排、整体缩一档 ──
+   merchant.css 的 520px 断点把 .kpis 折成单列，四张卡竖排占了
+   一屏半；改回两列并收紧内边距/数值字号/角标，钱包卡的渐变
+   与 order:-1 不变，仍排第一位。 */
+@media (max-width: 520px) {
+  .huoad-merchant-content .merchant-surface .kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .huoad-merchant-content .merchant-surface .kpi {
+    min-height: 0;
+    padding: 13px 14px;
+    border-radius: 12px;
+  }
+
+  .huoad-merchant-content .merchant-surface .kpi .top {
+    font-size: 12px;
+  }
+
+  .huoad-merchant-content .merchant-surface .kpi .top .ic {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+  }
+
+  .huoad-merchant-content .merchant-surface .kpi .top .ic svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .huoad-merchant-content .merchant-surface .kpi .v {
+    margin: 10px 0 3px;
+    font-size: 21px;
+  }
+
+  .huoad-merchant-content .merchant-surface .kpi .delta {
+    font-size: 11px;
+  }
+}

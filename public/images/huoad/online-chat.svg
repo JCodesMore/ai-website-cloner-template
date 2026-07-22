@@ -1,0 +1,23 @@
+<svg width="64" height="64" viewBox="14 12 36 36" fill="white" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Animated Chat Icon</title>
+  <desc id="desc">A chat bubble icon with pulsing glow and bouncing message dots.</desc>
+
+  <!-- Chat bubble -->
+  <path d="M14 18C14 14.6863 16.6863 12 20 12H44C47.3137 12 50 14.6863 50 18V34C50 37.3137 47.3137 40 44 40H30.5L23.5 47.5C22.2395 48.8516 20 47.9596 20 46.125V40H20C16.6863 40 14 37.3137 14 34V18Z" fill="white"/>
+
+  <!-- Message dots -->
+  <g>
+    <circle cx="25" cy="26" r="2.6" fill="#2563EB" opacity="0.95">
+      <animate attributeName="cy" values="26;24.5;26" dur="0.9s" begin="0s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.55;1;0.55" dur="0.9s" begin="0s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="32" cy="26" r="2.6" fill="#2563EB" opacity="0.95">
+      <animate attributeName="cy" values="26;24.5;26" dur="0.9s" begin="0.15s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.55;1;0.55" dur="0.9s" begin="0.15s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="39" cy="26" r="2.6" fill="#2563EB" opacity="0.95">
+      <animate attributeName="cy" values="26;24.5;26" dur="0.9s" begin="0.3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.55;1;0.55" dur="0.9s" begin="0.3s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+</svg>

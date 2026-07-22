@@ -47,3 +47,7 @@ next-env.d.ts
 
 # Local temp files
 temp/
+.next-*/
+
+# Agent worktrees (separate git worktrees, not tracked in the main repo)
+.claude/worktrees/

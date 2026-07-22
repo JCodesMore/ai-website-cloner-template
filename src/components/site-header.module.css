@@ -1,0 +1,276 @@
+.wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  /* /merchant 页会同时加载 Faorbit 的 site.css（body 级字体），这里锁定 HUOAD 的 Geist */
+  font-family: Geist, "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
+}
+
+.inner {
+  width: 100%;
+  min-width: 1200px;
+  max-width: 1320px;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+/* ≤768px 隐藏桌面头部 — 移动壳接管（MobileHeader，同原站 UA 分流） */
+@media (max-width: 768px) {
+  .wrapper {
+    display: none;
+  }
+}
+
+/* ── Top bar ─────────────────────────────────────────── */
+
+.top {
+  height: 30px;
+  background: #000;
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.slogan {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.slogan img {
+  width: 17px;
+  height: 17px;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.right a {
+  color: #fff;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.right a:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.lang {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+/* ── Middle bar ──────────────────────────────────────── */
+
+.middle {
+  height: 68px;
+  background: #fff;
+  font-size: 14px;
+}
+
+.logo {
+  flex: 1;
+}
+
+.logo a {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #333;
+  text-decoration: none;
+}
+
+.logo img {
+  width: 40px;
+  height: 40px;
+}
+
+.logo strong {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #000;
+}
+
+.search {
+  flex: 3;
+  display: flex;
+  justify-content: center;
+}
+
+.searchWrap {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 672px;
+  height: 36px;
+  padding: 7px 11px;
+  background: #f9fafb;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.searchWrap input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  line-height: 1.4;
+  font-family: inherit;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.searchWrap input::placeholder {
+  color: rgb(106, 114, 130);
+}
+
+.user {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 20px;
+}
+
+.loginBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 15px;
+  background: #fa6b1f;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: normal;
+  font-family: inherit;
+  border: 1px solid transparent;
+  border-radius: 22px;
+  box-shadow: 0 2px 0 rgba(255, 130, 5, 0.08);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.loginBtn:hover {
+  background: #e55a0f;
+}
+
+.loginBtn:active {
+  background: #d44d0f;
+}
+
+/* ── Bottom nav ──────────────────────────────────────── */
+
+.bottom {
+  height: 45px;
+  background: #fff;
+  border-top: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  gap: 20px;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: #364153;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.navItem:hover {
+  color: #fa6b1f;
+}
+
+.navItem svg {
+  width: 16px;
+  height: 16px;
+}
+
+.navItem svg:last-child {
+  transition: transform 0.2s;
+}
+
+/* ── 虚拟信用卡 hover 下拉 ───────────────────────────── */
+
+.navDrop {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.navDrop:hover .navItem {
+  color: #fa6b1f;
+}
+
+.navDrop:hover .navItem svg:last-child {
+  transform: rotate(180deg);
+}
+
+.dropMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 20;
+  min-width: 160px;
+  padding: 8px 0;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow:
+    0 6px 16px 0 rgba(0, 0, 0, 0.08),
+    0 3px 6px -4px rgba(0, 0, 0, 0.12),
+    0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(4px);
+  transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+}
+
+.navDrop:hover .dropMenu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropMenu a {
+  display: block;
+  padding: 10px 20px;
+  font-size: 14px;
+  color: #364153;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.2s, background 0.2s;
+}
+
+.dropMenu a:hover {
+  color: #fa6b1f;
+  background: #fff7f0;
+}

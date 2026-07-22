@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -19,7 +23,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     }
   },
   "include": [
@@ -28,7 +34,25 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "**/*.mts"
+    "**/*.mts",
+    ".next-verify/types/**/*.ts",
+    ".next-verify/dev/types/**/*.ts",
+    ".next-verify2/types/**/*.ts",
+    ".next-verify2/dev/types/**/*.ts",
+    ".next-verify3/types/**/*.ts",
+    ".next-verify3/dev/types/**/*.ts",
+    ".next-open/types/**/*.ts",
+    ".next-open/dev/types/**/*.ts",
+    ".next-dev-b/types/**/*.ts",
+    ".next-dev-b/dev/types/**/*.ts",
+    ".next-dev-c/types/**/*.ts",
+    ".next-dev-c/dev/types/**/*.ts",
+    ".next-build-verify/types/**/*.ts",
+    ".next-build-verify/dev/types/**/*.ts",
+    ".next-dev-d/types/**/*.ts",
+    ".next-dev-d/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }

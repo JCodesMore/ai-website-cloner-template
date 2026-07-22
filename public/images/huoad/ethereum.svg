@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <g id="ether" transform="translate(-31 -137)">
+    <circle id="Ellipse_10" data-name="Ellipse 10" cx="128" cy="128" r="128" transform="translate(31 137)" fill="#5d7cff"/>
+    <g id="ethereum" transform="translate(96 163)">
+      <path id="Path_156" data-name="Path 156" d="M126.529,0l-1.368,4.65V139.583l1.368,1.366,62.634-37.024Z" transform="translate(-63.908)" fill="#fff" opacity="0.8"/>
+      <path id="Path_157" data-name="Path 157" d="M62.634,0,0,103.927l62.634,37.024Z" fill="#fff"/>
+      <path id="Path_158" data-name="Path 158" d="M127.151,273.591l-.761.939V322.6l.761,2.251,62.672-88.262Z" transform="translate(-64.517 -120.781)" fill="#fff" opacity="0.8"/>
+      <path id="Path_159" data-name="Path 159" d="M62.634,324.847V273.576L0,236.585Z" transform="translate(0 -120.782)" fill="#fff"/>
+      <path id="Path_160" data-name="Path 160" d="M127.961,219.651,190.6,182.627l-62.634-28.468Z" transform="translate(-65.327 -78.702)" fill="rgba(119,145,255,0.7)"/>
+      <path id="Path_161" data-name="Path 161" d="M0,182.621l62.634,37.024V154.161Z" transform="translate(0 -78.697)" fill="rgba(119,145,255,0.5)"/>
+    </g>
+  </g>
+</svg>

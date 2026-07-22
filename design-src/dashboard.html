@@ -1,0 +1,3126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Faorbit · 控制台</title>
+<link rel="icon" type="image/png" href="assets/faorbit-favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/site.css">
+<script src="js/preview-identity.js"></script>
+<script src="js/faorbit-store.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  /* 在「开新卡」视图隐藏右上角「开新卡」按钮（!important 以盖过 data-allow 的 inline display）。 */
+  .nc-hide{display:none !important}
+  /* ===== 开新卡 / 充值：分组分块 + 收紧 ===== */
+  [data-view-panel="topup"] .form-card,
+  [data-view-panel="newcard"] .nc-grid .form-card{
+    padding:0;
+    border:1px solid var(--line);
+    border-radius:16px;
+    overflow:hidden;
+  }
+  /* 充值表单收窄居中，盖掉 site.css 里偏宽的响应式上限 */
+  [data-view-panel="topup"] .form-card{max-width:600px;margin:0 auto}
+  @media(min-width:1440px){ [data-view-panel="topup"] .form-card{max-width:620px;padding:0} }
+  @media(min-width:1720px){ [data-view-panel="topup"] .form-card{max-width:640px;padding:0} }
+
+  /* 分组块 */
+  .nc-group{padding:18px 22px;border-bottom:1px solid var(--line)}
+  .nc-group:last-child{border-bottom:0}
+  .nc-group-title{display:flex;align-items:center;gap:8px;font-family:var(--ff-disp);font-weight:700;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);margin-bottom:13px}
+  .nc-group-title svg{width:14px;height:14px;color:var(--blue)}
+  .nc-group .field{margin-bottom:14px}
+  .nc-group .field:last-child{margin-bottom:0}
+  .nc-foot{background:var(--bg-2)}
+  .nc-foot .summary{margin:0 0 14px;background:#fff}
+
+  /* 收紧输入与按钮尺寸 */
+  [data-view-panel="topup"] .field input,
+  [data-view-panel="topup"] .field select,
+  [data-view-panel="newcard"] .nc-grid .field select{padding:10px 12px;font-size:14px}
+  [data-view-panel="topup"] .field .amt-in input,
+  [data-view-panel="newcard"] .nc-grid .field .amt-in input{font-size:18px;padding:10px 12px 10px 28px}
+  [data-view-panel="topup"] .field .amt-in span,
+  [data-view-panel="newcard"] .nc-grid .field .amt-in span{left:12px}
+  .nc-group .amt-quick{margin-top:10px}
+  .nc-group .amt-quick button{padding:8px;font-size:12.5px}
+  [data-view-panel="topup"] .pay-opt,
+  [data-view-panel="newcard"] .pay-opt{padding:12px 10px}
+  [data-view-panel="topup"] .stepper button{width:42px;height:42px}
+  /* 卡段 BIN：按可用宽度自适应，每个约一半大，每行个数随宽度变化 */
+  [data-view-panel="newcard"] .bin-pills{grid-template-columns:repeat(auto-fill, minmax(180px, 1fr))}
+  /* 顶栏「开新卡」按钮收紧高度，与搜索框/图标按钮协调 */
+  .dash-top .btn{padding:7px 16px;font-size:13.5px}
+
+  /* 开卡规则提示条：≤840px 规则卡掉到表单下方时才显示，点击平滑滚动过去 */
+  .nc-rules-note{display:none;width:100%;align-items:center;gap:11px;text-align:left;background:rgba(246,161,58,.08);border:1px solid rgba(246,161,58,.3);border-radius:14px;padding:11px 13px;margin-bottom:14px;cursor:pointer;font-family:var(--ff-body)}
+  .nc-rules-note .ic{flex:none;width:34px;height:34px;border-radius:10px;background:rgba(246,161,58,.15);display:grid;place-items:center}
+  .nc-rules-note .ic svg{width:18px;height:18px;color:#c07a14}
+  .nc-rules-note .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+  .nc-rules-note .tx b{font-family:var(--ff-disp);font-size:13.5px;font-weight:600;color:var(--ink)}
+  .nc-rules-note .tx small{font-size:12px;color:var(--ink-2);line-height:1.45}
+  .nc-rules-note .arr{flex:none}
+  .nc-rules-note .arr svg{width:16px;height:16px;color:var(--ink-3)}
+  @media(max-width:840px){ .nc-rules-note{display:flex} }
+  /* 滚动落点：给固定的移动端顶条留余量；到位后禁止块闪烁提示 */
+  [data-card-rules-panel]{scroll-margin-top:60px}
+  .rules-deny.flash{animation:rulesFlash 1.6s ease}
+  @keyframes rulesFlash{0%,40%{box-shadow:0 0 0 3px rgba(210,59,59,.25);background:rgba(210,59,59,.1)}100%{box-shadow:0 0 0 0 rgba(210,59,59,0)}}
+
+  /* 高危平台清单：规则卡标题下方琥珀提示条（黄三角 + 文字 + 箭头，同 nc-rules-note 视觉语言），点开弹平台清单；标题行上移 */
+  .rules-card .rh{flex-direction:column;align-items:stretch;gap:9px;padding:13px 22px 12px}
+  .rh-line{display:flex;align-items:center;gap:10px}
+  .hrp-flag{display:flex;align-items:center;gap:8px;width:100%;padding:8px 11px 8px 2px;background:rgba(246,161,58,.09);border:1px solid rgba(246,161,58,.3);border-radius:10px;cursor:pointer;font-family:var(--ff-body);font-size:12.5px;font-weight:600;color:#b5720f;text-align:left}
+  .hrp-flag:hover{background:rgba(246,161,58,.16)}
+  .hrp-flag svg{width:14px;height:14px;flex:none;color:inherit}
+  .rules-card .rh .hrp-flag svg{width:14px;height:14px;flex:none;color:inherit}
+  .hrp-flag .ar{margin-left:auto;opacity:.65}
+  /* 移动端：规则卡掉到表单下方，顶部提示条下再给一条禁用平台直达入口 */
+  .hrp-flag-m{display:none;padding:10px 13px;margin-bottom:14px}
+  @media(max-width:840px){ .hrp-flag-m{display:flex} }
+  .hrp-list{max-height:55vh;overflow:auto;border:1px solid var(--line);border-radius:12px}
+  .hrp-list .hr-row{display:flex;align-items:baseline;gap:14px;padding:8px 14px;border-bottom:1px solid var(--line)}
+  .hrp-list .hr-row:last-child{border-bottom:0}
+  .hrp-list .hr-row b{font-family:var(--ff-disp);font-size:13px;font-weight:600;color:var(--ink);flex:none}
+  .hrp-list .hr-row span{flex:1;text-align:right;font-size:12.5px;color:var(--ink-2);line-height:1.5}
+
+  /* 钱包卡：充值 / 提现主操作按钮加大、充值用主色突出 */
+  [data-view-panel="wallet"] .wcard .acts{gap:10px;margin-top:20px}
+  [data-view-panel="wallet"] .wcard .acts .btn{flex:1;justify-content:center;padding:11px 16px;font-size:14.5px;border-radius:11px}
+  [data-view-panel="wallet"] .wcard .acts .btn svg{width:16px;height:16px}
+  [data-view-panel="wallet"] .wcard .acts .btn-soft:hover{border-color:var(--blue);color:var(--blue)}
+</style>
+</head>
+<body>
+
+<div class="dash">
+  <span data-auth-state="__AUTH_STATE__" data-user-name="__USER_NAME__" data-user-email="__USER_EMAIL__" data-user-role="__USER_ROLE__" data-frozen-count="__FROZEN_COUNT__" data-must-change-password="__MUST_CHANGE_PASSWORD__" data-has-paypwd="__HAS_PAYPWD__" data-paypwd-grace-ms="__PAYPWD_GRACE_MS__" hidden></span>
+  <!-- SIDEBAR -->
+  <aside class="dash-side">
+    <a href="dashboard.html?view=dashboard" class="logo"><img src="assets/faorbit-logo.svg" class="mark" alt="Faorbit"><img src="assets/faorbit-wordmark.png" class="wordmark" alt="Faorbit"></a>
+    <nav class="dnav">
+      <span class="lbl">概览</span>
+      <a data-view="dashboard" class="on"><i data-lucide="layout-dashboard"></i>仪表盘</a>
+      <a data-view="cards"><i data-lucide="credit-card"></i>我的卡片</a>
+      <a data-view="newcard"><i data-lucide="plus-circle"></i>开新卡</a>
+      <a data-view="transactions"><i data-lucide="arrow-left-right"></i>交易记录</a>
+      <span class="lbl" data-allow="owner">资金</span>
+      <a data-view="wallet" data-allow="owner"><i data-lucide="wallet"></i>钱包</a>
+      <a data-view="topup" data-allow="owner"><i data-lucide="arrow-down-to-line"></i>充值</a>
+      <span class="lbl" data-allow="member">资金</span>
+      <a href="my-wallet.html" data-allow="member"><i data-lucide="wallet"></i>我的钱包</a>
+      <span class="lbl" data-allow="owner">团队</span>
+      <a href="team-permissions.html" data-allow="owner"><i data-lucide="users"></i>成员与权限</a>
+      <a data-view="approvals" data-allow="owner"><i data-lucide="check-square"></i>审批</a>
+      <span class="lbl">开发者</span>
+      <a data-view="apikeys"><i data-lucide="terminal"></i>API 密钥</a>
+      <a data-view="settings"><i data-lucide="settings"></i>设置</a>
+    </nav>
+    <div class="role-switch" data-identity-switcher></div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="dash-main">
+    <div class="dash-top">
+      <div>
+        <div class="topttl" style="font-family:var(--ff-disp);font-weight:700;font-size:18px">仪表盘</div>
+        <div class="topsub" style="color:var(--ink-3);font-size:13px" data-greeting>早上好</div>
+      </div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:12px">
+        <div data-search-wrap style="position:relative">
+          <div class="dash-search"><i data-lucide="search"></i><input type="search" name="site-search" placeholder="搜索卡片、交易…" aria-label="搜索卡片、交易" data-search-input autocomplete="off" data-lpignore="true" data-1p-ignore data-form-type="other"></div>
+          <div data-search-panel style="display:none;position:absolute;top:100%;right:0;left:0;margin-top:6px;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 32px -8px rgba(12,22,64,.18);z-index:60;overflow:hidden;max-height:60vh;overflow-y:auto"></div>
+        </div>
+        <button class="icon-btn" data-notification-bell><i data-lucide="bell"></i></button>
+        <a data-view="newcard" data-cta-newcard class="btn btn-primary" style="cursor:pointer" data-allow="owner"><i data-lucide="plus"></i>开新卡</a>
+        <a href="my-wallet.html" class="btn btn-primary" style="cursor:pointer" data-allow="member"><i data-lucide="hand-coins"></i>申请资金</a>
+      </div>
+    </div>
+
+    <div class="dash-body">
+
+      <div data-password-change-banner style="display:none;align-items:center;gap:14px;padding:14px 18px;margin:0 0 16px;background:rgba(246,161,58,.08);border:1px solid rgba(246,161,58,.28);border-radius:12px">
+        <i data-lucide="key-round" style="width:22px;height:22px;color:#c2700f;flex:none"></i>
+        <div style="flex:1;min-width:0">
+          <div style="font-family:var(--ff-disp);font-weight:600;font-size:14px;color:var(--ink)">你正在使用初始密码</div>
+          <div style="color:var(--ink-2);font-size:12.5px;margin-top:2px">为了账号安全，请尽快修改为只有你本人知道的登录密码。</div>
+        </div>
+        <button class="btn btn-primary btn-sm" type="button" data-password-change-now style="flex:none"><i data-lucide="key"></i>立即修改</button>
+      </div>
+
+      <!-- 商户被平台冻结：横幅 + 申请解冻（仅冻结态由 page.tsx 注入显示） -->
+      <div data-tenant-frozen-banner style="display:none;align-items:center;gap:14px;padding:14px 18px;margin:0 0 16px;background:rgba(210,68,68,.07);border:1px solid rgba(210,68,68,.28);border-radius:12px">
+        <i data-lucide="alert-octagon" style="width:22px;height:22px;color:#d23b3b;flex:none"></i>
+        <div style="flex:1;min-width:0">
+          <div style="font-family:var(--ff-disp);font-weight:600;font-size:14px;color:var(--ink)">你的商户账号已被平台冻结</div>
+          <div style="color:var(--ink-2);font-size:12.5px;margin-top:2px">开卡、充值、提现、销卡、资金分配等经营功能已暂停。如需恢复，请向平台申请解冻。</div>
+        </div>
+        <button class="btn btn-primary btn-sm" data-tenant-unfreeze-btn style="flex:none"><i data-lucide="send"></i>申请解冻</button>
+      </div>
+
+      <!-- ===== VIEW: DASHBOARD ===== -->
+      <section class="view on" data-view-panel="dashboard">
+        <!-- Owner KPIs -->
+        <div class="kpis" data-allow="owner">
+          <div class="kpi"><div class="top">本月消费<span class="ic"><i data-lucide="trending-up"></i></span></div><div class="v" data-kpi-monthspend>$0.00</div><div class="delta" style="color:var(--ink-3)">本月已结算</div></div>
+          <div class="kpi"><div class="top">总卡数<span class="ic"><i data-lucide="credit-card"></i></span></div><div class="v" data-kpi-total>0</div><div class="delta" style="color:var(--ink-3)" data-kpi-total-sub>—</div></div>
+          <div class="kpi"><div class="top">过卡成功率<span class="ic"><i data-lucide="shield-check"></i></span></div><div class="v" data-kpi-passrate>—</div><div class="delta" style="color:var(--ink-3)">授权成功占比</div></div>
+          <div class="kpi"><div class="top">钱包余额<span class="ic"><i data-lucide="wallet"></i></span></div><div class="v" data-kpi-wallet>$0.00</div><div class="delta" style="color:var(--ink-3)">法定货币不可充值余额</div></div>
+        </div>
+        <!-- Member KPIs (陈墨) -->
+        <div class="kpis" data-allow="member">
+          <div class="kpi"><div class="top">我的可用余额<span class="ic"><i data-lucide="wallet"></i></span></div><div class="v" data-mkpi-avail>$0.00</div><div class="delta" style="color:var(--ink-3)">可用于开卡、充卡和广告扣款</div></div>
+          <div class="kpi"><div class="top">我的卡片余额<span class="ic"><i data-lucide="credit-card"></i></span></div><div class="v" data-mkpi-cards>$0.00</div><div class="delta" style="color:var(--ink-3)" data-mkpi-cards-sub>已充到卡片的额度</div></div>
+          <div class="kpi"><div class="top">本月消费<span class="ic"><i data-lucide="trending-up"></i></span></div><div class="v" data-mkpi-spend>$0.00</div><div class="delta" style="color:var(--ink-3)">仅显示你的交易</div></div>
+          <div class="kpi"><div class="top">待处理退款<span class="ic"><i data-lucide="rotate-ccw"></i></span></div><div class="v" data-mkpi-refund>$0.00</div><div class="delta" style="color:var(--ink-3)">退款入账中</div></div>
+        </div>
+        <div class="grid-2" data-allow="owner">
+          <div class="panel">
+            <div class="ph"><div style="font-family:var(--ff-disp);font-weight:600;font-size:15px">消费趋势</div>
+              <div class="lang-tabs" data-toggle="range" style="margin:0">
+                <button class="on" data-target="d7" style="border-radius:8px;border-bottom:1px solid var(--line)">近 7 天</button>
+                <button data-target="d30" style="border-radius:8px;border-bottom:1px solid var(--line)">近 30 天</button>
+              </div>
+            </div>
+            <div class="pb">
+              <svg class="linechart" data-trend data-series="" viewBox="0 0 640 220" preserveAspectRatio="none">
+                <defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f6dff" stop-opacity=".25"/><stop offset="1" stop-color="#1f6dff" stop-opacity="0"/></linearGradient></defs>
+                <line x1="0" y1="50" x2="640" y2="50" class="grid"/><line x1="0" y1="110" x2="640" y2="110" class="grid"/><line x1="0" y1="170" x2="640" y2="170" class="grid"/>
+                <path data-area d="M0,175 L640,175 L640,220 L0,220 Z" fill="url(#cg)"/>
+                <path data-line d="M0,175 L640,175" fill="none" stroke="#1f6dff" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+                <circle data-dot cx="640" cy="175" r="4.5" fill="#1f6dff" stroke="#fff" stroke-width="2"/>
+              </svg>
+              <div class="chart-x" data-trend-x><span>周一</span><span>周二</span><span>周三</span><span>周四</span><span>周五</span><span>周六</span><span>周日</span></div>
+            </div>
+          </div>
+          <div class="panel spend-panel">
+            <div class="ph"><div><div style="font-family:var(--ff-disp);font-weight:600;font-size:15px">支出分布</div><div style="color:var(--ink-3);font-size:11.5px;margin-top:2px">本月已结算 · 按交易平台</div></div></div>
+            <div class="pb"><!--SPEND_START-->
+              <div class="spend-layout">
+                <div class="spend-donut">
+                  <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="45" pathLength="100" fill="none" stroke="var(--bg-2)" stroke-width="12"></circle></svg>
+                  <div class="spend-total"><span>本月支出</span><b title="$0.00">$0.00</b></div>
+                </div>
+                <div class="spend-list"><div style="padding:24px 8px;text-align:center;color:var(--ink-3);font-size:13px">暂无已结算交易</div></div>
+              </div>
+              <div class="spend-note"><span>按本月已结算交易统计</span><button type="button" data-view="transactions">查看明细 <i data-lucide="arrow-right"></i></button></div>
+            <!--SPEND_END--></div>
+          </div>
+        </div>
+        <div class="panel" data-allow="owner">
+          <div class="ph"><div style="font-family:var(--ff-disp);font-weight:600;font-size:15px">最近卡片</div><a data-view="cards" style="font-size:13.5px;color:var(--blue);font-weight:600;cursor:pointer">查看全部 →</a></div>
+          <div style="overflow-x:auto">
+          <table class="dtable">
+            <thead><tr><th>卡片</th><th>卡号</th><th>本月消费</th><th>状态</th><th></th></tr></thead>
+            <tbody data-recent-tbody>
+              <tr><td colspan="5" style="text-align:center;color:var(--ink-3);padding:32px">暂无卡片</td></tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+
+        <!-- Member dashboard panel -->
+        <div class="panel" data-allow="member">
+          <div class="ph"><div style="font-family:var(--ff-disp);font-weight:600;font-size:15px">我的最近交易</div><a href="my-wallet.html" style="font-size:13.5px;color:var(--blue);font-weight:600">查看资金流水 →</a></div>
+          <div style="overflow-x:auto">
+          <table class="dtable">
+            <thead><tr><th>时间</th><th>类型</th><th>金额</th><th>关联对象</th><th>状态</th></tr></thead>
+            <tbody data-mtx-tbody>
+              <tr><td colspan="5" style="text-align:center;color:var(--ink-3);padding:32px">暂无资金流水</td></tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== VIEW: CARDS ===== -->
+      <section class="view" data-view-panel="cards">
+        <div class="fchips" data-cards-chips>
+          <button class="fchip on" data-fchip="all">全部 <span class="fchip-n" data-fc="all">0</span></button>
+          <button class="fchip" data-fchip="ok">活跃 <span class="fchip-n" data-fc="ok">0</span></button>
+          <button class="fchip" data-fchip="enabled">已启用 <span class="fchip-n" data-fc="enabled">0</span></button>
+          <button class="fchip" data-fchip="frozen">已冻结 <span class="fchip-n" data-fc="frozen">0</span></button>
+          <button class="fchip" data-fchip="closed">已注销 <span class="fchip-n" data-fc="closed">0</span></button>
+        </div>
+        <div class="panel">
+          <div style="overflow-x:auto">
+          <table class="dtable" data-cards-table>
+            <thead><tr><th>卡片</th><th class="col-owner">归属成员</th><th>卡号</th><th>余额</th><th>状态</th><th></th></tr></thead>
+            <tbody data-cards-tbody>
+              <tr><td colspan="6" style="text-align:center;color:var(--ink-3);padding:32px">暂无卡片</td></tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== VIEW: TRANSACTIONS ===== -->
+      <section class="view" data-view-panel="transactions">
+        <div class="view-head" style="justify-content:flex-end">
+          <div class="va"><button class="btn btn-soft btn-sm" data-tx-export><i data-lucide="download"></i>导出 CSV</button></div>
+        </div>
+        <div class="fchips" data-tx-chips>
+          <button class="fchip on" data-fchip="all">全部</button>
+          <button class="fchip" data-fchip="authorized">已授权</button>
+          <button class="fchip" data-fchip="captured">已结算</button>
+          <button class="fchip" data-fchip="declined">被拒付</button>
+          <button class="fchip" data-fchip="refunded">退款</button>
+        </div>
+        <div class="panel">
+          <div style="overflow-x:auto">
+          <table class="dtable" data-tx-table>
+            <thead><tr><th class="col-txn-member" data-allow="owner">交易成员</th><th>交易信息</th><th>卡片</th><th>时间</th><th>金额</th><th>状态</th><th>失败原因</th></tr></thead>
+            <tbody data-tx-tbody>
+              <tr><td colspan="7" style="text-align:center;color:var(--ink-3);padding:32px">暂无交易记录</td></tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== VIEW: WALLET ===== -->
+      <section class="view" data-view-panel="wallet" data-allow="owner">
+        <div class="wallet-grid">
+          <div class="wcard"><div class="cur"><span class="flag">🇺🇸</span>美元 USD</div><div class="bal" data-wallet-usd>$0.00</div><div class="sub">可用余额</div><div class="acts"><a data-view="topup" class="btn btn-primary" style="cursor:pointer"><i data-lucide="arrow-down-to-line"></i>充值</a><button class="btn btn-soft" data-withdraw-btn><i data-lucide="arrow-up-to-line"></i>提现</button></div></div>
+        </div>
+        <div class="panel">
+          <div class="ph"><div style="font-family:var(--ff-disp);font-weight:600;font-size:15px">充值与提现记录</div><button class="btn btn-soft btn-sm" data-ledger-export><i data-lucide="download"></i>导出全部资金流水</button></div>
+          <div style="overflow-x:auto">
+          <table class="dtable">
+            <thead><tr><th>类型</th><th>方式</th><th>时间</th><th>金额</th><th>状态</th></tr></thead>
+            <tbody data-wrec-tbody><!--WREC_START--><tr><td colspan="5" style="text-align:center;color:var(--ink-3);padding:32px">暂无充值或提现记录</td></tr><!--WREC_END--></tbody>
+          </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== VIEW: TOPUP ===== -->
+      <section class="view" data-view-panel="topup" data-allow="owner" data-topup-fee-rate="__TOPUP_FEE_RATE__">
+        <div class="form-card">
+          <div class="nc-group">
+            <div class="nc-group-title"><i data-lucide="wallet"></i>充值信息</div>
+            <div class="field">
+              <label>充值币种</label>
+              <div style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--line-2);border-radius:10px;font-size:14px;background:var(--bg-2)"><span class="flag">🇺🇸</span>美元 USD</div>
+            </div>
+            <div class="field">
+              <label>充值金额</label>
+              <div class="amt-in"><span>$</span><input id="topup-amt" value="" placeholder="0.00" inputmode="decimal"></div>
+              <div class="amt-quick"><button data-amt="1,000">$1,000</button><button data-amt="5,000">$5,000</button><button data-amt="10,000">$10,000</button><button data-amt="50,000">$50,000</button></div>
+            </div>
+          </div>
+          <div class="nc-group">
+            <div class="nc-group-title"><i data-lucide="credit-card"></i>支付方式</div>
+            <div class="field">
+              <div class="pay-opts" data-pay>
+                <div class="pay-opt on"><i data-lucide="bitcoin"></i><div class="pn">USDT</div><div class="pd">TRC20 · 即时</div></div>
+                <div class="pay-opt"><i data-lucide="banknote"></i><div class="pn">电汇</div><div class="pd">Wire · 1-2 天</div></div>
+                <div class="pay-opt"><i data-lucide="building-2"></i><div class="pn">对公转账</div><div class="pd">国内 · 1 天</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="nc-group nc-foot">
+            <div class="summary">
+              <div class="sr"><span>充值金额</span><b>$0.00</b></div>
+              <div class="sr"><span>手续费 (<span data-topup-fee-label>—</span>)</span><b>$0.00</b></div>
+              <div class="sr total"><span>实际到账</span><b>$0.00</b></div>
+            </div>
+            <button class="btn btn-primary" data-topup-submit style="width:100%;justify-content:center"><i data-lucide="check"></i>确认充值</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== VIEW: NEW CARD ===== -->
+      <section class="view" data-view-panel="newcard" data-card-fee-cents="__CARD_FEE_CENTS__">
+        <button type="button" class="nc-rules-note" data-nc-rules-note>
+          <span class="ic"><i data-lucide="shield-alert"></i></span>
+          <span class="tx"><b>开卡前请先阅读卡片使用规则</b><small>点击查看禁止的交易类型，违规将冻结卡片</small></span>
+          <span class="arr"><i data-lucide="chevron-down"></i></span>
+        </button>
+        <button type="button" class="hrp-flag hrp-flag-m" data-hrp-open><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M13.6 3.6a1.85 1.85 0 0 0-3.2 0L1.7 18.6a1.85 1.85 0 0 0 1.6 2.8h17.4a1.85 1.85 0 0 0 1.6-2.8L13.6 3.6z" fill="#f6b31b"/><path d="M12 9.2v4.4" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="#fff"/></svg>点击查看禁止消费的平台<svg class="ar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+        <div class="nc-grid">
+        <div class="form-card" style="max-width:none">
+          <div class="nc-group">
+            <div class="nc-group-title"><i data-lucide="layers"></i>卡段 BIN</div>
+            <div class="field">
+              <div class="bin-pills" data-bin-opts><!--BINS_START-->
+                <div style="padding:18px 8px;text-align:center;color:var(--ink-3);font-size:13px;grid-column:1/-1">暂无可用卡头</div>
+              <!--BINS_END--></div>
+            </div>
+          </div>
+          <!--NC_CONFIG_START--><div class="nc-group">
+            <div class="nc-group-title"><i data-lucide="sliders-horizontal"></i>卡片配置</div>
+            <div class="field">
+              <label>用途</label>
+              <select data-nc-purpose><option>广告投放</option><option>SaaS 订阅</option><option>跨境电商采购</option><option>差旅与日常</option><option>其他</option></select>
+            </div>
+            <div class="field">
+              <label>备注（选填）</label>
+              <input data-nc-remark type="text" maxlength="200" placeholder="便于识别，如 Meta 广告 07；本批卡片共用" autocomplete="off">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+              <div class="field">
+                <label>开卡数量</label>
+                <div class="stepper" data-nc-stepper>
+                  <button data-step="-1" type="button"><i data-lucide="minus"></i></button>
+                  <input data-nc-qty value="1" inputmode="numeric">
+                  <button data-step="1" type="button"><i data-lucide="plus"></i></button>
+                </div>
+              </div>
+              <div class="field">
+                <label>单卡预充金额</label>
+                <div class="amt-in"><span>$</span><input data-nc-amt value="" placeholder="0.00" inputmode="decimal"></div>
+              </div>
+            </div>
+            <div class="field">
+              <div class="amt-quick">
+                <button data-nc-quick="500">$500</button><button data-nc-quick="1,000">$1,000</button><button data-nc-quick="2,000">$2,000</button><button data-nc-quick="5,000">$5,000</button>
+              </div>
+            </div>
+          </div>
+          <div class="nc-group nc-foot">
+            <div class="summary">
+              <div class="sr"><span>开卡费 (<span data-nc-qtylabel>1</span> 张 × <span data-nc-fee-unit>$0.00</span>)</span><b data-nc-fee>$0.00</b></div>
+              <div class="sr"><span>预充总额 (<span data-nc-qtylabel2>1</span> 张 × <span data-nc-amtlabel>$0</span>)</span><b data-nc-preload>$0.00</b></div>
+              <div class="sr total"><span>从钱包扣除合计</span><b data-nc-total>$0.00</b></div>
+            </div>
+            <div class="nc-warn" data-nc-warn style="display:none"><i data-lucide="alert-triangle"></i>钱包余额不足，请先充值</div>
+            <button class="btn btn-primary" style="width:100%;justify-content:center" data-nc-submit><i data-lucide="zap"></i>确认开卡</button>
+          </div><!--NC_CONFIG_END-->
+        </div>
+
+        <!--NC_RULES_START--><aside class="rules-card" data-card-rules-panel>
+          <div class="rh"><div class="rh-line"><i data-lucide="scroll-text"></i><span class="rt">卡片使用规则</span><span class="rb" data-rules-bin>—</span></div><button type="button" class="hrp-flag" data-hrp-open><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M13.6 3.6a1.85 1.85 0 0 0-3.2 0L1.7 18.6a1.85 1.85 0 0 0 1.6 2.8h17.4a1.85 1.85 0 0 0 1.6-2.8L13.6 3.6z" fill="#f6b31b"/><path d="M12 9.2v4.4" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="#fff"/></svg>点击查看禁止消费的平台<svg class="ar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button></div>
+          <div class="rules-body">
+            <div hidden data-card-rules-data>__CARD_RULES_JSON__</div>
+            <div class="rules-sec">可用于以下场景</div>
+            <ul class="rules-list" data-rules-allowed>
+              <li><span class="ri">1</span><div><b>网络营销推广</b>：如 Facebook、Google、TikTok、Twitter 等</div></li>
+              <li><span class="ri">2</span><div><b>电商平台费用</b>：如 Amazon、Etsy、eBay、Aliexpress 等</div></li>
+              <li><span class="ri">3</span><div><b>开发者账号支付</b>：如 Google、Apple、OpenAI、LinkedIn 等</div></li>
+              <li><span class="ri">4</span><div><b>软件服务费用</b>：如云服务器、域名、软件授权、在线课程等</div></li>
+              <li><span class="ri">5</span><div><b>商旅出行</b>：如预订国际机票、酒店、租车等商旅服务</div></li>
+              <li><span class="ri">6</span><div><b>外贸与跨境服务</b>：如支付货款、运费等相关费用</div></li>
+            </ul>
+            <div class="rules-deny">
+              <div class="dh"><i data-lucide="shield-alert"></i>禁止以下违规交易</div>
+              <ul data-rules-prohibited>
+                <li>进行政务、法律、信贷机构等敏感行业交易</li>
+                <li>实施套利、薅羊毛行为，如阿里云、各类视频网站、游戏平台等试用活动</li>
+                <li>虚假注册、批量绑定及小额多次验证交易（如 $0、$0.01、$1 等）</li>
+                <li>在虚拟货币、博彩、毒品、色情、交友等违法或敏感平台交易</li>
+              </ul>
+              <div data-rules-freeze style="font-size:12px;color:#d23b3b;margin-top:9px;line-height:1.55">一经发现将冻结卡片，且卡内余额及账户余额均无法退回。</div>
+            </div>
+            <div class="rules-fee"><i data-lucide="info"></i><div data-rules-fee-copy>通过 <b>Google Pay</b> 完成的交易将按交易金额的 <b>0.4%</b> 收取手续费，该费用将直接从卡片余额中自动扣除。</div></div>
+          </div>
+        </aside><!--NC_RULES_END-->
+        </div>
+      </section>
+
+      <!-- ===== VIEW: MEMBERS ===== -->
+      <section class="view" data-view-panel="members" data-allow="owner">
+        <div class="view-head" style="justify-content:flex-end">
+          <div class="va"><button class="btn btn-primary btn-sm"><i data-lucide="user-plus"></i>邀请成员</button></div>
+        </div>
+        <div class="panel">
+          <div style="overflow-x:auto">
+          <table class="dtable">
+            <thead><tr><th>成员</th><th>角色</th><th>可管理卡片</th><th>最近活跃</th><th></th></tr></thead>
+            <tbody>
+              <tr><td colspan="5" style="text-align:center;color:var(--ink-3);padding:32px">成员管理请前往「<a href="team-permissions.html" style="color:var(--blue);font-weight:600">成员与权限</a>」</td></tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== VIEW: APPROVALS ===== -->
+      <section class="view" data-view-panel="approvals" data-allow="owner">
+
+        <div class="panel">
+          <div class="ph">
+            <div style="font-family:var(--ff-disp);font-weight:600;font-size:15px;display:flex;align-items:center;gap:10px">资金申请<span class="pill warn" data-fr-count style="display:none"></span></div>
+            <span style="color:var(--ink-3);font-size:13px">批准后从团队钱包转入成员钱包</span>
+          </div>
+          <div class="appr-list" data-fr-list><!--FR_START-->
+            <div class="merchant-empty merchant-empty--cleared"><strong>暂无待处理申请</strong><p>成员提交的新资金申请会出现在这里。</p></div>
+          <!--FR_END--></div>
+        </div>
+
+        <div class="panel" data-fr-history-wrap style="display:none">
+          <div class="ph">
+            <div style="font-family:var(--ff-disp);font-weight:600;font-size:15px">已处理资金申请</div>
+            <span style="color:var(--ink-3);font-size:13px" data-fr-history-count></span>
+          </div>
+          <div style="overflow-x:auto">
+          <table class="dtable">
+            <thead><tr><th>申请人</th><th>金额</th><th>用途</th><th>状态</th><th>处理人</th><th>处理时间</th></tr></thead>
+            <tbody data-fr-history></tbody>
+          </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== VIEW: API KEYS ===== -->
+      <section class="view" data-view-panel="apikeys">
+        <div class="view-head" style="justify-content:flex-end">
+          <div class="va"><button class="btn btn-primary btn-sm" data-create-key><i data-lucide="plus"></i>创建密钥</button></div>
+        </div>
+        <div class="panel"><!--KEYS_START-->
+          <div style="padding:32px;text-align:center;color:var(--ink-3);font-size:13px">暂无 API 密钥</div>
+        <!--KEYS_END--></div>
+        <div class="panel wh-panel">
+          <div class="ph"><div style="font-family:var(--ff-disp);font-weight:600;font-size:15px">Webhook 端点</div><button class="btn btn-soft btn-sm" data-wh-add><i data-lucide="plus"></i>添加端点</button></div>
+          <div data-wh-list>
+            <div style="padding:32px;text-align:center;color:var(--ink-3);font-size:13px">暂无 Webhook 端点</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== VIEW: SETTINGS ===== -->
+      <section class="view" data-view-panel="settings">
+        <div class="set-grid">
+          <div class="set-nav" data-set-nav>
+            <!-- shared -->
+            <a data-set-tab="security"  data-allow="all"><i data-lucide="shield"></i>安全</a>
+            <a data-set-tab="paypwd"    data-allow="all"><i data-lucide="key-round"></i>支付密码</a>
+            <a data-set-tab="notify"    data-allow="all"><i data-lucide="bell"></i>通知</a>
+            <a data-set-tab="plan"      data-allow="owner"><i data-lucide="crown"></i>套餐</a>
+          </div>
+          <div class="set-body" data-set-body>
+
+
+
+            <!-- ===== MEMBER RULES removed ===== -->
+
+            <!-- ===== APPROVAL RULES removed ===== -->
+
+
+
+            <!-- ===== SECURITY (both) ===== -->
+            <div class="set-pane" data-set-pane="security" data-allow="all">
+              <div class="set-row"><div><div class="sl">两步验证 (2FA)</div><div class="sd">登录时需要 Authenticator 验证码</div></div><div class="switch on" data-switch data-bind="security.twofa"></div></div>
+              <div class="set-row"><div><div class="sl">修改登录密码</div><div class="sd">建议每 90 天更新一次</div></div><button class="btn btn-soft btn-sm" type="button" data-change-pwd><i data-lucide="key"></i>修改</button></div>
+            </div>
+
+            <!-- ===== PAY PASSWORD (both) ===== -->
+            <div class="set-pane" data-set-pane="paypwd" data-allow="all">
+              <div class="readonly-card big"><i data-lucide="shield-check" class="lk"></i><div><div class="nm" data-paypwd-state>未设置支付密码</div><div class="em" data-paypwd-sub>设置后，开卡 / 充值 / 提现需验证支付密码</div></div><button class="btn btn-soft btn-sm" type="button" data-set-paypwd>设置</button></div>
+              <ul class="set-tips">
+                <li>支付密码与登录密码独立保存</li>
+                <li>开卡 / 充值 / 提现等资金操作需输入支付密码</li>
+                <li>校验一次后 5 分钟内的资金操作免重复输入</li>
+                <li>设置或修改时需先验证登录密码</li>
+              </ul>
+            </div>
+
+            <!-- ===== NOTIFY (both, role-filtered rows) ===== -->
+            <div class="set-pane" data-set-pane="notify" data-allow="all">
+              <div class="set-hd"><h3>通知偏好</h3><p>仅配置接收偏好。系统消息列表请查看右上角铃铛。</p></div>
+              <div class="set-row" data-allow="owner"><div><div class="sl">待审批提醒</div><div class="sd">有新的资金申请等待审批</div></div><div class="switch on" data-switch data-bind="notify.pendingApprovals"></div></div>
+              <div class="set-row"><div><div class="sl">审批结果通知</div><div class="sd"><span data-allow="owner">通知申请人</span><span data-allow="member">你的资金申请被批准或拒绝</span></div></div><div class="switch on" data-switch data-bind="notify.approvalResult"></div></div>
+              <div class="set-row"><div><div class="sl">余额偏低提醒</div><div class="sd"><span data-allow="owner">团队钱包余额低于阈值</span><span data-allow="member">你的钱包余额低于阈值</span></div></div><div class="switch on" data-switch data-bind="notify.lowBalance"></div></div>
+              <div class="set-row"><div><div class="sl">卡片扣款<span data-allow="owner">失败</span><span data-allow="member">成功 / 失败</span>提醒</div><div class="sd">扣款交易状态变化</div></div><div class="switch on" data-switch data-bind="notify.cardCharge"></div></div>
+              <div class="set-row" data-allow="member"><div><div class="sl">退款到账</div><div class="sd">失败扣款退回成功时通知</div></div><div class="switch on" data-switch data-bind="notify.refund"></div></div>
+              <div class="set-sub">通知方式</div>
+              <div class="set-row"><div><div class="sl">站内消息</div><div class="sd">显示在右上角铃铛</div></div><div class="switch on" data-switch data-bind="notify.channelInApp"></div></div>
+              <div class="set-foot"><button class="btn btn-primary" data-set-save="notify"><i data-lucide="check"></i>保存通知偏好</button></div>
+            </div>
+
+            <!-- ===== PLAN (owner only) ===== -->
+            <div class="set-pane" data-set-pane="plan" data-allow="owner">
+              <div class="set-hd"><h3>套餐与费率</h3><p>当前套餐决定开卡费和充值手续费。升级 / 续费从团队钱包扣款，立即生效。</p></div>
+              <div data-plan-body style="display:grid;gap:14px">
+                <div style="padding:24px;text-align:center;color:var(--ink-3);font-size:13px">加载中…</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- CARD DETAIL DRAWER -->
+<div class="drawer-overlay" data-drawer-overlay></div>
+<aside class="drawer" data-drawer>
+  <div class="dw-head">
+    <div class="ti" data-dw-name>卡片详情<small data-dw-sub>VISA · 虚拟卡</small></div>
+    <button class="icon-btn" data-drawer-close><i data-lucide="x"></i></button>
+  </div>
+  <div class="dw-body">
+    <div class="dcard" data-dw-card>
+      <div class="dc-top"><span class="dc-lbl" data-dw-lbl>—</span><span class="dc-chip"></span></div>
+      <div class="dc-pan" data-dw-pan>•••• •••• •••• ••••</div>
+      <div class="dc-bot"><span class="dc-scm" data-dw-scm><img src="https://cdn.jsdelivr.net/gh/aaronfagan/svg-credit-card-payment-icons@main/logo/visa.svg" class="visa" alt="Visa"></span></div>
+    </div>
+
+    <div data-dw-frozen-note style="display:none;gap:9px;align-items:flex-start;padding:12px 14px;margin-bottom:12px;background:rgba(246,130,31,.08);border:1px solid rgba(246,130,31,.28);border-radius:11px;color:var(--ink-2);font-size:12.5px;line-height:1.55">
+      <i data-lucide="shield-alert" style="width:16px;height:16px;color:#c2700f;flex:none;margin-top:1px"></i>
+      <span>此卡由平台冻结，你无法自行解冻。如需恢复，请点「申请解冻」提交原因，由平台审核处理。</span>
+    </div>
+    <div class="dw-acts">
+      <div class="dw-act" data-card-action="topup"><i data-lucide="plus-circle"></i>充值</div>
+      <div class="dw-act" data-card-action="withdraw"><i data-lucide="minus-circle"></i>提现</div>
+      <div class="dw-act" data-dw-freeze data-card-action="freeze"><i data-lucide="snowflake"></i>冻结</div>
+      <div class="dw-act danger" data-card-action="close"><i data-lucide="trash-2"></i>销卡</div>
+    </div>
+
+    <div class="dw-panel">
+      <div class="pt">卡片信息</div>
+      <div class="dw-info"><span class="k">卡号</span><span class="vv" data-dw-full>•••• •••• •••• •••• <span class="cp" data-reveal title="验证后查看"><i data-lucide="eye"></i></span></span></div>
+      <div class="dw-info"><span class="k">有效期</span><span class="vv" data-dw-exp>—</span></div>
+      <div class="dw-info"><span class="k">CVV</span><span class="vv" data-dw-cvvrow><span data-dw-cvv>•••</span></span></div>
+      <div class="dw-info"><span class="k">状态</span><span class="vv" data-dw-status>—</span></div>
+      <div class="dw-info"><span class="k">开卡时间</span><span class="vv" data-dw-created>—</span></div>
+      <div class="dw-info col-owner"><span class="k">归属成员</span><span class="vv" data-dw-owner>—</span></div>
+    </div>
+
+    <div class="dw-panel">
+      <div class="dw-prog">
+        <div class="pr"><span style="color:var(--ink-2)">本月消费 / 月度限额</span><b data-dw-spend>$0.00 / $0.00</b></div>
+        <div class="tk"><i data-dw-bar style="width:0%"></i></div>
+      </div>
+    </div>
+
+    <div class="dw-panel">
+      <div class="pt">最近交易</div>
+      <div data-dw-txlist></div>
+    </div>
+  </div>
+</aside>
+
+<!-- WITHDRAW MODAL -->
+<div class="wd-overlay" data-wd-overlay>
+  <div class="wd-modal">
+    <div class="wd-head">
+      <div>
+        <h3>卡片余额转回钱包</h3>
+        <p data-wd-card-name>—</p>
+      </div>
+      <button class="icon-btn" data-wd-close><i data-lucide="x"></i></button>
+    </div>
+    <div class="wd-stats">
+      <div class="wd-stat"><div class="lb">当前卡片余额</div><div class="vv" data-wd-card-balance>$0.00</div></div>
+      <div class="wd-arrow"><i data-lucide="arrow-right"></i></div>
+      <div class="wd-stat"><div class="lb">钱包可用余额</div><div class="vv" data-wd-wallet-balance>$0.00</div></div>
+    </div>
+    <div class="wd-field">
+      <label>转回金额（USD）</label>
+      <div class="amount-input"><input type="text" inputmode="decimal" placeholder="0.00" data-wd-amount></div>
+      <div class="wd-help">
+        <button type="button" class="wd-max" data-wd-max>全部转回</button>
+        <span class="err" data-wd-err></span>
+      </div>
+    </div>
+    <div class="wd-foot">
+      <button class="btn btn-soft" data-wd-close>取消</button>
+      <button class="btn btn-primary" data-wd-confirm><i data-lucide="check"></i>确认提现</button>
+    </div>
+  </div>
+</div>
+
+<!-- UNFREEZE REQUEST MODAL -->
+<div class="wd-overlay" data-uf-overlay>
+  <div class="wd-modal">
+    <div class="wd-head">
+      <div>
+        <h3>申请解冻卡片</h3>
+        <p data-uf-card-name>—</p>
+      </div>
+      <button class="icon-btn" data-uf-close><i data-lucide="x"></i></button>
+    </div>
+    <div style="display:flex;gap:9px;align-items:flex-start;padding:12px 14px;margin-bottom:16px;background:rgba(246,130,31,.08);border:1px solid rgba(246,130,31,.28);border-radius:11px;color:var(--ink-2);font-size:12.5px;line-height:1.55">
+      <i data-lucide="shield-alert" style="width:16px;height:16px;color:#c2700f;flex:none;margin-top:1px"></i>
+      <span>此卡由平台冻结，你无法自行解冻。提交申请后由平台审核处理。</span>
+    </div>
+    <div class="wd-field">
+      <label>解冻原因（提交给平台审核）</label>
+      <textarea data-uf-reason placeholder="例如：风控误判已澄清 / 已补充合规材料……" style="width:100%;min-height:90px;border:1px solid var(--line-2);border-radius:11px;padding:11px 14px;font-family:var(--ff-body);font-size:14.5px;color:var(--ink);background:#fff;resize:vertical"></textarea>
+      <div class="wd-help"><span></span><span class="err" data-uf-err></span></div>
+    </div>
+    <div class="wd-foot">
+      <button class="btn btn-soft" data-uf-close>取消</button>
+      <button class="btn btn-primary" data-uf-submit><i data-lucide="send"></i>提交申请</button>
+    </div>
+  </div>
+</div>
+
+<!-- TENANT UNFREEZE MODAL（商户申请解冻账号）-->
+<div class="wd-overlay" data-tuf-overlay>
+  <div class="wd-modal">
+    <div class="wd-head">
+      <div>
+        <h3>申请解冻商户</h3>
+        <p>账号被平台冻结 · 提交后由平台审核</p>
+      </div>
+      <button class="icon-btn" data-tuf-close><i data-lucide="x"></i></button>
+    </div>
+    <div style="display:flex;gap:9px;align-items:flex-start;padding:12px 14px;margin-bottom:16px;background:rgba(210,68,68,.07);border:1px solid rgba(210,68,68,.28);border-radius:11px;color:var(--ink-2);font-size:12.5px;line-height:1.55">
+      <i data-lucide="shield-alert" style="width:16px;height:16px;color:#d23b3b;flex:none;margin-top:1px"></i>
+      <span>你的商户账号已被平台冻结，经营功能暂停且无法自行解冻。提交申请后由平台审核处理。</span>
+    </div>
+    <div class="wd-field">
+      <label>解冻原因（提交给平台审核）</label>
+      <textarea data-tuf-reason placeholder="例如：经营资料已补齐 / 风控误判已澄清……" style="width:100%;min-height:90px;border:1px solid var(--line-2);border-radius:11px;padding:11px 14px;font-family:var(--ff-body);font-size:14.5px;color:var(--ink);background:#fff;resize:vertical"></textarea>
+      <div class="wd-help"><span></span><span class="err" data-tuf-err></span></div>
+    </div>
+    <div class="wd-foot">
+      <button class="btn btn-soft" data-tuf-close>取消</button>
+      <button class="btn btn-primary" data-tuf-submit><i data-lucide="send"></i>提交申请</button>
+    </div>
+  </div>
+</div>
+
+<!-- CARD AMOUNT MODAL（充值 / 提现 共用）-->
+<div class="wd-overlay" data-am-overlay>
+  <div class="wd-modal">
+    <div class="wd-head">
+      <div>
+        <h3 data-am-title>—</h3>
+        <p data-am-sub>—</p>
+      </div>
+      <button class="icon-btn" data-am-close><i data-lucide="x"></i></button>
+    </div>
+    <div class="wd-field">
+      <label data-am-label>金额（USD）</label>
+      <div class="amount-input"><input type="text" inputmode="decimal" placeholder="0.00" data-am-amount></div>
+      <div class="wd-help"><span data-am-hint style="color:var(--ink-3);font-size:12px"></span><span class="err" data-am-err></span></div>
+    </div>
+    <div class="wd-field" data-am-pwd-wrap>
+      <label>支付密码</label>
+      <input type="password" inputmode="numeric" autocomplete="off" placeholder="请输入支付密码" data-am-paypwd style="padding-left:14px;font-family:var(--ff-body);font-size:15px;font-weight:500;letter-spacing:1px">
+    </div>
+    <div class="wd-foot">
+      <button class="btn btn-soft" data-am-close>取消</button>
+      <button class="btn btn-primary" data-am-submit><i data-lucide="check"></i>确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- CARD CONFIRM MODAL（冻结 / 销卡 共用）-->
+<div class="wd-overlay" data-cf-overlay>
+  <div class="wd-modal" style="max-width:420px">
+    <div class="wd-head">
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <span data-cf-icon style="width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:rgba(246,130,31,.12);color:#c2700f;flex:none"><i data-lucide="alert-triangle"></i></span>
+        <div>
+          <h3 data-cf-title>—</h3>
+          <p data-cf-sub>—</p>
+        </div>
+      </div>
+      <button class="icon-btn" data-cf-close><i data-lucide="x"></i></button>
+    </div>
+    <p data-cf-msg style="color:var(--ink-2);font-size:13.5px;line-height:1.6;margin:2px 0 18px">—</p>
+    <div class="wd-field" data-cf-pwd-wrap style="display:none">
+      <label>支付密码</label>
+      <input type="password" inputmode="numeric" autocomplete="off" placeholder="请输入支付密码" data-cf-paypwd style="padding-left:14px;font-family:var(--ff-body);font-size:15px;font-weight:500;letter-spacing:1px">
+      <div class="wd-help"><span class="err" data-cf-err></span></div>
+    </div>
+    <div class="wd-foot">
+      <button class="btn btn-soft" data-cf-close>取消</button>
+      <button class="btn btn-primary" data-cf-submit>确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- 高危平台清单（规则卡标题小黄三角打开；来源：风控附录 II，持续更新）-->
+<div class="wd-overlay" data-hrp-overlay>
+  <div class="wd-modal" style="max-width:480px">
+    <div class="wd-head">
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <span style="width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:rgba(246,161,58,.14);color:#c2700f;flex:none"><i data-lucide="alert-triangle"></i></span>
+        <div>
+          <h3>高危平台清单</h3>
+        </div>
+      </div>
+      <button class="icon-btn" data-hrp-close><i data-lucide="x"></i></button>
+    </div>
+    <div class="hrp-list">
+      <div class="hr-row"><b>Audible</b><span>亚马逊在线有声书</span></div>
+      <div class="hr-row"><b>Wise</b><span>汇款工具</span></div>
+      <div class="hr-row"><b>Dundle.Com</b><span>供数字预付卡和礼品卡</span></div>
+      <div class="hr-row"><b>Mygiftcardsupply</b><span>礼品卡</span></div>
+      <div class="hr-row"><b>Moonpay</b><span>支付平台</span></div>
+      <div class="hr-row"><b>Easy Shop</b><span>配送平台</span></div>
+      <div class="hr-row"><b>Deliveroo</b><span>配送平台</span></div>
+      <div class="hr-row"><b>Doordash</b><span>配送平台</span></div>
+      <div class="hr-row"><b>Uber East</b><span>配送平台</span></div>
+      <div class="hr-row"><b>Rule Of Law Society Iv</b><span>慈善机构</span></div>
+      <div class="hr-row"><b>Amazon Digital Germany Gmbh</b><span>欺诈退货款</span></div>
+      <div class="hr-row"><b>Amazon Media Eu</b><span>欺诈退货款</span></div>
+      <div class="hr-row"><b>Okcoin</b><span>虚拟货币</span></div>
+      <div class="hr-row"><b>Skyhost</b><span>数字货币、加密钱包交易的销售数字艺术品</span></div>
+      <div class="hr-row"><b>Huobi（火币）</b><span>虚拟货币</span></div>
+      <div class="hr-row"><b>Tinder</b><span>色情社交软件</span></div>
+      <div class="hr-row"><b>Gotinder</b><span>色情社交软件</span></div>
+      <div class="hr-row"><b>Swag.Live</b><span>亚洲色情网站</span></div>
+      <div class="hr-row"><b>Onlyfans</b><span>敏感网站</span></div>
+      <div class="hr-row"><b>Coinbase</b><span>虚拟货币</span></div>
+      <div class="hr-row"><b>Coinmarketcap</b><span>虚拟货币</span></div>
+      <div class="hr-row"><b>Coingecko</b><span>虚拟货币</span></div>
+      <div class="hr-row"><b>Educoin</b><span>虚拟货币</span></div>
+      <div class="hr-row"><b>Steam</b><span>游戏平台，产生取消消费、退款等交易</span></div>
+      <div class="hr-row"><b>Paypal *Ebay</b><span>产生取消消费、退款等交易</span></div>
+      <div class="hr-row"><b>WeChat</b><span>产生取消消费、退款等交易</span></div>
+      <div class="hr-row"><b>Meituan</b><span>产生取消消费、退款等交易</span></div>
+      <div class="hr-row"><b>Apple Store</b><span>产生取消消费、退款等交易</span></div>
+      <div class="hr-row"><b>Poshmark</b><span>二手平台，产生取消消费、退款等交易</span></div>
+    </div>
+    <div style="font-size:12px;color:#d23b3b;margin-top:12px;line-height:1.55">在以上平台交易属违规消费，一经发现将冻结卡片，且卡内余额及账户余额均无法退回。</div>
+  </div>
+</div>
+<script>
+(function(){
+  document.addEventListener('click', function(e){
+    var el = e.target;
+    if(!el || !el.closest) return;
+    var ov = document.querySelector('[data-hrp-overlay]');
+    if(!ov) return;
+    if(el.closest('[data-hrp-open]')){ ov.classList.add('open'); return; }
+    if(el === ov || el.closest('[data-hrp-close]')) ov.classList.remove('open');
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key !== 'Escape') return;
+    var ov = document.querySelector('[data-hrp-overlay]');
+    if(ov) ov.classList.remove('open');
+  });
+})();
+</script>
+
+<!-- PAY PASSWORD PROMPT（5 分钟免密窗口外，资金操作弹一次）-->
+<div class="wd-overlay" data-pw-overlay>
+  <div class="wd-modal" style="max-width:400px">
+    <div class="wd-head">
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <span style="width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:rgba(31,109,255,.12);color:var(--blue);flex:none"><i data-lucide="shield-check"></i></span>
+        <div>
+          <h3>输入支付密码</h3>
+          <p data-pw-desc>此操作需验证支付密码</p>
+        </div>
+      </div>
+      <button class="icon-btn" data-pw-close><i data-lucide="x"></i></button>
+    </div>
+    <div class="wd-field">
+      <label>支付密码</label>
+      <input type="password" inputmode="numeric" autocomplete="off" placeholder="请输入支付密码" data-pw-input style="padding-left:14px;font-family:var(--ff-body);font-size:15px;font-weight:500;letter-spacing:1px">
+      <div class="wd-help"><span class="err" data-pw-err></span><span style="color:var(--ink-3);font-size:12px">验证后 5 分钟内免重复输入</span></div>
+    </div>
+    <div class="wd-foot">
+      <button class="btn btn-soft" data-pw-close>取消</button>
+      <button class="btn btn-primary" data-pw-ok><i data-lucide="check"></i>确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- API KEY REVEAL MODAL（仅显示一次）-->
+<div class="wd-overlay" data-ak-overlay>
+  <div class="wd-modal" style="max-width:460px">
+    <div class="wd-head">
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <span style="width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:rgba(31,109,255,.12);color:var(--blue);flex:none"><i data-lucide="key-round"></i></span>
+        <div>
+          <h3>密钥已创建</h3>
+          <p>请立即复制保存。密钥仅显示这一次，关闭后无法再次查看。</p>
+        </div>
+      </div>
+      <button class="icon-btn" data-ak-close><i data-lucide="x"></i></button>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;background:var(--bg-2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:2px 0 18px">
+      <code data-ak-value style="flex:1;font-family:var(--ff-mono);font-size:13px;color:var(--ink);word-break:break-all;line-height:1.5">—</code>
+      <button class="btn btn-soft btn-sm" data-ak-copy style="flex:none">复制</button>
+    </div>
+    <div class="wd-foot">
+      <button class="btn btn-primary" data-ak-close>我已保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAYMENT PASSWORD MODAL -->
+<div class="pp-overlay" data-pp-overlay>
+  <div class="pp-modal">
+    <div class="pi"><i data-lucide="shield-check"></i></div>
+    <h3 data-pp-title>输入支付密码</h3>
+    <p data-pp-desc>查看完整卡号、有效期与 CVV 需验证支付密码</p>
+    <div class="pp-dots" data-pp-dots>
+      <input type="text" inputmode="numeric" maxlength="1">
+      <input type="text" inputmode="numeric" maxlength="1">
+      <input type="text" inputmode="numeric" maxlength="1">
+      <input type="text" inputmode="numeric" maxlength="1">
+      <input type="text" inputmode="numeric" maxlength="1">
+      <input type="text" inputmode="numeric" maxlength="1">
+    </div>
+    <div class="pp-msg hint" data-pp-msg></div>
+    <div class="pp-actions">
+      <button class="btn btn-soft" data-pp-cancel>取消</button>
+      <button class="btn btn-primary" data-pp-confirm style="justify-content:center">确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-wrap" data-toast-wrap></div>
+
+<script src="site.js"></script>
+<script>
+(function(){
+  // 登录态优先用真实用户（服务端注入），避免标题/问候出现 mock 名「林一帆」。
+  const __am = document.querySelector('[data-auth-state]');
+  const __real = (__am && __am.getAttribute('data-auth-state') === 'authed')
+    ? { name: __am.getAttribute('data-user-name') || '', role: __am.getAttribute('data-user-role') || 'member' }
+    : null;
+  const owner = __real ? (__real.role === 'owner' || __real.role === 'admin')
+    : (!window.FaorbitIdentity || window.FaorbitIdentity.current().role === 'owner');
+  const me    = __real ? __real : (window.FaorbitIdentity ? window.FaorbitIdentity.current() : { name: '林一帆' });
+  const titles = owner ? {
+    dashboard:['仪表盘','早上好，'+me.name+' · 这是你团队今天的概览'],
+    cards:['我的卡片','管理你团队的所有虚拟卡'],
+    transactions:['交易记录','查看与导出所有交易明细'],
+    wallet:['钱包','管理美元（USD）余额'],
+    topup:['充值','为钱包充值以便开卡投放'],
+    newcard:['开新卡','选择卡段与用途，从钱包余额开卡'],
+    members:['成员与权限','邀请成员并分配卡片权限'],
+    approvals:['审批','处理团队的限额与开卡申请'],
+    apikeys:['API 密钥','管理密钥与 Webhook 端点'],
+    settings:['设置','管理账户、安全与通知偏好']
+  } : {
+    dashboard:['仪表盘','早上好，'+me.name+' · 这是你今天的个人概览'],
+    cards:['我的卡片','管理你名下的虚拟卡'],
+    transactions:['交易记录','仅显示与你相关的交易'],
+    newcard:['开新卡','从你的钱包余额开卡'],
+    apikeys:['API 密钥','管理你的密钥与 Webhook'],
+    settings:['设置','个人账户与通知偏好']
+  };
+  const navs = [...document.querySelectorAll('.dnav a[data-view]')];
+  const panels = [...document.querySelectorAll('[data-view-panel]')];
+  const ttl = document.querySelector('.topttl');
+  const sub = document.querySelector('.topsub');
+  function show(view){
+    panels.forEach(p=>p.classList.toggle('on', p.dataset.viewPanel===view));
+    navs.forEach(a=>a.classList.toggle('on', a.dataset.view===view));
+    // 已在「开新卡」视图时，隐藏右上角「开新卡」按钮（避免重复入口）。
+    // 用 class 而非 inline style，避免与 data-allow 的 display 控制冲突。
+    var ncCta=document.querySelector('[data-cta-newcard]');
+    if(ncCta) ncCta.classList.toggle('nc-hide', view==='newcard');
+    if(titles[view]){ ttl.textContent=titles[view][0]; sub.textContent=titles[view][1]; }
+    document.querySelector('.dash-main').scrollTo({top:0});
+    window.scrollTo({top:0});
+    if(window.lucide) lucide.createIcons();
+    localStorage.setItem('faorbit_dash_view', view);
+  }
+  // delegate any [data-view] click (nav, buttons, links, add-card)
+  document.addEventListener('click', e=>{
+    const t = e.target.closest('[data-view]');
+    if(t){ e.preventDefault(); show(t.dataset.view); }
+  });
+  // restore: URL ?view= wins over saved (so cross-page nav lands where you asked)
+  const url = new URL(location.href);
+  const urlView = url.searchParams.get('view');
+  if(urlView && titles[urlView]) show(urlView);
+  else {
+    const saved = localStorage.getItem('faorbit_dash_view');
+    if(saved && titles[saved]) show(saved);
+    else show('dashboard');
+  }
+
+  // ===== Approvals: render fund requests from store =====
+  const Store = window.FaorbitStore;
+  // toast() is declared later in this file; reference it lazily so this block
+  // doesn't shadow it (and trigger a "redeclared" SyntaxError that kills the
+  // whole script — which silently breaks the ?view=… URL restore).
+  function notify(msg, kind){ try { toast(msg, kind); } catch(_){ console.log(msg); } }
+  function fmtMoney(n){ return '$' + Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function fmtTimeShort(iso){
+    const d = new Date(iso), now = new Date();
+    const sameDay = d.toDateString() === now.toDateString();
+    const yest = new Date(now); yest.setDate(now.getDate()-1);
+    const isYest = d.toDateString() === yest.toDateString();
+    const hh = String(d.getHours()).padStart(2,'0'), mm = String(d.getMinutes()).padStart(2,'0');
+    if(sameDay) return '今天 ' + hh + ':' + mm;
+    if(isYest)  return '昨天 ' + hh + ':' + mm;
+    return (d.getMonth()+1) + '/' + d.getDate() + ' ' + hh + ':' + mm;
+  }
+  function escHtml(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  const STATUS_LABEL = { approved:'已批准', rejected:'已拒绝' };
+
+  function renderApprovals(){
+    if(!Store) return;
+    const pending = Store.listFundRequests({ status: 'pending' });
+    const decided = Store.listFundRequests().filter(r => r.status !== 'pending');
+
+    const sub = document.querySelector('[data-appr-sub]');
+    if(sub) sub.textContent = pending.length + ' 项待处理 · 已处理 ' + decided.length + ' 项';
+
+    const cnt = document.querySelector('[data-fr-count]');
+    if(cnt){
+      if(pending.length === 0){ cnt.style.display = 'none'; }
+      else { cnt.style.display = ''; cnt.textContent = pending.length + ' 条'; }
+    }
+
+    const list = document.querySelector('[data-fr-list]');
+    if(pending.length === 0){
+      list.innerHTML = '<div class="merchant-empty merchant-empty--cleared"><strong>暂无待处理申请</strong><p>成员提交的新资金申请会出现在这里。</p></div>';
+    } else {
+      list.innerHTML = pending.map(r => {
+        const u = Store.getUser(r.userId) || { name:r.name, email:r.email, av:{text:'?', bg:'#888'} };
+        const approver = Store.getUser(r.approverId);
+        return '<div class="appr" data-req-id="' + r.id + '">'
+          + '<span class="uav" style="background:' + escHtml(u.av.bg) + '">' + escHtml(u.av.text) + '</span>'
+          + '<div class="ai">'
+          +   '<div class="t">' + escHtml(u.name) + ' 申请资金 ' + fmtMoney(r.amount) + '</div>'
+          +   '<div class="d">' + escHtml(r.purpose) + ' · 审批人 ' + escHtml(approver ? approver.name : r.approverId) + ' · ' + fmtTimeShort(r.createdAt) + '</div>'
+          + '</div>'
+          + '<span class="amt">' + fmtMoney(r.amount) + '</span>'
+          + '<div class="acts">'
+          +   '<button class="btn btn-no btn-sm" data-reject>拒绝</button>'
+          +   '<button class="btn btn-ok btn-sm" data-approve><i data-lucide="check"></i>批准</button>'
+          + '</div>'
+          + '</div>';
+      }).join('');
+    }
+
+    const histWrap = document.querySelector('[data-fr-history-wrap]');
+    const histBody = document.querySelector('[data-fr-history]');
+    const histCount = document.querySelector('[data-fr-history-count]');
+    if(decided.length === 0){
+      histWrap.style.display = 'none';
+    } else {
+      histWrap.style.display = '';
+      histCount.textContent = decided.length + ' 条';
+      histBody.innerHTML = decided.map(r => {
+        const u = Store.getUser(r.userId) || { name:r.name };
+        return '<tr>'
+          + '<td><div class="card-cell"><span class="uav" style="background:' + escHtml(u.av ? u.av.bg : '#888') + '">' + escHtml(u.av ? u.av.text : '?') + '</span><div><div style="font-family:var(--ff-disp);font-weight:600">' + escHtml(u.name) + '</div><div style="color:var(--ink-3);font-size:12px">' + escHtml(u.email || '') + '</div></div></div></td>'
+          + '<td style="font-family:var(--ff-mono);font-weight:600">' + fmtMoney(r.amount) + '</td>'
+          + '<td style="color:var(--ink-2);max-width:280px">' + escHtml(r.purpose) + '</td>'
+          + '<td><span class="pill ' + (r.status === 'approved' ? 'ok' : 'warn') + ' dot">' + STATUS_LABEL[r.status] + '</span></td>'
+          + '<td>' + escHtml(r.decidedByName || '—') + '</td>'
+          + '<td style="color:var(--ink-3);font-size:12.5px">' + (r.decidedAt ? fmtTimeShort(r.decidedAt) : '—') + '</td>'
+        + '</tr>';
+      }).join('');
+    }
+
+    if(window.lucide) lucide.createIcons();
+  }
+
+  document.addEventListener('click', e=>{
+    const row = e.target.closest('.appr[data-req-id]');
+    if(!row) return;
+    const id = row.getAttribute('data-req-id');
+    try {
+      if(e.target.closest('[data-approve]')){ Store.approveFundRequest(id); notify('已批准并划转资金', 'ok'); }
+      else if(e.target.closest('[data-reject]')){ Store.rejectFundRequest(id, ''); notify('已拒绝申请', 'warn'); }
+    } catch(err){
+      notify(err.message || '操作失败', 'err');
+    }
+  });
+
+  // 真实会话：待审/已处理申请由服务端注入，审批按钮走真实 API；不让 mock store 覆盖。
+  var __apprAuthed = (function(){ var m = document.querySelector('[data-auth-state]'); return !!(m && m.getAttribute('data-auth-state') === 'authed'); })();
+  if(Store && !__apprAuthed){
+    Store.onChange(renderApprovals);
+    renderApprovals();
+  }
+
+  // ===== Settings: secondary nav + save handlers =====
+  const setNav  = document.querySelector('[data-set-nav]');
+  const setSub  = document.querySelector('[data-set-sub]');
+  if(setNav){
+    const ownerNow = !window.FaorbitIdentity || window.FaorbitIdentity.current().role === 'owner';
+    if(setSub) setSub.textContent = '安全、支付密码、通知';
+    function showPane(tab){
+      // first visible pane that matches current role
+      const navItems = [...setNav.querySelectorAll('a[data-set-tab]')].filter(a => a.style.display !== 'none');
+      const fallback = navItems[0] && navItems[0].dataset.setTab;
+      const target   = tab && navItems.some(a => a.dataset.setTab === tab) ? tab : fallback;
+      setNav.querySelectorAll('a[data-set-tab]').forEach(a => a.classList.toggle('on', a.dataset.setTab === target));
+      document.querySelectorAll('[data-set-pane]').forEach(p => p.classList.toggle('on', p.dataset.setPane === target));
+      if (target === 'plan' && typeof window.__loadPlanPane === 'function') window.__loadPlanPane();
+    }
+    setNav.addEventListener('click', e=>{
+      const a = e.target.closest('a[data-set-tab]');
+      if(!a || a.style.display === 'none') return;
+      showPane(a.dataset.setTab);
+    });
+    // Run after the global applyVisibility() pass so display values reflect role.
+    setTimeout(()=> showPane(), 0);
+    document.addEventListener('click', e=>{
+      const b = e.target.closest('button[data-set-save]');
+      if(!b) return;
+      if (b.dataset.setSave === 'notify') {
+        // 采集当前 notify 面板每个开关的 on/off，PUT 到后端持久化。
+        const pane = document.querySelector('[data-set-pane="notify"]');
+        if (!pane) return;
+        const payload = {};
+        pane.querySelectorAll('[data-bind^="notify."]').forEach(sw => {
+          const key = sw.getAttribute('data-bind').slice('notify.'.length);
+          payload[key] = sw.classList.contains('on');
+        });
+        b.disabled = true;
+        fetch('/api/merchant/settings/notifications', {
+          method: 'PUT',
+          headers: { 'content-type': 'application/json' },
+          credentials: 'same-origin',
+          body: JSON.stringify(payload),
+        }).then(r => r.json().then(j => ({ ok: r.ok, body: j })))
+          .then(res => {
+            b.disabled = false;
+            if (res.ok) notify('已保存', 'ok');
+            else notify((res.body && res.body.error) || '保存失败', 'err');
+          })
+          .catch(() => { b.disabled = false; notify('网络错误，请稍后重试', 'err'); });
+        return;
+      }
+      notify('已保存', 'ok');
+    });
+  }
+
+  // topup interactions
+  const amt = document.getElementById('topup-amt');
+  function num(s){ return parseFloat(String(s).replace(/,/g,''))||0; }
+  function fmt(n){ return n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function recalc(){
+    const v = num(amt && amt.value);
+    var pane = document.querySelector('[data-view-panel="topup"]');
+    var rate = pane ? parseFloat(pane.getAttribute('data-topup-fee-rate')) : NaN;
+    if (!(rate >= 0)) rate = 0.015; // 兜底：page.tsx 未注入时按 Starter 假设，不至于崩
+    const fee = v*rate;
+    const rows = document.querySelectorAll('[data-view-panel="topup"] .summary .sr b');
+    if(rows.length===3){ rows[0].textContent='$'+fmt(v); rows[1].textContent='$'+fmt(fee); rows[2].textContent='$'+fmt(v-fee); }
+  }
+  if(amt){
+    amt.addEventListener('input', recalc);
+    document.querySelectorAll('.amt-quick button').forEach(b=>b.addEventListener('click',()=>{ amt.value=b.dataset.amt; recalc(); }));
+  }
+  document.querySelectorAll('[data-pay] .pay-opt').forEach(o=>o.addEventListener('click',()=>{
+    document.querySelectorAll('[data-pay] .pay-opt').forEach(x=>x.classList.remove('on')); o.classList.add('on');
+  }));
+  // filter chips (visual toggle within a group)
+  document.querySelectorAll('.fchips').forEach(g=>g.addEventListener('click',e=>{
+    const c=e.target.closest('.fchip'); if(!c) return;
+    g.querySelectorAll('.fchip').forEach(x=>x.classList.remove('on')); c.classList.add('on');
+  }));
+  // 「我的卡片」筛选 chip：按 data-fkey 过滤 + 统计每类数量（数据来自真实渲染的行）。
+  (function(){
+    const chips=document.querySelector('[data-cards-chips]');
+    const tbody=document.querySelector('[data-cards-tbody]');
+    if(!chips||!tbody) return;
+    const rows=()=>Array.prototype.slice.call(tbody.querySelectorAll('tr[data-card]'));
+    // 空筛选结果提示行（动态创建，避免被数据注入覆盖）。
+    const emptyRow=document.createElement('tr');
+    emptyRow.style.display='none';
+    emptyRow.innerHTML='<td colspan="6" style="text-align:center;color:var(--ink-3);padding:32px">该分类暂无卡片</td>';
+    tbody.appendChild(emptyRow);
+    const c0={all:0,ok:0,enabled:0,frozen:0,closed:0};
+    rows().forEach(r=>{const k=r.getAttribute('data-fkey');c0.all++;if(c0[k]!=null)c0[k]++;});
+    chips.querySelectorAll('[data-fc]').forEach(s=>{const k=s.getAttribute('data-fc');s.textContent=c0[k]!=null?c0[k]:0;});
+    chips.addEventListener('click',e=>{
+      const c=e.target.closest('.fchip'); if(!c) return;
+      const key=c.getAttribute('data-fchip')||'all';
+      let shown=0;
+      rows().forEach(r=>{const show=key==='all'||r.getAttribute('data-fkey')===key;r.style.display=show?'':'none';if(show)shown++;});
+      // 一张卡都没有时静态「暂无卡片」行还在，不再叠加「该分类暂无卡片」
+      emptyRow.style.display=(shown===0&&rows().length>0)?'':'none';
+    });
+  })();
+  // 「交易记录」筛选 chip：按 data-fchip / 行上的 data-fkey 显隐（真实注入的行也带 data-fkey）。
+  (function(){
+    const chips=document.querySelector('[data-tx-chips]');
+    const tbody=document.querySelector('[data-tx-tbody]');
+    if(!chips||!tbody) return;
+    const cols=tbody.closest('table').querySelectorAll('thead th').length;
+    const emptyRow=document.createElement('tr');
+    emptyRow.style.display='none';
+    emptyRow.innerHTML='<td colspan="'+cols+'" style="text-align:center;color:var(--ink-3);padding:32px">该分类暂无交易</td>';
+    tbody.appendChild(emptyRow);
+    chips.addEventListener('click',e=>{
+      const c=e.target.closest('.fchip'); if(!c) return;
+      const key=c.getAttribute('data-fchip')||'all';
+      let shown=0;
+      tbody.querySelectorAll('tr[data-fkey]').forEach(r=>{const show=key==='all'||r.getAttribute('data-fkey')===key;r.style.display=show?'':'none';if(show)shown++;});
+      // 没有任何交易时静态「暂无交易记录」行还在，不再叠加「该分类暂无交易」
+      emptyRow.style.display=(shown===0&&tbody.querySelectorAll('tr[data-fkey]').length>0)?'':'none';
+    });
+  })();
+  // settings switches
+  document.querySelectorAll('[data-switch]').forEach(s=>s.addEventListener('click',()=>s.classList.toggle('on')));
+
+  // ===== card detail drawer =====
+  const drawer = document.querySelector('[data-drawer]');
+  const overlay = document.querySelector('[data-drawer-overlay]');
+  let currentCard = null, revealed = false;
+  function openDetail(row){
+    if(!row) return;
+    const d = row.dataset;
+    const set = (sel,val)=>{ const el=drawer.querySelector(sel); if(el) el.textContent=val; };
+    // card visual
+    const card = drawer.querySelector('[data-dw-card]');
+    card.className = 'dcard ' + d.color;
+    set('[data-dw-name]', '卡片详情');
+    drawer.querySelector('[data-dw-name]').innerHTML = '卡片详情<small data-dw-sub>VISA · 虚拟卡</small>';
+    set('[data-dw-lbl]', d.name);
+    set('[data-dw-owner]', d.owner || '—');
+    set('[data-dw-exp]', d.exp || '待银行接入');
+    set('[data-dw-created]', d.created || '—');
+    set('[data-dw-pan]', d.bin + ' •••• •••• ' + d.last);
+    // reset masked state each open
+    revealed = false;
+    drawer.querySelector('[data-dw-full]').innerHTML = d.bin + ' ••• •••• ' + d.last + ' <span class="cp" data-reveal title="验证后查看"><i data-lucide="eye"></i></span>';
+    drawer.querySelector('[data-dw-cvvrow]').innerHTML = '<span data-dw-cvv>•••</span>';
+    // scheme logo on the card visual
+    const scmEl = drawer.querySelector('[data-dw-scm]');
+    if(scmEl){
+      const cdn='https://cdn.jsdelivr.net/gh/aaronfagan/svg-credit-card-payment-icons@main/logo/';
+      if(d.scheme==='mastercard') scmEl.innerHTML='<img src="'+cdn+'mastercard.svg" class="mc" alt="Mastercard">';
+      else scmEl.innerHTML='<img src="'+cdn+'visa.svg" class="visa" alt="Visa">';
+    }
+    // 本月消费 / 月度限额（data-month 缺省按 0；限额 0 = 不限）
+    var dwLimit = parseMoney(d.recharge);
+    set('[data-dw-spend]', '$'+(d.month||'0')+' / '+(dwLimit > 0 ? '$'+d.recharge : '不限'));
+    drawer.querySelector('[data-dw-bar]').style.width = (dwLimit > 0 ? d.pct : 0)+'%';
+    var dwPct = Number(d.pct)||0;
+    drawer.querySelector('[data-dw-bar]').style.background = dwPct>=90 ? '#e5484d' : dwPct>=70 ? '#f6821f' : 'var(--blue)';
+    // status pill
+    const pillCls = d.status==='ok'?'ok':(d.status==='warn'?'warn':(d.status==='info'?'info':'off'));
+    drawer.querySelector('[data-dw-status]').innerHTML = '<span class="pill '+pillCls+'">'+d.statusLabel+'</span>';
+    // per-card recent transactions
+    const txList = drawer.querySelector('[data-dw-txlist]');
+    let txs = [];
+    try { txs = JSON.parse(row.getAttribute('data-tx')||'[]'); } catch(e){ txs = []; }
+    if(!txs.length){
+      txList.innerHTML = '<div class="dw-tx" style="color:var(--ink-3);justify-content:center">暂无交易</div>';
+    } else {
+      txList.innerHTML = txs.map(t=>{
+        const c = (t.c||'#33405e|#1c2740').split('|');
+        const credit = t.credit ? ' style="color:var(--green)"' : (t.decline ? ' style="color:#d23b3b"' : '');
+        return '<div class="dw-tx"><span class="uav" style="width:30px;height:30px;font-size:12px;background:linear-gradient(135deg,'+c[0]+','+c[1]+')">'+t.i+'</span><span class="mn">'+t.m+'</span><span class="am"'+credit+'>'+t.a+'</span></div>';
+      }).join('');
+    }
+    currentCard = d;
+    // 真实会话：抽屉携带卡 id（供 data-card-action 接管取用）；按状态切冻结/解冻；已注销卡隐藏动作。
+    drawer.setAttribute('data-card-id', d.cardId || '');
+    var dwActs = drawer.querySelector('.dw-acts');
+    if(dwActs) dwActs.style.display = (d.statusLabel === '已注销') ? 'none' : '';
+    var frozen = (d.statusLabel === '已冻结' || d.statusLabel === '系统冻结');
+    var byPlatform = frozen && d.freezeSource === 'platform';
+    var dwFz = drawer.querySelector('[data-dw-freeze]');
+    if(dwFz){
+      if(byPlatform){ dwFz.setAttribute('data-card-action','request_unfreeze'); dwFz.innerHTML = '<i data-lucide="lock"></i>申请解冻'; }
+      else if(frozen){ dwFz.setAttribute('data-card-action','unfreeze'); dwFz.innerHTML = '<i data-lucide="sun"></i>解冻'; }
+      else { dwFz.setAttribute('data-card-action','freeze'); dwFz.innerHTML = '<i data-lucide="snowflake"></i>冻结'; }
+    }
+    var dwNote = drawer.querySelector('[data-dw-frozen-note]');
+    if(dwNote) dwNote.style.display = byPlatform ? 'flex' : 'none';
+    if(window.lucide) lucide.createIcons();
+    overlay.classList.add('open');
+    drawer.classList.add('open');
+  }
+  function closeDetail(){ overlay.classList.remove('open'); drawer.classList.remove('open'); }
+  document.querySelectorAll('[data-drawer-close]').forEach(b=>b.addEventListener('click',closeDetail));
+  overlay.addEventListener('click', closeDetail);
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeDetail(); });
+  // open via clickable cell OR menu item
+  document.addEventListener('click', e=>{
+    const trig = e.target.closest('[data-open-detail]');
+    if(trig){
+      const row = trig.closest('[data-card]');
+      document.querySelectorAll('.menu.open').forEach(m=>m.classList.remove('open'));
+      openDetail(row);
+    }
+  });
+  // row action menus (open/close, single-open, click-outside)
+  // 菜单用 position:fixed + JS 定位，避免被表格容器的 overflow 裁剪 / 被后续行遮挡。
+  const MENU_GAP = 6;
+  function placeMenu(menu, btn){
+    menu.classList.add('open');
+    menu.style.visibility = 'hidden';
+    menu.style.maxHeight = '';
+    const r = btn.getBoundingClientRect();
+    const vw = window.innerWidth, vh = window.innerHeight, margin = 8;
+    const mw = menu.offsetWidth;
+    let mh = menu.offsetHeight;
+    const spaceBelow = vh - r.bottom - margin;
+    const spaceAbove = r.top - margin;
+    let top;
+    if(spaceBelow >= mh + MENU_GAP || spaceBelow >= spaceAbove){
+      const cap = Math.min(280, Math.max(120, spaceBelow - MENU_GAP));
+      if(mh > cap){ menu.style.maxHeight = cap + 'px'; mh = cap; }
+      top = r.bottom + MENU_GAP;
+    } else {
+      const cap = Math.min(280, Math.max(120, spaceAbove - MENU_GAP));
+      if(mh > cap){ menu.style.maxHeight = cap + 'px'; mh = cap; }
+      top = r.top - mh - MENU_GAP;
+    }
+    let left = r.right - mw;
+    if(left + mw > vw - margin) left = vw - margin - mw;
+    if(left < margin) left = margin;
+    menu.style.top = top + 'px';
+    menu.style.left = left + 'px';
+    menu.style.visibility = '';
+  }
+  function closeMenus(){
+    document.querySelectorAll('.menu.open').forEach(m=>{ m.classList.remove('open'); m.style.maxHeight=''; });
+  }
+  document.addEventListener('click', e=>{
+    const btn = e.target.closest('[data-menu]');
+    if(btn){
+      const menu = btn.parentElement.querySelector('.menu');
+      const isOpen = menu.classList.contains('open');
+      closeMenus();
+      if(!isOpen) placeMenu(menu, btn);
+      e.stopPropagation();
+      return;
+    }
+    if(!e.target.closest('.menu')) closeMenus();
+  });
+  // 滚动/缩放时位置会漂移，直接关闭。
+  window.addEventListener('scroll', closeMenus, true);
+  window.addEventListener('resize', closeMenus);
+  // settings sub-nav
+  document.querySelectorAll('.set-nav a').forEach(a=>a.addEventListener('click',()=>{
+    document.querySelectorAll('.set-nav a').forEach(x=>x.classList.remove('on')); a.classList.add('on');
+  }));
+
+  // ===== toast =====
+  const toastWrap = document.querySelector('[data-toast-wrap]');
+  function toast(msg, type){
+    type = type||'ok';
+    const ic = type==='err'?'x-circle':(type==='warn'?'alert-triangle':'check-circle-2');
+    const t = document.createElement('div');
+    t.className = 'toast '+type;
+    t.innerHTML = '<i data-lucide="'+ic+'"></i>'+msg;
+    toastWrap.appendChild(t);
+    if(window.lucide) lucide.createIcons();
+    requestAnimationFrame(()=>t.classList.add('show'));
+    setTimeout(()=>{ t.classList.remove('show'); setTimeout(()=>t.remove(),300); }, 2600);
+  }
+
+  // ===== payment password modal =====
+  const ppOverlay = document.querySelector('[data-pp-overlay]');
+  const ppDots = document.querySelector('[data-pp-dots]');
+  const ppInputs = [...ppDots.querySelectorAll('input')];
+  const ppMsg = document.querySelector('[data-pp-msg]');
+  const ppTitle = document.querySelector('[data-pp-title]');
+  const ppDesc = document.querySelector('[data-pp-desc]');
+  let ppMode = 'verify', ppOnOk = null;
+  function openPwd(opts){
+    opts = opts||{};
+    ppMode = opts.mode || 'verify';
+    ppOnOk = opts.onOk || null;
+    ppTitle.textContent = opts.title || '输入支付密码';
+    ppDesc.textContent = opts.desc || '查看完整卡号、有效期与 CVV 需验证支付密码';
+    ppMsg.textContent = ppMode==='set' ? '设置一个 6 位数字支付密码' : '';
+    ppMsg.className = 'pp-msg hint';
+    ppInputs.forEach(i=>{ i.value=''; i.classList.remove('err'); });
+    ppOverlay.classList.add('open');
+    setTimeout(()=>ppInputs[0].focus(), 60);
+  }
+  function closePwd(){ ppOverlay.classList.remove('open'); }
+  ppInputs.forEach((inp,i)=>{
+    inp.addEventListener('input', ()=>{
+      inp.value = inp.value.replace(/\D/g,'');
+      if(inp.value && i<5) ppInputs[i+1].focus();
+    });
+    inp.addEventListener('keydown', e=>{
+      if(e.key==='Backspace' && !inp.value && i>0) ppInputs[i-1].focus();
+      if(e.key==='Enter') confirmPwd();
+    });
+  });
+  function confirmPwd(){
+    const code = ppInputs.map(i=>i.value).join('');
+    if(code.length<6){ ppMsg.textContent='请输入完整的 6 位密码'; ppMsg.className='pp-msg'; return; }
+    if(ppMode==='set'){
+      closePwd(); toast('支付密码已更新', 'ok'); return;
+    }
+    // 克隆站不保存支付密码，仅作占位；真正校验由接入的正式平台完成，输满 6 位即放行。
+    closePwd(); if(ppOnOk) ppOnOk();
+  }
+  document.querySelector('[data-pp-confirm]').addEventListener('click', confirmPwd);
+  document.querySelector('[data-pp-cancel]').addEventListener('click', closePwd);
+  ppOverlay.addEventListener('click', e=>{ if(e.target===ppOverlay) closePwd(); });
+
+  // reveal full card number + expiry + CVV after password
+  function doReveal(){
+    revealed = true;
+    const d = currentCard; if(!d) return;
+    const realPan = d.pan || d.fullPan || '';
+    const seed = (parseInt(d.bin,10) + parseInt(d.last,10)).toString();
+    const filler = (seed + '4831726509').slice(0,6);
+    const pan = realPan || (d.bin + filler + d.last);
+    const cvv = d.cvv || String(parseInt(d.last,10)%900+100).padStart(3,'0');
+    const grp = pan.replace(/(.{4})/g,'$1 ').trim();
+    const cpIcon = '<span class="cp" data-copy title="复制"><i data-lucide="copy"></i></span>';
+    drawer.querySelector('[data-dw-full]').innerHTML = grp + ' ' + cpIcon;
+    drawer.querySelector('[data-dw-exp]').textContent = d.exp;
+    drawer.querySelector('[data-dw-cvvrow]').innerHTML = '<span data-dw-cvv>'+cvv+'</span> ' + cpIcon;
+    if(window.lucide) lucide.createIcons();
+    toast('已验证，完整卡信息已显示', 'ok');
+  }
+  // eye / reveal clicks inside drawer
+  drawer.addEventListener('click', e=>{
+    if(e.target.closest('[data-reveal]')){
+      if(revealed) return;
+      openPwd({ onOk: doReveal });
+    } else if(e.target.closest('[data-copy]')){
+      toast('已复制到剪贴板', 'ok');
+    }
+  });
+
+  // settings: set payment password
+  document.querySelectorAll('[data-set-paypwd]').forEach(b=>b.addEventListener('click',()=>{
+    openPwd({ mode:'set', title:'设置支付密码', desc:'用于查看完整卡号、有效期、CVV 与提现等敏感操作' });
+  }));
+
+  // ===== withdraw (card -> wallet) modal =====
+  const wdOverlay = document.querySelector('[data-wd-overlay]');
+  const wdCardName    = wdOverlay.querySelector('[data-wd-card-name]');
+  const wdCardBalEl   = wdOverlay.querySelector('[data-wd-card-balance]');
+  const wdWalletBalEl = wdOverlay.querySelector('[data-wd-wallet-balance]');
+  const wdAmtInput    = wdOverlay.querySelector('[data-wd-amount]');
+  const wdErrEl       = wdOverlay.querySelector('[data-wd-err]');
+  let wdRow = null;
+  function parseMoney(s){ return parseFloat(String(s||'').replace(/[^\d.\-]/g,'')) || 0; }
+  function fmtUSD(n){ return '$' + Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function openWithdraw(row){
+    if(!row) return;
+    wdRow = row;
+    const d = row.dataset;
+    wdCardName.textContent = d.name + ' · ' + d.bin + ' •••• ' + d.last;
+    wdCardBalEl.textContent = fmtUSD(parseMoney(d.balance));
+    const walletEl = document.querySelector('[data-wallet-usd]');
+    wdWalletBalEl.textContent = walletEl ? walletEl.textContent.trim() : '$0.00';
+    wdAmtInput.value = '';
+    wdAmtInput.classList.remove('err');
+    wdErrEl.textContent = '';
+    wdOverlay.classList.add('open');
+    setTimeout(()=>wdAmtInput.focus(), 60);
+  }
+  function closeWithdraw(){ wdOverlay.classList.remove('open'); wdRow = null; }
+  wdOverlay.querySelectorAll('[data-wd-close]').forEach(b=>b.addEventListener('click', closeWithdraw));
+  wdOverlay.addEventListener('click', e=>{ if(e.target === wdOverlay) closeWithdraw(); });
+  wdOverlay.querySelector('[data-wd-max]').addEventListener('click', ()=>{
+    if(!wdRow) return;
+    wdAmtInput.value = parseMoney(wdRow.dataset.balance).toFixed(2);
+    wdAmtInput.classList.remove('err'); wdErrEl.textContent = '';
+  });
+  wdAmtInput.addEventListener('input', ()=>{
+    wdAmtInput.classList.remove('err'); wdErrEl.textContent = '';
+  });
+  wdAmtInput.addEventListener('keydown', e=>{ if(e.key==='Enter') wdOverlay.querySelector('[data-wd-confirm]').click(); });
+  wdOverlay.querySelector('[data-wd-confirm]').addEventListener('click', ()=>{
+    if(!wdRow) return;
+    const amt = parseFloat(wdAmtInput.value);
+    const cardBal = parseMoney(wdRow.dataset.balance);
+    if(!isFinite(amt) || amt <= 0){
+      wdAmtInput.classList.add('err'); wdErrEl.textContent = '请输入大于 0 的金额'; return;
+    }
+    if(amt > cardBal){
+      wdAmtInput.classList.add('err'); wdErrEl.textContent = '不能超过卡片余额 ' + fmtUSD(cardBal); return;
+    }
+    const row = wdRow;
+    openPwd({
+      title:'输入支付密码',
+      desc:'卡片余额转回钱包需验证支付密码',
+      onOk: ()=>{
+        // mutate card balance + wallet USD balance
+        const newBal = Math.max(0, cardBal - amt);
+        row.dataset.balance = newBal.toLocaleString('en-US',{minimumFractionDigits: newBal % 1 ? 2:0, maximumFractionDigits: 2});
+        // update the card row's balance display（进度条是「本月消费/月度限额」，提现不影响，无需更新）
+        const sv = row.querySelector('.spendcell .sv > span');
+        if(sv){ sv.textContent = '$' + Math.round(newBal).toLocaleString('en-US'); }
+        // wallet USD
+        const walletEl = document.querySelector('[data-wallet-usd]');
+        if(walletEl){
+          const cur = parseMoney(walletEl.textContent);
+          walletEl.textContent = fmtUSD(cur + amt);
+        }
+        closeWithdraw();
+        toast('已转回钱包可用余额 ' + fmtUSD(amt), 'ok');
+      }
+    });
+  });
+
+  // ===== card actions (menu items + drawer quick actions) =====
+  function actionLabel(el){ return (el.textContent||'').trim(); }
+  function handleAction(label, ctxRow){
+    if(/充值/.test(label)){ toast('正在跳转充值…', 'ok'); document.querySelector('[data-view=topup]').click(); closeDetail(); }
+    else if(/提现/.test(label)){ openWithdraw(ctxRow); }
+    else if(/冻结/.test(label)){ openPwd({ title:'输入支付密码', desc:'冻结卡片需验证支付密码', onOk:()=>{ if(ctxRow) setStatus(ctxRow,'off','已冻结'); toast('卡片已冻结', 'warn'); closeDetail(); } }); }
+    else if(/销卡/.test(label)){ openPwd({ title:'输入支付密码', desc:'销卡后余额将退回钱包，操作不可撤销', onOk:()=>{ if(ctxRow) setStatus(ctxRow,'off','已注销'); toast('卡片已注销，余额已退回钱包', 'err'); closeDetail(); } }); }
+  }
+  function setStatus(row, status, label){
+    row.dataset.status = status; row.dataset.statusLabel = label;
+    const pill = row.querySelector('.pill');
+    if(pill){ pill.className = 'pill '+(status==='ok'?'ok':status==='warn'?'warn':'off'); pill.innerHTML='<i data-lucide="circle" style="width:8px;height:8px;fill:currentColor"></i>'+label; }
+    if(window.lucide) lucide.createIcons();
+  }
+  // row menu actions
+  document.addEventListener('click', e=>{
+    const mi = e.target.closest('.menu button:not([data-open-detail]):not([disabled])');
+    if(mi){ handleAction(actionLabel(mi), mi.closest('[data-card]')); document.querySelectorAll('.menu.open').forEach(m=>m.classList.remove('open')); }
+  });
+  // drawer quick actions
+  drawer.querySelectorAll('.dw-act').forEach(a=>a.addEventListener('click',()=>{
+    handleAction(actionLabel(a), document.querySelector('tr[data-card][data-name="'+(currentCard&&currentCard.name)+'"]'));
+  }));
+
+  // ===== 开新卡 calculator =====
+  const WALLET_USD = 0;
+  const ncQty = document.querySelector('[data-nc-qty]');
+  const ncAmt = document.querySelector('[data-nc-amt]');
+  var ncPane = document.querySelector('[data-view-panel="newcard"]');
+  var binRefresh = document.querySelector('[data-bin-refresh]');
+  if(binRefresh) binRefresh.addEventListener('click', function(){ window.location.reload(); });
+  // 顶部规则提示条：滚到下方规则卡，并闪烁「禁止」块引导视线
+  var ncRulesNote = document.querySelector('[data-nc-rules-note]');
+  if(ncRulesNote) ncRulesNote.addEventListener('click', function(){
+    var panel = document.querySelector('[data-card-rules-panel]');
+    if(!panel) return;
+    panel.scrollIntoView({behavior:'smooth', block:'start'});
+    var deny = panel.querySelector('.rules-deny');
+    if(deny){ deny.classList.remove('flash'); void deny.offsetWidth; deny.classList.add('flash'); }
+  });
+  var cardRulesByBin = {};
+  var cardRulesData = document.querySelector('[data-card-rules-data]');
+  try { cardRulesByBin = cardRulesData ? JSON.parse(cardRulesData.textContent || '{}') : {}; } catch(_e) { cardRulesByBin = {}; }
+  function renderCardRule(bin){
+    var rule = cardRulesByBin[bin];
+    if(!rule) return;
+    var badge = document.querySelector('[data-rules-bin]');
+    if(badge) badge.textContent = bin;
+    var allowed = document.querySelector('[data-rules-allowed]');
+    if(allowed && Array.isArray(rule.allowedUses)){
+      allowed.replaceChildren();
+      rule.allowedUses.forEach(function(item, index){
+        var li=document.createElement('li');
+        var num=document.createElement('span'); num.className='ri'; num.textContent=String(index+1);
+        var copy=document.createElement('div');
+        var title=document.createElement('b'); title.textContent=String(item.title||'');
+        copy.appendChild(title); copy.appendChild(document.createTextNode('：'+String(item.description||'')));
+        li.appendChild(num); li.appendChild(copy); allowed.appendChild(li);
+      });
+    }
+    var prohibited = document.querySelector('[data-rules-prohibited]');
+    if(prohibited && Array.isArray(rule.prohibitedUses)){
+      prohibited.replaceChildren();
+      rule.prohibitedUses.forEach(function(text){ var li=document.createElement('li'); li.textContent=String(text||''); prohibited.appendChild(li); });
+    }
+    var freeze = document.querySelector('[data-rules-freeze]');
+    if(freeze) freeze.textContent = String(rule.freezeNotice||'');
+    var fee = document.querySelector('[data-rules-fee-copy]');
+    if(fee){
+      fee.replaceChildren();
+      fee.appendChild(document.createTextNode('通过 '));
+      var pay=document.createElement('b'); pay.textContent='Google Pay'; fee.appendChild(pay);
+      fee.appendChild(document.createTextNode(' 完成的交易将按交易金额的 '));
+      var rate=document.createElement('b'); rate.textContent=String(rule.googlePayFeePercent)+'%'; fee.appendChild(rate);
+      fee.appendChild(document.createTextNode(' 收取手续费，该费用将直接从卡片余额中自动扣除。'));
+    }
+  }
+  function selectedRulesBin(){
+    var selected=document.querySelector('[data-bin-opts] .bin-pill.on');
+    return selected ? selected.getAttribute('data-bin') : '';
+  }
+  function syncCardRules(){
+    fetch('/api/merchant/card-rules',{credentials:'same-origin'})
+      .then(function(res){ return res.ok ? res.json() : Promise.reject(new Error('sync failed')); })
+      .then(function(data){ cardRulesByBin=data.rules||{}; var bin=selectedRulesBin(); if(bin) renderCardRule(bin); })
+      .catch(function(){ /* 网络恢复后下个轮询周期自动重试，当前规则继续可用。 */ });
+  }
+  var initialRulesBin=selectedRulesBin(); if(initialRulesBin) renderCardRule(initialRulesBin);
+  var cardRulesTimer=window.setInterval(syncCardRules,8000);
+  window.addEventListener('pagehide',function(){ window.clearInterval(cardRulesTimer); },{once:true});
+  var ncFeeCents = ncPane ? parseInt(ncPane.getAttribute('data-card-fee-cents'), 10) : NaN;
+  const OPEN_FEE = (Number.isFinite(ncFeeCents) && ncFeeCents >= 0) ? ncFeeCents / 100 : 0;
+  function ncNum(s){ return parseFloat(String(s).replace(/,/g,''))||0; }
+  function ncFmt(n){ return n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function ncRecalc(){
+    if(!ncQty) return;
+    let qty = Math.max(1, Math.min(500, parseInt(ncQty.value.replace(/\D/g,''))||1));
+    const amt = ncNum(ncAmt.value);
+    const fee = qty*OPEN_FEE;
+    const preload = qty*amt;
+    const total = fee+preload;
+    const set=(s,v)=>{ const el=document.querySelector(s); if(el) el.textContent=v; };
+    document.querySelectorAll('[data-nc-qtylabel],[data-nc-qtylabel2]').forEach(e=>e.textContent=qty);
+    const amtLabel=document.querySelector('[data-nc-amtlabel]'); if(amtLabel) amtLabel.textContent='$'+(amt%1?ncFmt(amt):amt.toLocaleString('en-US'));
+    set('[data-nc-fee]', '$'+ncFmt(fee));
+    set('[data-nc-preload]', '$'+ncFmt(preload));
+    set('[data-nc-total]', '$'+ncFmt(total));
+    const warn = document.querySelector('[data-nc-warn]');
+    const submit = document.querySelector('[data-nc-submit]');
+    if(total>WALLET_USD){ warn.style.display='flex'; submit.style.opacity='.5'; submit.style.pointerEvents='none'; }
+    else { warn.style.display='none'; submit.style.opacity=''; submit.style.pointerEvents=''; }
+  }
+  if(ncQty){
+    document.querySelectorAll('[data-nc-stepper] button').forEach(b=>b.addEventListener('click',()=>{
+      let q = (parseInt(ncQty.value.replace(/\D/g,''))||1) + parseInt(b.dataset.step,10);
+      ncQty.value = Math.max(1, Math.min(500, q)); ncRecalc();
+    }));
+    ncQty.addEventListener('input', ncRecalc);
+    ncAmt.addEventListener('input', ncRecalc);
+    document.querySelectorAll('[data-nc-quick]').forEach(b=>b.addEventListener('click',()=>{ ncAmt.value=b.dataset.ncQuick; ncRecalc(); }));
+    // 用途跟随卡头的可用场景（data-purposes，总台配置）：不可用的选项隐藏，当前选中不可用则切到第一个可用。
+    function syncPurposeOptions(){
+      var sel = document.querySelector('[data-nc-purpose]');
+      var pill = document.querySelector('[data-bin-opts] .bin-pill.on');
+      if(!sel) return;
+      var raw = pill ? (pill.getAttribute('data-purposes')||'') : '';
+      var allowed = raw ? raw.split('|') : null; // 无数据（设计稿演示态）= 不限
+      var firstOk = null, curOk = false;
+      Array.prototype.forEach.call(sel.options, function(op){
+        var ok = !allowed || allowed.indexOf(op.value) !== -1;
+        op.disabled = !ok; op.hidden = !ok;
+        if(ok && firstOk === null) firstOk = op.value;
+        if(ok && op.value === sel.value) curOk = true;
+      });
+      if(!curOk && firstOk !== null) sel.value = firstOk;
+    }
+    document.querySelectorAll('[data-bin-opts] .bin-pill').forEach(o=>o.addEventListener('click',()=>{
+      if(o.getAttribute('data-can-issue') === '0') return;
+      document.querySelectorAll('[data-bin-opts] .bin-pill').forEach(x=>x.classList.remove('on')); o.classList.add('on');
+      renderCardRule(o.getAttribute('data-bin'));
+      syncPurposeOptions();
+    }));
+    syncPurposeOptions();
+    const ncSubmit = document.querySelector('[data-nc-submit]');
+    if(ncSubmit) ncSubmit.addEventListener('click', ()=>{
+      const qty = Math.max(1, parseInt(ncQty.value.replace(/\D/g,''))||1);
+      openPwd({ title:'输入支付密码', desc:'开卡将从钱包余额扣款，请验证支付密码', onOk:()=>{
+        toast('成功开出 '+qty+' 张卡，已从钱包扣款', 'ok');
+        document.querySelector('[data-view=cards]').click();
+      }});
+    });
+    ncRecalc();
+  }
+})();
+</script>
+<script>
+/* 消费趋势：近7天 / 近30天 两套演示数据，点击切换重绘曲线与 X 轴刻度。 */
+(function () {
+  var svg = document.querySelector('.linechart[data-trend]');
+  if (!svg) return;
+  var area = svg.querySelector('[data-area]');
+  var line = svg.querySelector('[data-line]');
+  var dot = svg.querySelector('[data-dot]');
+  var xaxis = document.querySelector('[data-trend-x]');
+  var tabs = document.querySelector('[data-toggle="range"]');
+  if (!area || !line || !tabs) return;
+
+  var W = 640, TOP = 35, BOT = 175, BASE = 220;
+  // 登录态下服务端会把真实每日消费写进 data-series（JSON）；未登录则用演示数据。
+  var DATA = {
+    d7: {
+      values: [0, 0, 0, 0, 0, 0, 0],
+      labels: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+    },
+    d30: {
+      values: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+               0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+               0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      labels: ['30天前', '24天前', '18天前', '12天前', '6天前', '今天'],
+    },
+  };
+  var raw = svg.getAttribute('data-series');
+  if (raw) {
+    try {
+      var real = JSON.parse(raw);
+      if (real && real.d7 && real.d7.values) DATA = real;
+    } catch (e) {}
+  }
+
+  function coords(vals) {
+    var n = vals.length, max = Math.max.apply(null, vals), min = Math.min.apply(null, vals);
+    var span = (max - min) || 1, pts = [];
+    for (var i = 0; i < n; i++) {
+      var x = n === 1 ? 0 : Math.round((i * W) / (n - 1));
+      var y = Math.round(BOT - ((vals[i] - min) / span) * (BOT - TOP));
+      pts.push([x, y]);
+    }
+    return pts;
+  }
+  function lineD(pts) {
+    return pts.map(function (p, i) { return (i ? 'L' : 'M') + p[0] + ',' + p[1]; }).join(' ');
+  }
+  function render(key) {
+    var d = DATA[key]; if (!d) return;
+    var pts = coords(d.values), path = lineD(pts);
+    line.setAttribute('d', path);
+    area.setAttribute('d', path + ' L' + W + ',' + BASE + ' L0,' + BASE + ' Z');
+    if (dot) { var last = pts[pts.length - 1]; dot.setAttribute('cx', last[0]); dot.setAttribute('cy', last[1]); }
+    if (xaxis) xaxis.innerHTML = d.labels.map(function (l) { return '<span>' + l + '</span>'; }).join('');
+  }
+
+  tabs.querySelectorAll('button[data-target]').forEach(function (b) {
+    b.addEventListener('click', function () { render(b.getAttribute('data-target')); });
+  });
+  render('d7');
+})();
+</script>
+<script>
+/* 支付密码「5 分钟固定免密窗口」的统一入口（登录态）。
+   窗口状态以服务端为准：注入的剩余毫秒换算成本地绝对截止时刻，规避两端时钟偏差。
+   - window.faPay.isOpen()：当前是否在免密窗口内（无需再输入密码）。
+   - window.faPay.require(desc, onOk)：窗口内直接 onOk('')；窗口外弹一次输入框，确认后 onOk(密码)。
+   成功的资金操作会整页 reload，届时基于服务端新的剩余时长重新判定窗口，无需前端手动续期。 */
+(function () {
+  var marker = document.querySelector('[data-auth-state]');
+  if (!marker || marker.getAttribute('data-auth-state') !== 'authed') return;
+  var hasPwd = marker.getAttribute('data-has-paypwd') === '1';
+  var graceMs = parseInt(marker.getAttribute('data-paypwd-grace-ms') || '0', 10) || 0;
+  var deadline = graceMs > 0 ? Date.now() + graceMs : 0;
+  function isOpen() { return hasPwd && deadline > 0 && Date.now() < deadline; }
+  function toast(msg, kind) { try { if (window.FaorbitToast) { window.FaorbitToast(msg, kind || 'ok'); return; } } catch (e) {} alert(msg); }
+
+  var ov = document.querySelector('[data-pw-overlay]');
+  var input = ov && ov.querySelector('[data-pw-input]');
+  var errEl = ov && ov.querySelector('[data-pw-err]');
+  var okBtn = ov && ov.querySelector('[data-pw-ok]');
+  var descEl = ov && ov.querySelector('[data-pw-desc]');
+  var pending = null;
+  function close() { if (ov) ov.classList.remove('open'); pending = null; }
+  function open(desc, onOk) {
+    pending = onOk;
+    if (descEl) descEl.textContent = desc || '此操作需验证支付密码';
+    if (input) input.value = '';
+    if (errEl) errEl.textContent = '';
+    if (okBtn) okBtn.disabled = false;
+    if (ov) ov.classList.add('open');
+    setTimeout(function () { if (input) input.focus(); }, 80);
+  }
+  if (ov) {
+    ov.querySelectorAll('[data-pw-close]').forEach(function (b) { b.addEventListener('click', close); });
+    ov.addEventListener('click', function (e) { if (e.target === ov) close(); });
+    if (input) input.addEventListener('keydown', function (e) { if (e.key === 'Enter' && okBtn) okBtn.click(); });
+    if (okBtn) okBtn.addEventListener('click', function () {
+      var v = input ? input.value : '';
+      if (!v) { if (errEl) errEl.textContent = '请输入支付密码'; return; }
+      var fn = pending;
+      close();
+      if (fn) fn(v);
+    });
+  }
+
+  // 设置支付密码对话框（首次设置 / 修改同一后端流程）。resolve(true) = 设置成功。
+  // reason 非空时用于「资金操作前引导设置」的说明文案。
+  function openSetDialog(reason) {
+    if (!window.FaorbitDialog || !window.FaorbitDialog.form) {
+      toast('请前往「设置 · 安全」设置支付密码', 'err');
+      return Promise.resolve(false);
+    }
+    return window.FaorbitDialog.form({
+      title: '设置支付密码',
+      message: (reason ? reason + '——' : '') + '支付密码用于开卡 / 充值 / 提现 / 销卡等资金操作的二次验证。',
+      fields: [
+        { key: 'loginp', label: '登录密码（验证身份）', type: 'password', required: true },
+        { key: 'p1', label: '支付密码（至少 6 位）', type: 'password', required: true, validate: function (v) { return v.length >= 6 ? '' : '支付密码至少 6 位'; } },
+        { key: 'p2', label: '再次输入支付密码', type: 'password', required: true, validate: function (v, all) { return v === all.p1 ? '' : '两次支付密码不一致'; } },
+      ],
+      okText: '确认设置',
+    }).then(function (v) {
+      if (!v) return false;
+      return fetch('/api/merchant/settings/pay-password', {
+        method: 'POST', headers: { 'content-type': 'application/json' }, credentials: 'same-origin',
+        body: JSON.stringify({ loginPassword: v.loginp, newPayPassword: v.p1 }),
+      }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }); })
+        .then(function (res) {
+          if (res.ok) {
+            hasPwd = true;
+            marker.setAttribute('data-has-paypwd', '1');
+            var st = document.querySelector('[data-paypwd-state]'); if (st) st.textContent = '已设置支付密码';
+            var su = document.querySelector('[data-paypwd-sub]'); if (su) su.textContent = '开卡 / 充值 / 提现 / 销卡需验证支付密码';
+            var sb = document.querySelector('[data-set-paypwd]'); if (sb) sb.textContent = '修改';
+            toast('支付密码已设置', 'ok');
+            return true;
+          }
+          if (res.status === 401) { location.href = '/login'; return false; }
+          toast((res.j && res.j.error) || '设置失败', 'err');
+          return false;
+        }).catch(function () { toast('网络错误，请重试', 'err'); return false; });
+    });
+  }
+
+  window.faPay = {
+    get hasPwd() { return hasPwd; },
+    isOpen: isOpen,
+    openSetDialog: openSetDialog,
+    // 已设置 → onReady()；未设置 → 先引导设置，设置成功后再 onReady()。
+    ensureSet: function (reason, onReady) {
+      if (hasPwd) { onReady(); return; }
+      openSetDialog(reason).then(function (ok) { if (ok) onReady(); });
+    },
+    require: function (desc, onOk) {
+      // 未设置支付密码：先引导设置，设置成功后再走本次操作的验证输入。
+      if (!hasPwd) { openSetDialog(desc).then(function (ok) { if (ok) open(desc, onOk); }); return; }
+      if (isOpen()) { onOk(''); return; }
+      open(desc, onOk);
+    },
+  };
+})();
+</script>
+<script>
+/* 开新卡：登录态下接管「确认开卡」按钮，调真实 /api/merchant/cards 落库，成功后刷新当前视图。
+   未登录（演示态）则保留原 mock 行为。 */
+(function () {
+  var marker = document.querySelector('[data-auth-state]');
+  var authed = marker && marker.getAttribute('data-auth-state') === 'authed';
+
+  // 刷新后回到指定视图（开卡成功后仍停留在「开新卡」）。
+  if (authed && sessionStorage.getItem('faorbit_goto') === 'wallet') {
+    sessionStorage.removeItem('faorbit_goto');
+    var gw = document.querySelector('.dnav a[data-view="wallet"]');
+    if (gw) gw.click();
+  }
+  if (authed && sessionStorage.getItem('faorbit_goto') === 'newcard') {
+    sessionStorage.removeItem('faorbit_goto');
+    var gn = document.querySelector('.dnav a[data-view="newcard"]');
+    if (gn) gn.click();
+  }
+  if (authed && sessionStorage.getItem('faorbit_goto') === 'cards') {
+    sessionStorage.removeItem('faorbit_goto');
+    var go = document.querySelector('.dnav a[data-view="cards"]');
+    if (go) go.click();
+  }
+
+  if (!authed) return;
+
+  function toast(msg, kind) { try { if (window.FaorbitToast) { window.FaorbitToast(msg, kind || 'ok'); return; } } catch (e) {} alert(msg); }
+  if (sessionStorage.getItem('faorbit_card_created_success') === '1') {
+    sessionStorage.removeItem('faorbit_card_created_success');
+    setTimeout(function () { toast('开卡成功', 'ok'); }, 80);
+  }
+
+  // —— 充值：接管「确认充值」→ /api/merchant/wallet/topup，自助完成后回钱包刷新余额。——
+  var tbtn = document.querySelector('[data-topup-submit]');
+  if (tbtn) {
+    var tfresh = tbtn.cloneNode(true);
+    tbtn.parentNode.replaceChild(tfresh, tbtn);
+    // 支付方式 UI 标签 → 后端 method key
+    var METHOD_MAP = { 'USDT': 'usdt', '电汇': 'wire', '对公转账': 'wire' };
+    tfresh.addEventListener('click', function () {
+      var amount = ((document.getElementById('topup-amt') || {}).value) || '0';
+      var cur = 'USD';
+      var payEl = document.querySelector('[data-pay] .pay-opt.on .pn');
+      var methodLabel = payEl ? payEl.textContent.trim() : 'USDT';
+      var method = METHOD_MAP[methodLabel] || 'wire';
+      var label = tfresh.innerHTML;
+      window.faPay.require('充值需验证支付密码', function (pwd) {
+        tfresh.disabled = true; tfresh.textContent = '提交中…';
+        var payload = { amount: amount, currency: cur, method: method };
+        if (pwd) payload.payPassword = pwd;
+        fetch('/api/merchant/wallet/topup', {
+          method: 'POST', headers: { 'content-type': 'application/json' }, credentials: 'same-origin',
+          body: JSON.stringify(payload),
+        })
+          .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }); })
+          .then(function (res) {
+            if (res.ok && res.j && res.j.request) {
+              toast('充值已完成，资金已入账', 'ok');
+              sessionStorage.setItem('faorbit_goto', 'wallet');
+              setTimeout(function () { window.location.reload(); }, 500);
+              return;
+            }
+            if (res.status === 401) { window.location.href = '/login'; return; }
+            tfresh.disabled = false; tfresh.innerHTML = label;
+            toast((res.j && res.j.error) || '充值失败', 'err');
+          })
+          .catch(function () { tfresh.disabled = false; tfresh.innerHTML = label; toast('网络错误，请重试', 'err'); });
+      });
+    });
+  }
+
+  var btn = document.querySelector('[data-nc-submit]');
+  if (!btn) return;
+  var fresh = btn.cloneNode(true); // 克隆以剥离 mock 监听
+  btn.parentNode.replaceChild(fresh, btn);
+  var issueLabel = fresh.innerHTML;
+
+  function selectedBin() {
+    return document.querySelector('[data-bin-opts] .bin-pill.on');
+  }
+  function selectedBinReason() {
+    var binEl = selectedBin();
+    if (!binEl || binEl.getAttribute('data-can-issue') !== '0') return '';
+    return binEl.getAttribute('data-reason') || '该卡头暂不可开卡';
+  }
+  function currentIssueQty() {
+    return parseInt((document.querySelector('[data-nc-qty]') || {}).value, 10) || 1;
+  }
+  function limitReasonForQty() {
+    var binEl = selectedBin();
+    if (!binEl) return '请选择卡段 BIN';
+    var hardReason = selectedBinReason();
+    if (hardReason) return hardReason;
+    var qty = currentIssueQty();
+    var tenantRemainingRaw = binEl.getAttribute('data-tenant-remaining');
+    var programRemainingRaw = binEl.getAttribute('data-remaining');
+    var tenantRemaining = tenantRemainingRaw === '' || tenantRemainingRaw == null ? Infinity : parseInt(tenantRemainingRaw, 10);
+    var programRemaining = programRemainingRaw === '' || programRemainingRaw == null ? Infinity : parseInt(programRemainingRaw, 10);
+    var max = Math.min(tenantRemaining, programRemaining);
+    if (Number.isFinite(max) && qty > max) return max <= 0 ? '商户总上限已满' : '本次最多可开 ' + max + ' 张';
+    return '';
+  }
+  function syncIssueButton() {
+    var reason = limitReasonForQty();
+    if (reason) {
+      fresh.disabled = true;
+      fresh.textContent = reason === '商户总上限已满' ? '总开卡上限已满' : reason === '已达开卡上限' ? '已达开卡上限' : reason.indexOf('本次最多可开') === 0 ? reason : '暂不可开卡';
+      fresh.title = reason;
+    } else {
+      fresh.disabled = false;
+      fresh.innerHTML = issueLabel;
+      fresh.title = '';
+    }
+  }
+
+  document.querySelectorAll('[data-bin-opts] .bin-pill').forEach(function (o) {
+    o.addEventListener('click', syncIssueButton);
+  });
+  document.querySelectorAll('[data-nc-qty],[data-nc-stepper] button').forEach(function (o) {
+    o.addEventListener('input', syncIssueButton);
+    o.addEventListener('click', function () { setTimeout(syncIssueButton, 0); });
+  });
+  syncIssueButton();
+
+  fresh.addEventListener('click', function () {
+    var reason = limitReasonForQty();
+    if (reason) { toast(reason, 'err'); syncIssueButton(); return; }
+    var binEl = selectedBin();
+    var bin = binEl ? binEl.getAttribute('data-bin') : '';
+    var purpose = (document.querySelector('[data-nc-purpose]') || {}).value || '其他';
+    var qty = parseInt((document.querySelector('[data-nc-qty]') || {}).value, 10) || 1;
+    var amount = parseFloat((((document.querySelector('[data-nc-amt]') || {}).value) || '0').replace(/,/g, '')) || 0;
+    var remark = (((document.querySelector('[data-nc-remark]') || {}).value) || '').trim();
+    window.faPay.require('开卡将从钱包余额扣款，请验证支付密码', function (pwd) {
+      fresh.disabled = true; fresh.textContent = '开卡中…';
+      var payload = { bin: bin, purpose: purpose, count: qty, preloadAmount: amount, remark: remark };
+      if (pwd) payload.payPassword = pwd;
+      fetch('/api/merchant/cards', {
+        method: 'POST', headers: { 'content-type': 'application/json' }, credentials: 'same-origin',
+        body: JSON.stringify(payload),
+      })
+        .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }); })
+        .then(function (res) {
+          if (res.ok) {
+            sessionStorage.setItem('faorbit_goto', 'newcard');
+            sessionStorage.setItem('faorbit_card_created_success', '1');
+            window.location.reload();
+            return;
+          }
+          if (res.status === 401) { window.location.href = '/login'; return; }
+          fresh.disabled = false; fresh.innerHTML = issueLabel;
+          toast((res.j && res.j.error) || '开卡失败', 'err');
+        })
+        .catch(function () { fresh.disabled = false; fresh.innerHTML = issueLabel; toast('网络错误，请重试', 'err'); });
+    });
+  });
+})();
+
+/* 卡片菜单动作：登录态接管「充值 / 冻结 / 解冻 / 销卡」→ /api/merchant/cards/[id]，成功后回「我的卡片」刷新。 */
+(function () {
+  var marker = document.querySelector('[data-auth-state]');
+  if (!marker || marker.getAttribute('data-auth-state') !== 'authed') return;
+  function toast(msg, kind) { try { if (window.FaorbitToast) { window.FaorbitToast(msg, kind || 'ok'); return; } } catch (e) {} alert(msg); }
+
+  // 申请解冻模态（替代浏览器 prompt）
+  var ufOv = document.querySelector('[data-uf-overlay]');
+  var ufReason = ufOv && ufOv.querySelector('[data-uf-reason]');
+  var ufErr = ufOv && ufOv.querySelector('[data-uf-err]');
+  var ufName = ufOv && ufOv.querySelector('[data-uf-card-name]');
+  var ufSubmit = ufOv && ufOv.querySelector('[data-uf-submit]');
+  var ufCardId = null;
+  function openUnfreeze(id, name) {
+    ufCardId = id;
+    if (ufName) ufName.textContent = name || '';
+    if (ufReason) ufReason.value = '';
+    if (ufErr) ufErr.textContent = '';
+    if (ufSubmit) ufSubmit.disabled = false;
+    ufOv.classList.add('open');
+    setTimeout(function () { if (ufReason) ufReason.focus(); }, 80);
+  }
+  function closeUnfreeze() { if (ufOv) ufOv.classList.remove('open'); ufCardId = null; }
+  if (ufOv) {
+    ufOv.querySelectorAll('[data-uf-close]').forEach(function (b) { b.addEventListener('click', closeUnfreeze); });
+    ufOv.addEventListener('click', function (e) { if (e.target === ufOv) closeUnfreeze(); });
+    if (ufSubmit) ufSubmit.addEventListener('click', function () {
+      if (!ufCardId) return;
+      var reason = (ufReason.value || '').trim();
+      ufSubmit.disabled = true;
+      fetch('/api/merchant/cards/' + encodeURIComponent(ufCardId), {
+        method: 'POST', headers: { 'content-type': 'application/json' }, credentials: 'same-origin',
+        body: JSON.stringify({ action: 'request_unfreeze', reason: reason }),
+      })
+        .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }); })
+        .then(function (res) {
+          if (res.ok) { toast('已提交解冻申请，等待平台处理', 'ok'); closeUnfreeze(); return; }
+          ufSubmit.disabled = false;
+          if (res.status === 401) { window.location.href = '/login'; return; }
+          if (ufErr) ufErr.textContent = (res.j && res.j.error) || '提交失败';
+        })
+        .catch(function () { ufSubmit.disabled = false; if (ufErr) ufErr.textContent = '网络错误，请重试'; });
+    });
+  }
+
+  // 统一提交卡片动作 → /api/merchant/cards/[id]
+  function doCardAction(id, payload, okMsg, onErr) {
+    fetch('/api/merchant/cards/' + encodeURIComponent(id), {
+      method: 'POST', headers: { 'content-type': 'application/json' }, credentials: 'same-origin',
+      body: JSON.stringify(payload),
+    })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }); })
+      .then(function (res) {
+        if (res.ok) { toast(okMsg, 'ok'); sessionStorage.setItem('faorbit_goto', 'cards'); setTimeout(function () { window.location.reload(); }, 300); return; }
+        if (res.status === 401) { window.location.href = '/login'; return; }
+        if (onErr) onErr((res.j && res.j.error) || '操作失败'); else toast((res.j && res.j.error) || '操作失败', 'err');
+      })
+      .catch(function () { if (onErr) onErr('网络错误，请重试'); else toast('网络错误，请重试', 'err'); });
+  }
+
+  // 充值 / 提现 金额模态
+  var amOv = document.querySelector('[data-am-overlay]');
+  var amTitle = amOv && amOv.querySelector('[data-am-title]'), amSub = amOv && amOv.querySelector('[data-am-sub]');
+  var amLabel = amOv && amOv.querySelector('[data-am-label]'), amHint = amOv && amOv.querySelector('[data-am-hint]');
+  var amAmount = amOv && amOv.querySelector('[data-am-amount]'), amErr = amOv && amOv.querySelector('[data-am-err]');
+  var amPaypwd = amOv && amOv.querySelector('[data-am-paypwd]');
+  var amPwdWrap = amOv && amOv.querySelector('[data-am-pwd-wrap]');
+  var amSubmit = amOv && amOv.querySelector('[data-am-submit]');
+  var amCtx = null;
+  function openAmount(cfg) {
+    // 未设置支付密码：先引导设置，设置后再打开操作弹窗（引导前设置）。
+    if (!window.faPay.hasPwd) { window.faPay.ensureSet(cfg.title || '此操作需验证支付密码', function () { openAmount(cfg); }); return; }
+    amCtx = cfg;
+    if (amTitle) amTitle.textContent = cfg.title || '';
+    if (amSub) amSub.textContent = cfg.sub || '';
+    if (amLabel) amLabel.textContent = cfg.label || '金额（USD）';
+    if (amHint) amHint.textContent = cfg.hint || '';
+    if (amErr) amErr.textContent = '';
+    if (amAmount) { amAmount.value = cfg.value || ''; amAmount.classList.remove('err'); }
+    if (amPaypwd) amPaypwd.value = '';
+    // 5 分钟免密窗口内：隐藏支付密码输入。
+    if (amPwdWrap) amPwdWrap.style.display = window.faPay.isOpen() ? 'none' : '';
+    if (amSubmit) amSubmit.disabled = false;
+    amOv.classList.add('open');
+    setTimeout(function () { if (amAmount) amAmount.focus(); }, 80);
+  }
+  function closeAmount() { if (amOv) amOv.classList.remove('open'); amCtx = null; }
+  if (amOv) {
+    amOv.querySelectorAll('[data-am-close]').forEach(function (b) { b.addEventListener('click', closeAmount); });
+    amOv.addEventListener('click', function (e) { if (e.target === amOv) closeAmount(); });
+    if (amAmount) amAmount.addEventListener('keydown', function (e) { if (e.key === 'Enter' && amSubmit) amSubmit.click(); });
+    if (amSubmit) amSubmit.addEventListener('click', function () {
+      if (!amCtx) return;
+      var amt = parseFloat(String(amAmount.value || '').replace(/,/g, ''));
+      if (!(amt > 0)) { if (amErr) amErr.textContent = '请输入有效金额'; amAmount.classList.add('err'); return; }
+      var winOpen = window.faPay.isOpen();
+      var amPwd = amPaypwd ? amPaypwd.value : '';
+      if (!winOpen && !amPwd) { if (amErr) amErr.textContent = '请输入支付密码'; return; }
+      if (amErr) amErr.textContent = '';
+      amSubmit.disabled = true;
+      var payload = { action: amCtx.action, amount: amt };
+      if (amPwd) payload.payPassword = amPwd;
+      doCardAction(amCtx.id, payload, amCtx.okMsg, function (m) { amSubmit.disabled = false; if (amErr) amErr.textContent = m; });
+    });
+  }
+
+  // 冻结 / 销卡 确认模态
+  var cfOv = document.querySelector('[data-cf-overlay]');
+  var cfTitle = cfOv && cfOv.querySelector('[data-cf-title]'), cfSub = cfOv && cfOv.querySelector('[data-cf-sub]');
+  var cfMsg = cfOv && cfOv.querySelector('[data-cf-msg]'), cfIcon = cfOv && cfOv.querySelector('[data-cf-icon]');
+  var cfSubmit = cfOv && cfOv.querySelector('[data-cf-submit]');
+  var cfPwdWrap = cfOv && cfOv.querySelector('[data-cf-pwd-wrap]');
+  var cfPaypwd = cfOv && cfOv.querySelector('[data-cf-paypwd]');
+  var cfErr = cfOv && cfOv.querySelector('[data-cf-err]');
+  var cfCtx = null;
+  function openConfirm(cfg) {
+    // 需支付密码但未设置：先引导设置，设置后再打开确认弹窗。
+    if (cfg.needPwd && !window.faPay.hasPwd) { window.faPay.ensureSet(cfg.title || '此操作需验证支付密码', function () { openConfirm(cfg); }); return; }
+    cfCtx = cfg;
+    if (cfTitle) cfTitle.textContent = cfg.title || '';
+    if (cfSub) cfSub.textContent = cfg.sub || '';
+    if (cfMsg) cfMsg.textContent = cfg.msg || '';
+    if (cfSubmit) {
+      cfSubmit.textContent = cfg.confirmText || '确认'; cfSubmit.disabled = false;
+      cfSubmit.style.background = cfg.danger ? '#d24444' : ''; cfSubmit.style.borderColor = cfg.danger ? '#d24444' : '';
+    }
+    if (cfIcon) { cfIcon.style.background = cfg.danger ? 'rgba(210,68,68,.12)' : 'rgba(246,130,31,.12)'; cfIcon.style.color = cfg.danger ? '#d24444' : '#c2700f'; }
+    if (cfPwdWrap) cfPwdWrap.style.display = cfg.needPwd ? '' : 'none';
+    if (cfPaypwd) cfPaypwd.value = '';
+    if (cfErr) cfErr.textContent = '';
+    cfOv.classList.add('open');
+  }
+  function closeConfirm() { if (cfOv) cfOv.classList.remove('open'); cfCtx = null; }
+  if (cfOv) {
+    cfOv.querySelectorAll('[data-cf-close]').forEach(function (b) { b.addEventListener('click', closeConfirm); });
+    cfOv.addEventListener('click', function (e) { if (e.target === cfOv) closeConfirm(); });
+    if (cfSubmit) cfSubmit.addEventListener('click', function () {
+      if (!cfCtx) return;
+      var payload = { action: cfCtx.action };
+      if (cfCtx.needPwd) {
+        var p = cfPaypwd ? cfPaypwd.value : '';
+        if (!p) { if (cfErr) cfErr.textContent = '请输入支付密码'; return; }
+        if (cfErr) cfErr.textContent = '';
+        payload.payPassword = p;
+      }
+      cfSubmit.disabled = true;
+      doCardAction(cfCtx.id, payload, cfCtx.okMsg, function (m) { cfSubmit.disabled = false; if (cfCtx.needPwd && cfErr) cfErr.textContent = m; else toast(m, 'err'); });
+    });
+  }
+
+  document.addEventListener('click', function (e) {
+    var btn = e.target && e.target.closest ? e.target.closest('[data-card-action]') : null;
+    if (!btn) return;
+    e.preventDefault(); e.stopPropagation();
+    // 卡 id：行内菜单从 tr 取，详情抽屉从抽屉根 data-card-id 取
+    var host = btn.closest('[data-card-id]');
+    var id = host && host.getAttribute('data-card-id');
+    if (!id) return;
+    var action = btn.getAttribute('data-card-action');
+    // 卡名 / 卡号（模态副标题）
+    var cardName = host.getAttribute('data-name') || (document.querySelector('[data-dw-lbl]') ? document.querySelector('[data-dw-lbl]').textContent : '') || '';
+    var cardBin = host.getAttribute('data-bin') || '', cardLast = host.getAttribute('data-last') || '';
+    var sub = cardName + (cardBin && cardLast ? ' · ' + cardBin + ' •••• ' + cardLast : '');
+    var cardBal = host.getAttribute('data-balance') || '';
+    if (action === 'topup') {
+      openAmount({ id: id, action: 'topup', title: '卡片充值', sub: sub, label: '充值金额（USD）', hint: '从钱包余额扣款', value: '100', okMsg: '卡片充值成功' });
+    } else if (action === 'withdraw') {
+      openAmount({ id: id, action: 'withdraw', title: '卡片余额转回钱包', sub: sub, label: '转回金额（USD）', hint: cardBal ? '卡内余额 $' + cardBal : '', value: '', okMsg: '已转回钱包' });
+    } else if (action === 'close') {
+      openConfirm({ id: id, action: 'close', title: '销卡', sub: sub, msg: '确认销卡？卡内余额将退回钱包，且此操作不可恢复。', confirmText: '确认销卡', danger: true, needPwd: false, okMsg: '已销卡，余额已退回' });
+    } else if (action === 'freeze') {
+      openConfirm({ id: id, action: 'freeze', title: '冻结卡片', sub: sub, msg: '确认冻结此卡？冻结后不能授权与清算，已 hold 的授权会照常清算。', confirmText: '确认冻结', danger: false, okMsg: '卡片已冻结' });
+    } else if (action === 'request_unfreeze') {
+      openUnfreeze(id, sub);
+    } else if (action === 'unfreeze') {
+      doCardAction(id, { action: 'unfreeze' }, '卡片已解冻');
+    }
+  }, true);
+})();
+
+/* 商户被冻结：横幅「申请解冻」→ 商户级解冻申请。 */
+(function () {
+  var marker = document.querySelector('[data-auth-state]');
+  if (!marker || marker.getAttribute('data-auth-state') !== 'authed') return;
+  function toast(msg, kind) { try { if (window.FaorbitToast) { window.FaorbitToast(msg, kind || 'ok'); return; } } catch (e) {} alert(msg); }
+  var ov = document.querySelector('[data-tuf-overlay]');
+  var btn = document.querySelector('[data-tenant-unfreeze-btn]');
+  if (!ov || !btn) return;
+  var reason = ov.querySelector('[data-tuf-reason]');
+  var err = ov.querySelector('[data-tuf-err]');
+  var submit = ov.querySelector('[data-tuf-submit]');
+  function open() { if (reason) reason.value = ''; if (err) err.textContent = ''; if (submit) submit.disabled = false; ov.classList.add('open'); setTimeout(function () { if (reason) reason.focus(); }, 80); }
+  function close() { ov.classList.remove('open'); }
+  btn.addEventListener('click', open);
+  ov.querySelectorAll('[data-tuf-close]').forEach(function (b) { b.addEventListener('click', close); });
+  ov.addEventListener('click', function (e) { if (e.target === ov) close(); });
+  if (submit) submit.addEventListener('click', function () {
+    submit.disabled = true;
+    fetch('/api/merchant/tenant/unfreeze-request', {
+      method: 'POST', headers: { 'content-type': 'application/json' }, credentials: 'same-origin',
+      body: JSON.stringify({ reason: (reason && reason.value || '').trim() }),
+    })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }); })
+      .then(function (res) {
+        if (res.ok) { toast('已提交解冻申请，等待平台处理', 'ok'); close(); btn.disabled = true; btn.textContent = '解冻申请已提交'; return; }
+        submit.disabled = false;
+        if (res.status === 401) { window.location.href = '/login'; return; }
+        if (err) err.textContent = (res.j && res.j.error) || '提交失败';
+      })
+      .catch(function () { submit.disabled = false; if (err) err.textContent = '网络错误，请重试'; });
+  });
+})();
+
+/* 侧栏真实身份卡片 / 退出登录 / data-allow 按真角色显隐，统一由 public/js/preview-identity.js
+   在登录态接管；问候语由服务端写入 data-greeting。此处不再重复覆盖侧栏槽位。 */
+
+/* 设置改密码 + API 密钥创建/撤销。 */
+(function () {
+  var marker = document.querySelector('[data-auth-state]');
+  if (!marker || marker.getAttribute('data-auth-state') !== 'authed') return;
+  function toast(msg, kind) { try { if (window.FaorbitToast) { window.FaorbitToast(msg, kind || 'ok'); return; } } catch (e) {} alert(msg); }
+  function post(url, body) {
+    return fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify(body || {}) })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }); });
+  }
+  if (sessionStorage.getItem('faorbit_goto') === 'apikeys') {
+    sessionStorage.removeItem('faorbit_goto');
+    var gk = document.querySelector('.dnav a[data-view="apikeys"]'); if (gk) gk.click();
+  }
+  var cp = document.querySelector('[data-change-pwd]');
+  if (cp) {
+    var c2 = cp.cloneNode(true); cp.parentNode.replaceChild(c2, cp);
+    c2.addEventListener('click', function () {
+      window.FaorbitDialog.form({
+        title: '修改登录密码',
+        fields: [
+          { key: 'oldp', label: '当前登录密码', type: 'password', required: true, reveal: true },
+          { key: 'newp', label: '新密码（至少 8 位）', type: 'password', required: true, reveal: true, validate: function (v) { return v.length >= 8 ? '' : '新密码至少 8 位'; } },
+          { key: 'confirmp', label: '确认新密码', type: 'password', required: true, reveal: true, validate: function (v, all) { return v === all.newp ? '' : '两次输入的新密码不一致'; } },
+        ],
+        okText: '确认修改',
+      }).then(function (v) {
+        if (!v) return;
+        post('/api/merchant/settings/password', { oldPassword: v.oldp, newPassword: v.newp })
+          .then(function (r) {
+            if (r.ok) {
+              toast('登录密码已修改', 'ok');
+              marker.setAttribute('data-must-change-password', 'false');
+              var banner = document.querySelector('[data-password-change-banner]'); if (banner) banner.style.display = 'none';
+            } else if (r.status === 401) { location.href = '/login'; }
+            else { toast((r.j && r.j.error) || '修改失败', 'err'); }
+          });
+      });
+    });
+    var changeNow = document.querySelector('[data-password-change-now]');
+    if (changeNow) changeNow.addEventListener('click', function () {
+      var settings = document.querySelector('.dnav a[data-view="settings"]'); if (settings) settings.click();
+      var security = document.querySelector('[data-set-tab="security"]'); if (security) security.click();
+      c2.click();
+    });
+  }
+  // 设置 / 修改支付密码（用于开卡 / 充值 / 提现 / 销卡的资金校验）。
+  // 统一走 window.faPay.openSetDialog，与资金操作的「引导前设置」共用同一实现。
+  var sp = document.querySelector('[data-set-paypwd]');
+  if (sp) {
+    var s2 = sp.cloneNode(true); sp.parentNode.replaceChild(s2, sp);
+    s2.addEventListener('click', function () {
+      if (window.faPay && window.faPay.openSetDialog) window.faPay.openSetDialog();
+      else toast('请刷新后重试', 'err');
+    });
+  }
+  // API 密钥「仅显示一次」弹窗：替代原生 alert，关闭后才刷新列表（避免刷新把密钥冲掉）。
+  var akOv = document.querySelector('[data-ak-overlay]');
+  var akValue = akOv && akOv.querySelector('[data-ak-value]');
+  function openApiKey(key) { if (akValue) akValue.textContent = key || '—'; if (akOv) akOv.classList.add('open'); }
+  function closeApiKey() { if (akOv) akOv.classList.remove('open'); sessionStorage.setItem('faorbit_goto', 'apikeys'); window.location.reload(); }
+  if (akOv) {
+    akOv.querySelectorAll('[data-ak-close]').forEach(function (b) { b.addEventListener('click', closeApiKey); });
+    akOv.addEventListener('click', function (e) { if (e.target === akOv) closeApiKey(); });
+    var akCopy = akOv.querySelector('[data-ak-copy]');
+    if (akCopy) akCopy.addEventListener('click', function () {
+      var v = akValue ? akValue.textContent : '';
+      try { navigator.clipboard.writeText(v).then(function () { akCopy.textContent = '已复制'; setTimeout(function () { akCopy.textContent = '复制'; }, 1500); }); } catch (e) {}
+    });
+  }
+  var ck = document.querySelector('[data-create-key]');
+  if (ck) {
+    var k2 = ck.cloneNode(true); ck.parentNode.replaceChild(k2, ck);
+    k2.addEventListener('click', function () {
+      window.FaorbitDialog.form({
+        title: '创建 API 密钥',
+        message: '完整密钥只显示一次，创建后请立即复制保存。',
+        fields: [{ key: 'env', label: '环境', type: 'select', value: 'test', options: [{ value: 'test', label: 'test · 沙箱联调' }, { value: 'live', label: 'live · 生产' }] }],
+        okText: '创建密钥',
+      }).then(function (v) {
+        if (!v) return;
+        post('/api/merchant/apikeys', { env: v.env })
+          .then(function (r) {
+            if (r.ok) { openApiKey(r.j && r.j.key); }
+            else if (r.status === 401) { location.href = '/login'; }
+            else { toast((r.j && r.j.error) || '创建失败', 'err'); }
+          });
+      });
+    });
+  }
+  document.addEventListener('click', function (e) {
+    var rb = e.target.closest && e.target.closest('[data-revoke-key]');
+    if (!rb) return;
+    e.preventDefault(); e.stopPropagation();
+    var id = rb.getAttribute('data-key-id'); if (!id) return;
+    window.FaorbitDialog.confirm({ title: '撤销 API 密钥', message: '使用该密钥的服务会立即失效，且不可恢复。', danger: true, okText: '确认撤销' }).then(function (yes) {
+      if (!yes) return;
+      post('/api/merchant/apikeys/' + encodeURIComponent(id), { action: 'revoke' })
+        .then(function (r) { if (r.ok) { toast('密钥已撤销', 'ok'); sessionStorage.setItem('faorbit_goto', 'apikeys'); setTimeout(function () { window.location.reload(); }, 200); } else if (r.status === 401) { location.href = '/login'; } else { toast((r.j && r.j.error) || '撤销失败', 'err'); } });
+    });
+  }, true);
+})();
+
+/* 钱包提现：金额 + 收款方式（USDT/银行）+ 支付密码 → 商户端自助完成出金。 */
+(function () {
+  var marker = document.querySelector('[data-auth-state]');
+  if (!marker || marker.getAttribute('data-auth-state') !== 'authed') return;
+  function toast(msg, kind) { try { if (window.FaorbitToast) { window.FaorbitToast(msg, kind || 'ok'); return; } } catch (e) {} alert(msg); }
+  var wb = document.querySelector('[data-withdraw-btn]');
+  if (!wb) return;
+  var f = wb.cloneNode(true);
+  wb.parentNode.replaceChild(f, wb);
+
+  var ov = null;
+  function closeOv() { if (ov) { ov.remove(); ov = null; } }
+  f.addEventListener('click', function () {
+    // 未设置支付密码：先引导设置，设置后再打开提现弹窗。
+    if (!window.faPay.hasPwd) { window.faPay.ensureSet('提现需验证支付密码', function () { f.click(); }); return; }
+    closeOv();
+    ov = document.createElement('div');
+    ov.style.cssText = 'position:fixed;inset:0;background:rgba(12,22,64,.45);backdrop-filter:blur(3px);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px';
+    ov.innerHTML = ''
+      + '<div style="background:#fff;border-radius:16px;box-shadow:0 24px 64px -16px rgba(12,22,64,.4);width:100%;max-width:430px;overflow:hidden;max-height:92vh;overflow-y:auto">'
+      +   '<div style="padding:20px 26px 14px;border-bottom:1px solid var(--line)">'
+      +     '<div style="font-family:var(--ff-disp);font-weight:700;font-size:16px">提现</div>'
+      +     '<div style="color:var(--ink-3);font-size:12.5;margin-top:3px">提交后从钱包余额扣款，并记录到充值与提现记录。</div>'
+      +   '</div>'
+      +   '<div style="padding:18px 26px;display:grid;gap:13px">'
+      +     '<div>'
+      +       '<label style="display:block;font-size:12.5;font-weight:600;color:var(--ink-2);margin-bottom:6px">提现金额（USD）</label>'
+      +       '<input data-wd-amt type="number" min="0" step="0.01" placeholder="例如：100.00" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font-size:14px;font-family:var(--ff-mono);outline:none">'
+      +     '</div>'
+      +     '<div>'
+      +       '<label style="display:block;font-size:12.5;font-weight:600;color:var(--ink-2);margin-bottom:6px">收款方式</label>'
+      +       '<div style="display:flex;gap:8px">'
+      +         '<button type="button" data-wd-method="usdt" class="btn btn-primary btn-sm" style="flex:1;justify-content:center">USDT</button>'
+      +         '<button type="button" data-wd-method="bank" class="btn btn-soft btn-sm" style="flex:1;justify-content:center">银行转账</button>'
+      +       '</div>'
+      +     '</div>'
+      +     '<div data-wd-usdt>'
+      +       '<label style="display:block;font-size:12.5;font-weight:600;color:var(--ink-2);margin-bottom:6px">收款地址（TRC-20）</label>'
+      +       '<input data-wd-address type="text" placeholder="T 开头的 TRON 地址" autocomplete="off" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font-size:13px;font-family:var(--ff-mono);outline:none">'
+      +     '</div>'
+      +     '<div data-wd-bank style="display:none;grid-template-columns:1fr;gap:10px">'
+      +       '<input data-wd-bankname type="text" placeholder="开户行" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font-size:13.5px;outline:none">'
+      +       '<input data-wd-acctname type="text" placeholder="收款户名" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font-size:13.5px;outline:none">'
+      +       '<input data-wd-acctno type="text" placeholder="账号" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font-size:13.5px;font-family:var(--ff-mono);outline:none">'
+      +     '</div>'
+      +     (window.faPay.isOpen() ? '' : (''
+      +       '<div>'
+      +         '<label style="display:block;font-size:12.5;font-weight:600;color:var(--ink-2);margin-bottom:6px">支付密码</label>'
+      +         '<input data-wd-paypwd type="password" inputmode="numeric" autocomplete="off" placeholder="输入支付密码确认" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font-size:14px;outline:none">'
+      +       '</div>'))
+      +     '<div data-wd-err style="color:#d23b3b;font-size:12;min-height:16px"></div>'
+      +   '</div>'
+      +   '<div style="padding:0 26px 20px;display:flex;gap:10px;justify-content:flex-end">'
+      +     '<button class="btn btn-soft btn-sm" data-wd-cancel>取消</button>'
+      +     '<button class="btn btn-primary btn-sm" data-wd-ok>确认提现</button>'
+      +   '</div>'
+      + '</div>';
+    document.body.appendChild(ov);
+    var method = 'usdt';
+    var errEl = ov.querySelector('[data-wd-err]');
+    var okBtn = ov.querySelector('[data-wd-ok]');
+    ov.addEventListener('click', function (e) {
+      if (e.target === ov) { closeOv(); return; }
+      var mBtn = e.target.closest && e.target.closest('[data-wd-method]');
+      if (mBtn) {
+        method = mBtn.getAttribute('data-wd-method');
+        ov.querySelectorAll('[data-wd-method]').forEach(function (b) {
+          b.className = 'btn btn-sm ' + (b.getAttribute('data-wd-method') === method ? 'btn-primary' : 'btn-soft');
+          b.style.flex = '1'; b.style.justifyContent = 'center';
+        });
+        ov.querySelector('[data-wd-usdt]').style.display = method === 'usdt' ? '' : 'none';
+        ov.querySelector('[data-wd-bank]').style.display = method === 'bank' ? 'grid' : 'none';
+      }
+    });
+    ov.querySelector('[data-wd-cancel]').addEventListener('click', closeOv);
+    setTimeout(function () { ov.querySelector('[data-wd-amt]').focus(); }, 100);
+    okBtn.addEventListener('click', function () {
+      var amt = parseFloat(String(ov.querySelector('[data-wd-amt]').value || '').replace(/,/g, ''));
+      if (!(amt > 0)) { errEl.textContent = '请输入有效提现金额'; return; }
+      var payoutInfo;
+      if (method === 'usdt') {
+        payoutInfo = { network: 'TRC20', address: ov.querySelector('[data-wd-address]').value.trim() };
+        if (payoutInfo.address.length < 20) { errEl.textContent = '请填写正确的收款地址'; return; }
+      } else {
+        payoutInfo = {
+          bankName: ov.querySelector('[data-wd-bankname]').value.trim(),
+          accountName: ov.querySelector('[data-wd-acctname]').value.trim(),
+          accountNumber: ov.querySelector('[data-wd-acctno]').value.trim(),
+        };
+        if (!payoutInfo.bankName || !payoutInfo.accountName || !payoutInfo.accountNumber) { errEl.textContent = '请完整填写收款银行信息'; return; }
+      }
+      var pwdEl = ov.querySelector('[data-wd-paypwd]');
+      var pwd = pwdEl ? pwdEl.value : '';
+      if (pwdEl && !pwd) { errEl.textContent = '请输入支付密码'; return; }
+      errEl.textContent = '';
+      okBtn.disabled = true; okBtn.textContent = '提交中…';
+      var body = { amount: amt, method: method, payoutInfo: payoutInfo };
+      if (pwd) body.payPassword = pwd;
+      fetch('/api/merchant/wallet/withdraw', {
+        method: 'POST', headers: { 'content-type': 'application/json' }, credentials: 'same-origin',
+        body: JSON.stringify(body),
+      })
+        .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }); })
+        .then(function (res) {
+          if (res.ok) { closeOv(); toast('提现已完成，资金已出账', 'ok'); setTimeout(function () { window.location.reload(); }, 600); return; }
+          if (res.status === 401) { window.location.href = '/login'; return; }
+          okBtn.disabled = false; okBtn.textContent = '确认提现';
+          errEl.textContent = (res.j && res.j.error) || '提交失败';
+        })
+        .catch(function () { okBtn.disabled = false; okBtn.textContent = '确认提现'; errEl.textContent = '网络错误，请重试'; });
+    });
+  });
+})();
+
+/* 审批：owner 批准/驳回资金申请 → /api/merchant/requests/[id]，成功后刷新（停在审批视图）。 */
+(function () {
+  var marker = document.querySelector('[data-auth-state]');
+  if (!marker || marker.getAttribute('data-auth-state') !== 'authed') return;
+  function toast(msg, kind) { try { if (window.FaorbitToast) { window.FaorbitToast(msg, kind || 'ok'); return; } } catch (e) {} alert(msg); }
+  if (sessionStorage.getItem('faorbit_goto') === 'approvals') {
+    sessionStorage.removeItem('faorbit_goto');
+    var g = document.querySelector('.dnav a[data-view="approvals"]'); if (g) g.click();
+  }
+  document.addEventListener('click', function (e) {
+    var ap = e.target.closest && e.target.closest('[data-fr-approve]');
+    var rj = e.target.closest && e.target.closest('[data-fr-reject]');
+    var btn = ap || rj; if (!btn) return;
+    e.preventDefault(); e.stopPropagation();
+    var id = btn.getAttribute('data-req-id'); if (!id) return;
+    function run(body) {
+      btn.disabled = true;
+      fetch('/api/merchant/requests/' + encodeURIComponent(id), {
+        method: 'POST', headers: { 'content-type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify(body),
+      })
+        .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }); })
+        .then(function (res) {
+          if (res.ok) { toast(ap ? '已批准，资金已转入成员钱包' : '已驳回', 'ok'); sessionStorage.setItem('faorbit_goto', 'approvals'); setTimeout(function () { window.location.reload(); }, 300); return; }
+          if (res.status === 401) { window.location.href = '/login'; return; }
+          btn.disabled = false; toast((res.j && res.j.error) || '操作失败', 'err');
+        })
+        .catch(function () { btn.disabled = false; toast('网络错误', 'err'); });
+    }
+    if (ap) { run({ action: 'approve' }); return; }
+    window.FaorbitDialog.form({
+      title: '驳回资金申请',
+      message: '驳回后会通知申请人，可在下方填写原因。',
+      danger: true, okText: '确认驳回',
+      fields: [{ key: 'reason', label: '驳回原因（可选）', type: 'text', placeholder: '例如：本周预算已锁定' }],
+    }).then(function (v) { if (!v) return; run({ action: 'reject', reason: v.reason || '' }); });
+  }, true);
+})();
+
+/* 平台冻结提醒：登录态进入仪表盘，若有被平台冻结的卡，顶部居中弹 5s 横幅，点击跳「我的卡片」。 */
+(function () {
+  var m = document.querySelector('[data-auth-state]');
+  if (!m || m.getAttribute('data-auth-state') !== 'authed') return;
+  var n = parseInt(m.getAttribute('data-frozen-count') || '0', 10);
+  if (!(n > 0)) return;
+  setTimeout(function () {
+    var el = document.createElement('div');
+    el.setAttribute('role', 'alert');
+    el.style.cssText = 'position:fixed;top:18px;left:50%;transform:translateX(-50%) translateY(-14px);z-index:200;display:flex;align-items:center;gap:10px;max-width:92vw;padding:12px 18px;background:#fff;border:1px solid rgba(246,130,31,.35);border-left:4px solid #f6821f;border-radius:12px;box-shadow:0 16px 40px -12px rgba(12,22,64,.35);color:var(--ink);font-size:14px;font-weight:500;opacity:0;transition:opacity .25s,transform .25s;cursor:pointer';
+    el.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c2700f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
+      + '<span>你有 ' + n + ' 张卡片被平台冻结，点此前往「我的卡片」提交解冻申请</span>';
+    document.body.appendChild(el);
+    requestAnimationFrame(function () { el.style.opacity = '1'; el.style.transform = 'translateX(-50%) translateY(0)'; });
+    var dismiss = function () { el.style.opacity = '0'; el.style.transform = 'translateX(-50%) translateY(-14px)'; setTimeout(function () { el.remove(); }, 260); };
+    el.addEventListener('click', function () { var go = document.querySelector('.dnav a[data-view="cards"]'); if (go) go.click(); dismiss(); });
+    setTimeout(dismiss, 5000);
+  }, 800);
+})();
+
+/* 顶栏全局搜索：登录态下 debounce 拉 /api/merchant/search，命中项点击后切到对应视图并高亮行。 */
+(function () {
+  var authEl = document.querySelector('[data-auth-state]');
+  if (!authEl || authEl.getAttribute('data-auth-state') !== 'authed') return;
+  var wrap = document.querySelector('[data-search-wrap]');
+  if (!wrap) return;
+  var input = wrap.querySelector('[data-search-input]');
+  var panel = wrap.querySelector('[data-search-panel]');
+  if (!input || !panel) return;
+  var lastQ = '', timer = null, ctrl = null;
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function pad2(n) { return String(n).padStart(2, '0'); }
+  function fmtAt(iso) { var d = new Date(iso); return pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()) + ' ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes()); }
+  function hide() { panel.style.display = 'none'; panel.innerHTML = ''; }
+
+  function render(data) {
+    var q = input.value.trim();
+    var cards = (data && data.cards) || [];
+    var txns = (data && data.txns) || [];
+    if (!cards.length && !txns.length) {
+      panel.innerHTML = '<div style="padding:18px;color:var(--ink-3);font-size:13.5px;text-align:center">未找到与「' + esc(q) + '」相关的卡片或交易</div>';
+      panel.style.display = 'block';
+      return;
+    }
+    var html = '';
+    if (cards.length) {
+      html += '<div style="padding:8px 12px;color:var(--ink-3);font-size:11.5px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;background:var(--bg-2)">卡片</div>';
+      cards.forEach(function (c) {
+        var st = c.status === 'active' ? '在用' : (c.status === 'frozen' ? '冻结' : (c.status === 'closed' ? '已销' : c.status));
+        html += '<a href="#" data-jump="card" data-id="' + esc(c.id) + '" style="display:flex;align-items:center;gap:10px;padding:10px 12px;text-decoration:none;color:var(--ink);border-top:1px solid var(--line)">'
+          + '<i data-lucide="credit-card" style="width:16px;height:16px;color:var(--ink-3);flex:none"></i>'
+          + '<span style="font-weight:600">' + esc(c.label) + '</span>'
+          + '<span style="color:var(--ink-3);font-size:13px">' + esc(c.panMasked) + '</span>'
+          + '<span style="margin-left:auto;font-size:12px;color:var(--ink-3)">' + esc(st) + '</span>'
+          + '</a>';
+      });
+    }
+    if (txns.length) {
+      html += '<div style="padding:8px 12px;color:var(--ink-3);font-size:11.5px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;background:var(--bg-2);border-top:1px solid var(--line)">交易</div>';
+      txns.forEach(function (t) {
+        var amtColor = t.credit ? 'var(--green)' : (t.declined ? '#d23b3b' : 'var(--ink)');
+        html += '<a href="#" data-jump="txn" data-id="' + esc(t.id) + '" style="display:flex;align-items:center;gap:10px;padding:10px 12px;text-decoration:none;color:var(--ink);border-top:1px solid var(--line)">'
+          + '<i data-lucide="arrow-left-right" style="width:16px;height:16px;color:var(--ink-3);flex:none"></i>'
+          + '<span style="font-weight:600;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(t.merchant) + '</span>'
+          + '<span style="color:var(--ink-3);font-size:13px">' + esc(t.cardLabel) + ' · ' + fmtAt(t.at) + '</span>'
+          + '<span style="margin-left:auto;font-family:var(--ff-mono);color:' + amtColor + '">' + esc(t.amountText) + '</span>'
+          + '</a>';
+      });
+    }
+    panel.innerHTML = html;
+    panel.style.display = 'block';
+    if (window.lucide) lucide.createIcons();
+  }
+
+  function run() {
+    var q = input.value.trim();
+    if (q === lastQ) return;
+    lastQ = q;
+    if (!q) { hide(); return; }
+    if (ctrl) ctrl.abort();
+    ctrl = new AbortController();
+    panel.innerHTML = '<div style="padding:14px;color:var(--ink-3);font-size:13px;text-align:center">搜索中…</div>';
+    panel.style.display = 'block';
+    fetch('/api/merchant/search?q=' + encodeURIComponent(q), { signal: ctrl.signal, credentials: 'same-origin' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) { if (data) render(data); else hide(); })
+      .catch(function (err) { if (err && err.name === 'AbortError') return; hide(); });
+  }
+
+  input.addEventListener('input', function () { if (timer) clearTimeout(timer); timer = setTimeout(run, 200); });
+  input.addEventListener('focus', function () { if (input.value.trim()) run(); });
+  input.addEventListener('keydown', function (e) { if (e.key === 'Escape') { hide(); input.blur(); } });
+
+  document.addEventListener('click', function (e) {
+    var link = e.target && e.target.closest ? e.target.closest('[data-jump]') : null;
+    if (link) {
+      e.preventDefault();
+      var kind = link.getAttribute('data-jump'), id = link.getAttribute('data-id');
+      var goView = kind === 'card' ? 'cards' : 'transactions';
+      var nav = document.querySelector('.dnav a[data-view="' + goView + '"]');
+      if (nav) nav.click();
+      input.value = '';
+      lastQ = '';
+      hide();
+      input.blur();
+      setTimeout(function () {
+        var sel = kind === 'card'
+          ? 'tr[data-card-id="' + (window.CSS && CSS.escape ? CSS.escape(id) : id) + '"]'
+          : 'tr[data-txn-id="' + (window.CSS && CSS.escape ? CSS.escape(id) : id) + '"]';
+        var row = document.querySelector(sel);
+        if (!row) return;
+        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        var orig = row.style.backgroundColor;
+        row.style.transition = 'background-color .4s';
+        row.style.backgroundColor = 'rgba(31,109,255,.14)';
+        setTimeout(function () { row.style.backgroundColor = orig; }, 1400);
+      }, 200);
+      return;
+    }
+    if (!wrap.contains(e.target)) hide();
+  });
+})();
+
+/* 套餐面板：月/年切换 + 自定义购买弹窗（支付密码）+ 有效期展示。到期自动回落 Starter，不提供手动降级。 */
+(function () {
+  var authEl = document.querySelector('[data-auth-state]');
+  if (!authEl || authEl.getAttribute('data-auth-state') !== 'authed') return;
+  var body = document.querySelector('[data-plan-body]');
+  if (!body) return;
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function fmtUSD(cents) { return '$' + (cents / 100).toFixed(2); }
+  function fmtPct(rate) { return (Math.round(rate * 10000) / 100) + '%'; }
+  function fmtDay(iso) { var d = new Date(iso); var p = function (n) { return String(n).padStart(2, '0'); }; return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()); }
+  function fmtDate(iso) { var d = new Date(iso); var p = function (n) { return String(n).padStart(2, '0'); }; return fmtDay(iso) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()); }
+  function toast(msg, kind) { try { if (window.FaorbitToast) return window.FaorbitToast(msg, kind || 'ok'); } catch (e) {} alert(msg); }
+
+  var PLAN_TAGLINE = {
+    Starter: '起步团队 · 按需付费',
+    Growth: '规模化投放团队',
+    Enterprise: '大额投放与平台型客户',
+  };
+  var PLAN_TONE = { Starter: '#5b6478', Growth: '#1f6dff', Enterprise: '#8a5cf6' };
+  var PLAN_FEATURES = {
+    Starter: ['适合小规模验证', '标准开卡与充值费率', '基础团队协作'],
+    Growth: ['更低开卡费', '更低充值费率', '适合稳定投放团队'],
+    Enterprise: ['定制费率', '专属客户经理', '大额投放与平台协作'],
+  };
+  var snapshot = null;
+  var cycle = 'monthly'; // 'monthly' | 'yearly'
+
+  function priceOf(p) { return cycle === 'yearly' ? p.yearlyCents : p.monthlyCents; }
+
+  function render(data) {
+    snapshot = data;
+    var currentTone = PLAN_TONE[data.plan] || '#1f6dff';
+    var currentPlan = null;
+    (data.plans || []).forEach(function (p) { if (p.isCurrent) currentPlan = p; });
+    var currentPrice = currentPlan ? priceOf(currentPlan) : null;
+    var currentActionHtml = '';
+    if (currentPlan && data.planExpiresAt && currentPrice > 0) {
+      currentActionHtml = '<button class="btn btn-primary btn-sm" data-plan-renew="' + esc(currentPlan.key) + '"><i data-lucide="refresh-cw" style="width:14px;height:14px"></i>'
+        + (cycle === 'yearly' ? '按年续费' : '按月续费') + '</button>';
+    }
+    var html = '';
+
+    html += '<div class="plan-pane">';
+
+    // 顶部横条：当前套餐 + 有效期 + 两个费率
+    html += '<div class="plan-current-card" style="border-color:' + currentTone + '40">'
+      + '<div class="plan-current-inner">'
+      +   '<div>'
+      +     '<div class="plan-eyebrow">Current plan</div>'
+      +     '<div class="plan-title-row">'
+      +       '<span class="plan-icon" style="background:' + currentTone + '12;color:' + currentTone + '"><i data-lucide="crown"></i></span>'
+      +       '<span class="plan-name">' + esc(data.plan) + '</span>'
+      +     '</div>'
+      +     '<div class="plan-subline">' + esc(PLAN_TAGLINE[data.plan] || '')
+      +       (data.planExpiresAt ? ' · <b style="color:#c2700f">有效期至 ' + fmtDay(data.planExpiresAt) + '</b>，到期后自动恢复 Starter' : ' · 当前无到期日')
+      +     '</div>'
+      +     '<div class="plan-chip-row">'
+      +       '<span class="plan-chip"><i data-lucide="zap"></i>立即生效</span>'
+      +       '<span class="plan-chip"><i data-lucide="wallet"></i>团队钱包扣款</span>'
+      +       '<span class="plan-chip"><i data-lucide="shield-check"></i>支付密码确认</span>'
+      +       currentActionHtml
+      +     '</div>'
+      +   '</div>'
+      +   '<div class="plan-current-metrics">'
+      +     '<div class="plan-metric"><div class="label">开卡费</div><div class="value">' + fmtUSD(data.fees.cardIssueCents) + ' <span class="unit">/张</span></div></div>'
+      +     '<div class="plan-metric"><div class="label">充值费率</div><div class="value">' + fmtPct(data.fees.topupFeeRate) + '</div></div>'
+      +   '</div>'
+      + '</div></div>';
+
+    // 标题 + 月/年切换（年付约 8 折）
+    html += '<div class="plan-section-head">'
+      + '<div class="plan-section-title">全部套餐</div>'
+      + '<div class="plan-cycle">'
+      +   '<button data-plan-cycle="monthly" class="' + (cycle === 'monthly' ? 'on' : '') + '">按月</button>'
+      +   '<button data-plan-cycle="yearly" class="' + (cycle === 'yearly' ? 'on' : '') + '">按年<span class="plan-save">省 20%</span></button>'
+      + '</div></div>';
+
+    // 套餐卡
+    html += '<div class="plan-pricing-grid">';
+    (data.plans || []).forEach(function (p) {
+      // 当前套餐已在上方单独展示；下方完整列出其余套餐供比较。
+      if (p.isCurrent) return;
+      var tone = PLAN_TONE[p.key] || '#1f6dff';
+      var isEnt = p.key === 'Enterprise';
+      var price = priceOf(p);
+
+      var priceHtml;
+      if (price === null) priceHtml = '<div class="plan-price"><span class="main">定制</span></div>';
+      else if (price === 0) priceHtml = '<div class="plan-price"><span class="main">免费</span></div>';
+      else if (cycle === 'yearly') {
+        var perMo = price / 12;
+        priceHtml = '<div class="plan-price">'
+          + '<span class="main">$' + (perMo / 100).toFixed(2) + '</span> <span class="unit">/月</span> '
+          + '<span class="strike">$' + (p.monthlyCents / 100).toFixed(2) + '</span>'
+          + '<div class="save">年付 ' + fmtUSD(price) + ' · 立省 ' + fmtUSD(p.monthlyCents * 12 - price) + '</div>'
+          + '</div>'
+      } else {
+        priceHtml = '<div class="plan-price"><span class="main">' + fmtUSD(price) + '</span> <span class="unit">/月</span></div>';
+      }
+
+      var actionHtml = '';
+      if (p.direction === 'downgrade') {
+        actionHtml = '<div style="text-align:center;padding:8px 12px;background:var(--bg-2);color:var(--ink-3);font-size:12.5px;font-weight:600;border-radius:8px">当前暂不支持降级</div>';
+      } else if (isEnt) {
+        actionHtml = '<a href="mailto:sales@faorbit.io?subject=Enterprise 套餐咨询" class="btn btn-soft btn-sm" style="text-decoration:none"><i data-lucide="messages-square" style="width:14px;height:14px"></i>联系客户经理</a>';
+      } else {
+        actionHtml = '<button class="btn btn-primary btn-sm" data-plan-buy="' + esc(p.key) + '">立即升级</button>';
+      }
+
+      html += '<div class="plan-card ' + (isEnt ? 'enterprise' : '') + '">'
+        +   '<div class="plan-card-head">'
+        +     '<div class="plan-card-name"><span class="plan-dot" style="background:' + tone + ';box-shadow:0 0 0 4px ' + tone + '18"></span>' + esc(p.key) + '</div>'
+        +   '</div>'
+        +   '<div>' + priceHtml + '<div class="plan-desc">' + esc(PLAN_TAGLINE[p.key] || '') + '</div></div>'
+        +   '<div class="plan-features">' + (PLAN_FEATURES[p.key] || []).map(function (x) {
+              return '<div class="plan-feature"><i data-lucide="check"></i><span>' + esc(x) + '</span></div>';
+            }).join('') + '</div>'
+        +   '<div class="plan-rates">'
+        +     '<div class="plan-rate"><span>开卡费</span><b>' + fmtUSD(p.cardIssueCents) + ' /张</b></div>'
+        +     '<div class="plan-rate"><span>充值费率</span><b>' + fmtPct(p.topupFeeRate) + '</b></div>'
+        +   '</div>'
+        +   '<div class="plan-card-action">' + actionHtml + '</div>'
+        + '</div>';
+    });
+    html += '</div>';
+
+    html += '<div class="plan-info-box">'
+      + '<i data-lucide="info"></i>'
+      + '<span>套餐费从<b style="color:var(--ink-2)">团队钱包</b>扣款，需验证支付密码；升级立即生效。<b style="color:var(--ink-2)">到期后自动恢复 Starter</b>，不扣续费。</span>'
+      + '</div>';
+
+    if (data.history && data.history.length > 0) {
+      html += '<div class="plan-history"><div class="plan-history-title">套餐变更历史</div>'
+        + '<div class="plan-history-list">';
+      data.history.forEach(function (h, i) {
+        html += '<div class="plan-history-row">'
+          + '<div><span style="color:var(--ink-3)">' + esc(h.fromPlan) + '</span> → <b style="color:var(--ink)">' + esc(h.toPlan) + '</b>'
+          +   (h.cycle === 'yearly' ? ' <span style="font-size:10.5;color:#0a8f68;background:rgba(10,143,104,.1);padding:1px 7px;border-radius:99px;font-weight:600">年付</span>' : '')
+          + '</div>'
+          + '<div style="color:var(--ink-3)">' + fmtDate(h.createdAt) + (h.priceCents > 0 ? ' · 扣款 <b style="color:var(--ink);font-family:var(--ff-mono)">' + fmtUSD(h.priceCents) + '</b>' : '') + '</div>'
+          + '</div>';
+      });
+      html += '</div></div>';
+    }
+
+    html += '</div>';
+    body.innerHTML = html;
+    if (window.lucide) lucide.createIcons();
+  }
+
+  function load() {
+    body.innerHTML = '<div style="padding:24px;text-align:center;color:var(--ink-3);font-size:13px">加载中…</div>';
+    fetch('/api/merchant/settings/plan', { credentials: 'same-origin' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) { if (d) render(d); else body.innerHTML = '<div style="padding:18px;color:var(--ink-3);text-align:center">加载失败</div>'; })
+      .catch(function () { body.innerHTML = '<div style="padding:18px;color:var(--ink-3);text-align:center">网络错误</div>'; });
+  }
+  window.__loadPlanPane = load;
+
+  // ---- 购买确认弹窗（设计版）----
+  var buyOv = null;
+  function closeBuyModal() { if (buyOv) { buyOv.remove(); buyOv = null; } }
+  function openBuyModal(planKey, mode) {
+    if (!snapshot) return;
+    // 升级 / 续费从钱包扣款需支付密码；未设置则先引导设置。
+    if (window.faPay && !window.faPay.hasPwd) { window.faPay.ensureSet('套餐变更需验证支付密码', function () { openBuyModal(planKey, mode); }); return; }
+    var isRenew = mode === 'renew';
+    var p = null;
+    (snapshot.plans || []).forEach(function (x) { if (x.key === planKey) p = x; });
+    if (!p) return;
+    var price = priceOf(p);
+    if (price == null) return;
+    var isYear = cycle === 'yearly';
+    // 续费从「现有到期日」延期（剩余时间保留）；升级从「现在」起算。
+    var base = new Date();
+    if (isRenew && snapshot.planExpiresAt && new Date(snapshot.planExpiresAt).getTime() > base.getTime()) {
+      base = new Date(snapshot.planExpiresAt);
+    }
+    var expires = new Date(base);
+    if (isYear) expires.setFullYear(expires.getFullYear() + 1); else expires.setMonth(expires.getMonth() + 1);
+    var pp = function (n) { return String(n).padStart(2, '0'); };
+    var expiresStr = expires.getFullYear() + '-' + pp(expires.getMonth() + 1) + '-' + pp(expires.getDate());
+    var tone = PLAN_TONE[planKey] || '#1f6dff';
+
+    closeBuyModal();
+    buyOv = document.createElement('div');
+    buyOv.style.cssText = 'position:fixed;inset:0;background:rgba(12,22,64,.45);backdrop-filter:blur(3px);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px';
+    buyOv.innerHTML = ''
+      + '<div data-buy-card style="background:#fff;border-radius:16px;box-shadow:0 24px 64px -16px rgba(12,22,64,.4);width:100%;max-width:420px;overflow:hidden;transform:translateY(8px);opacity:0;transition:all .22s ease">'
+      +   '<div style="padding:22px 26px 18px;background:linear-gradient(135deg,' + tone + '12,' + tone + '04);border-bottom:1px solid var(--line)">'
+      +     '<div style="display:flex;align-items:center;gap:10px">'
+      +       '<span style="width:38px;height:38px;border-radius:10px;background:' + tone + '18;color:' + tone + ';display:inline-flex;align-items:center;justify-content:center"><i data-lucide="' + (isRenew ? 'refresh-cw' : 'crown') + '" style="width:19px;height:19px"></i></span>'
+      +       '<div><div style="font-family:var(--ff-disp);font-weight:700;font-size:16px;color:var(--ink)">' + (isRenew ? '续费 ' : '升级到 ') + esc(planKey) + '</div>'
+      +       '<div style="color:var(--ink-3);font-size:12">' + (isYear ? '年付 · 约 8 折' : '月付') + ' · 从团队钱包扣款</div></div>'
+      +     '</div>'
+      +   '</div>'
+      +   '<div style="padding:20px 26px;display:grid;gap:14px">'
+      +     '<div style="display:grid;gap:8px;font-size:13">'
+      +       '<div style="display:flex;justify-content:space-between"><span style="color:var(--ink-3)">套餐费用</span><b style="font-family:var(--ff-mono)">' + fmtUSD(price) + (isYear ? ' / 年' : ' / 月') + '</b></div>'
+      +       (isYear ? '<div style="display:flex;justify-content:space-between"><span style="color:var(--ink-3)">相比月付</span><b style="color:#0a8f68;font-family:var(--ff-mono)">省 ' + fmtUSD(p.monthlyCents * 12 - price) + '</b></div>' : '')
+      +       (isRenew && snapshot.planExpiresAt ? '<div style="display:flex;justify-content:space-between"><span style="color:var(--ink-3)">当前到期</span><b style="font-family:var(--ff-mono)">' + fmtDay(snapshot.planExpiresAt) + '</b></div>' : '')
+      +       '<div style="display:flex;justify-content:space-between"><span style="color:var(--ink-3)">生效时间</span><b>立即生效</b></div>'
+      +       '<div style="display:flex;justify-content:space-between"><span style="color:var(--ink-3)">' + (isRenew ? '续费后到期' : '有效期至') + '</span><b style="font-family:var(--ff-mono)">' + expiresStr + '</b></div>'
+      +       '<div style="display:flex;justify-content:space-between"><span style="color:var(--ink-3)">到期后</span><span style="color:var(--ink-2)">自动恢复 Starter，不自动续费</span></div>'
+      +     '</div>'
+      +     '<div>'
+      +       '<label style="display:block;font-size:12.5;font-weight:600;color:var(--ink-2);margin-bottom:6px">支付密码</label>'
+      +       '<input data-buy-pwd type="password" inputmode="numeric" autocomplete="off" placeholder="输入支付密码确认扣款" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font-size:14px;outline:none">'
+      +       '<div data-buy-err style="color:#d23b3b;font-size:12;min-height:16px;margin-top:5px"></div>'
+      +     '</div>'
+      +   '</div>'
+      +   '<div style="padding:0 26px 22px;display:flex;gap:10px;justify-content:flex-end">'
+      +     '<button class="btn btn-soft btn-sm" data-buy-cancel>取消</button>'
+      +     '<button class="btn btn-primary btn-sm" data-buy-confirm>确认支付 ' + fmtUSD(price) + '</button>'
+      +   '</div>'
+      + '</div>';
+    document.body.appendChild(buyOv);
+    if (window.lucide) lucide.createIcons();
+    var card = buyOv.querySelector('[data-buy-card]');
+    requestAnimationFrame(function () { card.style.transform = 'translateY(0)'; card.style.opacity = '1'; });
+
+    var pwdIn = buyOv.querySelector('[data-buy-pwd]');
+    var errEl = buyOv.querySelector('[data-buy-err]');
+    var okBtn = buyOv.querySelector('[data-buy-confirm]');
+    setTimeout(function () { pwdIn.focus(); }, 120);
+    buyOv.addEventListener('click', function (e) { if (e.target === buyOv) closeBuyModal(); });
+    buyOv.querySelector('[data-buy-cancel]').addEventListener('click', closeBuyModal);
+    pwdIn.addEventListener('keydown', function (e) { if (e.key === 'Enter') okBtn.click(); });
+    okBtn.addEventListener('click', function () {
+      var pwd = pwdIn.value;
+      if (!pwd) { errEl.textContent = '请输入支付密码'; return; }
+      errEl.textContent = '';
+      okBtn.disabled = true; okBtn.textContent = '支付中…';
+      fetch('/api/merchant/settings/plan', {
+        method: 'POST', headers: { 'content-type': 'application/json' }, credentials: 'same-origin',
+        body: JSON.stringify({ targetPlan: planKey, cycle: cycle, payPassword: pwd }),
+      })
+        .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, body: j }; }); })
+        .then(function (res) {
+          if (res.ok) {
+            closeBuyModal();
+            toast((isRenew ? '已续费 ' : '已升级到 ') + planKey + '，有效期至 ' + (res.body.expiresAt || '').slice(0, 10));
+            load();
+            return;
+          }
+          okBtn.disabled = false; okBtn.textContent = '确认支付 ' + fmtUSD(price);
+          errEl.textContent = (res.body && res.body.error) || '支付失败，请重试';
+        })
+        .catch(function () { okBtn.disabled = false; okBtn.textContent = '确认支付 ' + fmtUSD(price); errEl.textContent = '网络错误，请重试'; });
+    });
+  }
+
+  document.addEventListener('click', function (e) {
+    var cyBtn = e.target.closest && e.target.closest('[data-plan-cycle]');
+    if (cyBtn && snapshot) { cycle = cyBtn.getAttribute('data-plan-cycle'); render(snapshot); return; }
+    var buyBtn = e.target.closest && e.target.closest('[data-plan-buy]');
+    if (buyBtn) { e.preventDefault(); openBuyModal(buyBtn.getAttribute('data-plan-buy'), 'upgrade'); return; }
+    var renewBtn = e.target.closest && e.target.closest('[data-plan-renew]');
+    if (renewBtn) { e.preventDefault(); openBuyModal(renewBtn.getAttribute('data-plan-renew'), 'renew'); }
+  });
+})();
+
+/* 已处理资金申请：默认只显示最近 5 条，多余的折叠为「展开全部 N 条」。 */
+(function () {
+  var tbody = document.querySelector('[data-fr-history]');
+  if (!tbody) return;
+  var LIMIT = 5;
+  function applyCollapse() {
+    var rows = [].slice.call(tbody.querySelectorAll('tr'));
+    var old = document.querySelector('[data-fr-history-toggle]');
+    if (old) old.remove();
+    if (rows.length <= LIMIT) return;
+    rows.forEach(function (tr, i) { tr.style.display = i < LIMIT ? '' : 'none'; });
+    var wrap = tbody.closest('.panel');
+    var bar = document.createElement('div');
+    bar.setAttribute('data-fr-history-toggle', '');
+    bar.style.cssText = 'padding:10px 0 4px;text-align:center';
+    bar.innerHTML = '<button class="btn btn-soft btn-sm" style="width:auto">展开全部 ' + rows.length + ' 条</button>';
+    wrap.appendChild(bar);
+    var open = false;
+    bar.querySelector('button').addEventListener('click', function () {
+      open = !open;
+      rows.forEach(function (tr, i) { tr.style.display = open || i < LIMIT ? '' : 'none'; });
+      this.textContent = open ? '收起' : '展开全部 ' + rows.length + ' 条';
+    });
+  }
+  applyCollapse();
+})();
+
+/* 交易记录「导出 CSV」+ 钱包「导出全部资金流水」：登录态下走服务端生成下载。 */
+(function () {
+  var authEl = document.querySelector('[data-auth-state]');
+  if (!authEl || authEl.getAttribute('data-auth-state') !== 'authed') return;
+  var txBtn = document.querySelector('[data-tx-export]');
+  if (txBtn) txBtn.addEventListener('click', function () { window.location.href = '/api/merchant/transactions/export'; });
+  var ldBtn = document.querySelector('[data-ledger-export]');
+  if (ldBtn) ldBtn.addEventListener('click', function () { window.location.href = '/api/merchant/ledger/export'; });
+})();
+
+/* 登录 2FA 开关：开启走「扫码 + 验证码确认」弹窗，关闭需登录密码。接 /api/merchant/settings/twofa。 */
+(function () {
+  var authEl = document.querySelector('[data-auth-state]');
+  if (!authEl || authEl.getAttribute('data-auth-state') !== 'authed') return;
+  var sw = document.querySelector('[data-bind="security.twofa"]');
+  if (!sw) return;
+  function toast(msg, kind) { try { if (window.FaorbitToast) return window.FaorbitToast(msg, kind || 'ok'); } catch (e) {} alert(msg); }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+  var ov = null;
+  function closeOv() { if (ov) { ov.remove(); ov = null; } }
+  function modal(inner) {
+    closeOv();
+    ov = document.createElement('div');
+    ov.style.cssText = 'position:fixed;inset:0;background:rgba(12,22,64,.45);backdrop-filter:blur(3px);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px';
+    ov.innerHTML = '<div style="background:#fff;border-radius:16px;box-shadow:0 24px 64px -16px rgba(12,22,64,.4);width:100%;max-width:400px;overflow:hidden">' + inner + '</div>';
+    document.body.appendChild(ov);
+    ov.addEventListener('click', function (e) { if (e.target === ov) closeOv(); });
+    return ov;
+  }
+
+  function openEnable() {
+    fetch('/api/merchant/settings/twofa', {
+      method: 'POST', headers: { 'content-type': 'application/json' }, credentials: 'same-origin',
+      body: JSON.stringify({ action: 'start' }),
+    })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, body: j }; }); })
+      .then(function (res) {
+        if (!res.ok) { toast((res.body && res.body.error) || '无法开始绑定', 'err'); return; }
+        var d = res.body;
+        var m = modal(''
+          + '<div style="padding:20px 26px 14px;border-bottom:1px solid var(--line)">'
+          +   '<div style="font-family:var(--ff-disp);font-weight:700;font-size:16px">启用两步验证</div>'
+          +   '<div style="color:var(--ink-3);font-size:12.5;margin-top:3px">用 Google Authenticator / 1Password 等扫码后输入 6 位验证码</div>'
+          + '</div>'
+          + '<div style="padding:18px 26px;display:grid;gap:12px;justify-items:center">'
+          +   '<img src="' + d.qr + '" alt="TOTP QR" style="width:170px;height:170px;border:1px solid var(--line);border-radius:10px">'
+          +   '<code style="font-size:11px;color:var(--ink-3);word-break:break-all;text-align:center">' + esc(d.secret) + '</code>'
+          +   '<input data-tf-code type="text" inputmode="numeric" maxlength="6" placeholder="输入 6 位验证码" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font-size:15px;letter-spacing:5px;text-align:center;font-family:var(--ff-mono);outline:none">'
+          +   '<div data-tf-err style="color:#d23b3b;font-size:12;min-height:16px"></div>'
+          + '</div>'
+          + '<div style="padding:0 26px 20px;display:flex;gap:10px;justify-content:flex-end">'
+          +   '<button class="btn btn-soft btn-sm" data-tf-cancel>取消</button>'
+          +   '<button class="btn btn-primary btn-sm" data-tf-ok>确认启用</button>'
+          + '</div>');
+        var codeIn = m.querySelector('[data-tf-code]'); var errEl = m.querySelector('[data-tf-err]'); var okBtn = m.querySelector('[data-tf-ok]');
+        setTimeout(function () { codeIn.focus(); }, 100);
+        m.querySelector('[data-tf-cancel]').addEventListener('click', closeOv);
+        codeIn.addEventListener('keydown', function (e) { if (e.key === 'Enter') okBtn.click(); });
+        okBtn.addEventListener('click', function () {
+          var code = codeIn.value.trim();
+          if (!/^\d{6}$/.test(code)) { errEl.textContent = '请输入 6 位数字验证码'; return; }
+          okBtn.disabled = true; okBtn.textContent = '验证中…';
+          fetch('/api/merchant/settings/twofa', {
+            method: 'POST', headers: { 'content-type': 'application/json' }, credentials: 'same-origin',
+            body: JSON.stringify({ action: 'confirm', secret: d.secret, code: code }),
+          })
+            .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, body: j }; }); })
+            .then(function (res2) {
+              if (res2.ok) { closeOv(); sw.classList.add('on'); toast('两步验证已启用，下次登录需输入验证码'); return; }
+              okBtn.disabled = false; okBtn.textContent = '确认启用';
+              errEl.textContent = (res2.body && res2.body.error) || '验证失败';
+            })
+            .catch(function () { okBtn.disabled = false; okBtn.textContent = '确认启用'; errEl.textContent = '网络错误，请重试'; });
+        });
+      })
+      .catch(function () { toast('网络错误，请重试', 'err'); });
+  }
+
+  function openDisable() {
+    var m = modal(''
+      + '<div style="padding:20px 26px 14px;border-bottom:1px solid var(--line)">'
+      +   '<div style="font-family:var(--ff-disp);font-weight:700;font-size:16px">关闭两步验证</div>'
+      +   '<div style="color:var(--ink-3);font-size:12.5;margin-top:3px">关闭后登录不再要求验证码，账号安全性降低</div>'
+      + '</div>'
+      + '<div style="padding:18px 26px;display:grid;gap:10px">'
+      +   '<label style="font-size:12.5;font-weight:600;color:var(--ink-2)">登录密码</label>'
+      +   '<input data-tf-pwd type="password" autocomplete="current-password" placeholder="输入登录密码确认" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font-size:14px;outline:none">'
+      +   '<div data-tf-err style="color:#d23b3b;font-size:12;min-height:16px"></div>'
+      + '</div>'
+      + '<div style="padding:0 26px 20px;display:flex;gap:10px;justify-content:flex-end">'
+      +   '<button class="btn btn-soft btn-sm" data-tf-cancel>取消</button>'
+      +   '<button class="btn btn-soft btn-sm danger" data-tf-ok>确认关闭</button>'
+      + '</div>');
+    var pwdIn = m.querySelector('[data-tf-pwd]'); var errEl = m.querySelector('[data-tf-err]'); var okBtn = m.querySelector('[data-tf-ok]');
+    setTimeout(function () { pwdIn.focus(); }, 100);
+    m.querySelector('[data-tf-cancel]').addEventListener('click', closeOv);
+    pwdIn.addEventListener('keydown', function (e) { if (e.key === 'Enter') okBtn.click(); });
+    okBtn.addEventListener('click', function () {
+      if (!pwdIn.value) { errEl.textContent = '请输入登录密码'; return; }
+      okBtn.disabled = true;
+      fetch('/api/merchant/settings/twofa', {
+        method: 'POST', headers: { 'content-type': 'application/json' }, credentials: 'same-origin',
+        body: JSON.stringify({ action: 'disable', loginPassword: pwdIn.value }),
+      })
+        .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, body: j }; }); })
+        .then(function (res) {
+          if (res.ok) { closeOv(); sw.classList.remove('on'); toast('两步验证已关闭'); return; }
+          okBtn.disabled = false;
+          errEl.textContent = (res.body && res.body.error) || '关闭失败';
+        })
+        .catch(function () { okBtn.disabled = false; errEl.textContent = '网络错误，请重试'; });
+    });
+  }
+
+  // 拦截通用 [data-switch] 的 class 翻转：2FA 开关状态只由服务端结果驱动。
+  sw.addEventListener('click', function (e) {
+    e.stopImmediatePropagation();
+    if (sw.classList.contains('on')) openDisable();
+    else openEnable();
+  }, true);
+})();
+
+/* Webhook 端点管理：列表渲染 + 添加弹窗（一次性 secret）+ 行内操作菜单（禁用/启用/删除）。 */
+(function () {
+  var authEl = document.querySelector('[data-auth-state]');
+  if (!authEl || authEl.getAttribute('data-auth-state') !== 'authed') return;
+  var list = document.querySelector('[data-wh-list]');
+  var addBtn = document.querySelector('[data-wh-add]');
+  if (!list || !addBtn) return;
+
+  var EVENTS = [
+    { key: 'card.created', label: '开卡成功（card.created）' },
+    { key: 'txn.captured', label: '扣款结算（txn.captured）' },
+    { key: 'txn.declined', label: '扣款被拒（txn.declined）' },
+    { key: 'txn.refunded', label: '退款到账（txn.refunded）' },
+  ];
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function toast(msg, kind) { try { if (window.FaorbitToast) return window.FaorbitToast(msg, kind || 'ok'); } catch (e) {} alert(msg); }
+
+  function render(endpoints) {
+    if (!endpoints.length) {
+      list.innerHTML = '<div style="padding:22px;text-align:center;color:var(--ink-3);font-size:13px">还没有 Webhook 端点，点「添加端点」创建；事件将带 HMAC 签名投递到你的服务器</div>';
+      return;
+    }
+    list.innerHTML = endpoints.map(function (e) {
+      var active = e.status === 'active';
+      var evN = Array.isArray(e.events) ? e.events.length : 0;
+      return '<div class="keyrow wh-row" data-wh-row="' + esc(e.id) + '">'
+        + '<span class="pill ' + (active ? 'ok' : 'off') + '">' + (active ? '活跃' : '已禁用') + '</span>'
+        + '<span class="kk wh-url" title="' + esc(e.url) + '">' + esc(e.url) + '</span>'
+        + '<span class="wh-meta"><span>' + evN + ' 个事件</span><span>' + esc(e.secretMasked || '') + '</span></span>'
+        + '<button class="icon-btn wh-more" data-wh-menu-btn="' + esc(e.id) + '" aria-label="更多操作"><i data-lucide="more-horizontal"></i></button>'
+        + '<div class="wh-menu" data-wh-menu="' + esc(e.id) + '" style="display:none">'
+        +   '<button data-wh-toggle="' + esc(e.id) + '" data-wh-next="' + (active ? 'disable' : 'enable') + '" style="display:block;width:100%;text-align:left;border:0;background:none;cursor:pointer;padding:10px 14px;font-size:13px;color:var(--ink)">' + (active ? '禁用端点' : '启用端点') + '</button>'
+        +   '<button data-wh-del="' + esc(e.id) + '" style="display:block;width:100%;text-align:left;border:0;background:none;cursor:pointer;padding:10px 14px;font-size:13px;color:#d23b3b;border-top:1px solid var(--line)">删除端点</button>'
+        + '</div>'
+        + '</div>';
+    }).join('');
+    if (window.lucide) lucide.createIcons();
+  }
+
+  function load() {
+    fetch('/api/merchant/webhooks', { credentials: 'same-origin' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) { if (d) render(d.endpoints || []); })
+      .catch(function () {});
+  }
+  load();
+
+  // ---- 添加端点弹窗 ----
+  var ov = null;
+  function closeOv() { if (ov) { ov.remove(); ov = null; } }
+  addBtn.addEventListener('click', function () {
+    closeOv();
+    ov = document.createElement('div');
+    ov.style.cssText = 'position:fixed;inset:0;background:rgba(12,22,64,.45);backdrop-filter:blur(3px);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px';
+    ov.innerHTML = ''
+      + '<div style="background:#fff;border-radius:16px;box-shadow:0 24px 64px -16px rgba(12,22,64,.4);width:100%;max-width:440px;overflow:hidden">'
+      +   '<div style="padding:20px 26px 16px;border-bottom:1px solid var(--line)">'
+      +     '<div style="font-family:var(--ff-disp);font-weight:700;font-size:16px">添加 Webhook 端点</div>'
+      +     '<div style="color:var(--ink-3);font-size:12.5;margin-top:3px">事件发生时以 POST + HMAC 签名投递到该 URL</div>'
+      +   '</div>'
+      +   '<div style="padding:18px 26px;display:grid;gap:14px" data-wh-form>'
+      +     '<div>'
+      +       '<label style="display:block;font-size:12.5;font-weight:600;color:var(--ink-2);margin-bottom:6px">接收 URL</label>'
+      +       '<input data-wh-url type="url" placeholder="https://api.example.com/faorbit/webhook" autocomplete="off" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font-size:13.5px;font-family:var(--ff-mono);outline:none">'
+      +     '</div>'
+      +     '<div>'
+      +       '<label style="display:block;font-size:12.5;font-weight:600;color:var(--ink-2);margin-bottom:6px">订阅事件</label>'
+      +       '<div style="display:grid;gap:8px">' + EVENTS.map(function (ev) {
+              return '<label style="display:flex;align-items:center;gap:9px;font-size:13px;cursor:pointer"><input type="checkbox" data-wh-ev value="' + ev.key + '" checked>' + esc(ev.label) + '</label>';
+            }).join('') + '</div>'
+      +     '</div>'
+      +     '<div data-wh-err style="color:#d23b3b;font-size:12;min-height:16px"></div>'
+      +   '</div>'
+      +   '<div style="padding:0 26px 20px;display:flex;gap:10px;justify-content:flex-end">'
+      +     '<button class="btn btn-soft btn-sm" data-wh-cancel>取消</button>'
+      +     '<button class="btn btn-primary btn-sm" data-wh-submit>创建端点</button>'
+      +   '</div>'
+      + '</div>';
+    document.body.appendChild(ov);
+    var urlIn = ov.querySelector('[data-wh-url]');
+    var errEl = ov.querySelector('[data-wh-err]');
+    var okBtn = ov.querySelector('[data-wh-submit]');
+    setTimeout(function () { urlIn.focus(); }, 100);
+    ov.addEventListener('click', function (e) { if (e.target === ov) closeOv(); });
+    ov.querySelector('[data-wh-cancel]').addEventListener('click', closeOv);
+    okBtn.addEventListener('click', function () {
+      var url = urlIn.value.trim();
+      if (!/^https?:\/\/.+/.test(url)) { errEl.textContent = '请填写合法的 http(s) URL'; return; }
+      var events = [].slice.call(ov.querySelectorAll('[data-wh-ev]:checked')).map(function (c) { return c.value; });
+      if (!events.length) { errEl.textContent = '至少选择一个事件'; return; }
+      errEl.textContent = '';
+      okBtn.disabled = true; okBtn.textContent = '创建中…';
+      fetch('/api/merchant/webhooks', {
+        method: 'POST', headers: { 'content-type': 'application/json' }, credentials: 'same-origin',
+        body: JSON.stringify({ url: url, events: events }),
+      })
+        .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, body: j }; }); })
+        .then(function (res) {
+          if (!res.ok) { okBtn.disabled = false; okBtn.textContent = '创建端点'; errEl.textContent = (res.body && res.body.error) || '创建失败'; return; }
+          // 展示一次性 secret（仅此一次，商户用于验签）
+          var form = ov.querySelector('[data-wh-form]');
+          form.innerHTML = ''
+            + '<div style="padding:14px 16px;background:rgba(10,143,104,.08);border:1px solid rgba(10,143,104,.3);border-radius:10px;font-size:13px;color:var(--ink-2);line-height:1.7">'
+            + '端点已创建。以下签名密钥<b style="color:#c2700f">仅显示这一次</b>，请立即保存，用于校验回调签名：'
+            + '<div style="margin-top:8px;display:flex;gap:8px;align-items:center">'
+            + '<code data-wh-secret style="flex:1;background:#fff;border:1px solid var(--line);border-radius:8px;padding:9px 12px;font-size:12px;word-break:break-all">' + esc(res.body.secret) + '</code>'
+            + '<button class="btn btn-soft btn-sm" data-wh-copy style="flex:none">复制</button>'
+            + '</div></div>';
+          var foot = ov.querySelector('[data-wh-cancel]').parentElement;
+          foot.innerHTML = '<button class="btn btn-primary btn-sm" data-wh-done>我已保存</button>';
+          foot.querySelector('[data-wh-done]').addEventListener('click', function () { closeOv(); });
+          form.parentElement.addEventListener('click', function (e) {
+            if (e.target.closest && e.target.closest('[data-wh-copy]')) {
+              navigator.clipboard.writeText(res.body.secret).then(function () { toast('已复制签名密钥'); });
+            }
+          });
+          load();
+        })
+        .catch(function () { okBtn.disabled = false; okBtn.textContent = '创建端点'; errEl.textContent = '网络错误，请重试'; });
+    });
+  });
+
+  // ---- 行内操作菜单 ----
+  document.addEventListener('click', function (e) {
+    var menuBtn = e.target.closest && e.target.closest('[data-wh-menu-btn]');
+    if (menuBtn) {
+      var id = menuBtn.getAttribute('data-wh-menu-btn');
+      var menu = document.querySelector('[data-wh-menu="' + id + '"]');
+      var wasOpen = menu && menu.style.display !== 'none';
+      document.querySelectorAll('[data-wh-menu]').forEach(function (m) { m.style.display = 'none'; });
+      if (menu && !wasOpen) {
+        menu.style.display = 'block';
+        // 视口底部放不下时向上翻转，避免菜单被截断
+        menu.style.top = '';
+        menu.style.bottom = '';
+        if (menu.getBoundingClientRect().bottom > window.innerHeight - 8) {
+          menu.style.top = 'auto';
+          menu.style.bottom = 'calc(100% - 6px)';
+        }
+      }
+      e.stopPropagation();
+      return;
+    }
+    if (!(e.target.closest && e.target.closest('[data-wh-menu]'))) {
+      document.querySelectorAll('[data-wh-menu]').forEach(function (m) { m.style.display = 'none'; });
+    }
+    var tgl = e.target.closest && e.target.closest('[data-wh-toggle]');
+    if (tgl) {
+      var tid = tgl.getAttribute('data-wh-toggle');
+      fetch('/api/merchant/webhooks/' + encodeURIComponent(tid), {
+        method: 'PATCH', headers: { 'content-type': 'application/json' }, credentials: 'same-origin',
+        body: JSON.stringify({ action: tgl.getAttribute('data-wh-next') }),
+      })
+        .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, body: j }; }); })
+        .then(function (res) {
+          if (res.ok) { toast(res.body.status === 'active' ? '端点已启用' : '端点已禁用'); load(); }
+          else toast((res.body && res.body.error) || '操作失败', 'err');
+        })
+        .catch(function () { toast('网络错误', 'err'); });
+      return;
+    }
+    var del = e.target.closest && e.target.closest('[data-wh-del]');
+    if (del) {
+      var did = del.getAttribute('data-wh-del');
+      if (!confirm('确认删除该端点？删除后事件不再投递到此 URL。')) return;
+      fetch('/api/merchant/webhooks/' + encodeURIComponent(did), { method: 'DELETE', credentials: 'same-origin' })
+        .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, body: j }; }); })
+        .then(function (res) {
+          if (res.ok) { toast('端点已删除'); load(); }
+          else toast((res.body && res.body.error) || '删除失败', 'err');
+        })
+        .catch(function () { toast('网络错误', 'err'); });
+    }
+  });
+})();
+
+/* 通知深链：?card=<id> 自动打开对应卡片的详情抽屉（配合铃铛「卡片通知」跳转）。 */
+(function () {
+  var cid = new URL(location.href).searchParams.get('card');
+  if (!cid) return;
+  function tryOpen(attempt) {
+    var row = null;
+    try { row = document.querySelector('tr[data-card-id="' + (window.CSS && CSS.escape ? CSS.escape(cid) : cid) + '"]'); } catch (e) {}
+    if (row) {
+      var t = row.querySelector('[data-open-detail]');
+      if (t) { t.click(); return; }
+    }
+    if (attempt < 10) setTimeout(function () { tryOpen(attempt + 1); }, 150);
+  }
+  tryOpen(0);
+})();
+</script>
+</body>
+</html>

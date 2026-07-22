@@ -1,0 +1,433 @@
+/** /proxy 移动版样式 — 原 proxy.css 的 @media(max-width:768px) 段解包而来。
+ *  /proxy 用 <link media="(max-width:768px)"> 按宽度加载；/proxy/m 无条件加载（强制移动版）。
+ *  ≤520px 的窄屏微调仍是媒体查询，两条路由下都只对小屏生效。 */
+
+.huoad-desktop-only {
+  display: none;
+}
+
+/* 黑顶条：模块样式在 ≥769px 自隐，/proxy/m 靠这条显示回来 */
+.huoad-mheader {
+  display: flex;
+}
+
+.hp-page {
+  /* 顶条改为 sticky 56px 占流式空间，无需再留顶部 padding */
+  padding: 0 0 calc(66px + env(safe-area-inset-bottom));
+}
+
+.hp-inner {
+  display: block;
+  min-width: 0;
+  max-width: none;
+  padding: 0;
+}
+
+.hp-side {
+  display: none;
+}
+
+/* 移动端去掉外层白卡：面板直接落在浅灰页底上，形成干净的卡片流 */
+.hp-content {
+  min-height: 0;
+  background: transparent;
+  border-radius: 0;
+  padding: 14px 12px 20px;
+}
+
+/* 面板整体收紧：更小的标题/内边距/卡间距 */
+.hp-panel + .hp-panel {
+  margin-top: 12px;
+}
+
+.hp-panel-body {
+  padding: 14px;
+}
+
+.hp-qslider {
+  padding: 12px 12px 8px;
+  margin-bottom: 14px;
+}
+
+.hp-mtab {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 80;
+  display: flex;
+  background: #fff;
+  border-top: 1px solid #eee;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.hp-mtab a {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 54px;
+  font-size: 10px;
+  line-height: 1;
+  color: #333;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.hp-mtab a svg {
+  width: 21px;
+  height: 21px;
+}
+
+.hp-mtab a.on {
+  color: #fa6b1f;
+  background: #fff7f0;
+  font-weight: 600;
+}
+
+/* 概览四卡与快捷入口降两列；流量套餐/国家/充值面额同理 */
+.hp-kpis,
+.hp-quick,
+.hp-plans,
+.hp-amounts {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.hp-cgrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* 移动端默认收起：clamp 约 5 行高、底部渐隐，避免整列铺满 */
+.hp-cgrid.collapsed {
+  max-height: 196px;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(180deg, #000 72%, transparent);
+  mask-image: linear-gradient(180deg, #000 72%, transparent);
+}
+
+.hp-cmore {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 9px 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  color: #fa6b1f;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.hp-cmore:hover {
+  background: #fff7ed;
+}
+
+/* 购买页：右侧「您的订单」结算卡从 300px sticky 侧卡改为
+   随文档流铺满，跟在配置区之后 */
+.hp-buy {
+  display: block;
+}
+
+.hp-order {
+  position: static;
+  width: auto;
+  margin-top: 16px;
+}
+
+/* 需要关注：窄屏每行改两行卡片——类型/地区/剩余天数一行，
+   IP/日期/续费一行，去横滚 */
+.hp-exp {
+  padding: 0;
+}
+
+.hp-exp-row {
+  min-width: 0;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas:
+    "kind geo   days"
+    "ip   date  renew";
+  gap: 8px 10px;
+  padding: 12px;
+  border: 1px solid #ececec;
+  border-radius: 10px;
+}
+
+.hp-exp-row + .hp-exp-row {
+  border-top: 1px solid #ececec;
+  margin-top: 8px;
+}
+
+.hp-exp-kind {
+  grid-area: kind;
+}
+
+.hp-exp-geo {
+  grid-area: geo;
+  min-width: 0;
+}
+
+.hp-exp-ip {
+  grid-area: ip;
+  min-width: 0;
+}
+
+.hp-exp-date {
+  grid-area: date;
+  justify-self: start;
+}
+
+.hp-exp-days {
+  grid-area: days;
+  justify-self: end;
+}
+
+.hp-exp-renew {
+  grid-area: renew;
+  justify-self: end;
+}
+
+/* 已购代理表在窄屏改为卡片流：去横滚，每条一张卡——
+   国家/到期同行，HTTP / SOCKS5 各占一行带协议标签 + 复制按钮 */
+.hp-pp .hp-pp-scroll {
+  overflow-x: visible;
+}
+
+.hp-pp .hp-table {
+  table-layout: auto;
+  min-width: 0;
+}
+
+.hp-pp .hp-table thead {
+  display: none;
+}
+
+.hp-pp .hp-table,
+.hp-pp .hp-table tbody {
+  display: block;
+}
+
+.hp-pp .hp-table tbody tr {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas:
+    "check country date"
+    "http  http    http"
+    "socks socks   socks";
+  align-items: center;
+  gap: 6px 8px;
+  padding: 11px 12px;
+  border: 1px solid #ececec;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.hp-pp .hp-table tbody tr + tr {
+  margin-top: 8px;
+}
+
+.hp-pp .hp-table tbody td {
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.hp-pp .hp-table tbody td:nth-child(1) {
+  grid-area: check;
+}
+
+.hp-pp .hp-table tbody td:nth-child(2) {
+  grid-area: country;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.hp-pp .hp-table tbody td:nth-child(3) {
+  grid-area: http;
+}
+
+.hp-pp .hp-table tbody td:nth-child(4) {
+  grid-area: socks;
+}
+
+.hp-pp .hp-table tbody td:nth-child(5) {
+  grid-area: date;
+  justify-self: end;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* HTTP / SOCKS5 行：协议标签 + 凭据同行 */
+.hp-pp .hp-table tbody td:nth-child(3),
+.hp-pp .hp-table tbody td:nth-child(4) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 6px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.hp-pp .hp-table tbody td:nth-child(3)::before {
+  content: "HTTP";
+}
+
+.hp-pp .hp-table tbody td:nth-child(4)::before {
+  content: "SOCKS5";
+}
+
+.hp-pp .hp-table tbody td:nth-child(3)::before,
+.hp-pp .hp-table tbody td:nth-child(4)::before {
+  flex: none;
+  width: 48px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #9ca3af;
+}
+
+/* 凭据：解除桌面固定 ch 列宽，随卡自适应，过长本行内横滚不撑破页面 */
+.hp-pp .hp-cred {
+  flex: 1;
+  min-width: 0;
+  gap: 4px;
+}
+
+.hp-pp .hp-cred > span:first-child {
+  min-width: 0 !important;
+  flex: 1;
+  overflow-x: auto;
+  white-space: nowrap;
+  font-size: 11.5px;
+  scrollbar-width: none;
+}
+
+.hp-pp .hp-cred > span:first-child::-webkit-scrollbar {
+  display: none;
+}
+
+.hp-pp .hp-cred .hp-icon-btn {
+  flex: none;
+}
+
+/* 面板头（标题/徽章/工具）窄屏整体可换行：标题保持单行，
+   放不下的徽章、按钮整块下移而不是把标题挤成竖排 */
+.hp-panel-head {
+  flex-wrap: wrap;
+  row-gap: 6px;
+  padding: 12px 14px;
+  font-size: 14px;
+}
+
+.hp-seeall {
+  white-space: nowrap;
+}
+
+/* 已购代理面板头（标题/续费条/搜索/分页）竖排铺满：
+   搜索框整行，分页条两端对齐，按钮不折字 */
+
+.hp-pp-search {
+  width: 100%;
+  margin-left: 0;
+  order: 2;
+}
+
+.hp-pp .hp-panel-head .hp-pp-foot {
+  width: 100%;
+  order: 3;
+  flex-wrap: wrap;
+  row-gap: 8px;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+/* 两行各自整行铺满、两端对齐：共 X 条 ↔ 每页选择；上一页 ↔ 页码 ↔ 下一页。
+   控件同步缩小一档，整块更紧凑不留大片空白。 */
+.hp-pp .hp-pp-footinfo,
+.hp-pp .hp-pager {
+  width: 100%;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.hp-pp .hp-pp-size select {
+  padding: 5px 24px 5px 9px;
+  font-size: 12px;
+}
+
+/* 藏掉尾字「条」，让选择框右边缘与下一行「下一页」按钮严格对齐
+   （数量单位已由左侧「共 N 条」表达，不会歧义） */
+.hp-pp .hp-pp-size-unit {
+  display: none;
+}
+
+.hp-pp .hp-pager span {
+  font-size: 12px;
+}
+
+.hp-pp-size,
+.hp-pager button {
+  white-space: nowrap;
+}
+
+.hp-pp .hp-pager button {
+  padding: 5px 12px;
+  font-size: 12px;
+}
+
+/* 订单表窄屏收紧：去横滚、缩字号内边距，藏掉次要列——
+   规格/数量（第 3 列）及近期订单「时间」/订单列表「日期」，
+   保留订单号/类型/金额/状态四列 */
+.hp-otable {
+  font-size: 12.5px;
+}
+
+.hp-otable th,
+.hp-otable td {
+  padding: 10px 6px;
+}
+
+.hp-otable th:first-child,
+.hp-otable td:first-child {
+  padding-left: 2px;
+}
+
+.hp-otable th:nth-child(3),
+.hp-otable td:nth-child(3),
+.hp-otable-recent th:nth-child(6),
+.hp-otable-recent td:nth-child(6),
+.hp-otable-list th:nth-child(5),
+.hp-otable-list td:nth-child(5) {
+  display: none;
+}
+
+/* toast 抬到 tab 栏上方 */
+.hp-toast {
+  bottom: calc(74px + env(safe-area-inset-bottom));
+  max-width: calc(100vw - 24px);
+}
+
+@media (max-width: 520px) {
+  /* 快速购买卡有右上角绝对定位角标，窄于 ~180px 会压住标题，改单列 */
+  .hp-kpis,
+  .hp-quick {
+    grid-template-columns: 1fr;
+  }
+
+  /* 流量套餐保持两列（单列时整卡铺满太占竖向空间）；缩内边距/字号更紧凑 */
+  .hp-plans {
+    gap: 8px;
+  }
+
+  .hp-plan {
+    padding: 11px 12px;
+  }
+
+  .hp-plan b {
+    font-size: 17px;
+  }
+
+  .hp-plan i {
+    margin-top: 5px;
+  }
+}

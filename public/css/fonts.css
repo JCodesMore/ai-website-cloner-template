@@ -1,0 +1,4 @@
+/* Intentionally empty.
+   Production builds use system font stacks from site.css so they do not depend
+   on Google Fonts/CDN availability. Add self-hosted @font-face rules here only
+   after placing the referenced .woff2 files under public/. */

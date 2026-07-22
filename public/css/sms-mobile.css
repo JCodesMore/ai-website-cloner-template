@@ -1,0 +1,451 @@
+/** /sms 移动版样式 — 配方同 proxy-mobile.css：
+ *  /sms 用 <link media="(max-width:768px)"> 按宽度加载；/sms/m 无条件加载（强制移动版），
+ *  所以桌面断点里的响应规则在这里全部解包重写，不依赖视口媒体查询。 */
+
+.huoad-desktop-only {
+  display: none;
+}
+
+/* 黑顶条：模块样式在 ≥769px 自隐，/sms/m 靠这条显示回来 */
+.huoad-mheader {
+  display: flex;
+}
+
+.sms-page {
+  /* 顶条改为 sticky 56px 占流式空间，无需再留顶部 padding */
+  padding: 0 0 calc(66px + env(safe-area-inset-bottom));
+}
+
+.sms-inner {
+  display: block;
+  min-width: 0;
+  max-width: none;
+  padding: 0;
+}
+
+.sms-side {
+  display: none;
+}
+
+/* 移动端去掉外层白卡：面板直接落在浅灰页底上，形成干净的卡片流 */
+.sms-content {
+  min-height: 0;
+  background: transparent;
+  border-radius: 0;
+  padding: 14px 12px 20px;
+}
+
+/* ── 底部五格 tab 栏（同 /vcc、/proxy 配方）───────────── */
+
+.sms-mtab {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 80;
+  display: flex;
+  background: #fff;
+  border-top: 1px solid #eee;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.sms-mtab a {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 54px;
+  font-size: 10px;
+  line-height: 1;
+  color: #333;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.sms-mtab a svg {
+  width: 21px;
+  height: 21px;
+}
+
+.sms-mtab a.on {
+  color: #fa6b1f;
+  background: #fff7f0;
+  font-weight: 600;
+}
+
+/* toast 抬到 tab 栏上方 */
+.sms-scope .toast {
+  bottom: calc(74px + env(safe-area-inset-bottom));
+  max-width: calc(100vw - 24px);
+}
+
+/* ── 购买台：单列卡片流（原型 920 断点解包）──────────── */
+
+.buy-grid {
+  grid-template-columns: 1fr;
+}
+
+.buy-aside {
+  position: static;
+  min-width: 0;
+}
+
+/* 服务列表：窄屏改横向药丸轨（解包原型 ≤768px 断点）——
+   无嵌套竖滚，一屏能看到 3 个以上服务；隐藏库存/价格，星标常显（触屏无 hover） */
+.svc-scroll {
+  max-height: none;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 2px 12px 14px;
+  scrollbar-width: none;
+}
+
+.svc-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.svc-item {
+  flex: 0 0 auto;
+  width: auto;
+  border-top: 0;
+  border: 1px solid var(--line-2);
+  border-radius: 12px;
+  padding: 8px 12px 8px 8px;
+  gap: 8px;
+}
+
+.svc-item.active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.svc-item.active::before {
+  display: none;
+}
+
+.svc-item__body {
+  flex: 0 0 auto;
+}
+
+.svc-item__meta,
+.svc-item__price {
+  display: none;
+}
+
+.svc-item__name {
+  font-size: 13.5px;
+  white-space: nowrap;
+}
+
+.fav-btn {
+  opacity: 1;
+}
+
+.svc-empty {
+  flex: 1;
+  border-top: 0;
+  white-space: nowrap;
+}
+
+/* 智能购买 → 细条：图标标题 + 价格上限一行 */
+.smart {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+}
+
+.smart__head {
+  margin-bottom: 0;
+  flex: none;
+}
+
+.smart__icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+}
+
+.smart__title {
+  font-size: 13px;
+}
+
+.smart__sub {
+  display: none;
+}
+
+.caps {
+  flex: 1;
+}
+
+.cap {
+  padding: 7px 4px;
+  font-size: 12px;
+}
+
+/* 结算钉在 tab 栏上方，行情滚动时「确认下单」始终够得着 */
+.checkout {
+  position: sticky;
+  bottom: calc(64px + env(safe-area-inset-bottom));
+  z-index: 20;
+  box-shadow: var(--pop-shadow);
+}
+
+.svc-header {
+  padding: 15px 16px;
+}
+
+.svc-notice,
+.rate-legend {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.country-row {
+  padding: 13px 16px;
+  gap: 11px;
+}
+
+/* ── 接码详情 ─────────────────────────────────────────── */
+
+.activation-grid {
+  grid-template-columns: 1fr;
+}
+
+.act-rail {
+  position: static;
+}
+
+.order-number {
+  font-size: 21px;
+}
+
+.order-head {
+  flex-wrap: wrap;
+  row-gap: 8px;
+  padding: 15px 16px;
+}
+
+.order-body {
+  padding: 16px;
+}
+
+.order-foot {
+  flex-wrap: wrap;
+  row-gap: 8px;
+  padding: 13px 16px;
+}
+
+.order-note {
+  margin-left: 0;
+  width: 100%;
+}
+
+/* ── 订单头：筛选药丸 + 导出挤进同一行（解包原型 ≤768px）──
+   chips 占满可横滚，导出收成图标钉在行尾 */
+.orders-head__filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.orders-head__filters .chips {
+  flex: 1;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.orders-head__filters .chips::-webkit-scrollbar {
+  display: none;
+}
+
+.orders-head__filters .btn-export {
+  flex: none;
+  padding: 8px 11px;
+}
+
+.btn-export__label {
+  display: none;
+}
+
+/* ── 订单表：砍次要列去横滚（同前两个板块的移动惯例）──── */
+
+.dtable {
+  font-size: 13px;
+}
+
+.dtable th,
+.dtable td {
+  padding: 11px 10px;
+}
+
+.dtable th:first-child,
+.dtable td:first-child {
+  padding-left: 14px;
+}
+
+.dtable th:last-child,
+.dtable td:last-child {
+  padding-right: 14px;
+}
+
+/* 订单表窄屏改卡片流（同 /proxy 已购代理表的配方）：
+   去横滚，每单一张三行卡——服务/状态一行，号码/验证码一行，时间/操作一行；
+   国家/运营商（3）、金额（5）两列藏掉 */
+table.dtable-orders {
+  min-width: 0 !important;
+  display: block;
+  white-space: normal;
+}
+
+.dtable-orders thead {
+  display: none;
+}
+
+.dtable-orders tbody {
+  display: block;
+}
+
+.dtable-orders tbody tr {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "svc  status"
+    "num  code"
+    "time act";
+  gap: 5px 12px;
+  align-items: center;
+  padding: 12px 16px;
+}
+
+.dtable-orders tbody tr + tr {
+  border-top: 1px solid var(--line);
+}
+
+.dtable-orders tbody td {
+  display: block;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.dtable-orders tbody td:nth-child(1) {
+  grid-area: svc;
+}
+
+.dtable-orders tbody td:nth-child(2) {
+  grid-area: num;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dtable-orders tbody td:nth-child(3),
+.dtable-orders tbody td:nth-child(5) {
+  display: none;
+}
+
+.dtable-orders tbody td:nth-child(4) {
+  grid-area: code;
+  justify-self: end;
+}
+
+.dtable-orders tbody td:nth-child(6) {
+  grid-area: status;
+  justify-self: end;
+}
+
+.dtable-orders tbody td:nth-child(7) {
+  grid-area: time;
+  text-align: left !important;
+}
+
+.dtable-orders tbody td:nth-child(8) {
+  grid-area: act;
+  justify-self: end;
+  /* 覆盖桌面表格的 width:1 收缩：卡片流里按钮靠 justify-self 右对齐，
+     再撑 1px 会让「再收一条」溢出卡片右缘被裁切 */
+  width: auto !important;
+}
+
+/* 进行中列表：地区省略（号码/倒计时优先） */
+.orders-live__place {
+  display: none;
+}
+
+/* 流水表 5 列砍 1：变动后余额（4） */
+table.dtable-ledger {
+  min-width: 0 !important;
+}
+
+.dtable-ledger td:nth-child(4) {
+  display: none;
+}
+
+/* ── 钱包 ─────────────────────────────────────────────── */
+
+.stat-grid {
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.stat {
+  padding: 16px;
+}
+
+.stat__value {
+  font-size: 26px;
+}
+
+.pay-opts {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.wallet-grid {
+  grid-template-columns: 1fr;
+}
+
+.form-card {
+  padding: 18px 16px;
+}
+
+/* ── API 文档 ─────────────────────────────────────────── */
+
+.docs {
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
+.docs-side {
+  position: static;
+  display: none;
+}
+
+.docs-duo {
+  grid-template-columns: 1fr;
+}
+
+.docs-main h2 {
+  font-size: 24px;
+}
+
+/* ── 窄屏微调 ─────────────────────────────────────────── */
+
+@media (max-width: 520px) {
+  .checkout__row span:first-child {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .code-display {
+    font-size: 27px;
+  }
+}

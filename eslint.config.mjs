@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Agent worktrees carry their own .next build output; don't lint generated code.
+    ".claude/worktrees/**",
+    // Vendored minified icon bundle; single-line source blows the parser's stack.
+    "public/js/lucide-local.js",
   ]),
 ]);
 

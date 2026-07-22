@@ -1,0 +1,2034 @@
+/*
+ * Faorbit merchant UI — Orbital Ledger
+ *
+ * A presentation-only layer for authenticated merchant and auth surfaces.
+ * Marketing pages keep using site.css unchanged. Business hooks, state class
+ * names and DOM relationships continue to be owned by the existing pages.
+ */
+
+.merchant-surface,
+.auth,
+.merchant-topup {
+  --bg: #ffffff;
+  --bg-2: #f4f6fa;
+  --surface: #ffffff;
+  --surface-2: #edf1f7;
+  --line: #dde3ec;
+  --line-2: #cbd4e2;
+  --ink: #101828;
+  --ink-2: #4d5b73;
+  --ink-3: #667085;
+  --navy: #0b1c35;
+  --blue: #1656d9;
+  --blue-2: #2d6fe8;
+  --green: #08734f;
+  --green-dim: #d9f0e7;
+  --warning: #8a4b08;
+  --danger: #a32d38;
+  --orbit: #18a6c9;
+  --r: 14px;
+  --r-lg: 18px;
+  --shadow-card: 0 1px 2px rgba(16, 24, 40, 0.03), 0 12px 32px -26px rgba(16, 35, 72, 0.16);
+  --ff-disp: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --ff-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --ff-mono: "SFMono-Regular", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+  color: var(--ink);
+  font-family: var(--ff-body);
+  /* 本项目所有 0 用普通字形（不要中间带线的 0）。注意：带线 0 来自 Geist Mono
+     的默认字形，font-feature-settings 关不掉（"zero" 0 是无效写法）；真正的修复
+     是 globals.css 里自托管的补丁字体 public/fonts/GeistMono-plain0.woff2。 */
+  font-feature-settings: "tnum" 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.merchant-surface {
+  min-height: 100vh;
+  background: var(--bg-2);
+}
+
+.merchant-surface :where(button, a, input, select, textarea, [role="button"]):focus-visible,
+.auth :where(button, a, input, select, textarea):focus-visible,
+.merchant-topup :where(button, a, input, select, textarea):focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
+.merchant-surface :where(button, input, select, textarea),
+.auth :where(button, input, select, textarea),
+.merchant-topup :where(button, input, select, textarea) {
+  font: inherit;
+}
+
+.merchant-surface :where(.btn, .icon-btn, .fchip, .pay-opt, .bin-pill, .switch, .dw-act),
+.auth :where(.btn, .auth-tabs button, .oauth a, .oauth button) {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ---------- Auth and registration ---------- */
+
+.auth {
+  min-height: 100vh;
+  grid-template-columns: minmax(440px, 0.92fr) minmax(540px, 1.08fr);
+  background: var(--bg-2);
+}
+
+.auth .auth-aside {
+  position: relative;
+  padding: clamp(40px, 5vw, 72px);
+  background:
+    radial-gradient(circle at 78% 24%, rgba(45, 111, 232, 0.46), transparent 28%),
+    radial-gradient(circle at 16% 84%, rgba(24, 166, 201, 0.18), transparent 32%),
+    linear-gradient(145deg, #0d2b69 0%, #091b3e 52%, #071327 100%);
+  isolation: isolate;
+}
+
+.auth .auth-aside::before {
+  top: 10%;
+  right: -14%;
+  width: min(42vw, 620px);
+  height: min(42vw, 620px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: transparent;
+  box-shadow:
+    0 0 0 56px rgba(255, 255, 255, 0.025),
+    0 0 0 118px rgba(255, 255, 255, 0.018);
+}
+
+.auth .auth-aside::after {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.75) 58%, transparent 100%);
+}
+
+.auth .auth-aside .logo {
+  width: max-content;
+  gap: 12px;
+  color: #fff;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+}
+
+.auth .auth-aside .logo .mark {
+  width: 34px;
+  height: 34px;
+  padding: 5px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+}
+
+.auth .quote-lg {
+  max-width: 610px;
+  font-size: clamp(26px, 2.25vw, 38px);
+  font-weight: 580;
+  line-height: 1.35;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.auth .auth-aside .who {
+  margin-top: 26px;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.auth .auth-aside .who .av {
+  width: 46px;
+  height: 46px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: linear-gradient(145deg, #6da7ff, #2367eb);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.16);
+}
+
+.auth .auth-aside .badges {
+  gap: 8px;
+}
+
+.auth .auth-aside .badges span {
+  min-height: 36px;
+  padding: 7px 13px;
+  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.055);
+  color: rgba(255, 255, 255, 0.84);
+  backdrop-filter: blur(10px);
+}
+
+.auth .auth-form {
+  overflow-y: auto;
+  padding: clamp(28px, 5vw, 72px);
+  background:
+    radial-gradient(circle at 100% 0, rgba(22, 86, 217, 0.07), transparent 30%),
+    var(--bg-2);
+}
+
+.auth .auth-card {
+  max-width: 468px;
+  padding: clamp(28px, 3vw, 42px);
+  border: 1px solid rgba(203, 212, 226, 0.8);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.03),
+    0 24px 64px -34px rgba(16, 35, 72, 0.24);
+}
+
+.auth .auth-tabs {
+  min-height: 48px;
+  margin-bottom: 32px;
+  padding: 4px;
+  border-color: var(--line);
+  border-radius: 14px;
+  background: var(--bg-2);
+}
+
+.auth .auth-tabs button {
+  border-radius: 10px;
+  color: var(--ink-3);
+  transition: color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.auth .auth-tabs button.on {
+  color: var(--ink);
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.09);
+}
+
+.auth h2 {
+  margin-bottom: 8px;
+  color: var(--ink);
+  font-size: clamp(26px, 3vw, 32px);
+  font-weight: 650;
+  letter-spacing: -0.035em;
+}
+
+.auth .sub {
+  margin-bottom: 28px;
+  color: var(--ink-2);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.auth .field {
+  margin-bottom: 18px;
+}
+
+.auth .field label {
+  margin-bottom: 8px;
+  color: #344054;
+  font-size: 13px;
+  font-weight: 620;
+}
+
+.auth .input,
+.auth .field input:not([type="checkbox"]),
+.auth .field select,
+.auth .field textarea {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 1px solid var(--line-2);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 15px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.025);
+  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.auth .input:hover,
+.auth .field input:not([type="checkbox"]):hover {
+  border-color: #aeb9ca;
+}
+
+.auth .input:focus,
+.auth .field input:not([type="checkbox"]):focus,
+.auth .field select:focus,
+.auth .field textarea:focus {
+  border-color: var(--blue);
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(22, 86, 217, 0.13);
+}
+
+.auth .input::placeholder,
+.auth .field input::placeholder {
+  color: #98a2b3;
+}
+
+.auth .input-group .suffix {
+  right: 7px;
+  min-height: 34px;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--blue);
+  line-height: 1;
+}
+
+.auth .checkrow {
+  color: var(--ink-2);
+  line-height: 1.45;
+}
+
+.auth .checkrow input {
+  width: 17px;
+  height: 17px;
+  flex: none;
+}
+
+.auth .link {
+  color: var(--blue);
+}
+
+.auth .btn,
+.merchant-topup .btn {
+  min-height: 44px;
+  border-radius: 12px;
+  transition: background 160ms ease, border-color 160ms ease, box-shadow 160ms ease, color 160ms ease;
+}
+
+.auth .btn-primary {
+  border-color: var(--blue);
+  background: var(--blue);
+  box-shadow: 0 8px 20px -12px rgba(22, 86, 217, 0.7);
+}
+
+.auth .btn-primary:hover {
+  background: #1747b7;
+  transform: none;
+}
+
+.auth .btn:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
+.auth .divider-or {
+  margin: 24px 0;
+  color: var(--ink-3);
+}
+
+.auth .oauth a,
+.auth .oauth button {
+  min-height: 46px;
+  border-color: var(--line-2);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.025);
+}
+
+.auth .oauth a:hover,
+.auth .oauth button:hover {
+  border-color: #aeb9ca;
+  background: var(--bg-2);
+}
+
+.auth .auth-err,
+.auth .form-message.error {
+  margin: 4px 0 12px;
+  padding: 11px 13px;
+  border: 1px solid rgba(163, 45, 56, 0.22);
+  border-radius: 10px;
+  background: rgba(163, 45, 56, 0.06);
+  color: var(--danger);
+  font-size: 13px;
+}
+
+.auth .form-message {
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg-2);
+  color: var(--ink-2);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.auth .form-message.success {
+  border-color: rgba(8, 115, 79, 0.22);
+  background: rgba(8, 115, 79, 0.07);
+  color: var(--green);
+}
+
+.auth .form-message.warning {
+  border-color: rgba(138, 75, 8, 0.24);
+  background: rgba(138, 75, 8, 0.07);
+  color: var(--warning);
+}
+
+/* ---------- Merchant application shell ---------- */
+
+.merchant-surface .dash {
+  grid-template-columns: 264px minmax(0, 1fr);
+  min-height: 100vh;
+  background: var(--bg-2);
+}
+
+.merchant-surface .dash-side {
+  /* 深色侧栏内重定义浅色主题变量：底部身份卡/退出按钮的内联样式
+     （preview-identity.js）用 var(--ink-*)/var(--bg-2)，否则深灰字印深底看不清 */
+  --ink: #fff;
+  --ink-2: rgba(226, 235, 250, 0.85);
+  --ink-3: rgba(203, 216, 238, 0.72);
+  --bg-2: rgba(255, 255, 255, 0.08);
+  z-index: 20;
+  height: 100vh;
+  padding: 20px 14px 14px;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(circle at 50% -12%, rgba(45, 111, 232, 0.25), transparent 30%),
+    linear-gradient(180deg, #0b1f3c 0%, #08182f 54%, #071426 100%);
+  color: #fff;
+}
+
+.merchant-surface .dash-side .logo {
+  min-height: 54px;
+  padding: 4px 10px 18px;
+  gap: 10px;
+}
+
+.merchant-surface .dash-side .logo .mark {
+  width: 32px;
+  height: 32px;
+  padding: 4px;
+  border-radius: 9px;
+  background: #fff;
+  object-fit: contain;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+}
+
+.merchant-surface .dash-side .logo .wordmark {
+  height: 20px;
+  filter: brightness(0) invert(1);
+  opacity: 0.96;
+}
+
+.merchant-surface .dnav {
+  gap: 3px;
+  padding: 2px 2px 10px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.merchant-surface .dnav::-webkit-scrollbar {
+  width: 5px;
+}
+
+.merchant-surface .dnav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.merchant-surface .dnav::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.merchant-surface .dnav .lbl {
+  padding: 12px 12px 5px;
+  color: rgba(218, 229, 247, 0.66);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+}
+
+.merchant-surface .dnav a {
+  min-height: 38px;
+  padding: 8px 12px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: rgba(229, 237, 249, 0.88);
+  font-size: 14px;
+  font-weight: 520;
+  transition: color 140ms ease, background 140ms ease, border-color 140ms ease;
+}
+
+.merchant-surface .dnav a svg {
+  width: 17px;
+  height: 17px;
+  stroke-width: 1.9;
+  opacity: 0.84;
+}
+
+.merchant-surface .dnav a:hover {
+  border-color: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.065);
+  color: #fff;
+}
+
+.merchant-surface .dnav a.on {
+  border-color: rgba(93, 148, 255, 0.2);
+  background: linear-gradient(90deg, rgba(45, 111, 232, 0.26), rgba(45, 111, 232, 0.12));
+  color: #fff;
+  box-shadow: inset 3px 0 0 #5d94ff;
+}
+
+.merchant-surface .dnav a.on svg {
+  color: #8db5ff;
+  opacity: 1;
+}
+
+.merchant-surface .role-switch {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.merchant-surface .rs-cap,
+.merchant-surface .rs-em,
+.merchant-surface .rs-trigger .chev {
+  color: rgba(218, 229, 247, 0.48);
+}
+
+.merchant-surface .rs-name {
+  color: rgba(255, 255, 255, 0.94);
+}
+
+.merchant-surface .rs-trigger:hover,
+.merchant-surface .rs-trigger.open {
+  border-color: rgba(255, 255, 255, 0.09);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.merchant-surface .rs-pop {
+  border-color: var(--line);
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 20px 54px -20px rgba(3, 12, 31, 0.58);
+}
+
+.merchant-surface .rs-pop .rs-name {
+  color: var(--ink);
+}
+
+.merchant-surface .rs-pop .rs-em,
+.merchant-surface .rs-pop .rs-pop-h,
+.merchant-surface .rs-pop .rs-pop-foot {
+  color: var(--ink-3);
+}
+
+.merchant-surface .dash-main {
+  min-width: 0;
+  background: var(--bg-2);
+}
+
+.merchant-surface .dash-top {
+  min-height: 72px;
+  padding: 13px clamp(20px, 2.4vw, 36px);
+  gap: 16px;
+  border-bottom: 1px solid rgba(203, 212, 226, 0.8);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 30px -26px rgba(16, 24, 40, 0.36);
+  backdrop-filter: blur(16px) saturate(150%);
+}
+
+.merchant-surface .dash-top .topttl {
+  color: var(--ink);
+  font-size: 19px;
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+
+.merchant-surface .dash-top .topsub {
+  margin-top: 2px;
+  color: var(--ink-3);
+  line-height: 1.35;
+}
+
+.merchant-surface .dash-search {
+  width: min(260px, 24vw);
+  min-height: 42px;
+  padding: 9px 13px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  background: var(--bg-2);
+  color: var(--ink-3);
+  transition: border-color 150ms ease, background 150ms ease, box-shadow 150ms ease;
+}
+
+.merchant-surface .dash-search:focus-within {
+  border-color: var(--blue);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(22, 86, 217, 0.11);
+}
+
+.merchant-surface .dash-search input::placeholder {
+  color: #8994a7;
+}
+
+/* input[type=search] 用于阻断浏览器把登录邮箱自动填进搜索框；隐藏其原生清除/装饰按钮，保持与原文本框一致的外观。 */
+.merchant-surface .dash-search input::-webkit-search-cancel-button,
+.merchant-surface .dash-search input::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.merchant-surface .dash-body {
+  width: 100%;
+  max-width: 1680px;
+  margin: 0 auto;
+  padding: clamp(24px, 2.4vw, 36px);
+  gap: 24px;
+}
+
+.merchant-surface .view {
+  gap: 24px;
+}
+
+.merchant-surface .view-head {
+  min-height: 44px;
+  align-items: center;
+}
+
+.merchant-surface .view-head .vt {
+  color: var(--ink);
+  font-size: 23px;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+}
+
+.merchant-surface .view-head .vs {
+  color: var(--ink-3);
+}
+
+/* ---------- Controls ---------- */
+
+.merchant-surface .btn {
+  min-height: 40px;
+  padding: 9px 16px;
+  border-radius: 11px;
+  font-size: 13.5px;
+  font-weight: 620;
+  line-height: 1;
+  box-shadow: none;
+  transition: color 150ms ease, background 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.merchant-surface .btn:hover {
+  transform: none;
+}
+
+.merchant-surface .btn-primary {
+  border-color: var(--blue);
+  background: var(--blue);
+  color: #fff;
+  box-shadow: 0 5px 14px -9px rgba(22, 86, 217, 0.8);
+}
+
+.merchant-surface .btn-primary:hover {
+  border-color: #1747b7;
+  background: #1747b7;
+}
+
+.merchant-surface .btn-soft {
+  border-color: var(--line);
+  background: #fff;
+  color: #344054;
+}
+
+.merchant-surface .btn-soft:hover {
+  border-color: #b9c3d2;
+  background: var(--bg-2);
+}
+
+.merchant-surface .btn-ok {
+  background: var(--green);
+}
+
+.merchant-surface .btn-no {
+  border-color: rgba(163, 45, 56, 0.28);
+  color: var(--danger);
+}
+
+.merchant-surface .btn:disabled,
+.merchant-surface button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.merchant-surface .icon-btn {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-color: var(--line);
+  border-radius: 11px;
+  background: #fff;
+  color: var(--ink-2);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.025);
+  transition: color 140ms ease, background 140ms ease, border-color 140ms ease;
+}
+
+.merchant-surface .icon-btn:hover {
+  border-color: #bdc7d6;
+  background: var(--bg-2);
+  color: var(--ink);
+}
+
+.merchant-surface .icon-btn svg {
+  width: 17px;
+  height: 17px;
+  stroke-width: 1.9;
+}
+
+.merchant-surface .field label {
+  color: #344054;
+  font-size: 13px;
+  font-weight: 620;
+}
+
+.merchant-surface .field input,
+.merchant-surface .field select,
+.merchant-surface .field textarea,
+.merchant-surface .alloc .field input,
+.merchant-surface .alloc .field select,
+.merchant-surface .alloc .field textarea,
+.merchant-surface .ldg-filters input,
+.merchant-surface .ldg-filters select {
+  border-color: var(--line-2);
+  border-radius: 11px;
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.025);
+}
+
+.merchant-surface .field input:hover,
+.merchant-surface .field select:hover,
+.merchant-surface .field textarea:hover {
+  border-color: #aeb9ca;
+}
+
+.merchant-surface .field input:focus,
+.merchant-surface .field select:focus,
+.merchant-surface .field textarea:focus,
+.merchant-surface .alloc .field input:focus,
+.merchant-surface .alloc .field select:focus,
+.merchant-surface .alloc .field textarea:focus,
+.merchant-surface .ldg-filters input:focus,
+.merchant-surface .ldg-filters select:focus {
+  border-color: var(--blue);
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(22, 86, 217, 0.12);
+}
+
+.merchant-surface .switch {
+  background: #aeb8c7;
+  box-shadow: inset 0 0 0 1px rgba(16, 24, 40, 0.06);
+}
+
+.merchant-surface .switch.on {
+  background: var(--blue);
+}
+
+/* ---------- KPIs, panels and tables ---------- */
+
+.merchant-surface .kpis {
+  grid-template-columns: minmax(260px, 1.5fr) repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.merchant-surface [data-view-panel="dashboard"] .kpi:has([data-kpi-wallet]),
+.merchant-surface [data-view-panel="dashboard"] .kpi:has([data-mkpi-avail]),
+.merchant-surface .kpi:has([data-kpi="wallet"]) {
+  order: -1;
+  border-color: rgba(22, 86, 217, 0.25);
+  background:
+    radial-gradient(circle at 100% 0, rgba(24, 166, 201, 0.1), transparent 38%),
+    linear-gradient(145deg, #ffffff, #f4f8ff);
+}
+
+.merchant-surface .kpi {
+  min-height: 142px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: var(--shadow-card);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.merchant-surface .kpi:hover {
+  border-color: #c5cede;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.03), 0 18px 40px -28px rgba(16, 35, 72, 0.34);
+}
+
+.merchant-surface .kpi .top {
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 520;
+}
+
+.merchant-surface .kpi .top .ic {
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(22, 86, 217, 0.12);
+  border-radius: 10px;
+  background: rgba(22, 86, 217, 0.075);
+  color: var(--blue);
+}
+
+.merchant-surface .kpi .v {
+  margin: 15px 0 5px;
+  color: var(--ink);
+  font-family: var(--ff-disp);
+  font-size: clamp(27px, 2.1vw, 34px);
+  font-weight: 650;
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+}
+
+.merchant-surface .kpi .delta,
+.merchant-surface .kpi .hint {
+  color: var(--ink-3);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.merchant-surface .kpi .delta.up {
+  color: var(--green);
+}
+
+.merchant-surface .kpi .delta.down,
+.merchant-surface .cl-tx.decline {
+  color: var(--danger);
+}
+
+.merchant-surface .panel,
+.merchant-surface .form-card,
+.merchant-surface .wcard,
+.merchant-surface .vc,
+.merchant-surface .fs-card,
+.merchant-surface .set-grid {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: var(--shadow-card);
+}
+
+.merchant-surface .panel {
+  overflow: clip;
+}
+
+/* Webhook 面板不裁剪：行内「更多操作」下拉菜单要垂出面板底部 */
+.merchant-surface .panel.wh-panel {
+  overflow: visible;
+}
+
+.merchant-surface .panel .ph {
+  min-height: 60px;
+  padding: 16px 22px;
+  gap: 16px;
+  border-color: var(--line);
+  background: #fff;
+}
+
+.merchant-surface .panel .ph > :first-child,
+.merchant-surface .panel .ph h3 {
+  color: var(--ink);
+  font-weight: 640;
+}
+
+.merchant-surface .panel .pb {
+  padding: 22px;
+}
+
+.merchant-surface .grid-2 {
+  grid-template-columns: minmax(0, 1.7fr) minmax(320px, 0.8fr);
+  gap: 16px;
+}
+
+.merchant-surface .linechart .grid {
+  stroke: #e4e9f1;
+}
+
+.merchant-surface .chart-x {
+  color: var(--ink-3);
+}
+
+.merchant-surface .lang-tabs {
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg-2);
+}
+
+.merchant-surface .lang-tabs button {
+  min-height: 30px;
+  padding: 6px 11px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--ink-3);
+  font-family: var(--ff-body);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.merchant-surface .lang-tabs button.on {
+  border: 0;
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.1);
+}
+
+.merchant-surface .dtable {
+  font-size: 13.5px;
+}
+
+.merchant-surface .dtable th,
+.merchant-surface .dtable td {
+  height: 54px;
+  padding: 12px 22px;
+  border-color: #e6eaf1;
+  vertical-align: middle;
+}
+
+.merchant-surface .dtable th {
+  height: 42px;
+  background: #f8fafc;
+  color: #667085;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.075em;
+  white-space: nowrap;
+}
+
+.merchant-surface .dtable tbody tr {
+  transition: background 120ms ease;
+}
+
+.merchant-surface .dtable tbody tr:hover {
+  background: #f8faff;
+}
+
+.merchant-surface .cl-name {
+  color: var(--ink);
+  font-weight: 620;
+}
+
+.merchant-surface .cl-pan,
+.merchant-surface .linked,
+.merchant-surface code {
+  color: #5f6c82;
+  font-family: var(--ff-mono);
+}
+
+.merchant-surface .cl-pan {
+  white-space: nowrap;
+}
+
+.merchant-surface .card-cell.clickable:hover {
+  background: rgba(22, 86, 217, 0.055);
+}
+
+.merchant-surface .pill,
+.merchant-surface .role {
+  min-height: 26px;
+  padding: 4px 9px;
+  font-size: 11.5px;
+  font-weight: 650;
+}
+
+.merchant-surface .pill.ok,
+.merchant-surface .pill.approved,
+.merchant-surface .role.member-mkt {
+  background: rgba(8, 115, 79, 0.09);
+  color: var(--green);
+}
+
+.merchant-surface .pill.warn,
+.merchant-surface .pill.pending,
+.merchant-surface .pill.low,
+.merchant-surface .pill.idle,
+.merchant-surface .pill.proc {
+  background: rgba(138, 75, 8, 0.09);
+  color: var(--warning);
+}
+
+.merchant-surface .pill.info,
+.merchant-surface .role.admin {
+  background: rgba(22, 86, 217, 0.09);
+  color: var(--blue);
+}
+
+.merchant-surface .pill.rejected,
+.merchant-surface .btn-no,
+.merchant-surface .menu button.danger,
+.merchant-surface .row-menu button.danger {
+  color: var(--danger);
+}
+
+.merchant-surface .pill.off,
+.merchant-surface .role {
+  background: var(--surface-2);
+  color: #59677d;
+}
+
+.merchant-surface .role.owner,
+.merchant-surface .pill.lead {
+  background: rgba(81, 56, 173, 0.09);
+  color: #523aa2;
+}
+
+.merchant-surface .fchips {
+  gap: 7px;
+}
+
+.merchant-surface .fchip {
+  min-height: 34px;
+  padding: 7px 12px;
+  border-color: var(--line);
+  background: #fff;
+  color: var(--ink-2);
+  font-size: 12.5px;
+}
+
+.merchant-surface .fchip:hover {
+  border-color: #aeb9ca;
+  color: var(--ink);
+}
+
+.merchant-surface .fchip.on {
+  border-color: var(--blue);
+  background: rgba(22, 86, 217, 0.08);
+  color: var(--blue);
+  box-shadow: inset 0 0 0 1px rgba(22, 86, 217, 0.08);
+}
+
+.merchant-surface .fchip.on .fchip-n {
+  background: rgba(22, 86, 217, 0.12);
+  color: var(--blue);
+}
+
+/* ---------- Cards, forms and settings ---------- */
+
+.merchant-surface .cardgrid,
+.merchant-surface .wallet-grid {
+  gap: 16px;
+}
+
+.merchant-surface [data-view-panel="wallet"] {
+  position: relative;
+}
+
+.merchant-surface [data-view-panel="wallet"] .view-head {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 2;
+  min-height: 0;
+}
+
+.merchant-surface [data-view-panel="wallet"] .wallet-grid {
+  grid-template-columns: 1fr;
+}
+
+.merchant-surface [data-view-panel="wallet"] .wcard {
+  min-height: 184px;
+  padding: 28px;
+  background:
+    radial-gradient(circle at 100% 0, rgba(24, 166, 201, 0.1), transparent 38%),
+    linear-gradient(145deg, #ffffff, #f4f8ff);
+}
+
+.merchant-surface [data-view-panel="topup"] .pay-opts {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.merchant-surface .vc,
+.merchant-surface .wcard {
+  overflow: hidden;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.merchant-surface .vc:hover {
+  transform: none;
+  border-color: #bdc7d6;
+  box-shadow: 0 16px 32px -28px rgba(16, 35, 72, 0.38);
+}
+
+.merchant-surface .vc .face.blue,
+.merchant-surface .dcard.blue {
+  background: linear-gradient(145deg, #1a65ea, #0d3d9d);
+}
+
+.merchant-surface .vc .face.navy,
+.merchant-surface .dcard.navy {
+  background: linear-gradient(145deg, #172f5d, #09162f);
+}
+
+.merchant-surface .vc .face.sky,
+.merchant-surface .dcard.sky {
+  background: linear-gradient(145deg, #148bb3, #0b4d75);
+}
+
+.merchant-surface .vc .face.indigo,
+.merchant-surface .dcard.indigo {
+  background: linear-gradient(145deg, #5a4ed8, #2d2394);
+}
+
+.merchant-surface .vc .face.teal,
+.merchant-surface .dcard.teal {
+  background: linear-gradient(145deg, #12a294, #086158);
+}
+
+.merchant-surface .vc .face.emerald,
+.merchant-surface .dcard.emerald {
+  background: linear-gradient(145deg, #1ea55c, #0b5f34);
+}
+
+.merchant-surface .form-card {
+  padding: 28px;
+}
+
+.merchant-surface .nc-group {
+  padding: 22px 24px;
+}
+
+.merchant-surface .nc-group-title,
+.merchant-surface .set-sub,
+.merchant-surface .plan-eyebrow {
+  color: #667085;
+  font-size: 10.5px;
+  letter-spacing: 0.11em;
+}
+
+.merchant-surface .nc-foot {
+  background: #f8fafc;
+}
+
+.merchant-surface .summary {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.merchant-surface .pay-opts,
+.merchant-surface .bin-pills {
+  gap: 10px;
+}
+
+.merchant-surface .pay-opt,
+.merchant-surface .bin-pill {
+  border-color: var(--line-2);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: none;
+  transition: border-color 140ms ease, background 140ms ease, box-shadow 140ms ease;
+}
+
+.merchant-surface .pay-opt:hover,
+.merchant-surface .bin-pill:hover {
+  border-color: #9aa8bc;
+}
+
+.merchant-surface .pay-opt.on,
+.merchant-surface .bin-pill.on {
+  border-color: var(--blue);
+  background: rgba(22, 86, 217, 0.045);
+  box-shadow: inset 0 0 0 1px var(--blue);
+}
+
+.merchant-surface .bin-pill .rec {
+  background: var(--blue);
+  box-shadow: 0 3px 10px -5px rgba(22, 86, 217, 0.75);
+  animation: none;
+}
+
+.merchant-surface .bin-pill .rec::after {
+  display: none;
+}
+
+.merchant-surface .set-grid {
+  overflow: hidden;
+}
+
+.merchant-surface .set-nav {
+  padding: 16px 12px;
+  border-color: var(--line);
+  background: #f8fafc;
+}
+
+.merchant-surface .set-nav a {
+  min-height: 40px;
+  border-radius: 9px;
+}
+
+.merchant-surface .set-nav a.on {
+  background: #fff;
+  color: var(--blue);
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.08);
+}
+
+.merchant-surface .set-body {
+  max-width: 720px;
+  padding: 30px;
+}
+
+.merchant-surface .plan-current-card {
+  border-color: rgba(22, 86, 217, 0.2);
+  background: linear-gradient(135deg, #f3f7ff 0%, #fff 68%);
+}
+
+.merchant-surface .plan-card {
+  border-color: var(--line);
+  box-shadow: none;
+}
+
+.merchant-surface .plan-card.current {
+  border-color: var(--blue);
+  box-shadow: inset 0 0 0 1px var(--blue);
+}
+
+/* ---------- Team funds structure ---------- */
+
+.merchant-surface .fs-card {
+  padding: 24px;
+}
+
+.merchant-surface .fs-head {
+  margin-bottom: 20px;
+}
+
+.merchant-surface .fs-head h3 {
+  color: var(--ink);
+  font-weight: 650;
+}
+
+.merchant-surface .fs-head .vh {
+  color: var(--ink-3);
+}
+
+.merchant-surface .fs-row {
+  grid-template-columns:
+    minmax(220px, 1.2fr) 20px minmax(170px, 1fr) 20px
+    minmax(170px, 1fr) 20px minmax(170px, 1fr);
+  gap: 9px;
+}
+
+.merchant-surface .fs-row > :last-child {
+  grid-column: auto;
+}
+
+.merchant-surface .fs-cell {
+  padding: 17px;
+  border-color: var(--line);
+  border-radius: 13px;
+  background: #f8fafc;
+}
+
+.merchant-surface .fs-cell.total {
+  border-color: rgba(22, 86, 217, 0.28);
+  background:
+    radial-gradient(circle at 100% 0, rgba(24, 166, 201, 0.12), transparent 42%),
+    linear-gradient(145deg, #f1f6ff, #fff);
+}
+
+.merchant-surface .fs-cell .lb,
+.merchant-surface .fs-cell .h {
+  color: var(--ink-3);
+}
+
+.merchant-surface .fs-cell .v {
+  color: var(--ink);
+  font-size: 23px;
+  font-weight: 650;
+  letter-spacing: -0.04em;
+}
+
+.merchant-surface .fs-cell.total .v {
+  color: var(--blue);
+  font-size: 27px;
+}
+
+.merchant-surface .fs-sign {
+  color: #98a2b3;
+  font-size: 18px;
+}
+
+/* ---------- Menus, drawers and modals ---------- */
+
+.merchant-surface .menu,
+.merchant-surface .row-menu,
+.merchant-surface .wh-menu {
+  padding: 6px;
+  border-color: var(--line);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 20px 48px -18px rgba(16, 35, 72, 0.34);
+}
+
+.merchant-surface .menu button,
+.merchant-surface .row-menu button {
+  min-height: 38px;
+  border-radius: 8px;
+  color: var(--ink);
+}
+
+.merchant-surface .menu button:hover,
+.merchant-surface .row-menu button:hover {
+  background: var(--bg-2);
+}
+
+.merchant-surface .drawer-overlay,
+.merchant-surface .alloc-overlay,
+.merchant-surface .ldg-overlay,
+.merchant-surface .pp-overlay,
+.merchant-surface .wd-overlay {
+  background: rgba(7, 20, 38, 0.48);
+  backdrop-filter: blur(4px);
+}
+
+.merchant-surface .drawer,
+.merchant-surface .alloc,
+.merchant-surface .ldg {
+  border-left: 1px solid rgba(255, 255, 255, 0.52);
+  background: var(--bg-2);
+  box-shadow: -24px 0 64px -28px rgba(3, 12, 31, 0.58);
+}
+
+.merchant-surface .drawer,
+.merchant-surface .alloc {
+  width: 488px;
+  max-width: min(94vw, 488px);
+}
+
+.merchant-surface .ldg {
+  width: 700px;
+  max-width: min(96vw, 700px);
+}
+
+.merchant-surface .dw-head,
+.merchant-surface .alloc-head,
+.merchant-surface .ldg-head {
+  min-height: 68px;
+  border-color: var(--line);
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(14px);
+}
+
+.merchant-surface .dw-head {
+  padding: 18px 24px;
+}
+
+.merchant-surface .dw-head .ti,
+.merchant-surface .alloc-head h3,
+.merchant-surface .ldg-who .nm {
+  color: var(--ink);
+  font-weight: 650;
+}
+
+.merchant-surface .dw-body,
+.merchant-surface .alloc-body,
+.merchant-surface .ldg-body {
+  scrollbar-width: thin;
+  scrollbar-color: #bcc6d5 transparent;
+}
+
+.merchant-surface .dw-panel,
+.merchant-surface .impact,
+.merchant-surface .target-card,
+.merchant-surface .ldg-list,
+.merchant-surface .req-hist {
+  border-color: var(--line);
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.025);
+}
+
+.merchant-surface .dw-act {
+  min-height: 70px;
+  border-color: var(--line);
+  background: #fff;
+}
+
+.merchant-surface .dw-act:hover {
+  border-color: rgba(22, 86, 217, 0.42);
+  color: var(--blue);
+  box-shadow: none;
+}
+
+.merchant-surface .alloc-head,
+.merchant-surface .alloc-foot {
+  padding-left: 24px;
+  padding-right: 24px;
+  border-color: var(--line);
+  background: #fff;
+}
+
+.merchant-surface .alloc-note,
+.merchant-surface .plan-info-box {
+  border-color: rgba(22, 86, 217, 0.16);
+  background: rgba(22, 86, 217, 0.055);
+}
+
+.merchant-surface .pp-modal,
+.merchant-surface .wd-modal {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 30px 72px -24px rgba(3, 12, 31, 0.5);
+}
+
+.merchant-surface .pp-modal .pi {
+  border-radius: 12px;
+  background: rgba(22, 86, 217, 0.08);
+  color: var(--blue);
+}
+
+.merchant-surface .pp-dots input {
+  border-color: var(--line-2);
+  border-radius: 10px;
+}
+
+.merchant-surface .toast {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: #0b1c35;
+  box-shadow: 0 18px 48px -18px rgba(3, 12, 31, 0.62);
+}
+
+/* ---------- Empty, loading and error presentation ---------- */
+
+.merchant-surface .spend-empty,
+.merchant-surface .bin-empty,
+.merchant-surface .ldg-empty,
+.merchant-surface .req-empty,
+.merchant-surface .appr-empty,
+.merchant-surface .empty-row td {
+  color: var(--ink-3);
+}
+
+.merchant-surface .merchant-empty {
+  display: grid;
+  place-items: center;
+  min-height: 132px;
+  padding: 28px 22px;
+  text-align: center;
+}
+
+.merchant-surface .merchant-empty::before {
+  content: "+";
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  margin-bottom: 11px;
+  border: 1px solid rgba(22, 86, 217, 0.15);
+  border-radius: 12px;
+  background: rgba(22, 86, 217, 0.07);
+  color: var(--blue);
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.merchant-surface .merchant-empty--cleared::before {
+  content: "✓";
+  border-color: rgba(8, 115, 79, 0.16);
+  background: rgba(8, 115, 79, 0.07);
+  color: var(--green);
+}
+
+.merchant-surface .merchant-empty strong {
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.merchant-surface .merchant-empty p {
+  max-width: 360px;
+  margin-top: 5px;
+  color: var(--ink-3);
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+
+.merchant-surface .spend-empty-icon {
+  border: 1px solid rgba(22, 86, 217, 0.12);
+  background: rgba(22, 86, 217, 0.07);
+  color: var(--blue);
+}
+
+.merchant-surface .field.invalid input,
+.merchant-surface .field.invalid select,
+.merchant-surface .field.invalid textarea,
+.merchant-surface input.err {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px rgba(163, 45, 56, 0.1);
+}
+
+.merchant-surface .field-err,
+.merchant-surface .pp-msg,
+.merchant-surface .wd-help .err {
+  color: var(--danger);
+}
+
+.merchant-surface .skeleton {
+  overflow: hidden;
+  border-radius: 8px;
+  background: #e8edf4;
+}
+
+.merchant-surface .skeleton::after {
+  content: "";
+  display: block;
+  width: 45%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.76), transparent);
+  animation: merchant-shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes merchant-shimmer {
+  from { transform: translateX(-130%); }
+  to { transform: translateX(330%); }
+}
+
+/* ---------- Mobile navigation ---------- */
+
+.merchant-mobile-toggle {
+  display: none;
+}
+
+.merchant-mobile-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 18;
+  padding: 0;
+  border: 0;
+  visibility: hidden;
+  background: rgba(7, 20, 38, 0.46);
+  opacity: 0;
+  cursor: default;
+  backdrop-filter: blur(3px);
+  transition: opacity 180ms ease, visibility 180ms ease;
+}
+
+.merchant-surface .dash.mobile-nav-open .merchant-mobile-overlay {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* ---------- Standalone top-up record ---------- */
+
+.merchant-topup {
+  min-height: 100vh;
+  padding: clamp(28px, 6vw, 68px) 20px;
+  background:
+    radial-gradient(circle at 50% -10%, rgba(22, 86, 217, 0.12), transparent 34%),
+    var(--bg-2);
+}
+
+.merchant-topup__shell {
+  width: min(760px, 100%);
+  margin: 0 auto;
+}
+
+.merchant-topup__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 18px;
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.merchant-topup__back:hover {
+  color: var(--blue);
+}
+
+.merchant-topup__card {
+  padding: clamp(22px, 4vw, 32px);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 22px 54px -36px rgba(16, 35, 72, 0.32);
+}
+
+.merchant-topup__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.merchant-topup__eyebrow {
+  margin-bottom: 8px;
+  color: var(--blue);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.merchant-topup__title {
+  color: var(--ink);
+  font-size: 25px;
+  font-weight: 650;
+  letter-spacing: -0.035em;
+}
+
+.merchant-topup__meta {
+  margin-top: 7px;
+  color: var(--ink-3);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.merchant-topup__status {
+  min-height: 30px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.merchant-topup__summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 26px 0 14px;
+}
+
+.merchant-topup__sum {
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.merchant-topup__sum--highlight {
+  border-color: rgba(8, 115, 79, 0.2);
+  background: rgba(8, 115, 79, 0.055);
+}
+
+.merchant-topup__sum-label {
+  color: var(--ink-3);
+  font-size: 11.5px;
+}
+
+.merchant-topup__sum-value {
+  margin-top: 6px;
+  color: var(--ink);
+  font-family: var(--ff-mono);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.merchant-topup__sum--highlight .merchant-topup__sum-value {
+  color: var(--green);
+  font-size: 22px;
+}
+
+.merchant-topup__hint {
+  color: var(--ink-3);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.merchant-topup__section,
+.merchant-topup__notice {
+  margin-top: 16px;
+  padding: clamp(20px, 3vw, 26px);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+}
+
+.merchant-topup__section-title {
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 650;
+}
+
+.merchant-topup__section-copy {
+  margin: 6px 0 17px;
+  color: var(--ink-3);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.merchant-topup__rows {
+  display: grid;
+  gap: 7px;
+}
+
+.merchant-topup__row {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.75fr) minmax(0, 1.25fr);
+  gap: 16px;
+  align-items: center;
+  padding: 11px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+.merchant-topup__row-label {
+  color: var(--ink-3);
+  font-size: 12.5px;
+}
+
+.merchant-topup__row-value {
+  color: var(--ink);
+  font-family: var(--ff-mono);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.merchant-topup__notice {
+  color: var(--ink-2);
+  font-size: 13.5px;
+  line-height: 1.65;
+}
+
+.merchant-topup__notice--success {
+  border-color: rgba(8, 115, 79, 0.22);
+  background: rgba(8, 115, 79, 0.06);
+}
+
+.merchant-topup__notice--error {
+  border-color: rgba(163, 45, 56, 0.22);
+  background: rgba(163, 45, 56, 0.055);
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1280px) {
+  .merchant-surface .grid-2 {
+    grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.8fr);
+  }
+
+  .merchant-surface .fs-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .merchant-surface .fs-cell.total {
+    grid-column: 1 / -1;
+  }
+
+  .merchant-surface .fs-sign {
+    display: none;
+  }
+}
+
+@media (max-width: 1160px) {
+  .merchant-surface .kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1000px) {
+  .merchant-surface .dash {
+    display: block;
+  }
+
+  .merchant-surface .dash-side {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    width: min(286px, 86vw);
+    transform: translateX(-104%);
+    transition: transform 220ms cubic-bezier(0.22, 0.8, 0.22, 1);
+  }
+
+  .merchant-surface .dash.mobile-nav-open .dash-side {
+    transform: translateX(0);
+  }
+
+  .merchant-mobile-toggle {
+    display: grid;
+    flex: none;
+  }
+
+  .merchant-surface .dash-top {
+    padding: 12px 20px;
+  }
+
+  .merchant-surface .dash-body {
+    padding: 24px 20px;
+  }
+
+  .merchant-surface .grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .merchant-surface .dash-search {
+    width: auto;
+    min-width: 180px;
+    max-width: 320px;
+  }
+
+  .auth {
+    grid-template-columns: 1fr;
+  }
+
+  .auth .auth-aside {
+    display: none;
+  }
+
+  .auth .auth-form {
+    min-height: 100vh;
+  }
+}
+
+@media (max-height: 820px) and (min-width: 1001px) {
+  .auth .auth-aside {
+    padding-top: 38px;
+    padding-bottom: 38px;
+  }
+
+  .auth .quote-lg {
+    font-size: clamp(25px, 2vw, 32px);
+  }
+
+  .auth .auth-aside .who {
+    margin-top: 18px;
+  }
+
+  .auth .auth-form {
+    padding: 24px 48px;
+  }
+
+  .auth .auth-card {
+    padding: 28px 34px;
+  }
+
+  .auth .auth-tabs {
+    margin-bottom: 24px;
+  }
+
+  .auth .sub {
+    margin-bottom: 22px;
+  }
+
+  .auth .field {
+    margin-bottom: 14px;
+  }
+
+  .auth .divider-or {
+    margin: 18px 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .merchant-surface .dash-top {
+    align-items: center;
+    gap: 10px;
+  }
+
+  .merchant-surface .dash-top > div:last-child {
+    width: 100%;
+    margin-left: 0;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .merchant-surface .dash-top > div:last-child [data-search-wrap],
+  .merchant-surface .dash-top > div:last-child .dash-search {
+    flex: 1 1 210px;
+    width: auto;
+    max-width: none;
+  }
+
+  .merchant-surface .dash-body {
+    padding: 20px 16px 32px;
+  }
+
+  .merchant-surface .view {
+    gap: 18px;
+  }
+
+  .merchant-surface .kpis,
+  .merchant-surface .cardgrid,
+  .merchant-surface .wallet-grid,
+  .merchant-surface .fs-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .merchant-surface .fs-cell.total {
+    grid-column: 1 / -1;
+  }
+
+  .merchant-surface .kpi {
+    min-height: 132px;
+  }
+
+  .merchant-surface .panel .ph {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .merchant-surface .dtable {
+    min-width: 760px;
+  }
+
+  .merchant-surface .dtable:has([data-members-tbody]) {
+    min-width: 920px;
+  }
+
+  .merchant-surface .dtable:has([data-tx-tbody]) {
+    min-width: 880px;
+  }
+
+  .merchant-surface .dtable:has([data-cards-tbody]) {
+    min-width: 840px;
+  }
+
+  .merchant-surface [data-view-panel="wallet"] .view-head {
+    top: 18px;
+    right: 18px;
+  }
+
+  .merchant-surface .set-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .merchant-surface .set-nav {
+    overflow-x: auto;
+    flex-direction: row;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .merchant-surface .set-nav a {
+    flex: none;
+    white-space: nowrap;
+  }
+
+  .merchant-surface .set-body {
+    padding: 22px;
+  }
+
+  .merchant-surface .drawer,
+  .merchant-surface .alloc,
+  .merchant-surface .ldg {
+    width: min(100vw, 560px);
+    max-width: 100vw;
+  }
+
+  .merchant-topup__summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .auth .auth-form {
+    align-items: flex-start;
+    padding: 18px;
+  }
+
+  .auth .auth-card {
+    margin: auto 0;
+    padding: 24px 20px;
+    border-radius: 18px;
+  }
+
+  .merchant-surface .dash-top {
+    padding: 10px 14px;
+  }
+
+  .merchant-surface .dash-top > div:first-of-type {
+    min-width: 0;
+  }
+
+  .merchant-surface .dash-top .topsub {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .merchant-surface .dash-top > div:last-child .btn {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  .merchant-surface .kpis,
+  .merchant-surface .cardgrid,
+  .merchant-surface .wallet-grid,
+  .merchant-surface .fs-row {
+    grid-template-columns: 1fr;
+  }
+
+  .merchant-surface .fs-cell.total {
+    grid-column: auto;
+  }
+
+  .merchant-surface .kpi {
+    min-height: 124px;
+  }
+
+  .merchant-surface .view-head .va {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .merchant-surface .view-head .va .btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .merchant-surface [data-view-panel="topup"] .pay-opts {
+    grid-template-columns: 1fr;
+  }
+
+  .merchant-surface [data-view-panel="wallet"] .view-head {
+    position: static;
+    min-height: 40px;
+  }
+
+  .merchant-surface .dw-acts {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .merchant-surface .alloc-body,
+  .merchant-surface .dw-body,
+  .merchant-surface .ldg-body {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .merchant-surface .alloc-head,
+  .merchant-surface .alloc-foot,
+  .merchant-surface .dw-head,
+  .merchant-surface .ldg-head {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .merchant-topup {
+    padding: 22px 14px;
+  }
+
+  .merchant-topup__card,
+  .merchant-topup__section,
+  .merchant-topup__notice {
+    border-radius: 15px;
+  }
+
+  .merchant-topup__row {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+
+  .merchant-topup__row-value {
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .merchant-surface *,
+  .auth *,
+  .merchant-topup * {
+    scroll-behavior: auto;
+  }
+
+  .merchant-surface :where(.dash-side, .merchant-mobile-overlay, .drawer, .alloc, .ldg, .toast, .skeleton::after),
+  .auth :where(button, input, a) {
+    animation: none;
+    transition-duration: 0.01ms;
+  }
+}
