@@ -4,7 +4,14 @@
  *  右侧国家/运营商行情 + 数量条 + 结算。登录环节已拿掉（演示态直接下单）；
  *  钱包页已下线，余额不足只提示不跳转。 */
 
-import { useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 import {
   SMS_SERVICES,
   countriesFor,
@@ -114,6 +121,62 @@ export function BuyView({ go }: { go: (view: SmsView, actId?: string) => void })
     return list.filter((s) => s.name.toLowerCase().includes(q) || s.slug.includes(q));
   }, [tab, favs, search]);
 
+  // 服务滑轨的横向滚动指示条：仅当轨道真正横向溢出时才有意义
+  // （移动端药丸轨会溢出，桌面竖列表不会），故无需媒体查询即天然只在移动端出现。
+  const svcScrollRef = useRef<HTMLDivElement>(null);
+  const scrollBarRef = useRef<HTMLDivElement>(null);
+  const [svcScroll, setSvcScroll] = useState({ max: 0, left: 0, ratio: 1 });
+
+  const measureSvcScroll = useCallback(() => {
+    const el = svcScrollRef.current;
+    if (!el) return;
+    setSvcScroll({
+      max: el.scrollWidth - el.clientWidth,
+      left: el.scrollLeft,
+      ratio: el.scrollWidth > 0 ? el.clientWidth / el.scrollWidth : 1,
+    });
+  }, []);
+
+  // 列表内容变化（切 tab / 搜索 / 收藏增删）后重新测量
+  useEffect(() => {
+    measureSvcScroll();
+  }, [measureSvcScroll, items]);
+
+  // 跟随滑动更新位置，视口/内容尺寸变化时重测
+  useEffect(() => {
+    const el = svcScrollRef.current;
+    if (!el) return;
+    const onScroll = () => setSvcScroll((s) => ({ ...s, left: el.scrollLeft }));
+    el.addEventListener("scroll", onScroll, { passive: true });
+    const ro = new ResizeObserver(measureSvcScroll);
+    ro.observe(el);
+    return () => {
+      el.removeEventListener("scroll", onScroll);
+      ro.disconnect();
+    };
+  }, [measureSvcScroll]);
+
+  // 拖动指示条 → 反向驱动滑轨滚动
+  function dragScrollbar(e: ReactPointerEvent<HTMLDivElement>) {
+    const scroller = svcScrollRef.current;
+    const bar = scrollBarRef.current;
+    if (!scroller || !bar || svcScroll.max <= 0) return;
+    const travel = bar.clientWidth * (1 - svcScroll.ratio);
+    if (travel <= 0) return;
+    e.preventDefault();
+    const startX = e.clientX;
+    const startLeft = scroller.scrollLeft;
+    const onMove = (ev: PointerEvent) => {
+      scroller.scrollLeft = startLeft + ((ev.clientX - startX) / travel) * svcScroll.max;
+    };
+    const onUp = () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+    };
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+  }
+
   const countries = useMemo(() => countriesFor(selected), [selected]);
 
   const sorted = useMemo(() => {
@@ -201,7 +264,7 @@ export function BuyView({ go }: { go: (view: SmsView, actId?: string) => void })
               />
             </div>
           </div>
-          <div className="svc-scroll">
+          <div className="svc-scroll" id="svc-scroll" ref={svcScrollRef}>
             {items.map((s) => {
               const key = favKey(s);
               const fav = favs.includes(key);
@@ -251,6 +314,28 @@ export function BuyView({ go }: { go: (view: SmsView, actId?: string) => void })
               </div>
             )}
           </div>
+          {svcScroll.max > 1 && (
+            <div
+              ref={scrollBarRef}
+              className="svc-scrollbar"
+              role="scrollbar"
+              aria-orientation="horizontal"
+              aria-label="服务列表滚动"
+              aria-controls="svc-scroll"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={Math.round((svcScroll.left / svcScroll.max) * 100)}
+              onPointerDown={dragScrollbar}
+            >
+              <div
+                className="svc-scrollbar__thumb"
+                style={{
+                  width: `${svcScroll.ratio * 100}%`,
+                  left: `${(svcScroll.left / svcScroll.max) * (1 - svcScroll.ratio) * 100}%`,
+                }}
+              />
+            </div>
+          )}
         </div>
 
         {/* 智能购买 */}

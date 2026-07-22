@@ -100,12 +100,37 @@
   gap: 8px;
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 2px 12px 14px;
+  padding: 2px 12px 10px;
   scrollbar-width: none;
 }
 
 .svc-scroll::-webkit-scrollbar {
   display: none;
+}
+
+/* 药丸轨下方的横向滚动指示条：药丸轨隐藏了原生滚动条，靠它提示「可左右滑」
+   并显示进度；拖动 thumb 也能反向驱动滑轨（见 buy.tsx dragScrollbar） */
+.svc-scrollbar {
+  position: relative;
+  height: 4px;
+  margin: 0 12px 12px;
+  border-radius: 999px;
+  background: var(--line);
+  touch-action: none;
+  cursor: pointer;
+}
+
+.svc-scrollbar__thumb {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--accent) 55%, var(--line-2));
+  transition: background-color 0.15s;
+}
+
+.svc-scrollbar:active .svc-scrollbar__thumb {
+  background: var(--accent);
 }
 
 .svc-item {
