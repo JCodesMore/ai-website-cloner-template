@@ -17,7 +17,13 @@ import { cn } from "@/lib/utils";
  * `layout.tsx` pads the content wrapper by the matching nav height.
  *
  * Source breakpoints are desktop-first max-widths (991 / 767 / 479) inverted to
- * mobile-first here: base = 56px bar, `md:` = 64px, `lg:` = 112px + full links.
+ * mobile-first here: base = 56px bar, 768px = 64px, 992px = 112px + full links.
+ *
+ * Webflow's desktop boundary is 992px, not Tailwind's `lg` (1024px), so every
+ * bar/logo/link rule uses `min-[992px]:`. The 768px rules are written as
+ * `min-[768px]:` rather than `md:` for cascade reasons: Tailwind emits all
+ * arbitrary min-width blocks *before* the named breakpoints, so a `md:` rule
+ * would override its `min-[992px]:` counterpart at ≥992px.
  */
 
 type NavLink = {
@@ -83,7 +89,7 @@ export function SiteHeader() {
   return (
     <nav className="fixed inset-x-0 top-0 z-50 border-b border-[#ffffff1a] bg-black font-inter">
       {/* .fu-nav__container-1 */}
-      <div className="mx-auto flex h-14 w-full max-w-[1280px] items-center justify-between px-4 md:h-16 lg:h-28">
+      <div className="mx-auto flex h-14 w-full max-w-[1280px] items-center justify-between px-4 min-[768px]:h-16 min-[992px]:h-28">
         {/* .fu-nav__logo-link + .fu-nav__logo-1 */}
         <Link href="/" className="flex shrink-0 items-center no-underline">
           <Image
@@ -92,13 +98,13 @@ export function SiteHeader() {
             width={1920}
             height={800}
             loading="eager"
-            sizes="(min-width: 1024px) 240px, 120px"
-            className="block h-auto max-h-8 w-[76.7969px] min-[480px]:w-auto md:max-h-9 lg:h-24 lg:max-h-none lg:w-auto"
+            sizes="(min-width: 992px) 240px, 120px"
+            className="block h-auto max-h-8 w-[76.7969px] min-[480px]:w-auto min-[768px]:max-h-9 min-[992px]:h-24 min-[992px]:max-h-none min-[992px]:w-auto"
           />
         </Link>
 
         {/* .fu-nav__links-wrapper-1 — display:none below 992px */}
-        <div className="hidden items-center gap-8 lg:flex">
+        <div className="hidden items-center gap-8 min-[992px]:flex">
           {NAV_LINKS.map((link) => (
             <Link key={link.href} href={link.href} className={NAV_LINK_CLASS}>
               {link.label}
@@ -110,7 +116,9 @@ export function SiteHeader() {
           </a>
         </div>
 
-        {/* .fu-nav__mobile-btn-1 — transparent below 480px, red above, gone at lg */}
+        {/* .fu-nav__mobile-btn-1 — transparent below 480px, red above, gone at 992px.
+            480–991px uses the Flowkit token `accent-primary` (#bd1f1f), which is a
+            different red from the bespoke #bc1a1a used by the call button. */}
         <button
           type="button"
           onClick={() => setIsMenuOpen((open) => !open)}
@@ -119,8 +127,8 @@ export function SiteHeader() {
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
           className={cn(
             "flex cursor-pointer items-center justify-center bg-transparent p-2 text-white",
-            "min-[480px]:bg-[#bc1a1a]",
-            "lg:hidden",
+            "min-[480px]:bg-[#bd1f1f]",
+            "min-[992px]:hidden",
           )}
         >
           <MenuIcon className="size-6" />
@@ -130,7 +138,7 @@ export function SiteHeader() {
       {isMenuOpen ? (
         <div
           id={MOBILE_MENU_ID}
-          className="border-t border-[#ffffff1a] bg-black lg:hidden"
+          className="border-t border-[#ffffff1a] bg-black min-[992px]:hidden"
         >
           <div className="mx-auto flex w-full max-w-[1280px] flex-col px-4 py-2">
             {NAV_LINKS.map((link) => (

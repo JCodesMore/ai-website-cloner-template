@@ -102,19 +102,21 @@ function JourneyStep({ step, index }: { step: JourneyStepItem; index: number }) 
       ref={ref}
       className={cn(
         // ≤767px: row, left-aligned, 24px gap. ≥768px: centred column, 16px gap.
-        "flex flex-row items-start gap-6 text-left md:flex-col md:items-center md:gap-4 md:text-center",
+        "flex flex-row items-start gap-6 text-left min-[768px]:flex-col min-[768px]:items-center min-[768px]:gap-4 min-[768px]:text-center",
         // State A → State B: opacity 0/1, translateY(20px)/0, 700ms ease-out.
         // `translate` is listed alongside `transform`: Tailwind v4 compiles `translate-y-*`
         // to the standalone `translate` property, so a bare `transform` list would let the
         // rise snap into place and animate only the fade.
-        "transition-[opacity,transform,translate] duration-700 ease-out",
+        // `ease-[ease-out]` is the literal CSS keyword the source uses. Tailwind's bare
+        // `ease-out` maps to `--ease-out: cubic-bezier(0,0,.2,1)`, a different curve.
+        "transition-[opacity,transform,translate] duration-700 ease-[ease-out]",
         STAGGER_DELAYS[index],
         "motion-reduce:transition-none motion-reduce:delay-0",
         isInView ? "translate-y-0 opacity-100" : "translate-y-5 opacity-0",
       )}
     >
       {/* .journey-step_icon-wrap */}
-      <div className="flex size-14 shrink-0 cursor-default flex-col items-center justify-center gap-2 rounded-[12px] border border-[#3a3a3a] bg-[#2a2a2a] p-4 transition-all duration-500 hover:border-[#bc1a1a66] hover:bg-[#bc1a1a1a] md:mb-6 md:size-[110px] md:rounded-[20px]">
+      <div className="flex size-14 shrink-0 cursor-default flex-col items-center justify-center gap-2 rounded-[12px] border border-[#3a3a3a] bg-[#2a2a2a] p-4 transition-all duration-500 hover:border-[#bc1a1a66] hover:bg-[#bc1a1a1a] min-[768px]:mb-6 min-[768px]:size-[110px] min-[768px]:rounded-[20px]">
         <Icon className="size-7 shrink-0 text-[#E63946]" />
         <span className="text-[10px] font-bold tracking-[1.5px] text-[#bc1a1a] uppercase">
           STEP {step.number}
@@ -123,7 +125,7 @@ function JourneyStep({ step, index }: { step: JourneyStepItem; index: number }) 
 
       {/* .journey-step_content */}
       <div className="flex flex-col items-center gap-2">
-        <h3 className="m-0 text-center text-[15px] leading-[1.3] font-bold text-white">
+        <h3 className="font-inter m-0 text-center text-[15px] leading-[1.3] font-bold text-white">
           {step.title}
         </h3>
         <p className="m-0 text-center text-[13px] leading-[1.6] text-[#aaa]">
@@ -144,7 +146,7 @@ export function JourneyTimeline() {
           <p className="mb-3 text-center text-[12px] font-semibold tracking-[0.15em] text-[#bc1a1a] uppercase">
             HOW IT WORKS
           </p>
-          <h2 className="m-0 mb-4 text-center text-[32px] leading-[1.15] font-bold text-white min-[992px]:text-[44px]">
+          <h2 className="font-inter m-0 mb-4 text-center text-[32px] leading-[1.15] font-bold text-white min-[992px]:text-[44px]">
             Your <span className="text-[#bc1a1a]">journey</span> with us
           </h2>
           <p className="m-0 mb-16 text-center text-[16px] leading-[1.6] text-[#aaa]">
@@ -156,10 +158,10 @@ export function JourneyTimeline() {
         {/* .journey-section_grid */}
         <div
           id="journey-grid"
-          className="relative flex flex-col gap-10 md:grid md:grid-cols-3 md:items-start md:gap-x-4 md:gap-y-0 min-[992px]:grid-cols-6"
+          className="relative flex flex-col gap-10 min-[768px]:grid min-[768px]:grid-cols-3 min-[768px]:items-start min-[768px]:gap-x-4 min-[768px]:gap-y-0 min-[992px]:grid-cols-6"
         >
           {/* .journey-timeline-line — the connector behind the stacked mobile steps only */}
-          <div className="absolute top-0 bottom-0 left-[27px] w-px bg-[#bc1a1a26] md:hidden" />
+          <div className="absolute top-0 bottom-0 left-[27px] w-px bg-[#bc1a1a26] min-[768px]:hidden" />
 
           {JOURNEY_STEPS.map((step, index) => (
             <JourneyStep key={step.number} step={step} index={index} />

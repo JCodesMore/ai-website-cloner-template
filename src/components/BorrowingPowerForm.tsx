@@ -72,8 +72,9 @@ interface BorrowingPowerFormProps {
  *   Webflow default. The option label is used as its value instead.
  *
  * One source quirk that *is* reproduced: the **Last Name label sits outside** the `<div>` holding
- * its input, so as a direct child of the `display:flex; gap:16px` form it lands 16px above its
- * field rather than the 5px every other label gets.
+ * its input. Because the form is a plain block container this is invisible — the label's 5px
+ * bottom margin collapses against the wrapper below it, so it sits 5px above its field like
+ * every other label.
  */
 export function BorrowingPowerForm({ className }: BorrowingPowerFormProps) {
   const [submitted, setSubmitted] = useState(false);
@@ -99,7 +100,9 @@ export function BorrowingPowerForm({ className }: BorrowingPowerFormProps) {
 
         {/* .bpa-card */}
         <div className="mt-[24px] w-full rounded-[12px] bg-white px-[48px] py-[40px] text-left font-serif shadow-[0_2px_16px_#00000014]">
-          <h3 className="mb-[28px] text-center font-inter text-[36px] leading-[1.15] font-normal tracking-[0] text-[#111111]">
+          {/* `.bpa-card-title` declares no line-height, so it keeps Webflow's `h3 {
+              line-height: 30px }` base — not a ratio of its 36px font-size. */}
+          <h3 className="mb-[28px] text-center font-inter text-[36px] leading-[30px] font-normal tracking-[0] text-[#111111]">
             Get Approved
           </h3>
 
@@ -108,7 +111,11 @@ export function BorrowingPowerForm({ className }: BorrowingPowerFormProps) {
               <div>Thank you! Your submission has been received!</div>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col gap-[16px]">
+            /* `.bpa-form.w-form` is the DIV *wrapping* the form, not the form itself, so its
+               `display:flex; gap:16px` never reaches these fields — the form is a plain block
+               and its children stack on their own collapsing margins. Only `.w-form`'s
+               `margin: 0 0 15px` is observable, folded onto the form here. */
+            <form onSubmit={handleSubmit} className="mb-[15px]">
               <div>
                 <Label htmlFor="bpa-first-name" className={LABEL_CLASS}>
                   First Name

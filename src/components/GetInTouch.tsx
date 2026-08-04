@@ -59,21 +59,21 @@ export function GetInTouch({
     <main
       id="contact-git"
       className={cn(
-        "box-border bg-black px-[16px] pt-[32px] pb-[10px] font-inter min-[480px]:pt-[40px] md:pt-[48px] min-[992px]:px-0 min-[992px]:pt-[96px]",
+        "box-border bg-black px-[16px] pt-[32px] pb-[10px] font-inter min-[480px]:pt-[40px] min-[768px]:pt-[48px] min-[992px]:px-0 min-[992px]:pt-[96px]",
         className,
       )}
     >
       {/* .git-container — block padding only below 768px */}
-      <div className="mx-auto box-border w-full max-w-full px-[16px] py-[32px] text-center font-inter min-[480px]:py-[40px] md:max-w-[600px] md:py-0">
+      <div className="mx-auto box-border w-full max-w-full px-[16px] py-[32px] text-center font-inter min-[480px]:py-[40px] min-[768px]:max-w-[600px] min-[768px]:py-0">
         <p className="mb-[16px] text-[12px] font-semibold tracking-[0.15em] text-[#bc1a1a] uppercase">
           Get In Touch
         </p>
 
-        <h2 className="mb-[20px] text-center font-inter text-[22px] leading-[1.15] font-bold text-[#fdf6f6] min-[480px]:text-[26px] md:text-[32px] min-[992px]:text-[44px]">
+        <h2 className="mb-[20px] text-center font-inter text-[22px] leading-[1.15] font-bold text-[#fdf6f6] min-[480px]:text-[26px] min-[768px]:text-[32px] min-[992px]:text-[44px]">
           {heading}
         </h2>
 
-        <p className="mb-[32px] block max-w-full px-[8px] text-center text-[14px] leading-[1.7] text-[#888888] md:mb-[48px] md:inline-block md:max-w-[480px] md:px-0">
+        <p className="mb-[32px] block max-w-full px-[8px] text-center text-[14px] leading-[1.7] text-[#888888] min-[768px]:mb-[48px] min-[768px]:inline-block min-[768px]:max-w-[480px] min-[768px]:px-0">
           {subheading}
         </p>
 

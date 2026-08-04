@@ -72,9 +72,9 @@ interface FaqAccordionProps {
   /** Defaults to `brand-faq` (`#e5341a`) — what every embed on the site actually uses. */
   accentColor?: FaqAccent;
   /**
-   * The source's "close the other items" loop is commented out in every copy of the embed
-   * script, so the live site does allow several panels at once. Defaults to `false` per the
-   * build brief; `/low-doc-loans` passes `true`.
+   * The "close the other items" loop is commented out on `/` and `/contact` — both pass
+   * `true`, matching the live site's multi-open behaviour. `/low-doc-loans` ships the same
+   * embed with that loop as live code, so it is single-open and takes the `false` default.
    */
   allowMultiple?: boolean;
   /** Extra classes merged onto the outer `.faq-section` element. */

@@ -60,7 +60,7 @@ interface FundUpDifferenceProps {
  * any `.fd-diff-*` selector.
  *
  * Breakpoints are ported mobile-first so the source's `max-width` queries land
- * exactly — base = its `≤767px` block, `md:` (768px) = its `≤991px` block, and
+ * exactly — base = its `≤767px` block, `min-[768px]:` (768px) = its `≤991px` block, and
  * `min-[992px]:` = the unqualified desktop values. See
  * `docs/research/components/difference-idealclient-cta.spec.md`.
  */
@@ -71,24 +71,24 @@ export function FundUpDifference({
   return (
     <section
       className={cn(
-        "font-inter bg-[#111] py-[48px] md:py-[64px] min-[992px]:py-[96px]",
+        "font-inter bg-[#111] py-[48px] min-[768px]:py-[64px] min-[992px]:py-[96px]",
         className,
       )}
     >
-      <div className="mx-auto max-w-[1100px] px-[20px] md:px-[24px] min-[992px]:px-[40px]">
-        <div className="mb-[36px] text-center md:mb-[48px] min-[992px]:mb-[64px]">
+      <div className="mx-auto max-w-[1100px] px-[20px] min-[768px]:px-[24px] min-[992px]:px-[40px]">
+        <div className="mb-[36px] text-center min-[768px]:mb-[48px] min-[992px]:mb-[64px]">
           <p className="mt-0 mb-[12px] text-[12px] font-semibold tracking-[0.15em] text-[#bc1a1a] uppercase">
             WHY CHOOSE US
           </p>
-          <h2 className="font-inter mt-0 mb-[16px] text-[28px] leading-[1.15] font-bold tracking-[0] text-white md:text-[34px] md:tracking-[-0.5px] min-[992px]:text-[44px]">
+          <h2 className="font-inter mt-0 mb-[16px] text-[28px] leading-[1.15] font-bold tracking-[0] text-white min-[768px]:text-[34px] min-[768px]:tracking-[-0.5px] min-[992px]:text-[44px]">
             The FundUp difference
           </h2>
-          <p className="m-0 text-[15px] leading-[1.6] font-normal text-[#ffffff8c] md:text-[17px]">
+          <p className="m-0 text-[15px] leading-[1.6] font-normal text-[#ffffff8c] min-[768px]:text-[17px]">
             We&apos;re more than brokers — we&apos;re your lending partners.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-x-[24px] gap-y-[36px] text-left md:grid-cols-2 md:gap-y-[40px] min-[992px]:grid-cols-4 min-[992px]:gap-x-[32px] min-[992px]:gap-y-0">
+        <div className="grid grid-cols-1 gap-x-[24px] gap-y-[36px] text-left min-[768px]:grid-cols-2 min-[768px]:gap-y-[40px] min-[992px]:grid-cols-4 min-[992px]:gap-x-[32px] min-[992px]:gap-y-0">
           {cards.map(({ Icon, title, description }) => (
             <div
               key={title}
@@ -97,7 +97,7 @@ export function FundUpDifference({
               <div className="mb-[20px] flex size-[64px] shrink-0 items-center justify-center rounded-full border border-[#bc1a1a4d] bg-[#bc1a1a26] text-[#bc1a1a]">
                 <Icon className="size-6" />
               </div>
-              <h3 className="mt-0 mb-[12px] text-[17px] leading-[1.3] font-bold text-white md:text-[18px]">
+              <h3 className="font-inter mt-0 mb-[12px] text-[17px] leading-[1.3] font-bold text-white min-[768px]:text-[18px]">
                 {title}
               </h3>
               <p className="m-0 max-w-[260px] text-[15px] leading-[1.7] text-[#ffffff8c]">

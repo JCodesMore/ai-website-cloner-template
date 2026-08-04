@@ -160,7 +160,10 @@ export function ServicesGrid({ services = SERVICES, className }: ServicesGridPro
         </div>
 
         {/* .services-section_grid — the 1px gutters are the hairlines. */}
-        <div className="grid grid-cols-1 gap-px overflow-hidden rounded-2xl bg-[#ffffff1a] md:grid-cols-2 min-[992px]:grid-cols-3">
+        {/* `min-[768px]:` not `md:` — Tailwind emits every arbitrary min-width block
+            *before* the named ones, so `md:grid-cols-2` would out-cascade
+            `min-[992px]:grid-cols-3` and pin the grid at 2 columns on desktop. */}
+        <div className="grid grid-cols-1 gap-px overflow-hidden rounded-2xl bg-[#ffffff1a] min-[768px]:grid-cols-2 min-[992px]:grid-cols-3">
           {services.map((service) => (
             <ServiceGridCard key={service.number} service={service} />
           ))}

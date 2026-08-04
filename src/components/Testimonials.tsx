@@ -203,7 +203,7 @@ export function Testimonials() {
 
           {/* .fu-testi__heading */}
           <div className="mb-10 text-center">
-            <h2 className="text-[clamp(34px,5vw,54px)] leading-[1.15] font-bold tracking-[-1px] text-white">
+            <h2 className="font-sans text-[clamp(34px,5vw,54px)] leading-[1.15] font-bold tracking-[-1px] text-white">
               Trusted by Australians <span className="block text-[#e5341a] italic">nationwide</span>
             </h2>
           </div>

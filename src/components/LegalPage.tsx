@@ -17,7 +17,9 @@ import { cn } from "@/lib/utils";
 const PAGE_TITLE_CLASSES = cn(
   "font-heading text-foreground",
   "font-semibold leading-[1.04] tracking-[-0.01em]",
-  "text-[1.45rem] min-[480px]:text-[1.81rem] md:text-[2.26rem] min-[992px]:text-[2.83rem]",
+  // `min-[768px]:` not `md:` — Tailwind v4 emits every arbitrary min-width block before the
+  // named breakpoints, so a `md:` rule out-cascades its `min-[992px]:` counterpart at ≥992px.
+  "text-[1.45rem] min-[480px]:text-[1.81rem] min-[768px]:text-[2.26rem] min-[992px]:text-[2.83rem]",
 );
 
 const PROSE_CLASSES = [
@@ -31,10 +33,10 @@ const PROSE_CLASSES = [
   "[&_li]:mb-2 [&_li:last-child]:mb-0",
   // Numbered clause headings (h3 type scale, weight 500).
   "[&_h2]:font-heading [&_h2]:mb-6 [&_h2]:font-medium [&_h2]:leading-[1.04] [&_h2]:tracking-[-0.01em]",
-  "[&_h2]:text-[1.02rem] min-[480px]:[&_h2]:text-[1.28rem] md:[&_h2]:text-[1.6rem] min-[992px]:[&_h2]:text-[2rem]",
+  "[&_h2]:text-[1.02rem] min-[480px]:[&_h2]:text-[1.28rem] min-[768px]:[&_h2]:text-[1.6rem] min-[992px]:[&_h2]:text-[2rem]",
   // Decimal sub-clause headings (h4 type scale, weight 600).
   "[&_h3]:font-heading [&_h3]:mt-10 [&_h3]:mb-3 [&_h3]:font-semibold [&_h3]:leading-[1.3] [&_h3]:tracking-[-0.01em]",
-  "[&_h3]:text-[1.03rem] min-[480px]:[&_h3]:text-[1.15rem] md:[&_h3]:text-[1.27rem] min-[992px]:[&_h3]:text-[1.41rem]",
+  "[&_h3]:text-[1.03rem] min-[480px]:[&_h3]:text-[1.15rem] min-[768px]:[&_h3]:text-[1.27rem] min-[992px]:[&_h3]:text-[1.41rem]",
   "[&_h2+h3]:mt-0",
   // Generous separation between numbered sections.
   "[&>section+section]:mt-14 md:[&>section+section]:mt-20",

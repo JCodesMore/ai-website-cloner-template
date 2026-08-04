@@ -1,11 +1,11 @@
 import type { ComponentType } from "react";
 
 import {
-  AwardIcon,
-  BuildingIcon,
   ClockIcon,
-  UsersIcon,
+  DollarSignIcon,
   type IconProps,
+  LayoutIcon,
+  StarIcon,
 } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import type { Stat } from "@/types";
@@ -18,14 +18,17 @@ export interface TrustStat extends Stat {
 /**
  * The four figures under the hero.
  *
+ * Icons are the source's own inline SVGs, in the source's own order:
+ * dollar-sign, star, layout, clock (each shipped at 20×20).
+ *
  * "24hr" is labelled "Turnaround" — the live site repeats "Lenders Compared"
  * there, which is a copy/paste bug (see `docs/research/FIXES.md` #5).
  */
 export const TRUST_STATS: readonly TrustStat[] = [
-  { value: "40+", label: "Lenders Compared", Icon: BuildingIcon },
-  { value: "500+", label: "Clients Helped", Icon: UsersIcon },
-  { value: "24hr", label: "Turnaround", Icon: ClockIcon },
-  { value: "10+", label: "Yrs Industry Experience", Icon: AwardIcon },
+  { value: "40+", label: "Lenders Compared", Icon: DollarSignIcon },
+  { value: "500+", label: "Clients Helped", Icon: StarIcon },
+  { value: "24hr", label: "Turnaround", Icon: LayoutIcon },
+  { value: "10+ Yrs", label: "Industry Experience", Icon: ClockIcon },
 ];
 
 interface TrustBarProps {
@@ -50,7 +53,7 @@ export function TrustBar({ stats = TRUST_STATS, className }: TrustBarProps) {
         <div className="grid auto-rows-[minmax(55px,1fr)] grid-cols-2 gap-[24px] md:grid-cols-4">
           {stats.map(({ value, label, Icon }) => (
             <div key={label} className="flex items-center justify-center gap-[12px]">
-              <Icon className="size-6 shrink-0 text-[#bc1a1a]" />
+              <Icon className="size-5 shrink-0 text-[#bc1a1a]" />
               <div className="flex flex-col gap-[2px]">
                 <p className="text-[18px] leading-none font-bold text-white">{value}</p>
                 <p className="font-inter text-[12px] text-[#ffffff99]">{label}</p>

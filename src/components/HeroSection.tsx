@@ -1,4 +1,4 @@
-import { ArrowRightIcon, PhoneIcon } from "@/components/icons";
+import { ArrowRightIcon } from "@/components/icons";
 import { cn } from "@/lib/utils";
 
 interface HeroSectionProps {
@@ -53,17 +53,23 @@ export function HeroSection({ className }: HeroSectionProps) {
           AUSTRALIAN MORTGAGE BROKER
         </p>
 
-        <h1 className="mb-[24px] font-inter text-[clamp(2rem,8vw,3.75rem)] leading-[1.1] font-bold text-white">
+        {/* 60px flat, dropping to 36px at ≤479px — the source states both sizes
+            explicitly on `.fu-hero-embed__h1`; there is no fluid step between. */}
+        <h1 className="mb-[24px] font-inter text-[60px] leading-[1.1] font-bold text-white max-[480px]:mb-[16px] max-[480px]:text-[36px]">
           Funding solutions for <span className="text-[#bc1a1a]">wealth building</span> Australians
         </h1>
 
-        <p className="mx-auto mb-[16px] max-w-[672px] font-inter text-[14px] leading-[1.6] font-normal text-[#ffffffcc]">
-          Whether you&apos;re buying your first home, expanding an investment portfolio, or funding
-          your business — we&apos;ve got you covered.
+        {/* The dash before "tailored" is an em dash (U+2014); `self‑employed` is joined by a
+            non-breaking hyphen (U+2011), not an ASCII `-`. Both are verbatim from the source. */}
+        <p className="mx-auto mb-[16px] max-w-[672px] font-inter text-[14px] leading-[1.6] font-normal text-[#ffffffcc] max-[480px]:mb-[12px] max-[480px]:text-[16px]">
+          Compare 40+ lenders in minutes. Home loans, investment loans, refinancing &amp; more —
+          tailored for the self‑employed.
         </p>
 
+        {/* Glyphs verbatim from the source: U+2713 ticks, each separator a space plus two
+            U+00A0 plus a space, and `Australia‑wide` on a U+2011 non-breaking hyphen. */}
         <p className="mb-[32px] font-inter text-[14px] font-semibold text-[#bc1a1a]">
-          Free consultation &middot; No obligation &middot; Compare 40+ lenders
+          {"✓ Free consultation    ✓ No obligation    ✓ Australia‑wide"}
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-[16px]">
@@ -71,16 +77,17 @@ export function HeroSection({ className }: HeroSectionProps) {
             href="#bpa-consent2"
             className="inline-flex h-[52px] items-center gap-[10px] rounded-[8px] bg-[#bc1a1a] px-[32px] font-inter text-[15px] font-bold whitespace-nowrap text-white shadow-[0_4px_20px_#0000004d] transition-[filter] duration-200 hover:brightness-110"
           >
-            Get Your Free Assessment
-            <ArrowRightIcon className="size-[18px] shrink-0" />
+            Book a Free Consult
+            {/* 16×16 in the source; `ArrowRightIcon` already ships `stroke-width: 2.5`. */}
+            <ArrowRightIcon className="size-[16px] shrink-0" />
           </a>
 
+          {/* No icon, and therefore no gap — `.fu-hero-embed__btn-ghost` declares neither. */}
           <a
-            href="tel:0412885734"
-            className="inline-flex h-[52px] items-center justify-center gap-[10px] rounded-[8px] border-2 border-[#bc1a1a] bg-transparent px-[32px] font-inter text-[15px] font-bold whitespace-nowrap text-[#bc1a1a] transition-[filter] duration-200 hover:brightness-110"
+            href="#services"
+            className="inline-flex h-[52px] items-center justify-center rounded-[8px] border-2 border-[#bc1a1a] bg-transparent px-[32px] font-inter text-[15px] font-bold whitespace-nowrap text-[#bc1a1a] transition-[filter] duration-200 hover:brightness-110"
           >
-            <PhoneIcon className="size-[18px] shrink-0" />
-            Call 0412 885 734
+            Our Services
           </a>
         </div>
       </div>

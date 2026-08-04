@@ -122,7 +122,7 @@ export function IdealClient({ cards = IDEAL_CLIENT_CARDS, className }: IdealClie
                 <div className="mb-[24px] flex size-[56px] items-center justify-center rounded-[12px] border border-[#dc262633] bg-[#dc262614]">
                   <Icon className="size-[28px] text-[#dc2626]" />
                 </div>
-                <h3 className="m-0 mb-[12px] text-[20px] font-bold text-[#111]">{title}</h3>
+                <h3 className="font-inter m-0 mb-[12px] text-[20px] font-bold text-[#111]">{title}</h3>
                 <p className="m-0 mb-[24px] text-[14px] leading-[1.7] text-[#555]">
                   {description}
                 </p>

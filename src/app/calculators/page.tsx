@@ -26,8 +26,11 @@ export const metadata: Metadata = {
  * This shell is a Server Component; only the four cards are client-side.
  */
 export default function CalculatorsPage() {
+  // leading-[20px], not 1.5 — the embed inherits Webflow's `body { line-height: 20px }` and
+  // never redeclares it. Tailwind Preflight zeroes that, so every label, result and legend
+  // without explicit leading was rendering 2–5px short (~20px of drift per panel).
   return (
-    <main className="flex-1 bg-[#f2f2f2] font-inter leading-normal text-[#222222]">
+    <main className="flex-1 bg-[#f2f2f2] font-inter leading-[20px] text-[#222222]">
       {/* section#home.fu-hero-embed — same hero shell as the other inner pages,
           minus the background image layers this page never had. */}
       <section

@@ -80,17 +80,31 @@ section#home.fu-hero-embed          (relative, overflow hidden)
 - backgroundColor: `transparent`; color: `#bc1a1a`; border: `2px solid #bc1a1a`; borderRadius: `8px`
 - height: `52px`; padding: `0 32px`
 - fontFamily: `Inter`; fontSize: `15px`; fontWeight: `700`; whiteSpace: `nowrap`
+- **no `gap`** — unlike the primary button this rule declares none, because the ghost
+  button has no icon. Don't add one.
 
 ### Responsive
-`≤479px`: `.fu-hero-embed` → `min-height: auto`, `padding-top: 100px`, `padding-bottom: 60px`.
-Scale the `60px` h1 down for mobile (the source's `fu-` sections don't define an explicit mobile
-h1 size here — use `clamp()` or Tailwind steps so it doesn't overflow at 390px).
+Every rule below sits in `@media screen and (max-width:479px)`:
+- `.fu-hero-embed` → `min-height: auto`; `padding-top: 100px`; `padding-bottom: 60px`
+- `.fu-hero-embed__h1` → `font-size: 36px`; `margin-bottom: 16px` ← the source **does** define an
+  explicit mobile h1 size. Use it verbatim; no `clamp()` and no intermediate step.
+- `.fu-hero-embed__body` → `font-size: 16px`; `margin-bottom: 12px` (larger on mobile, not smaller)
+- `.fu-hero-embed__bg` → swaps to the mobile JPG
+
+In Tailwind, `max-[479px]` compiles to `not all and (min-width:479px)` and so **skips 479px
+itself** — write `max-[480px]` to reproduce the source's `≤479px`.
 
 ### Text content (verbatim)
-- Eyebrow: `AUSTRALIAN MORTGAGE BROKER`
-- H1: `Funding solutions for wealth building Australians` — the accent span wraps the
-  portion rendered in red; confirm the exact split against the cached HTML
-- CTAs: primary → `#bpa-consent2`, ghost → `tel:0412885734`
+- Eyebrow: `Australian Mortgage Broker` in the markup; `.fu-hero-embed__eyebrow` applies
+  `text-transform: uppercase`
+- H1: `Funding solutions for <span class="fu-hero-embed__accent">wealth building</span> Australians`
+- Body: `Compare 40+ lenders in minutes. Home loans, investment loans, refinancing & more —
+  tailored for the self‑employed.` — em dash is U+2014; `self‑employed` uses a
+  **U+2011 non-breaking hyphen**
+- Trust line: `✓ Free consultation  ✓ No obligation  ✓ Australia‑wide` — U+2713 ticks; each
+  separator is space + **two U+00A0** + space; `Australia‑wide` is also U+2011
+- CTAs: primary `Book a Free Consult` → `#bpa-consent2`, with a **16×16** arrow SVG at
+  `stroke-width: 2.5`; ghost `Our Services` → `#services`, **no icon**
 
 ### Assets
 `public/images/hero-bg-desktop.webp`, `public/images/hero-bg-mobile.jpg`
@@ -123,7 +137,10 @@ gridAutoRows: `minmax(55px, 1fr)`; gap: `24px`
 | 40+ | Lenders Compared |
 | 500+ | Clients Helped |
 | 24hr | **Turnaround** ← the live site duplicates "Lenders Compared" here; fixed per `FIXES.md` #5 |
-| 10+ | Yrs Industry Experience |
+| 10+ Yrs | Industry Experience |
+
+The last row splits after "Yrs": `<p class="stat-number">10+ Yrs</p>` /
+`<p class="stat-label">Industry Experience</p>`. "Yrs" belongs to the value, not the label.
 
 ### Responsive
 Four columns collapse on narrow viewports — grid should go `grid-cols-2` below `md` so the

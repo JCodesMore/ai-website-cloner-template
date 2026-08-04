@@ -100,7 +100,7 @@ export function FieldLabel({
   children: ReactNode;
 }) {
   const classes = cn(
-    "mb-[7px] block text-[12px] leading-normal font-semibold text-[#222222]",
+    "mb-[7px] block text-[12px] leading-[20px] font-semibold text-[#222222]",
     className,
   );
 
@@ -210,7 +210,7 @@ export function SliderField({
   return (
     <div className="mb-[22px]">
       <div className="mb-[8px] flex items-center justify-between">
-        <Label htmlFor={id} className="text-[12px] leading-normal font-semibold text-[#222222]">
+        <Label htmlFor={id} className="text-[12px] leading-[20px] font-semibold text-[#222222]">
           {label}
         </Label>
         <span className="text-[13px] font-bold text-[#d62b2b]">{valueLabel}</span>
@@ -254,7 +254,7 @@ export function StackedBar({ segments }: { segments: readonly StackedBarSegment[
         <div
           key={segment.label}
           className={cn("h-full min-w-0 transition-[width] duration-[350ms]", EASE)}
-          style={{ width: `${segment.widthPercent.toFixed(2)}%` }}
+          style={{ width: `${segment.widthPercent.toFixed(2)}%`, backgroundColor: segment.color }}
         />
       ))}
     </div>
@@ -379,7 +379,7 @@ export function BookConsultCta({ className }: { className?: string }) {
     <Link
       href="/contact"
       className={cn(
-        "mt-auto flex h-[44px] w-full items-center justify-center rounded-[8px] bg-[#d62b2b] text-[13px] font-bold tracking-[0.01em] text-white transition-[background-color,transform] duration-150 hover:-translate-y-px hover:bg-[#b82020] active:translate-y-0",
+        "mt-auto flex h-[44px] w-full items-center justify-center rounded-[8px] bg-[#d62b2b] text-[13px] font-bold tracking-[0.01em] text-white transition-[background-color,translate] duration-150 hover:-translate-y-px hover:bg-[#b82020] active:translate-y-0",
         className,
       )}
     >

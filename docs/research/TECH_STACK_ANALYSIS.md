@@ -104,6 +104,22 @@ Everything else — every icon, every chart, every decorative element — is inl
 Each of these caused a real, visible bug during the build. Worth knowing before touching any
 component.
 
+**0. Named breakpoints out-cascade arbitrary ones — the worst of these by far.**
+Tailwind v4 emits **all** arbitrary min-width blocks (`min-[768px]:`, `min-[992px]:`) *before*
+the named ones (`sm:`, `md:`, `lg:`). Specificity is equal, so source order decides. Put
+`md:grid-cols-2` and `min-[992px]:grid-cols-3` on the same element and `md:` wins at **every**
+width ≥992px — the 992px rule never applies at all.
+
+This silently broke eight layouts here: the services grid rendered 2 columns instead of 3, the
+difference grid 2 instead of 4, the journey timeline 3 instead of 6, and heading ramps on
+`GetInTouch` and both legal pages stayed at their tablet size on desktop.
+
+**Rule: never mix a named breakpoint with an arbitrary one on the same property of the same
+element.** Because Webflow's desktop boundary is 992px and Tailwind's `lg` is 1024px, this
+codebase needs `min-[992px]:` — so write the 768px step as `min-[768px]:` too. Verify by
+grepping byte offsets in `.next/static/chunks/*.css`: the wider breakpoint's rule must appear
+later in the file.
+
 **1. `translate-y-*` compiles to the `translate` property, not `transform`.**
 So `transition-[opacity,transform]` emits `transition-property: opacity, transform`, never
 matches `translate`, and the animation **snaps instead of easing**. Write
