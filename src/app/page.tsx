@@ -36,9 +36,10 @@ export default function Home() {
       <CtaBand />
       <BorrowingPowerForm />
       <GetInTouch />
-      {/* The homepage embed's "close others" loop is commented out in source,
-          so multiple answers stay open at once. `/low-doc-loans` differs. */}
-      <FaqAccordion items={HOME_FAQ_ITEMS} allowMultiple />
+      {/* Single-open with the first question expanded, matching every other FAQ on the
+          site. A deliberate divergence: the homepage embed's "close others" loop is
+          commented out in source, so live it opens any number and starts fully closed. */}
+      <FaqAccordion items={HOME_FAQ_ITEMS} />
     </>
   );
 }

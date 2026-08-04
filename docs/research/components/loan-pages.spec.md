@@ -545,14 +545,16 @@ Buttons `Book Free Consultation →` → `/contact`, `Call 0412 885 734` → `te
 
 The panel itself is a Webflow embed with its own `<style>`/`<script>`, already ported as
 `FaqAccordion`. Props used: `items` (the six below), `heading="Low doc loan questions answered"`,
-`badge="FAQ"`, `allowMultiple={true}`.
+`badge="FAQ"`.
 
-> **Discrepancy on record.** The build brief specified `allowMultiple={true}` on the grounds that the
-> embed's "close others" loop is commented out. In *this* page's copy of the embed it is **not**
-> commented out — the `items.forEach(... remove('is-open') ...)` block is live code, so the original
-> `/low-doc-loans` accordion is single-open. `allowMultiple={true}` is passed as instructed; flip it
-> to `false` if strict behavioural parity is wanted. (The trailing second `<script>` on this section
-> targets `.faq-item`/`.faq-trigger`, which exist nowhere on the page — dead code, not ported.)
+> **Resolved.** The build brief specified `allowMultiple={true}` on the grounds that the embed's
+> "close others" loop is commented out. In *this* page's copy it is **not** commented out — the
+> `items.forEach(... remove('is-open') ...)` block is live code, so the original `/low-doc-loans`
+> accordion is single-open. The prop was never actually passed here, and has since been removed
+> from `FaqAccordion` altogether: every FAQ on the site is now single-open with the first question
+> expanded (`FIXES.md` → *Requested changes*). This page therefore matches its original, bar the
+> open first item. (The trailing second `<script>` on this section targets `.faq-item` /
+> `.faq-trigger`, which exist nowhere on the page — dead code, not ported.)
 
 1. **What is a low doc loan?** — A low doc (low documentation) loan is a home loan designed for self-employed borrowers who can't provide the full financial documentation that traditional loans require — like two years of tax returns.
 2. **Are low doc loan rates higher?** — Low doc loans often carry slightly higher interest rates than standard loans because they are perceived as higher risk by lenders. However, rates vary significantly between lenders, and we'll help you find the most competitive option available.

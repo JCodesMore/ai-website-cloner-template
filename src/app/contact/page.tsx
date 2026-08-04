@@ -76,9 +76,10 @@ export default function ContactPage() {
     // padding, so the source renders its eyebrow behind the fixed nav.
     <div className="pt-14 min-[768px]:pt-16 min-[992px]:pt-28">
       <GetInTouch />
-      {/* Same embed as the homepage — its "close others" loop is commented out
-          in source, so multiple answers stay open at once. */}
-      <FaqAccordion items={CONTACT_FAQ_ITEMS} allowMultiple />
+      {/* Same embed as the homepage, and the same deliberate divergence: single-open with
+          the first question expanded. Live, this copy's "close others" loop is commented
+          out, so any number of answers can be open and none are on load. */}
+      <FaqAccordion items={CONTACT_FAQ_ITEMS} />
     </div>
   );
 }

@@ -57,9 +57,15 @@ A `.faq-item` **script** *is* shipped (single-open, `scrollHeight` based) on `/`
 `/low-doc-loans` and `/book-a-consultation` — but it is dead code with no matching markup, i.e.
 the same defect already recorded as `FIXES.md` #11. Ignored.
 
-`allowMultiple` and `accentColor` are still exposed as props per the brief; the *defaults* are set
-from what the source actually does (`multiple = false` per the brief's instruction, accent
-`brand-faq`). See "API" below.
+`accentColor` is exposed as a prop per the brief, defaulting to what the source actually uses
+(`brand-faq`). See "API" below.
+
+> **Superseded — open behaviour is no longer source-driven.** `allowMultiple` was originally
+> exposed so each route could reproduce its own embed's quirk. It has since been **removed**: by
+> client direction every FAQ on the site is single-open with the first question expanded, so the
+> component hardcodes `multiple={false}` / `defaultValue={[0]}`. See `FIXES.md` → *Requested
+> changes*. Everything below about the live embeds' differing open behaviour remains an accurate
+> record of the **source**, not of what we ship.
 
 ### DOM structure
 
@@ -159,13 +165,17 @@ align-items: center; justify-content: center; transition: transform 0.3s ease; c
 The shipped script toggles `.is-open` on click; its "close other items" loop is **commented out**,
 so any number of panels can be open simultaneously. Nothing is open on load.
 
+**We deliberately diverge here.** Ours is single-open with the first question expanded on load, on
+every FAQ page — client direction, recorded in `FIXES.md` → *Requested changes*. The toggle itself
+is unchanged: clicking the open item still collapses it, leaving none open.
+
 Ported to Base UI's `Accordion` (via the installed shadcn `Accordion` / `AccordionItem`
 wrappers), which drives the same thing with a real `height` transition instead of the
 `max-height: 500px` hack — visually identical but without the 500px ceiling that would clip a
 long answer on the original.
 
-- `multiple={allowMultiple}` ← Base UI's prop is `multiple`, **not** Radix's `type="single|multiple"`
-- `defaultValue={[]}` — all closed on load
+- `multiple={false}` ← Base UI's prop is `multiple`, **not** Radix's `type="single|multiple"`
+- `defaultValue={[0]}` — first item open on load (`AccordionItem` keys off `value={index}`)
 - Panel: `h-(--accordion-panel-height) … data-starting-style:h-0 data-ending-style:h-0` with
   `transition-[height] duration-300 ease-[ease-out]` (source: `max-height 0.3s ease-out`)
 - Chevron: `group-aria-expanded:rotate-180` + `transition-transform duration-300 ease-[ease]`
@@ -188,8 +198,8 @@ interface FaqAccordionProps {
   heading?: string;                 // default "Frequently asked questions"
   badge?: string | null;            // default "FAQ"; null hides the badge row
   accentColor?: FaqAccent;          // default "brand-faq"
-  allowMultiple?: boolean;          // default false
   className?: string;
+  // No open-behaviour prop: single-open + first item expanded, on every page. See FIXES.md.
 }
 ```
 

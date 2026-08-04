@@ -68,9 +68,12 @@ const EXPLORE_LINKS: readonly ExploreLink[] = [
  * `LowDocHero`'s right column and the feature grid inside `LowDocExplainer`'s. No `<main>` in the
  * source.
  *
- * This page *does* ship the `.fu-faq2` embed, so `FaqAccordion` is reused for it. Unlike the `/`
- * and `/contact` copies — where the "close others" loop is commented out — this page's script
- * runs it, so the accordion is single-open. Hence no `allowMultiple`.
+ * This page *does* ship the `.fu-faq2` embed, so `FaqAccordion` is reused for it. It is the one
+ * page whose live script actually runs the "close others" loop — the `/` and `/contact` copies
+ * have theirs commented out. That distinction no longer drives anything here: `FaqAccordion` is
+ * single-open with the first question expanded on every page by client direction, so this route
+ * is the only one whose open behaviour still happens to agree with the original (bar the open
+ * first item). See `docs/research/FIXES.md`.
  *
  * Full extraction is in `docs/research/components/loan-pages.spec.md`.
  */

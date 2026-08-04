@@ -29,6 +29,20 @@ than reproduce, agreed with the user during reconnaissance.
 | 20 | **Legal pages cramped under the nav at mobile.** `LegalPage` relies on `section-y`, which is only `4rem` (64px) below 480px against a 57px fixed nav — a 7px gap | `/privacy-policy`, `/terms-and-conditions` | Mobile-scoped `pt-[104px]`, explicitly cancelled from 480px up so `section-y` still governs every wider breakpoint. Gap: 7px → 47px at mobile, unchanged at desktop |
 | 16 | **Ideal-client cards stack flush on mobile.** `.oc-grid` flips to `display:block` below 480px, making its 24px gaps inert so the three cards butt against each other with zero separation | `/` | Kept as a grid at all widths; single column below 480px, 3-up above |
 
+## Requested changes (client direction, not defect fixes)
+
+Behaviour that works correctly on the live site but was changed on request. Kept separate from
+the table above, which is scoped to actual defects.
+
+| Change | Where | Live behaviour | Ours |
+|---|---|---|---|
+| **FAQ accordions open one at a time, with the first question already expanded on load** | `/`, `/contact`, `/low-doc-loans` | Inconsistent, and only by accident: all three ship the same embed script, but `/` and `/contact` have its "close the others" loop commented out so any number of answers can be open, while `/low-doc-loans` runs it. All three load fully closed. | Single-open on all three, first item expanded. Clicking the open item still collapses it, leaving none open — the same toggle the source performs. The per-page `allowMultiple` prop was removed rather than defaulted, so the old inconsistency can't creep back |
+
+`/self-employed-loans` is **untouched**. Its FAQ is five static `.sel-faq-item` cards with every
+answer permanently visible — no `<button>`, no `aria-expanded`, no script — so there is no
+accordion to make single-open. Making it one would mean building interactivity the original never
+had; left as-is by decision.
+
 ## Deliberately preserved
 
 | Item | Decision |

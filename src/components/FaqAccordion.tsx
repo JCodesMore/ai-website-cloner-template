@@ -71,12 +71,6 @@ interface FaqAccordionProps {
   badge?: string | null;
   /** Defaults to `brand-faq` (`#e5341a`) — what every embed on the site actually uses. */
   accentColor?: FaqAccent;
-  /**
-   * The "close the other items" loop is commented out on `/` and `/contact` — both pass
-   * `true`, matching the live site's multi-open behaviour. `/low-doc-loans` ships the same
-   * embed with that loop as live code, so it is single-open and takes the `false` default.
-   */
-  allowMultiple?: boolean;
   /** Extra classes merged onto the outer `.faq-section` element. */
   className?: string;
 }
@@ -89,6 +83,13 @@ interface FaqAccordionProps {
  * handler that toggles `.is-open` and animates `max-height: 0 → 500px`. This ports it to Base
  * UI's accordion, which animates real `height` — visually identical, minus the 500px ceiling
  * that would clip a long answer on the original.
+ *
+ * **Open behaviour is a deliberate divergence from the live site** (client direction — see
+ * `docs/research/FIXES.md`). Every FAQ here is single-open with the first question already
+ * expanded. Live, the three embeds disagree with each other: `/` and `/contact` have their
+ * "close the others" loop commented out so any number can be open, `/low-doc-loans` runs it,
+ * and all three load with everything closed. Hence no per-page prop — the consistency is the
+ * point, and a prop would just let the old inconsistency back in.
  *
  * The embed's `CameraPlainVariable` webfont is omitted (FIXES.md #12 — a `cdn.gpteng.co`
  * third-party leftover), so this falls back to the project `font-sans` stack, matching the
@@ -104,7 +105,6 @@ export function FaqAccordion({
   heading = "Frequently asked questions",
   badge = "FAQ",
   accentColor = "brand-faq",
-  allowMultiple = false,
   className,
 }: FaqAccordionProps) {
   return (
@@ -137,9 +137,16 @@ export function FaqAccordion({
             </h2>
           </div>
 
+          {/*
+            `multiple` / `defaultValue` are Base UI's props — not Radix's
+            `type="single" | "multiple"`. `AccordionItem` keys off `value={index}`, so `[0]`
+            is the first question; on an empty `items` list it simply matches nothing.
+            Clicking the open item still collapses it, leaving none open — Base UI's default
+            with `multiple={false}`, and the same toggle the source's own handler performs.
+          */}
           <Accordion
-            multiple={allowMultiple}
-            defaultValue={[]}
+            multiple={false}
+            defaultValue={[0]}
             className="flex w-full flex-col gap-[12px]"
           >
             {items.map((item, index) => (

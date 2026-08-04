@@ -114,6 +114,12 @@ There is **one** implementation, click-driven, shipped byte-identically on three
 > `/low-doc-loans` actually runs `items.forEach(i => i.classList.remove('is-open'))`. An earlier
 > draft of this file had it backwards.
 
+**The clone deliberately does not reproduce this.** The table above records the *live site*; the
+inconsistency across the three embeds is an artefact, not a design decision. By client direction
+every FAQ we ship is **single-open with the first question already expanded on load**. See
+`FIXES.md` → *Requested changes*. `/self-employed-loans` is untouched — it has no accordion to
+change.
+
 The `.faq-item` *script* is shipped on four pages but has no matching markup anywhere — dead
 code, same defect class as `FIXES.md` #11.
 
@@ -121,8 +127,10 @@ Accent is `#e5341a` on **all three** FAQ embeds, not per-page. (`#dc2626` on `/c
 `.git-icon` SVG stroke, not the FAQ. `#bc1a1a` never appears in a FAQ embed.)
 Panel bg `#f9f9f9`, body text `#666666`.
 
-**Implementation:** shadcn `accordion` (base-nova / `@base-ui/react`), already installed.
-Use `type="multiple"` on `/low-doc-loans` to match, `type="single"` elsewhere.
+**Implementation:** shadcn `accordion` (base-nova / `@base-ui/react`), already installed. Base UI's
+props are `multiple` and `defaultValue`, **not** Radix's `type="single" | "multiple"` — an earlier
+draft of this line used the Radix names, and had the two pages the wrong way round besides. All
+three render `<FaqAccordion>` with `multiple={false}` and `defaultValue={[0]}`.
 
 ---
 
