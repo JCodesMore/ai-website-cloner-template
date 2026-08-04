@@ -14,9 +14,12 @@ export const metadata: Metadata = {
  */
 export default function ServicesPage() {
   return (
-    <>
+    // Nav clearance. This page opens with a section that has no built-in top
+    // padding, so on the live site its eyebrow renders behind the fixed nav.
+    // Reproducing that would hide content — see docs/research/FIXES.md.
+    <div className="pt-14 min-[768px]:pt-16 min-[992px]:pt-28">
       <ServicesGrid />
       <AboutNed />
-    </>
+    </div>
   );
 }

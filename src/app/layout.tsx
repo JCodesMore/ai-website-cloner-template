@@ -62,10 +62,16 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <SiteHeader />
-        {/* The nav is position:fixed — pad by its height at each breakpoint. */}
-        <div className="flex flex-1 flex-col pt-14 md:pt-16 lg:pt-28">
-          {children}
-        </div>
+        {/*
+          No top padding here, deliberately. The nav is `position: fixed` and the
+          source lets the first section sit underneath it — every hero carries its
+          own `padding-top: 140px` to compensate. Padding the wrapper stacked on top
+          of that and pushed every page 141px below the live site.
+
+          The five routes that don't open with a hero add their own clearance; see
+          docs/research/FIXES.md.
+        */}
+        <div className="flex flex-1 flex-col">{children}</div>
         <SiteFooter />
       </body>
     </html>

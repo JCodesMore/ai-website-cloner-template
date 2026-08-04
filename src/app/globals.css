@@ -186,8 +186,12 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
-    font-size: 1rem;
-    line-height: 1.6;
+    /* 14px / 20px absolute, matching Webflow's base reset — measured on the live
+       site, not inferred. Both are inherited by every element that doesn't set
+       its own, so a 1rem/1.6 default rendered inherited text 14% large with
+       ~5px of extra leading. LegalPage opts back out; see FIXES.md. */
+    font-size: 14px;
+    line-height: 20px;
     font-weight: 400;
     -webkit-font-smoothing: antialiased;
   }

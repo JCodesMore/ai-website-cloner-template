@@ -30,7 +30,9 @@ export const metadata: Metadata = {
  */
 export default function BookAConsultationPage() {
   return (
-    <>
+    // Nav clearance — this page opens with a section that has no built-in top
+    // padding, so the source renders its heading behind the fixed nav.
+    <div className="pt-14 min-[768px]:pt-16 min-[992px]:pt-28">
       <GetInTouch
         heading="Book a Consultation"
         subheading="Ready to find the right loan? Contact FundUp for a free, no-obligation mortgage consultation. Call 0412 885 734 or send us a message — we're here to help."
@@ -39,19 +41,8 @@ export default function BookAConsultationPage() {
 
       {/* section.faq-section — same wrapper the FAQ uses elsewhere; here it holds the embed. */}
       <section className="w-full overflow-x-hidden bg-white px-[16px] py-0 min-[992px]:overflow-x-visible min-[992px]:px-0">
-        {/*
-         * div.code-embed.w-embed.w-iframe.w-script
-         *
-         * ⚠️ Preserved defect — flag for the orchestrator. The source's desktop rule is
-         * `padding-left: 500px; padding-right: 500px` (≥992px only), which leaves the iframe
-         * `100vw − 1000px` wide: ~920px at 1920px, ~440px at 1440px, and effectively **zero**
-         * between 992px and ~1050px. Reproduced 1:1 per the match-first mandate, but this is a
-         * genuine layout break and a strong candidate for a new `FIXES.md` row (a centred
-         * `max-width` would be the natural fix). Responsive ladder, verbatim:
-         *   ≥992  → 40px 500px          ≤991 → 24px gutters
-         *   ≤767  → 16px gutters        ≤479 → 8px gutters, display:block
-         */}
-        {/* FIXED: the source's `padding: 40px 500px` at ≥992px leaves the iframe
+        {/* div.code-embed.w-embed.w-iframe.w-script
+            FIXED: the source's `padding: 40px 500px` at ≥992px leaves the iframe
             100vw−1000px wide — effectively zero between 992 and ~1050px, where the
             booking calendar disappears entirely. Replaced with a centred max-width
             that matches the source's rendered width at common desktop sizes.
@@ -75,6 +66,6 @@ export default function BookAConsultationPage() {
        * renders and loads on its own; this script only handles the postMessage auto-resize.
        */}
       <Script src="https://api.leadconnectorhq.com/js/form_embed.js" strategy="lazyOnload" />
-    </>
+    </div>
   );
 }

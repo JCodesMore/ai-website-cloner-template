@@ -72,11 +72,13 @@ const CONTACT_FAQ_ITEMS: readonly FaqItem[] = [
  */
 export default function ContactPage() {
   return (
-    <>
+    // Nav clearance — this page opens with a section that has no built-in top
+    // padding, so the source renders its eyebrow behind the fixed nav.
+    <div className="pt-14 min-[768px]:pt-16 min-[992px]:pt-28">
       <GetInTouch />
       {/* Same embed as the homepage — its "close others" loop is commented out
           in source, so multiple answers stay open at once. */}
       <FaqAccordion items={CONTACT_FAQ_ITEMS} allowMultiple />
-    </>
+    </div>
   );
 }

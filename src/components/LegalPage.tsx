@@ -59,7 +59,15 @@ export interface LegalPageProps {
  */
 export function LegalPage({ title, intro, children, footnote }: LegalPageProps) {
   return (
-    <main className="section-y flex-1 bg-background">
+    // No explicit nav clearance needed: `section-y` already applies 64/80/112/128px
+    // of padding-block depending on breakpoint, which clears the 56/64/113px fixed
+    // nav at every width. (Adding a `pt-*` utility here would *reduce* it — utilities
+    // beat the `@layer components` rule that `section-y` lives in.)
+    //
+    // `text-base leading-[1.6]` is set explicitly rather than inherited: `body`
+    // matches Webflow's 14px/20px, which is far too tight for long legal prose.
+    // A documented divergence — see docs/research/FIXES.md.
+    <main className="section-y flex-1 bg-background text-base leading-[1.6]">
       <div className="mx-auto w-full max-w-[50rem] px-4 md:px-6">
         <header className="border-b border-border pb-8 md:pb-10">
           <h1 className={PAGE_TITLE_CLASSES}>{title}</h1>
