@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { INCOME_OPTIONS, SITUATION_OPTIONS } from "@/lib/enquiry-options";
 import { cn } from "@/lib/utils";
 
 /** `.w-input` + `.text-field-*` — 38px box, square corners, `#ccc` hairline. */
@@ -35,17 +36,6 @@ const CHECKBOX_INPUT_CLASS = "float-left mt-[4px] ml-[-20px] appearance-auto lea
 /** `.checkbox-label` / `.checkbox-label-2`, i.e. `.w-form-label` + Inter. */
 const CHECKBOX_TEXT_CLASS =
   "mb-0 inline-block cursor-pointer font-inter text-[14px] leading-[20px] font-normal";
-
-const SITUATION_OPTIONS = [
-  "First Home Buyer",
-  "Investor",
-  "Refinance",
-  "Upgrading",
-  "Commercial Lending",
-  "Asset Finance",
-] as const;
-
-const INCOME_OPTIONS = ["100K-150K", "150K-200K", "200K+"] as const;
 
 interface BorrowingPowerFormProps {
   /** Extra classes merged onto the outer `<section>`. */
@@ -238,9 +228,11 @@ export function BorrowingPowerForm({ className }: BorrowingPowerFormProps) {
                   <span className={CHECKBOX_TEXT_CLASS}>
                     By checking this box, I consent to receive marketing and promotional messages
                     including special offers, discounts, new product updates among others from{" "}
-                    <strong>FundUp</strong> at the phone number provided. Frequency may vary.
-                    Message &amp; data rates may apply. Text HELP for assistance, reply STOP to opt
-                    out.
+                    <strong>FundUp</strong>{" "}
+                    {/* FIXED: a plain space here is swallowed by the compiler when the text wraps
+                        to the next line, so this rendered as "FundUpat the phone number". */}
+                    at the phone number provided. Frequency may vary. Message &amp; data rates may
+                    apply. Text HELP for assistance, reply STOP to opt out.
                   </span>
                 </label>
               </div>

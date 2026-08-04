@@ -462,7 +462,7 @@ Transitions: `.result-big` and `.bp-row-value` `all .25s`; `.bar-segment`
 | # | Source | Clone | Why |
 |---|---|---|---|
 | 1 | Sub-heading `Use our free tools to estimate you rloan repayments stamps duty costs across Australia` | `Use our free tools to estimate your loan repayments and stamp duty costs across Australia` | Three typos in one sentence (`you r`→`your`, missing `and`, `stamps`→`stamp`). Explicitly briefed. |
-| 2 | `<button onclick='window.open("https://fundup.au/contact","_blank")'>` | `<Link href="/contact">` | Same destination, client-side nav, no popup, no `target="_blank"`. Visual treatment unchanged. |
+| 2 | `<button onclick='window.open("https://fundup.au/contact","_blank")'>` | `<ConsultDialog>` — a booking modal opened in place | **Client direction, not a defect fix** (`FIXES.md` → *Requested changes*). It no longer navigates at all. `/contact` carries no form, so the source's button abandoned the calculator for a dead end. `.cta-btn`'s visual treatment is byte-identical; only the element and its behaviour changed. See *Consult modal* below. |
 | 3 | Duty `$21,090` in static markup | `$21,530` | Stale markup; the shipped script computes `$21,530`. See the stamp-duty note above. |
 | 4 | No dependants control (hint text mentions them) | Same — `dependants` held at `0` | Adding a scale would be invented finance maths. |
 | 5 | Two independent gross-income inputs (single vs household) | One shared `grossIncome` | Same defaults, value survives toggling. |
@@ -472,6 +472,52 @@ Transitions: `.result-big` and `.bp-row-value` `all .25s`; `.bar-segment`
 
 Not changed: the VIC `>$960,000` discontinuity and the SA first-home-buyer gap
 are left exactly as the site ships them (documented above).
+
+---
+
+## Consult modal — `ConsultDialog`
+
+**New work, with no counterpart in the source.** Rendered once per calculator by
+`BookConsultCta`, so four per page.
+
+Built on `@base-ui/react/dialog` via `src/components/ui/dialog.tsx` — **not Radix**, so the parts
+are `Backdrop`/`Popup`, not `Overlay`/`Content`. Three Base UI defaults are relied on rather than
+passed: `Root` emits no DOM element, `Portal` is `keepMounted={false}`, and `Root` is modal with
+outside-click dismissal.
+
+> `Root` emitting no element is load-bearing. The trigger stays a direct flex child of
+> `.right-panel`, which is the only reason `.cta-btn`'s `margin-top: auto` still pins it to the
+> bottom of the card. Verified in the browser: unchanged offsets on all four cards.
+
+| Part | Treatment |
+|---|---|
+| Backdrop | `bg-black/20` + `backdrop-blur-[2px]`. Deliberately a light scrim — the brief was that the page stay readable behind the modal |
+| Popup | centred, `w calc(100vw − 32px)`, `max-w 520px`, `max-h calc(100dvh − 48px)`, `overflow-y auto`, `radius 18px` (matches `.calc-card`), white, `shadow 0 24px 70px rgba(0,0,0,.25)` |
+| Enter/exit | `opacity 0` + `scale .96` → in, mirrored out, 200ms. `translate` and `scale` are separate properties in Tailwind v4, so the centring offset and the entrance scale don't collide |
+| Header | `position sticky` inside the popup — the form is long enough to scroll |
+| Fields | `h 42px`, `radius 10px`, `border #e0e0e0`, `bg #fafafa`; focus → `border #d62b2b`, `bg #fff` |
+| Submit | `h 46px`, `radius 10px`, `bg #d62b2b` → `#b82020` — same red as the button that opened it |
+| Breakpoint | field pairs go two-up from 480px. **Arbitrary `min-[480px]:` only** — Tailwind v4 emits arbitrary min-width blocks before the named breakpoints, so mixing families on one property lets `sm:` win where it shouldn't |
+
+**Fields** mirror the homepage `BorrowingPowerForm` one-for-one (client's choice), plus
+**Preferred date** and **Preferred time**. `SITUATION_OPTIONS` / `INCOME_OPTIONS` were lifted out
+to `src/lib/enquiry-options.ts` so the two forms cannot drift. Styling is *not* shared — the
+homepage form clones Webflow's square `#ccc` hairlines, this one was briefed as modern.
+
+- **Date** is floored at today via `min`. No ceiling.
+- **Time** is unrestricted. FundUp advertise `Available 24/7/365` in their own contact band, so
+  every hour is inside their service window. Swap in a slot list if that stops being true.
+- `lang="en-AU"` is set on the date field. Firefox and Safari honour it; **Chrome ignores it** and
+  follows the browser's own locale — that is Chrome's behaviour, not a defect, and the submitted
+  value is ISO regardless.
+
+**State resets on open, not on close.** Resetting on `onOpenChangeComplete` reads as the tidier
+option but is only as reliable as the exit animation, which never completes in a background tab —
+caught in testing, where a booked-then-closed modal reopened to a stale "Thanks".
+
+**Nothing is sent.** `submitConsultRequest()` (`src/lib/consult-request.ts`) resolves with no
+transport; Resend gets wired there once the domain is verified. A dev-only banner on the
+confirmation panel says so, and compiles out of production.
 
 ---
 

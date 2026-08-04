@@ -37,6 +37,16 @@ the table above, which is scoped to actual defects.
 | Change | Where | Live behaviour | Ours |
 |---|---|---|---|
 | **FAQ accordions open one at a time, with the first question already expanded on load** | `/`, `/contact`, `/low-doc-loans` | Inconsistent, and only by accident: all three ship the same embed script, but `/` and `/contact` have its "close the others" loop commented out so any number of answers can be open, while `/low-doc-loans` runs it. All three load fully closed. | Single-open on all three, first item expanded. Clicking the open item still collapses it, leaving none open — the same toggle the source performs. The per-page `allowMultiple` prop was removed rather than defaulted, so the old inconsistency can't creep back |
+| **"Book Free Consult" opens a booking form in a modal instead of navigating** | `/calculators` — all four calculator cards | `<button onclick='window.open("https://fundup.au/contact","_blank")'>`. It abandoned the calculator for `/contact`, which carries **no form at all** — so the page's only conversion control dead-ended | `ConsultDialog`: the same fields as the homepage `BorrowingPowerForm`, plus **preferred date and time**, in a light modal over a translucent backdrop. `.cta-btn`'s visual treatment is untouched — only the element and its behaviour changed |
+
+**The modal does not send anything yet.** `submitConsultRequest()` in
+`src/lib/consult-request.ts` resolves without a transport, and the confirmation panel is shown on
+that resolution — agreed with the client, who will wire delivery through Resend once they can
+verify the domain. That one function is the only thing that has to change. A dev-only warning
+renders on the confirmation panel so this cannot be forgotten; it is compiled out of production.
+
+The three `Book Free Consultation →` bands on `/`, `/low-doc-loans` and `/self-employed-loans`
+still navigate as before — this change was scoped to `/calculators`.
 
 `/self-employed-loans` is **untouched**. Its FAQ is five static `.sel-faq-item` cards with every
 answer permanently visible — no `<button>`, no `aria-expanded`, no script — so there is no

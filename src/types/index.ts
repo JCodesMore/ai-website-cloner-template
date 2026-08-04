@@ -119,3 +119,33 @@ export interface BorrowingPowerResult {
   moderate: number;
   optimistic: number;
 }
+
+/* -------------------------------------------------------------------------- */
+/*  Consultation booking                                                      */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * One "Book Free Consult" submission from the `/calculators` modal.
+ *
+ * The first six fields mirror the homepage `BorrowingPowerForm` one-for-one; the two
+ * `preferred*` fields are new to the modal. Nothing is sent anywhere yet — see
+ * `submitConsultRequest()` in `src/lib/consult-request.ts`.
+ */
+export interface ConsultRequest {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  /** One of `SITUATION_OPTIONS`; empty when left unselected. */
+  situation: string;
+  /** One of `INCOME_OPTIONS`; empty when left unselected. */
+  income: string;
+  /** ISO `YYYY-MM-DD`, verbatim from `<input type="date">`. */
+  preferredDate: string;
+  /** 24-hour `HH:MM`, verbatim from `<input type="time">`. */
+  preferredTime: string;
+  /** Required by the form — non-marketing SMS. */
+  consentNonMarketing: boolean;
+  /** Optional — marketing and promotional SMS. */
+  consentMarketing: boolean;
+}

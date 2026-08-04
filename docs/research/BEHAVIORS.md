@@ -141,6 +141,13 @@ embed. Sliders and number inputs recompute on every change; no debounce in the o
 All maths runs locally — no network calls. See `PAGE_TOPOLOGY.md` for the four calculators and
 the stamp-duty bracket data.
 
+**Plus one behaviour the source doesn't have.** Each card's `.cta-btn` used to be
+`window.open("https://fundup.au/contact","_blank")`; by client direction it now opens a booking
+modal in place instead of navigating. Click-driven, `@base-ui/react/dialog`, closes on Escape,
+outside click or its own close buttons. Spec in
+`components/calculators.spec.md` → *Consult modal*; rationale in `FIXES.md` → *Requested changes*.
+Still no network calls — the form has no transport wired up yet.
+
 ---
 
 ## 8. Booking widget — `/book-a-consultation`

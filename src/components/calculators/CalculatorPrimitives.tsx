@@ -1,8 +1,8 @@
 "use client";
 
 import type { ReactNode } from "react";
-import Link from "next/link";
 
+import { ConsultDialog } from "@/components/calculators/ConsultDialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -371,20 +371,23 @@ export function BorrowingPowerRows({ rows }: { rows: readonly BorrowingPowerRow[
 /**
  * `.cta-btn` — "Book Free Consult".
  *
- * The source is a `<button onclick='window.open("https://fundup.au/contact","_blank")'>`;
- * this is the same destination as a real in-app link, with no popup.
+ * **No longer navigates anywhere** (client direction — see `docs/research/FIXES.md`). The source
+ * is a `<button onclick='window.open("https://fundup.au/contact","_blank")'>`, and `/contact`
+ * carries no form at all, so the button used to abandon the calculator for a dead end. It now
+ * opens `ConsultDialog` in place. The `.cta-btn` treatment below is unchanged — only the element
+ * and its behaviour differ.
+ *
+ * `mt-auto` survives the switch because `Dialog.Root` renders no DOM element of its own, so the
+ * trigger is still a direct flex child of `.right-panel`.
  */
 export function BookConsultCta({ className }: { className?: string }) {
   return (
-    <Link
-      href="/contact"
-      className={cn(
+    <ConsultDialog
+      triggerClassName={cn(
         "mt-auto flex h-[44px] w-full items-center justify-center rounded-[8px] bg-[#d62b2b] text-[13px] font-bold tracking-[0.01em] text-white transition-[background-color,translate] duration-150 hover:-translate-y-px hover:bg-[#b82020] active:translate-y-0",
         className,
       )}
-    >
-      Book Free Consult
-    </Link>
+    />
   );
 }
 
