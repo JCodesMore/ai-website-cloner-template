@@ -4,12 +4,28 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ---------------------------------------------------------------------------
+   fundup.au design tokens
+   Extracted from the site's Webflow/Flowkit style-guide bundle. See
+   docs/research/DESIGN_TOKENS.md for provenance and the full source values.
+
+   The site is light-mode only — no dark variant exists on the original, so the
+   .dark block below simply holds the light values to keep shadcn primitives
+   from breaking if something toggles the class.
+--------------------------------------------------------------------------- */
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
-  --font-heading: var(--font-sans);
+
+  /* Plus Jakarta Sans for headings, Instrument Sans for body/buttons.
+     Inter and Roboto Serif are used by a few bespoke sections. */
+  --font-sans: var(--font-instrument-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-plus-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-inter: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-roboto-serif), ui-serif, Georgia, serif;
+  --font-mono: ui-monospace, monospace;
+
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -39,82 +55,128 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* The site's three reds, preserved exactly where each is used on the
+     original (see docs/research/FIXES.md — kept by explicit decision). */
+  --color-brand: var(--brand);
+  --color-brand-contact: var(--brand-contact);
+  --color-brand-faq: var(--brand-faq);
+
+  /* Explicit Flowkit radii — .25 / .5 / .75 / 1rem, not a computed scale.
+     2xl/3xl/4xl aren't Flowkit tokens, but shadcn primitives and several
+     sections reference them; without a value `rounded-2xl` resolves to an
+     undefined var and silently renders square corners. */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+  --radius-4xl: 2rem;
+  --radius-round: 100rem;
+
+  /* Container widths */
+  --container-site: 1280px;
+  --container-site-lg: 1440px;
+  --container-site-sm: 1000px;
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* ── Surfaces ─────────────────────────────────────────────────────────── */
+  --background: #ffffff;              /* neutral-primary   */
+  --foreground: #0f0f0f;              /* neutral-inverse   */
+  --card: #ffffff;
+  --card-foreground: #0f0f0f;
+  --popover: #ffffff;
+  --popover-foreground: #0f0f0f;
+
+  /* ── Brand ────────────────────────────────────────────────────────────── */
+  --brand: #bc1a1a;                   /* dominant: 80 uses in CSS, 24 inline  */
+  --brand-contact: #dc2626;           /* /contact icon SVGs                   */
+  --brand-faq: #e5341a;               /* /low-doc-loans FAQ embed             */
+  --primary: #bc1a1a;
+  --primary-foreground: #ffffff;
+
+  /* Hover derived from the brand red. The original hovers to #8ca5fe — an
+     un-rebranded Flowkit template blue, i.e. a live bug we fix. */
+  --primary-hover: #9a1515;
+
+  /* ── Neutrals ─────────────────────────────────────────────────────────── */
+  --secondary: #fbf9f5;               /* warm off-white alternate surface     */
+  --secondary-foreground: #0f0f0f;
+  --muted: #fbf9f5;
+  --muted-foreground: #18181899;      /* neutral-inverse-a60                  */
+  --accent: #fbf9f5;
+  --accent-foreground: #0f0f0f;
+  --destructive: #bc1a1a;
+
+  --border: #1818181a;                /* neutral-inverse-a10                  */
+  --border-strong: #18181833;         /* neutral-inverse-a20                  */
+  --input: #1818181a;
+  --ring: #bc1a1a;
+
+  --chart-1: #bc1a1a;
+  --chart-2: #0f0f0f;
+  --chart-3: #18181899;
+  --chart-4: #fbf9f5;
+  --chart-5: #18181833;
+
+  --radius: 0.5rem;                   /* card radius; buttons override to .25 */
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0f0f0f;
+  --sidebar-primary: #bc1a1a;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #fbf9f5;
+  --sidebar-accent-foreground: #0f0f0f;
+  --sidebar-border: #1818181a;
+  --sidebar-ring: #bc1a1a;
+
+  /* ── Section rhythm — 8rem desktop, stepping down per breakpoint ─────── */
+  --section-padding-y: 8rem;
 }
 
+/* The original has no dark mode. Mirror light values so shadcn primitives
+   that reference .dark don't render an unstyled surface. */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #ffffff;
+  --foreground: #0f0f0f;
+  --card: #ffffff;
+  --card-foreground: #0f0f0f;
+  --popover: #ffffff;
+  --popover-foreground: #0f0f0f;
+  --primary: #bc1a1a;
+  --primary-foreground: #ffffff;
+  --secondary: #fbf9f5;
+  --secondary-foreground: #0f0f0f;
+  --muted: #fbf9f5;
+  --muted-foreground: #18181899;
+  --accent: #fbf9f5;
+  --accent-foreground: #0f0f0f;
+  --destructive: #bc1a1a;
+  --border: #1818181a;
+  --input: #1818181a;
+  --ring: #bc1a1a;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0f0f0f;
+  --sidebar-primary: #bc1a1a;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #fbf9f5;
+  --sidebar-accent-foreground: #0f0f0f;
+  --sidebar-border: #1818181a;
+  --sidebar-ring: #bc1a1a;
+}
+
+/* Section vertical rhythm steps at the source's own breakpoints (991/767/479),
+   expressed here as max-width queries to match the original exactly. */
+@media screen and (max-width: 991px) {
+  :root { --section-padding-y: 7rem; }
+}
+@media screen and (max-width: 767px) {
+  :root { --section-padding-y: 5rem; }
+}
+@media screen and (max-width: 479px) {
+  :root { --section-padding-y: 4rem; }
 }
 
 @layer base {
@@ -123,8 +185,59 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.6;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
   }
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
   }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+  }
+}
+
+@layer components {
+  /* Page container — 1280px with 1rem gutters, matching Flowkit's .container */
+  .container-site {
+    width: 100%;
+    max-width: var(--container-site);
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+  .container-site-sm {
+    width: 100%;
+    max-width: var(--container-site-sm);
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+  .container-site-lg {
+    width: 100%;
+    max-width: var(--container-site-lg);
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+  /* Standard section rhythm */
+  .section-y {
+    padding-block: var(--section-padding-y);
+  }
+  /* Flowkit eyebrow: .9rem uppercase with .01em tracking */
+  .eyebrow {
+    font-size: 0.9rem;
+    line-height: 1.3;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+  }
+  @media screen and (max-width: 479px) {
+    .eyebrow { font-size: 0.8rem; }
+  }
+}
+
+/* Hero entrance animation, lifted verbatim from the source's inline <style>. */
+@keyframes heroSlideUp {
+  0%   { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
 }

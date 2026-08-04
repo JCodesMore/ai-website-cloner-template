@@ -1,20 +1,53 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Instrument_Sans, Plus_Jakarta_Sans, Inter, Roboto_Serif } from "next/font/google";
+import { SiteFooter } from "@/components/SiteFooter";
+import { SiteHeader } from "@/components/SiteHeader";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// The source loads all four via Google's WebFont Loader at weights 300–700.
+// next/font self-hosts them instead, removing the render-blocking request.
+const instrumentSans = Instrument_Sans({
+  variable: "--font-instrument-sans",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
+const plusJakarta = Plus_Jakarta_Sans({
+  variable: "--font-plus-jakarta",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+});
+
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const robotoSerif = Roboto_Serif({
+  variable: "--font-roboto-serif",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "Website Clone",
-  description: "Pixel-perfect website clone",
+  metadataBase: new URL("https://www.fundup.au"),
+  title: {
+    default: "Self-Employed Mortgage Broker Australia | FundUp",
+    template: "%s | FundUp",
+  },
+  description:
+    "Australia's specialist self-employed mortgage broker. We compare 40+ lenders for home loans, investment loans, refinancing and asset finance.",
+  icons: {
+    icon: "/seo/favicon.png",
+    apple: "/seo/apple-touch-icon.png",
+  },
+  openGraph: {
+    type: "website",
+    siteName: "FundUp",
+    locale: "en_AU",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
 export default function RootLayout({
@@ -25,9 +58,16 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${instrumentSans.variable} ${plusJakarta.variable} ${inter.variable} ${robotoSerif.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <SiteHeader />
+        {/* The nav is position:fixed — pad by its height at each breakpoint. */}
+        <div className="flex flex-1 flex-col pt-14 md:pt-16 lg:pt-28">
+          {children}
+        </div>
+        <SiteFooter />
+      </body>
     </html>
   );
 }

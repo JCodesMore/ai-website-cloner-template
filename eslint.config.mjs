@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Agent worktrees are full project copies — linting them double-reports
+    // every file and pulls in their node_modules junctions.
+    ".claude/worktrees/**",
   ]),
 ]);
 
