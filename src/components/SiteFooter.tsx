@@ -16,6 +16,8 @@ import Link from "next/link";
  * `.footer_bottom-1` gets `padding-left/right: 0` at ≤767px (it has no inline
  * padding to begin with) and `font-size: 12px` at ≤479px (both `.footer_legal`
  * children already set 12px themselves).
+ *
+ * The trailing "Powered by WaynAI" credit is an addition, not part of the source.
  */
 
 type FooterLink = {
@@ -38,6 +40,9 @@ const FOOTER_LINK_CLASS =
 
 /** `.footer_legal` — 12px/1.6 #ffffff66, centred, no margin. */
 const FOOTER_LEGAL_CLASS = "text-center text-xs leading-[1.6] text-[#ffffff66]";
+
+/** Inherits `.footer_legal`'s muted tier; hover follows the footer's `.footer_link-1` idiom. */
+const FOOTER_CREDIT_LINK_CLASS = "no-underline transition-colors duration-200 hover:text-white";
 
 export function SiteFooter() {
   return (
@@ -93,6 +98,17 @@ export function SiteFooter() {
           <p className={FOOTER_LEGAL_CLASS}>
             Loan Ranger Finance Pty Ltd Trading as FundUp is a Credit Representative 571356 of LMG
             Broker Services Pty Ltd ACN 632 405 504 Australian Credit Licence 517192.
+          </p>
+          <p className={FOOTER_LEGAL_CLASS}>
+            Powered by{" "}
+            <a
+              href="https://waynai.com.au"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={FOOTER_CREDIT_LINK_CLASS}
+            >
+              WaynAI
+            </a>
           </p>
         </div>
       </div>
