@@ -4,13 +4,14 @@
   <a href="https://github.com/JCodesMore/ai-website-cloner-template/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License" /></a>
   <a href="https://github.com/JCodesMore/ai-website-cloner-template/stargazers"><img src="https://img.shields.io/github/stars/JCodesMore/ai-website-cloner-template?style=flat" alt="Stars" /></a>
   <a href="https://discord.gg/hrTSX5yTpB"><img src="https://img.shields.io/discord/1400896964597383279?label=discord" alt="Discord" /></a>
+  <img src="https://img.shields.io/endpoint?url=https://gittokens.rsamf.com/badge/JCodesMore/ai-website-cloner-template" alt="tokens" />
 </p>
 
 > 简体中文文档 | [English README](README.md)
 
 一套可复用的模板，借助 AI 编程代理将任意网站反向工程为干净、现代的 Next.js 代码库。
 
-**推荐：使用 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) + Opus 4.7 以获得最佳效果**，同时也支持其他多种 AI 编程代理。
+**推荐：使用 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) + Opus 5 以获得最佳效果**，同时也支持其他多种 AI 编程代理。
 
 只需给定目标 URL，运行 `/clone-website`，AI 代理就会自动完成站点检查、设计 token 与资源提取、组件规格编写，并派出并行构建器逐个还原页面区块。
 
@@ -63,7 +64,7 @@
 
 | 代理                                                          | 状态                        |
 | ------------------------------------------------------------- | --------------------------- |
-| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | **推荐** — Opus 4.7         |
+| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | **推荐** — Opus 5           |
 | [Codex CLI](https://github.com/openai/codex)                  | 已支持                      |
 | [OpenCode](https://opencode.ai/)                              | 已支持                      |
 | [GitHub Copilot](https://github.com/features/copilot)         | 已支持                      |
