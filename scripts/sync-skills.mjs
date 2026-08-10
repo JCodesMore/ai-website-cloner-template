@@ -31,7 +31,7 @@ if (!match) {
 }
 
 const body = match[2];
-const shortDesc = 'Reverse-engineer and clone any website as a pixel-perfect replica';
+const shortDesc = 'Reverse-engineer and clone one or more websites as pixel-perfect replicas';
 
 // --- Helpers ---
 
@@ -46,7 +46,7 @@ const HEADER =
   '<!-- AUTO-GENERATED from .claude/skills/clone-website/SKILL.md \u2014 do not edit directly.\n' +
   '     Run `node scripts/sync-skills.mjs` to regenerate. -->\n\n';
 
-const noArgs = (text) => text.replace(/\$ARGUMENTS/g, 'the target URL provided by the user');
+const noArgs = (text) => text.replace(/\$ARGUMENTS/g, 'the target URL or URLs provided by the user');
 
 const agentSkill = (text) =>
   `---\nname: clone-website\ndescription: "${shortDesc}"\n---\n${noArgs(text)}`;
@@ -104,7 +104,7 @@ write(
 // 10. Augment Code — markdown + YAML frontmatter
 write(
   '.augment/commands/clone-website.md',
-  `---\ndescription: "${shortDesc}"\nargument-hint: "<url>"\n---\n${HEADER}${body}`
+  `---\ndescription: "${shortDesc}"\nargument-hint: "<url1> [<url2> ...]"\n---\n${HEADER}${body}`
 );
 
 // 11. Continue — prompt file with invokable: true

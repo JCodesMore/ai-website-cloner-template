@@ -1,19 +1,19 @@
 ---
 name: clone-website
-description: "Reverse-engineer and clone any website as a pixel-perfect replica"
+description: "Reverse-engineer and clone one or more websites as pixel-perfect replicas"
 ---
 
 # Clone Website
 
-You are about to reverse-engineer and rebuild **the target URL provided by the user** as pixel-perfect clones.
+You are about to reverse-engineer and rebuild **the target URL or URLs provided by the user** as pixel-perfect clones.
 
-When multiple URLs are provided, process them independently and in parallel where possible, while keeping each site's extraction artifacts isolated in dedicated folders (for example, `docs/research/<hostname>/`).
+When multiple URLs are provided, preserve every pathname as a distinct route and isolate each target's research, screenshots, components, and assets. URLs that differ only by query string or fragment share a pathname, so resolve their route and state behavior explicitly in the output plan. Parallelize page work only after the shared foundation and output plan are fixed so concurrent builders cannot overwrite one another.
 
 This is not a two-phase process (inspect then build). You are a **foreman walking the job site** — as you inspect each section of the page, you write a detailed specification to a file, then hand that file to a specialist builder agent with everything they need. Extraction and construction happen in parallel, but extraction is meticulous and produces auditable artifacts.
 
 ## Scope Defaults
 
-The target is whatever page `the target URL provided by the user` resolves to. Clone exactly what's visible at that URL. Unless the user specifies otherwise, use these defaults:
+The target is whatever page `the target URL or URLs provided by the user` resolves to. Clone exactly what's visible at that URL. Unless the user specifies otherwise, use these defaults:
 
 - **Fidelity level:** Pixel-perfect — exact match in colors, spacing, typography, animations
 - **In scope:** Visual layout and styling, component structure and interactions, responsive design, mock data for demo purposes
@@ -22,13 +22,41 @@ The target is whatever page `the target URL provided by the user` resolves to. C
 
 If the user provides additional instructions (specific fidelity level, customizations, extra context), honor those over the defaults.
 
+## Output Isolation and Route Preservation
+
+Treat every target URL as durable project output, not as permission to replace whatever was built previously.
+
+Choose an `<app-root>` before extraction. For a single application, `<app-root>` is the repository root (`.`). If different origins need separate applications, require the user to provide or approve a prepared Next.js project root for each origin; verify each root builds independently, and never write one origin's output into another root.
+
+Then assign each target:
+
+- A collision-resistant `<site-key>`: a readable origin slug (including a non-default port) plus the first 8 lowercase hex characters of SHA-256 over the normalized origin.
+- A collision-resistant `<page-key>`: a segment-preserving readable pathname slug plus the first 8 lowercase hex characters of SHA-256 over the normalized pathname and any stateful query/fragment; use `root-<hash>` for `/`. Never rely on lossy character replacement alone.
+- An artifact root: `<app-root>/docs/research/<site-key>/<page-key>/`.
+- A screenshot root: `<app-root>/docs/design-references/<site-key>/<page-key>/`.
+- A component root: `<app-root>/src/components/sites/<site-key>/<page-key>/`, with genuinely shared same-site components under `<app-root>/src/components/sites/<site-key>/shared/`.
+- An asset root: `<app-root>/public/sites/<site-key>/<page-key>/`, with genuinely shared same-site assets under `<app-root>/public/sites/<site-key>/shared/`.
+- A Next.js route file.
+
+All paths in the remaining phases are relative to that target's `<app-root>`. Before writing, verify that every planned route, artifact root, screenshot root, component root, asset root, and downloader filename is unique or is an explicitly approved shared location.
+
+Routing defaults:
+
+- For the first single-URL clone in an untouched template, the existing scaffold at `src/app/page.tsx` may be replaced so the clone remains available at `/`.
+- For multiple URLs from the same origin, or any later clone added to a project that already contains cloned/user-authored pages, preserve the normalized source pathname as its App Router URL (for example, `/docs/intro` becomes `<app-root>/src/app/docs/intro/page.tsx`). Encode filesystem segment names that would invoke App Router syntax: escape a leading `_` or `@`, and literal parentheses or square brackets, with percent-encoded folder spellings rather than creating private folders, slots, route groups, or dynamic segments. Verify the built route resolves at the exact normalized URL before completion.
+- Inspect every existing `src/app/**/page.tsx` before writing. Never delete or replace a non-scaffold route, component tree, research folder, screenshot, or asset namespace unless the user explicitly approves that exact replacement.
+- If the planned route already exists, stop and ask whether to update that route, choose another route, or skip it.
+- URLs from different origins may require incompatible fonts, global CSS, layouts, and metadata. Before modifying files, ask whether the user wants separate prepared application roots (recommended) or an intentionally combined multi-site app with route-scoped styling. Do not create an unapproved monorepo or silently mix global foundations.
+
 ## Pre-Flight
 
 1. **Browser automation is required.** Check for available browser MCP tools (Chrome MCP, Playwright MCP, Browserbase MCP, Puppeteer MCP, etc.). Use whichever is available — if multiple exist, prefer Chrome MCP. If none are detected, ask the user which browser tool they have and how to connect it. This skill cannot work without browser automation.
-2. Parse `the target URL provided by the user` as one or more URLs. Normalize and validate each URL; if any are invalid, ask the user to correct them before proceeding. For each valid URL, verify it is accessible via your browser MCP tool.
+2. Parse `the target URL or URLs provided by the user` as one or more URLs. Normalize and validate each URL; if any are invalid, ask the user to correct them before proceeding. For each valid URL, verify it is accessible via your browser MCP tool.
 3. Verify the base project builds: `npm run build`. The Next.js + shadcn/ui + Tailwind v4 scaffold should already be in place. If not, tell the user to set it up first.
-4. Create the output directories if they don't exist: `docs/research/`, `docs/research/components/`, `docs/design-references/`, `scripts/`. For multiple clones, also prepare per-site folders like `docs/research/<hostname>/` and `docs/design-references/<hostname>/`.
-5. When working with multiple sites in one command, optionally confirm whether to run them in parallel (recommended, if resources allow) or sequentially to avoid overload.
+4. Inventory existing routes (`src/app/**/page.tsx`), site component namespaces, research artifacts, screenshots, and public assets. Distinguish the untouched template scaffold from existing cloned or user-authored work.
+5. Write an output plan listing every target URL, `<app-root>`, `<site-key>`, `<page-key>`, destination route, artifact roots, and whether any shared foundation file must change. Resolve collisions across every planned output, same-path query/fragment behavior, and multi-origin layout decisions with the user before editing.
+6. Create only the planned per-page/per-site directories plus `scripts/` if needed. Use unique asset-download script names such as `scripts/download-assets-<site-key>-<page-key>.mjs`; do not overwrite another page's downloader.
+7. For multiple pages from one origin, build the shared foundation once, sequentially, before parallel page work. Optionally confirm whether to run page builders in parallel (recommended if resources allow) or sequentially to avoid overload.
 
 ## Guiding Principles
 
@@ -107,7 +135,7 @@ For scroll-dependent elements:
 
 ### 8. Spec Files Are the Source of Truth
 
-Every component gets a specification file in `docs/research/components/` BEFORE any builder is dispatched. This file is the contract between your extraction work and the builder agent. The builder receives the spec file contents inline in its prompt — the file also persists as an auditable artifact that the user (or you) can review if something looks wrong.
+Every component gets a specification file under that page's artifact root (`docs/research/<site-key>/<page-key>/components/`) BEFORE any builder is dispatched. This file is the contract between your extraction work and the builder agent. The builder receives the spec file contents inline in its prompt — the file also persists as an auditable artifact that the user (or you) can review if something looks wrong.
 
 The spec file is not optional. It is not a nice-to-have. If you dispatch a builder without first writing a spec file, you are shipping incomplete instructions based on whatever you can remember from a browser MCP session, and the builder will guess to fill gaps.
 
@@ -121,19 +149,19 @@ Navigate to the target URL with browser MCP.
 
 ### Screenshots
 - Take **full-page screenshots** at desktop (1440px) and mobile (390px) viewports
-- Save to `docs/design-references/` with descriptive names
+- Save to that page's screenshot root (`docs/design-references/<site-key>/<page-key>/`) with descriptive names
 - These are your master reference — builders will receive section-specific crops/screenshots later
 
 ### Global Extraction
 Extract these from the page before doing anything else:
 
-**Fonts** — Inspect `<link>` tags for Google Fonts or self-hosted fonts. Check computed `font-family` on key elements (headings, body, code, labels). Document every family, weight, and style actually used. Configure them in `src/app/layout.tsx` using `next/font/google` or `next/font/local`.
+**Fonts** — Inspect `<link>` tags for Google Fonts or self-hosted fonts. Check computed `font-family` on key elements (headings, body, code, labels). Document every family, weight, and style actually used. For a single-site app, configure shared fonts in `src/app/layout.tsx` using `next/font/google` or `next/font/local`. In an approved combined multi-site app, keep incompatible fonts/layout concerns route-scoped.
 
-**Colors** — Extract the site's color palette from computed styles across the page. Update `src/app/globals.css` with the target's actual colors in the `:root` and `.dark` CSS variable blocks. Map them to shadcn's token names (background, foreground, primary, muted, etc.) where they fit. Add custom properties for colors that don't map to shadcn tokens.
+**Colors** — Extract the site's color palette from computed styles across the page. For a single-site app, merge the target's colors into `src/app/globals.css` without removing tokens required by existing routes. Map them to shadcn's token names (background, foreground, primary, muted, etc.) where they fit. In an approved combined multi-site app, use a route wrapper or scoped token namespace instead of replacing another site's global palette.
 
-**Favicons & Meta** — Download favicons, apple-touch-icons, OG images, webmanifest to `public/seo/`. Update `layout.tsx` metadata.
+**Favicons & Meta** — Download page/site SEO assets under the planned site asset namespace. Put truly app-global metadata in the root layout only when it applies to every route; otherwise export route-specific metadata from the destination page or a route layout.
 
-**Global UI patterns** — Identify any site-wide CSS or JS: custom scrollbar hiding, scroll-snap on the page container, global keyframe animations, backdrop filters, gradients used as overlays, **smooth scroll libraries** (Lenis, Locomotive Scroll — check for `.lenis`, `.locomotive-scroll`, or custom scroll container classes). Add these to `globals.css` and note any libraries that need to be installed.
+**Global UI patterns** — Identify any site-wide CSS or JS: custom scrollbar hiding, scroll-snap on the page container, global keyframe animations, backdrop filters, gradients used as overlays, **smooth scroll libraries** (Lenis, Locomotive Scroll — check for `.lenis`, `.locomotive-scroll`, or custom scroll container classes). Merge truly shared behavior into `globals.css`; keep page-specific behavior scoped to the page so existing routes do not change unexpectedly.
 
 ### Mandatory Interaction Sweep
 
@@ -161,7 +189,7 @@ This is a dedicated pass AFTER screenshots and BEFORE anything else. Its purpose
 - Mobile: 390px
 - At each width, note which sections change layout (column → stack, sidebar disappears, etc.) and at approximately which breakpoint the change occurs.
 
-Save all findings to `docs/research/BEHAVIORS.md`. This is your behavior bible — reference it when writing every component spec.
+Save all findings to `<artifact-root>/BEHAVIORS.md`. This is your behavior bible — reference it when writing every component spec.
 
 ### Page Topology
 Map out every distinct section of the page from top to bottom. Give each a working name. Document:
@@ -171,18 +199,18 @@ Map out every distinct section of the page from top to bottom. Give each a worki
 - Dependencies between sections (e.g., a floating nav that overlays everything)
 - **The interaction model** of each section (static, click-driven, scroll-driven, time-driven)
 
-Save this as `docs/research/PAGE_TOPOLOGY.md` — it becomes your assembly blueprint.
+Save this as `<artifact-root>/PAGE_TOPOLOGY.md` — it becomes your assembly blueprint.
 
 ## Phase 2: Foundation Build
 
-This is sequential. Do it yourself (not delegated to an agent) since it touches many files:
+This is sequential per origin. Do it yourself (not delegated to an agent) since it touches shared files. Re-read the output plan and preserve every existing route before editing:
 
-1. **Update fonts** in `layout.tsx` to match the target site's actual fonts
-2. **Update globals.css** with the target's color tokens, spacing values, keyframe animations, utility classes, and any **global scroll behaviors** (Lenis, smooth scroll CSS, scroll-snap on body)
-3. **Create TypeScript interfaces** in `src/types/` for the content structures you've observed
-4. **Extract SVG icons** — find all inline `<svg>` elements on the page, deduplicate them, and save as named React components in `src/components/icons.tsx`. Name them by visual function (e.g., `SearchIcon`, `ArrowRightIcon`, `LogoIcon`).
-5. **Download global assets** — write and run a Node.js script (`scripts/download-assets.mjs`) that downloads all images, videos, and other binary assets from the page to `public/`. Preserve meaningful directory structure.
-6. Verify: `npm run build` passes
+1. **Merge fonts and shared layout behavior** without deleting requirements of existing routes. Use route layouts when behavior is not truly app-global.
+2. **Merge global CSS carefully**; scope page/site-specific tokens, keyframes, scroll behavior, and utilities under a route wrapper when they could conflict.
+3. **Create namespaced TypeScript interfaces** for the content structures you've observed; reuse existing same-site types only when their contracts match.
+4. **Extract SVG icons** — deduplicate same-site icons under `src/components/sites/<site-key>/shared/icons.tsx`; keep page-only icons in the page component namespace. Name them by visual function (e.g., `SearchIcon`, `ArrowRightIcon`, `LogoIcon`).
+5. **Download assets into the planned namespace** — use the page's uniquely named download script and write into `public/sites/<site-key>/<page-key>/` or the approved same-site shared directory. Never write a generic filename over another page's asset.
+6. Verify every previously existing route still builds, then run `npm run build`.
 
 ### Asset Discovery Script Pattern
 
@@ -222,7 +250,7 @@ JSON.stringify({
 });
 ```
 
-Then write a download script that fetches everything to `public/`. Use batched parallel downloads (4 at a time) with proper error handling.
+Then use the uniquely named page download script to fetch everything into its planned asset root. Use batched parallel downloads (4 at a time) with proper error handling.
 
 ## Phase 3: Component Specification & Dispatch
 
@@ -232,7 +260,7 @@ This is the core loop. For each section in your page topology (top to bottom), y
 
 For each section, use browser MCP to extract everything:
 
-1. **Screenshot** the section in isolation (scroll to it, screenshot the viewport). Save to `docs/design-references/`.
+1. **Screenshot** the section in isolation (scroll to it, screenshot the viewport). Save to the page's screenshot root.
 
 2. **Extract CSS** for every element in the section. Use the extraction script below — don't hand-measure individual properties. Run it once per component container and capture the full output:
 
@@ -293,15 +321,15 @@ Record the diff explicitly: "Property X changes from VALUE_A to VALUE_B, trigger
 
 4. **Extract real content** — all text, alt attributes, aria labels, placeholder text. Use `element.textContent` for each text node. For tabbed/stateful content, **click each tab and extract content per state**.
 
-5. **Identify assets** this section uses — which downloaded images/videos from `public/`, which icon components from `icons.tsx`. Check for **layered images** (multiple `<img>` or background-images stacked in the same container).
+5. **Identify assets** this section uses — which namespaced downloaded images/videos and which site/page icon components. Check for **layered images** (multiple `<img>` or background-images stacked in the same container).
 
 6. **Assess complexity** — how many distinct sub-components does this section contain? A distinct sub-component is an element with its own unique styling, structure, and behavior (e.g., a card, a nav item, a search panel).
 
 ### Step 2: Write the Component Spec File
 
-For each section (or sub-component, if you're breaking it up), create a spec file in `docs/research/components/`. This is NOT optional — every builder must have a corresponding spec file.
+For each section (or sub-component, if you're breaking it up), create a spec file inside the page's component-spec directory. This is NOT optional — every builder must have a corresponding spec file.
 
-**File path:** `docs/research/components/<component-name>.spec.md`
+**File path:** `docs/research/<site-key>/<page-key>/components/<component-name>.spec.md`
 
 **Template:**
 
@@ -309,8 +337,8 @@ For each section (or sub-component, if you're breaking it up), create a spec fil
 # <ComponentName> Specification
 
 ## Overview
-- **Target file:** `src/components/<ComponentName>.tsx`
-- **Screenshot:** `docs/design-references/<screenshot-name>.png`
+- **Target file:** `src/components/sites/<site-key>/<page-key>/<ComponentName>.tsx`
+- **Screenshot:** `docs/design-references/<site-key>/<page-key>/<screenshot-name>.png`
 - **Interaction model:** <static | click-driven | scroll-driven | time-driven>
 
 ## DOM Structure
@@ -356,9 +384,9 @@ For each section (or sub-component, if you're breaking it up), create a spec fil
 - Cards: [...]
 
 ## Assets
-- Background image: `public/images/<file>.webp`
-- Overlay image: `public/images/<file>.png`
-- Icons used: <ArrowIcon>, <SearchIcon> from icons.tsx
+- Background image: `public/sites/<site-key>/<page-key>/images/<file>.webp`
+- Overlay image: `public/sites/<site-key>/<page-key>/images/<file>.png`
+- Icons used: <ArrowIcon>, <SearchIcon> from the planned page or same-site shared icon module
 
 ## Text Content (verbatim)
 <All text content, copy-pasted from the live site>
@@ -382,9 +410,9 @@ Based on complexity, dispatch builder agent(s) in worktree(s):
 
 **What every builder agent receives:**
 - The full contents of its component spec file (inline in the prompt — don't say "go read the spec file")
-- Path to the section screenshot in `docs/design-references/`
-- Which shared components to import (`icons.tsx`, `cn()`, shadcn primitives)
-- The target file path (e.g., `src/components/HeroSection.tsx`)
+- Path to the section screenshot in the page's namespaced screenshot root
+- Which shared components to import (the planned site-scoped icon module, `cn()`, shadcn primitives)
+- The namespaced target file path (e.g., `src/components/sites/<site-key>/<page-key>/HeroSection.tsx`)
 - Instruction to verify with `npx tsc --noEmit` before finishing
 - For responsive behavior: the specific breakpoint values and what changes
 
@@ -395,6 +423,7 @@ Based on complexity, dispatch builder agent(s) in worktree(s):
 As builder agents complete their work:
 - Merge their worktree branches into main
 - You have full context on what each agent built, so resolve any conflicts intelligently
+- Reject or repair any merge that deletes or rewrites an unrelated existing route or another page's namespace
 - After each merge, verify the build still passes: `npm run build`
 - If a merge introduces type errors, fix them immediately
 
@@ -402,19 +431,20 @@ The extract → spec → dispatch → merge cycle continues until all sections a
 
 ## Phase 4: Page Assembly
 
-After all sections are built and merged, wire everything together in `src/app/page.tsx`:
+After all sections are built and merged, wire the page into the exact destination route from the approved output plan. Use `src/app/page.tsx` only for the first fresh-template root clone; otherwise use the planned path such as `src/app/docs/intro/page.tsx`:
 
 - Import all section components
 - Implement the page-level layout from your topology doc (scroll containers, column structures, sticky positioning, z-index layering)
 - Connect real content to component props
 - Implement page-level behaviors: scroll snap, scroll-driven animations, dark-to-light transitions, intersection observers, smooth scroll (Lenis etc.)
+- Confirm all routes that existed before this run are still present and were not unintentionally changed
 - Verify: `npm run build` passes clean
 
 ## Phase 5: Visual QA Diff
 
 After assembly, do NOT declare the clone complete. Take side-by-side comparison screenshots:
 
-1. Open the original site and your clone side-by-side (or take screenshots at the same viewport widths)
+1. Open the original site and the clone at its planned local route side-by-side (or take screenshots at the same viewport widths)
 2. Compare section by section, top to bottom, at desktop (1440px)
 3. Compare again at mobile (390px)
 4. For each discrepancy found:
@@ -430,7 +460,7 @@ Only after this visual QA pass is the clone complete.
 
 Before dispatching ANY builder agent, verify you can check every box. If you can't, go back and extract more.
 
-- [ ] Spec file written to `docs/research/components/<name>.spec.md` with ALL sections filled
+- [ ] Spec file written to `docs/research/<site-key>/<page-key>/components/<name>.spec.md` with ALL sections filled
 - [ ] Every CSS value in the spec is from `getComputedStyle()`, not estimated
 - [ ] Interaction model is identified and documented (static / click / scroll / time)
 - [ ] For stateful components: every state's content and styles are captured
@@ -451,6 +481,7 @@ These are lessons from previous failed clones — each one cost hours of rework:
 - **Don't build mockup components for content that's actually videos/animations.** Check if a section uses `<video>`, Lottie, or canvas before building elaborate HTML mockups of what the video shows.
 - **Don't approximate CSS classes.** "It looks like `text-lg`" is wrong if the computed value is `18px` and `text-lg` is `18px/28px` but the actual line-height is `24px`. Extract exact values.
 - **Don't build everything in one monolithic commit.** The whole point of this pipeline is incremental progress with verified builds at each step.
+- **Don't treat a new target as permission to replace the current app.** Preserve existing routes and namespaced artifacts; ask before updating a route that already exists.
 - **Don't reference docs from builder prompts.** Each builder gets the CSS spec inline in its prompt — never "see DESIGN_TOKENS.md for colors." The builder should have zero need to read external docs.
 - **Don't skip asset extraction.** Without real images, videos, and fonts, the clone will always look fake regardless of how perfect the CSS is.
 - **Don't give a builder agent too much scope.** If you're writing a builder prompt and it's getting long because the section is complex, that's a signal to break it into smaller tasks.
@@ -462,6 +493,8 @@ These are lessons from previous failed clones — each one cost hours of rework:
 ## Completion
 
 When done, report:
+- Source URL to destination-route mapping for every page built
+- Existing routes preserved and any explicitly approved replacements
 - Total sections built
 - Total components created
 - Total spec files written (should match components)

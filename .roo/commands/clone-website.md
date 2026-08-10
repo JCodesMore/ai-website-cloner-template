@@ -1,5 +1,5 @@
 ---
-description: "Reverse-engineer and clone any website as a pixel-perfect replica"
+description: "Reverse-engineer and clone one or more websites as pixel-perfect replicas"
 argument-hint: "<url1> [<url2> ...]"
 ---
 <!-- AUTO-GENERATED from .claude/skills/clone-website/SKILL.md — do not edit directly.
