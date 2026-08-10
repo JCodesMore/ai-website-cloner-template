@@ -189,4 +189,4 @@ docker compose up dev --build # 在开发模式下运行，端口 3001
 
 MIT
 
-<sub>Languages: <a href="README.md">English</a> · Simplified Chinese</sub>
+<sub>语言: <a href="README.md">English</a> · <a href="README.ja.md">日本語</a> · 简体中文</sub>
