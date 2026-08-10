@@ -106,6 +106,14 @@ Give your AI coding agent a URL and watch it recreate the website as a clean Nex
 
 The `/clone-website` skill runs a multi-phase pipeline:
 
+```mermaid
+flowchart LR
+    P1["1. Reconnaissance"] --> P2["2. Foundation"]
+    P2 --> P3["3. Component Specs"]
+    P3 --> P4["4. Parallel Build"]
+    P4 --> P5["5. Assembly and QA"]
+```
+
 1. **Reconnaissance** — screenshots, design token extraction, interaction sweep (scroll, click, hover, responsive)
 2. **Foundation** — updates fonts, colors, globals, downloads all assets
 3. **Component Specs** — writes detailed spec files (`docs/research/components/`) with exact computed CSS values, states, behaviors, and content

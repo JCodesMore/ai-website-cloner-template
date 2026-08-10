@@ -106,6 +106,14 @@
 
 `/clone-website` 指令会运行一个多阶段流水线：
 
+```mermaid
+flowchart LR
+    P1["1. 侦察"] --> P2["2. 基础搭建"]
+    P2 --> P3["3. 组件规格"]
+    P3 --> P4["4. 并行构建"]
+    P4 --> P5["5. 组装与 QA"]
+```
+
 1. **侦察（Reconnaissance）** — 截图、提取设计 token、扫描交互行为（滚动、点击、悬停、响应式）
 2. **基础搭建（Foundation）** — 更新字体、颜色、全局样式，下载全部资源
 3. **组件规格（Component Specs）** — 编写详细的规格文件（`docs/research/components/`），包含精确的计算 CSS 值、状态、行为和内容
