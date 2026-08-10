@@ -11,7 +11,7 @@
 #
 # Agents that DON'T need generated files (they read AGENTS.md natively):
 #   Codex CLI, OpenCode, Cursor, Windsurf, Copilot Coding Agent,
-#   Roo Code, Aider, Augment Code
+#   Roo Code, Aider, Augment Code, Kiro
 #
 # Agents with their own thin pointer files (created manually):
 #   Claude Code  → CLAUDE.md (@AGENTS.md import)

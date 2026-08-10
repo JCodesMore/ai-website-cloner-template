@@ -79,6 +79,7 @@
 | [Codex CLI](https://github.com/openai/codex)                  | 已支持                      |
 | [OpenCode](https://opencode.ai/)                              | 已支持                      |
 | [GitHub Copilot](https://github.com/features/copilot)         | 已支持                      |
+| [Kiro](https://kiro.dev/)                                    | 已支持                      |
 | [Cursor](https://cursor.com/)                                 | 已支持                      |
 | [Windsurf](https://codeium.com/windsurf)                      | 已支持                      |
 | [Gemini CLI](https://github.com/google-gemini/gemini-cli)     | 已支持                      |
@@ -146,6 +147,7 @@ docs/
 scripts/
   sync-agent-rules.sh  # 重新生成各代理指令文件
   sync-skills.mjs      # 为所有平台重新生成 /clone-website 指令
+.kiro/skills/          # 生成的 Kiro 工作区技能
 AGENTS.md           # 代理指令（单一事实来源）
 CLAUDE.md           # Claude Code 配置（引用 AGENTS.md）
 GEMINI.md           # Gemini CLI 配置（引用 AGENTS.md）

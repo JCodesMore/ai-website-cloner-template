@@ -79,6 +79,7 @@ Give your AI coding agent a URL and watch it recreate the website as a clean Nex
 | [Codex CLI](https://github.com/openai/codex)                  | Supported                  |
 | [OpenCode](https://opencode.ai/)                              | Supported                  |
 | [GitHub Copilot](https://github.com/features/copilot)         | Supported                  |
+| [Kiro](https://kiro.dev/)                                    | Supported                  |
 | [Cursor](https://cursor.com/)                                 | Supported                  |
 | [Windsurf](https://codeium.com/windsurf)                      | Supported                  |
 | [Gemini CLI](https://github.com/google-gemini/gemini-cli)     | Supported                  |
@@ -146,6 +147,7 @@ docs/
 scripts/
   sync-agent-rules.sh  # Regenerate agent instruction files
   sync-skills.mjs      # Regenerate /clone-website for all platforms
+.kiro/skills/          # Generated Kiro workspace skill
 AGENTS.md           # Agent instructions (single source of truth)
 CLAUDE.md           # Claude Code config (imports AGENTS.md)
 GEMINI.md           # Gemini CLI config (imports AGENTS.md)
