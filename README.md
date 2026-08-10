@@ -69,7 +69,7 @@ Give your AI coding agent a URL and watch it recreate the website as a clean Nex
    ```
 6. **Customize** (optional) — after the base clone is built, modify as needed
 
-> Using a different agent? Open `AGENTS.md` for project instructions — most agents pick it up automatically.
+> Most supported clients expose `/clone-website` directly. If your client activates skills from natural-language requests, enter `Clone <target-url> using the clone-website workflow`. Project instructions are in `AGENTS.md`.
 
 ## Supported Platforms
 
@@ -88,7 +88,6 @@ Give your AI coding agent a URL and watch it recreate the website as a clean Nex
 | [Continue](https://continue.dev/)                             | Supported                  |
 | [Amazon Q](https://aws.amazon.com/q/developer/)               | Supported                  |
 | [Augment Code](https://www.augmentcode.com/)                  | Supported                  |
-| [Aider](https://aider.chat/)                                  | Supported                  |
 
 ## Prerequisites
 
@@ -156,6 +155,9 @@ scripts/
   sync-agent-rules.sh  # Regenerate agent instruction files
   sync-skills.mjs      # Regenerate /clone-website for all platforms
 .kiro/skills/          # Generated Kiro workspace skill
+.cline/skills/         # Generated Cline workspace skill
+.roo/skills/           # Generated Roo Code workspace skill
+.roo/commands/         # Generated Roo Code slash command
 AGENTS.md           # Agent instructions (single source of truth)
 CLAUDE.md           # Claude Code config (imports AGENTS.md)
 GEMINI.md           # Gemini CLI config (imports AGENTS.md)

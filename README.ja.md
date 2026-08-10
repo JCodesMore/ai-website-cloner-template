@@ -69,7 +69,7 @@ AI コーディングエージェントに URL を渡すだけで、ウェブサ
    ```
 6. **カスタマイズする**（任意）— 基本のクローンが構築された後、必要に応じて変更します
 
-> 別のエージェントを使用しますか？プロジェクトの手順については `AGENTS.md` を開いてください。ほとんどのエージェントはこのファイルを自動的に読み込みます。
+> ほとんどの対応クライアントでは `/clone-website` を直接実行できます。自然言語による依頼でスキルを起動するクライアントでは、`clone-website ワークフローを使って <対象URL> をクローンして` と入力してください。プロジェクトの指示は `AGENTS.md` にあります。
 
 ## 対応プラットフォーム
 
@@ -88,7 +88,6 @@ AI コーディングエージェントに URL を渡すだけで、ウェブサ
 | [Continue](https://continue.dev/)                             | 対応                  |
 | [Amazon Q](https://aws.amazon.com/q/developer/)               | 対応                  |
 | [Augment Code](https://www.augmentcode.com/)                  | 対応                  |
-| [Aider](https://aider.chat/)                                  | 対応                  |
 
 ## 前提条件
 
@@ -156,6 +155,9 @@ scripts/
   sync-agent-rules.sh  # エージェント指示ファイルを再生成
   sync-skills.mjs      # 全プラットフォーム向けに /clone-website を再生成
 .kiro/skills/          # 生成された Kiro ワークスペーススキル
+.cline/skills/         # 生成された Cline ワークスペーススキル
+.roo/skills/           # 生成された Roo Code ワークスペーススキル
+.roo/commands/         # 生成された Roo Code スラッシュコマンド
 AGENTS.md           # エージェント指示（唯一の参照元）
 CLAUDE.md           # Claude Code 設定（AGENTS.md を読み込み）
 GEMINI.md           # Gemini CLI 設定（AGENTS.md を読み込み）

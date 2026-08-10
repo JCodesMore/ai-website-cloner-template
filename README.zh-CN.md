@@ -69,7 +69,7 @@
    ```
 6. **按需定制**（可选） — 基础克隆完成后，可进一步修改。
 
-> 使用其他 AI 代理？打开 `AGENTS.md` 查看项目指令 — 大多数代理会自动读取。
+> 大多数受支持的客户端都可以直接调用 `/clone-website`。如果你的客户端通过自然语言请求激活技能，请输入 `使用 clone-website 工作流克隆 <目标网址>`。项目指令位于 `AGENTS.md`。
 
 ## 支持的平台
 
@@ -88,7 +88,6 @@
 | [Continue](https://continue.dev/)                             | 已支持                      |
 | [Amazon Q](https://aws.amazon.com/q/developer/)               | 已支持                      |
 | [Augment Code](https://www.augmentcode.com/)                  | 已支持                      |
-| [Aider](https://aider.chat/)                                  | 已支持                      |
 
 ## 前置要求
 
@@ -156,6 +155,9 @@ scripts/
   sync-agent-rules.sh  # 重新生成各代理指令文件
   sync-skills.mjs      # 为所有平台重新生成 /clone-website 指令
 .kiro/skills/          # 生成的 Kiro 工作区技能
+.cline/skills/         # 生成的 Cline 工作区技能
+.roo/skills/           # 生成的 Roo Code 工作区技能
+.roo/commands/         # 生成的 Roo Code 斜杠命令
 AGENTS.md           # 代理指令（单一事实来源）
 CLAUDE.md           # Claude Code 配置（引用 AGENTS.md）
 GEMINI.md           # Gemini CLI 配置（引用 AGENTS.md）
