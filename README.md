@@ -176,7 +176,7 @@ Each script regenerates the platform-specific copies automatically. Agents that 
 
 ## Star History
 
-[![Star History Chart](docs/assets/star-history.png)](https://www.star-history.com/jcodesmore/ai-website-cloner-template/)
+![Star History Chart](docs/assets/star-history.png)
 
 ## License
 

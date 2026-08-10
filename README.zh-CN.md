@@ -180,7 +180,7 @@ docker compose up dev --build # 在开发模式下运行，端口 3001
 
 ## Star 历史
 
-[![Star History Chart](docs/assets/star-history.png)](https://www.star-history.com/jcodesmore/ai-website-cloner-template/)
+![Star History Chart](docs/assets/star-history.png)
 
 ## 许可证
 
