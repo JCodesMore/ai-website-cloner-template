@@ -12,8 +12,6 @@
   </a>
 </p>
 
-> English README | [中文说明](README.zh-CN.md)
-
 A reusable template for reverse-engineering any website into a clean, modern Next.js codebase using AI coding agents. 
 
 **Recommended: [Claude Code](https://docs.anthropic.com/en/docs/claude-code) with Opus 5 for best results** — but works with a variety of AI coding agents.
@@ -181,3 +179,5 @@ Each script regenerates the platform-specific copies automatically. Agents that 
 ## License
 
 MIT
+
+<sub>Translations: <a href="README.zh-CN.md">Simplified Chinese</a></sub>

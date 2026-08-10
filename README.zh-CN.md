@@ -17,8 +17,6 @@
   </a>
 </p>
 
-> 简体中文文档 | [English README](README.md)
-
 一套可复用的模板，借助 AI 编程代理将任意网站反向工程为干净、现代的 Next.js 代码库。
 
 **推荐：使用 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) + Opus 5 以获得最佳效果**，同时也支持其他多种 AI 编程代理。
@@ -185,3 +183,5 @@ docker compose up dev --build # 在开发模式下运行，端口 3001
 ## 许可证
 
 MIT
+
+<sub>Languages: <a href="README.md">English</a> · Simplified Chinese</sub>
