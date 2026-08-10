@@ -1,13 +1,17 @@
+<div align="center">
+
 # AI Website Cloner Template 中文版
 
-<p align="left">
-  <a href="https://github.com/JCodesMore/ai-website-cloner-template/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License" /></a>
-  <a href="https://github.com/JCodesMore/ai-website-cloner-template/stargazers"><img src="https://img.shields.io/github/stars/JCodesMore/ai-website-cloner-template?style=flat" alt="Stars" /></a>
-  <a href="https://discord.gg/hrTSX5yTpB"><img src="https://img.shields.io/discord/1400896964597383279?label=discord" alt="Discord" /></a>
-  <img src="https://img.shields.io/endpoint?url=https://gittokens.rsamf.com/badge/JCodesMore/ai-website-cloner-template" alt="tokens" />
-</p>
+### 一条命令，克隆任意网站
 
-<p align="left">
+向 AI 编程代理提供一个 URL。它会捕捉真实的设计、内容和资源，并将网站重建为干净的 Next.js 应用。
+
+**推荐使用 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) + Opus 5 以获得最佳效果，同时支持 Codex、Cursor、Gemini 等工具。**
+
+[![Use this template](https://img.shields.io/badge/Use_this_template-Create_your_copy-2ea44f?style=for-the-badge&logo=github&logoColor=white)](https://github.com/JCodesMore/ai-website-cloner-template/generate)
+
+[快速开始](#快速开始) · [观看演示](#演示) · [支持的平台](#支持的平台) · [Discord](https://discord.gg/hrTSX5yTpB)
+
   <a href="https://www.star-history.com/jcodesmore/ai-website-cloner-template/">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/badge?repo=JCodesMore/ai-website-cloner-template&amp;theme=dark" />
@@ -15,13 +19,10 @@
       <img alt="Star History 全球排名" src="https://api.star-history.com/badge?repo=JCodesMore/ai-website-cloner-template" />
     </picture>
   </a>
-</p>
 
-一套可复用的模板，借助 AI 编程代理将任意网站反向工程为干净、现代的 Next.js 代码库。
+</div>
 
-**推荐：使用 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) + Opus 5 以获得最佳效果**，同时也支持其他多种 AI 编程代理。
-
-只需给定目标 URL，运行 `/clone-website`，AI 代理就会自动完成站点检查、设计 token 与资源提取、组件规格编写，并派出并行构建器逐个还原页面区块。
+---
 
 ## 演示
 

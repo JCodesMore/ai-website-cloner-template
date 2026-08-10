@@ -1,8 +1,17 @@
+<div align="center">
+
 # AI Website Cloner Template
 
-<a href="https://github.com/JCodesMore/ai-website-cloner-template/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License" /></a> <a href="https://github.com/JCodesMore/ai-website-cloner-template/stargazers"><img src="https://img.shields.io/github/stars/JCodesMore/ai-website-cloner-template?style=flat" alt="Stars" /></a> <a href="https://discord.gg/hrTSX5yTpB"><img src="https://img.shields.io/discord/1400896964597383279?label=discord" alt="Discord" /></a> <img src="https://img.shields.io/endpoint?url=https://gittokens.rsamf.com/badge/JCodesMore/ai-website-cloner-template" alt="tokens" />
+### Clone any website with one command
 
-<p align="left">
+Give your AI coding agent a URL. It captures the real design, content, and assets, then rebuilds the site as a clean Next.js app.
+
+**Best results with [Claude Code](https://docs.anthropic.com/en/docs/claude-code) + Opus 5. Works with Codex, Cursor, Gemini, and more.**
+
+[![Use this template](https://img.shields.io/badge/Use_this_template-Create_your_copy-2ea44f?style=for-the-badge&logo=github&logoColor=white)](https://github.com/JCodesMore/ai-website-cloner-template/generate)
+
+[Quick Start](#quick-start) · [Watch Demo](#demo) · [Supported Platforms](#supported-platforms) · [Discord](https://discord.gg/hrTSX5yTpB)
+
   <a href="https://www.star-history.com/jcodesmore/ai-website-cloner-template/">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/badge?repo=JCodesMore/ai-website-cloner-template&amp;theme=dark" />
@@ -10,13 +19,10 @@
       <img alt="Star History Global Rank" src="https://api.star-history.com/badge?repo=JCodesMore/ai-website-cloner-template" />
     </picture>
   </a>
-</p>
 
-A reusable template for reverse-engineering any website into a clean, modern Next.js codebase using AI coding agents. 
+</div>
 
-**Recommended: [Claude Code](https://docs.anthropic.com/en/docs/claude-code) with Opus 5 for best results** — but works with a variety of AI coding agents.
-
-Point it at a URL, run `/clone-website`, and your AI agent will inspect the site, extract design tokens and assets, write component specs, and dispatch parallel builders to reconstruct every section.
+---
 
 ## Demo
 
