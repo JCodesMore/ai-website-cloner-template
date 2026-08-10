@@ -4,13 +4,15 @@
 
 ### 一条命令，克隆任意网站
 
-向 AI 编程代理提供一个 URL。它会捕捉真实的设计、内容和资源，并将网站重建为干净的 Next.js 应用。
+只需给你的 AI 编程代理一个 URL，它就会将该网站重新构建成一个简洁的 Next.js 应用。
 
 **推荐使用 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) + Opus 5 以获得最佳效果，同时支持 Codex、Cursor、Gemini 等工具。**
 
-[![Use this template](https://img.shields.io/badge/Use_this_template-Create_your_copy-2ea44f?style=for-the-badge&logo=github&logoColor=white)](https://github.com/JCodesMore/ai-website-cloner-template/generate)
+[![Use this template](https://img.shields.io/badge/Use_this_template-Create_your_copy-2ea44f?style=for-the-badge&logo=github&logoColor=white)](https://github.com/JCodesMore/ai-website-cloner-template/generate) [![Discord](https://img.shields.io/badge/Join_the_community-Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/hrTSX5yTpB)
 
-[快速开始](#快速开始) · [观看演示](#演示) · [支持的平台](#支持的平台) · [Discord](https://discord.gg/hrTSX5yTpB)
+[快速开始](#快速开始) · [观看演示](#演示) · [支持的平台](#支持的平台)
+
+<a href="https://github.com/JCodesMore/ai-website-cloner-template/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License" /></a> <a href="https://github.com/JCodesMore/ai-website-cloner-template"><img src="https://img.shields.io/github/stars/JCodesMore/ai-website-cloner-template?style=flat" alt="Stars" /></a> <img src="https://img.shields.io/endpoint?url=https://gittokens.rsamf.com/badge/JCodesMore/ai-website-cloner-template" alt="tokens" />
 
   <a href="https://www.star-history.com/jcodesmore/ai-website-cloner-template/">
     <picture>
