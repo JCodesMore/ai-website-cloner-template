@@ -7,6 +7,16 @@
   <img src="https://img.shields.io/endpoint?url=https://gittokens.rsamf.com/badge/JCodesMore/ai-website-cloner-template" alt="tokens" />
 </p>
 
+<p align="left">
+  <a href="https://www.star-history.com/jcodesmore/ai-website-cloner-template/">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/badge?repo=JCodesMore/ai-website-cloner-template&amp;theme=dark" />
+      <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/badge?repo=JCodesMore/ai-website-cloner-template" />
+      <img alt="Star History 全球排名" src="https://api.star-history.com/badge?repo=JCodesMore/ai-website-cloner-template" />
+    </picture>
+  </a>
+</p>
+
 > 简体中文文档 | [English README](README.md)
 
 一套可复用的模板，借助 AI 编程代理将任意网站反向工程为干净、现代的 Next.js 代码库。
@@ -170,7 +180,7 @@ docker compose up dev --build # 在开发模式下运行，端口 3001
 
 ## Star 历史
 
-[![Star History Chart](https://api.star-history.com/svg?repos=JCodesMore/ai-website-cloner-template&type=Date)](https://star-history.com/#JCodesMore/ai-website-cloner-template&Date)
+[![Star History Chart](docs/assets/star-history.png)](https://www.star-history.com/jcodesmore/ai-website-cloner-template/)
 
 ## 许可证
 

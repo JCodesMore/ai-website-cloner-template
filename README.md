@@ -2,6 +2,16 @@
 
 <a href="https://github.com/JCodesMore/ai-website-cloner-template/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License" /></a> <a href="https://github.com/JCodesMore/ai-website-cloner-template/stargazers"><img src="https://img.shields.io/github/stars/JCodesMore/ai-website-cloner-template?style=flat" alt="Stars" /></a> <a href="https://discord.gg/hrTSX5yTpB"><img src="https://img.shields.io/discord/1400896964597383279?label=discord" alt="Discord" /></a> <img src="https://img.shields.io/endpoint?url=https://gittokens.rsamf.com/badge/JCodesMore/ai-website-cloner-template" alt="tokens" />
 
+<p align="left">
+  <a href="https://www.star-history.com/jcodesmore/ai-website-cloner-template/">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/badge?repo=JCodesMore/ai-website-cloner-template&amp;theme=dark" />
+      <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/badge?repo=JCodesMore/ai-website-cloner-template" />
+      <img alt="Star History Global Rank" src="https://api.star-history.com/badge?repo=JCodesMore/ai-website-cloner-template" />
+    </picture>
+  </a>
+</p>
+
 > English README | [中文说明](README.zh-CN.md)
 
 A reusable template for reverse-engineering any website into a clean, modern Next.js codebase using AI coding agents. 
@@ -166,7 +176,7 @@ Each script regenerates the platform-specific copies automatically. Agents that 
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=JCodesMore/ai-website-cloner-template&type=Date)](https://star-history.com/#JCodesMore/ai-website-cloner-template&Date)
+[![Star History Chart](docs/assets/star-history.png)](https://www.star-history.com/jcodesmore/ai-website-cloner-template/)
 
 ## License
 
