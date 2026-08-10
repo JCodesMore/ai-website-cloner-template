@@ -7,11 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-08-10
+
 ### Added
+- Docker workflows for local development and multi-stage production builds
 - Kiro support through a generated workspace `/clone-website` skill
+- Complete generated workspace skills for Cline and Roo Code, including a Roo slash-command bridge
+- Simplified Chinese and Japanese READMEs with the same onboarding and workflow guidance as the English documentation
+- Contributor and security policies, including a private vulnerability-reporting path
+- CI enforcement that generated agent rules and skills remain synchronized with their source files
+- Compact pipeline diagrams and a static Star History chart in every README
 
 ### Changed
 - Raised the project Node.js baseline to 24 across local development, CI, Docker, and contributor-facing documentation
+- Refreshed Next.js to 16.3, React to 19.2.4, and related dependencies
+- Updated `/clone-website` so later runs preserve existing pages and isolate routes, research, components, assets, and downloaders for each target
+- Improved multi-origin and query/fragment planning with collision-resistant output namespaces and explicit route verification
+- Redesigned README onboarding around the template workflow, Opus 5 recommendation, supported platforms, and community links
+- Hardened the rule and skill generators for current platform schemas and deterministic output
+
+### Fixed
+- Gemini CLI command validation by adding the required name and flattening the prompt schema
+- Cline and Roo Code invocation, frontmatter, and argument handling
+- Next.js documentation resolution in generated agent rules
+- Vulnerable framework dependencies and generated-file consistency checks
+
+### Removed
+- Aider from the officially supported-platform list because its current capabilities cannot run the complete browser and subagent workflow reliably; `.aider.conf.yml` remains available for loading general project context
+
+### Security
+- Documented responsible vulnerability disclosure through GitHub private vulnerability reporting
+- Updated vulnerable dependencies to patched releases
 
 ## [0.3.1] - 2026-03-29
 
@@ -75,7 +101,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - MIT license
 - README with badges, demo section, quick start, and star history
 
-[Unreleased]: https://github.com/JCodesMore/ai-website-cloner-template/compare/v0.3.1...HEAD
+[Unreleased]: https://github.com/JCodesMore/ai-website-cloner-template/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/JCodesMore/ai-website-cloner-template/compare/v0.3.1...v0.4.0
 [0.3.1]: https://github.com/JCodesMore/ai-website-cloner-template/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/JCodesMore/ai-website-cloner-template/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/JCodesMore/ai-website-cloner-template/compare/v0.1.1...v0.2.0
