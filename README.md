@@ -20,6 +20,16 @@ Give your AI coding agent a URL and watch it recreate the website as a clean Nex
 
 ---
 
+## Sponsor
+
+<div align="center">
+  <a href="https://www.rapidproxy.io/?ref=JCM" target="_blank" rel="noopener noreferrer"><img src="docs/assets/sponsors/rapidproxy-banner.png" alt="RapidProxy — high-quality proxy service starting from $0.65/GB" width="728" /></a>
+
+  **[RapidProxy](https://www.rapidproxy.io/?ref=JCM)** powers scraping and automation with fast, reliable residential proxies. Get 90M+ residential IPs, 500MB free traffic, non-expiring bandwidth, and pricing from just $0.55/GB.
+</div>
+
+---
+
 ## Demo
 
 [![Watch the demo](docs/design-references/comparison.png)](https://youtu.be/O669pVZ_qr0)
