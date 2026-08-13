@@ -16,16 +16,13 @@ Give your AI coding agent a URL and watch it recreate the website as a clean Nex
 
   <a href="https://trendshift.io/repositories/24302?utm_source=repository-badge&amp;utm_medium=badge&amp;utm_campaign=badge-repository-24302" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/repositories/24302" alt="JCodesMore%2Fai-website-cloner-template | Trendshift" width="250" height="55" /></a> <a href="https://www.star-history.com/jcodesmore/ai-website-cloner-template/"><picture><source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/badge?repo=JCodesMore/ai-website-cloner-template&amp;theme=dark" /><source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/badge?repo=JCodesMore/ai-website-cloner-template" /><img alt="Star History Global Rank" src="https://api.star-history.com/badge?repo=JCodesMore/ai-website-cloner-template" width="216" height="55" /></picture></a>
 
-</div>
+<br />
+<sub><strong>SPONSORED BY</strong></sub>
+<br /><br />
+<a href="https://www.rapidproxy.io/?ref=JCM"><img src="docs/assets/sponsors/rapidproxy-banner.png" alt="RapidProxy residential proxy service" width="680" /></a>
+<br />
+<sub>Power your scraping and automation with 90M+ residential IPs, 500MB free traffic, and non-expiring bandwidth. <a href="https://www.rapidproxy.io/?ref=JCM">Explore RapidProxy →</a></sub>
 
----
-
-## Sponsor
-
-<div align="center">
-  <a href="https://www.rapidproxy.io/?ref=JCM" target="_blank" rel="noopener noreferrer"><img src="docs/assets/sponsors/rapidproxy-banner.png" alt="RapidProxy — high-quality proxy service starting from $0.65/GB" width="728" /></a>
-
-  **[RapidProxy](https://www.rapidproxy.io/?ref=JCM)** powers scraping and automation with fast, reliable residential proxies. Get 90M+ residential IPs, 500MB free traffic, non-expiring bandwidth, and pricing from just $0.55/GB.
 </div>
 
 ---
