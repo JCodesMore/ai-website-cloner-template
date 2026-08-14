@@ -30,9 +30,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "test": "bash tests/sync-agent-rules.test.sh",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "check": "npm run lint && npm run typecheck && npm run build"
+    "check": "npm run test && npm run lint && npm run typecheck && npm run build"
   },
   "dependencies": {
     "@base-ui/react": "^1.3.0",
