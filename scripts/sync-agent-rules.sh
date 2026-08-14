@@ -42,7 +42,8 @@ resolve_imports() {
         cat "$resolved"
         echo ""
       else
-        echo "<!-- Import not found: $import_path -->"
+        echo "Error: AGENTS.md import not found: $import_path" >&2
+        return 1
       fi
     else
       echo "$line"
