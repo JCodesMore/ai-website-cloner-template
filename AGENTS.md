@@ -62,8 +62,12 @@ scripts/            # Asset download scripts
 ```
 
 ## MOST IMPORTANT NOTES
-- When launching Claude Code agent teams, ALWAYS have each teammate work in their own worktree branch and merge everyone's work at the end, resolving any merge conflicts smartly since you are basically serving the orchestrator role and have full context to our goals, work given, work achieved, and desired outcomes.
+- Use agent teams only for genuinely independent, substantial tracks. Give concurrent
+  writers separate worktrees when isolation is needed, but do not automatically merge,
+  commit, push or deploy because the team finished. Inspect each diff, run the relevant
+  checks and follow the repository's human and release gates.
 - After editing `AGENTS.md`, run `bash scripts/sync-agent-rules.sh` to regenerate platform-specific instruction files.
 - After editing `.claude/skills/clone-website/SKILL.md`, run `node scripts/sync-skills.mjs` to regenerate the skill for all platforms.
 
-@docs/research/INSPECTION_GUIDE.md
+Read `docs/research/INSPECTION_GUIDE.md` on demand before inspection or
+reverse-engineering work; do not load it for unrelated tasks.
