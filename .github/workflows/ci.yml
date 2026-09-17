@@ -23,23 +23,6 @@ jobs:
           node-version: 24
           cache: npm
 
-      - name: Verify generated files are in sync
-        shell: bash
-        run: |
-          bash scripts/sync-agent-rules.sh
-          node scripts/sync-skills.mjs
-
-          if [[ -n "$(git status --porcelain=v1 --untracked-files=all)" ]]; then
-            echo "::error::Generated files are out of sync with their sources (AGENTS.md / SKILL.md)."
-            echo "Run the sync scripts locally and commit the result:"
-            echo "  bash scripts/sync-agent-rules.sh"
-            echo "  node scripts/sync-skills.mjs"
-            git status --short
-            git diff --stat
-            exit 1
-          fi
-          echo "All generated files are in sync with their sources."
-
       - name: Install dependencies
         run: npm ci
 

@@ -59,11 +59,14 @@ docs/
   research/         # Inspection output (design tokens, components, layout)
   design-references/ # Screenshots and visual references
 scripts/            # Asset download scripts
+.agents/
+  skills/
+    clone-website/  # Canonical cross-agent cloning workflow
+.claude/
+  commands/
+    clone-website.md # Thin Claude Code invocation bridge
 ```
 
-## MOST IMPORTANT NOTES
-- When launching Claude Code agent teams, ALWAYS have each teammate work in their own worktree branch and merge everyone's work at the end, resolving any merge conflicts smartly since you are basically serving the orchestrator role and have full context to our goals, work given, work achieved, and desired outcomes.
-- After editing `AGENTS.md`, run `bash scripts/sync-agent-rules.sh` to regenerate platform-specific instruction files.
-- After editing `.claude/skills/clone-website/SKILL.md`, run `node scripts/sync-skills.mjs` to regenerate the skill for all platforms.
-
-@docs/research/INSPECTION_GUIDE.md
+## Agent Workflow
+- Edit `.agents/skills/clone-website/` for cloning-workflow changes. It is the canonical skill used by Codex, Cursor, and OpenCode.
+- Keep `.claude/commands/clone-website.md` as a thin Claude Code bridge to the canonical skill; do not duplicate the workflow there.

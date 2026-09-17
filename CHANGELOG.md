@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Consolidated Claude Code, Codex, Cursor, and OpenCode support around one canonical Agent Skill in `.agents/skills/clone-website/`
+- Reduced the Claude Code integration to a thin command bridge that forwards arguments to the canonical skill without creating a duplicate skill in other agents
+- Moved the website inspection guide into the canonical skill's on-demand references
+
+### Removed
+- Generated skill and instruction copies for unsupported or redundant agent platforms
+- The agent-rule and skill synchronization scripts and their generated-file CI gate
+
 ## [0.4.0] - 2026-08-10
 
 ### Added

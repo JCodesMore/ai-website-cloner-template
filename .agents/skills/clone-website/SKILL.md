@@ -1,13 +1,11 @@
 ---
 name: clone-website
-description: Reverse-engineer and clone one or more websites in one shot — extracts assets, CSS, and content section-by-section and proactively dispatches parallel builder agents in worktrees as it goes. Use this whenever the user wants to clone, replicate, rebuild, reverse-engineer, or copy any website. Also triggers on phrases like "make a copy of this site", "rebuild this page", "pixel-perfect clone". Provide one or more target URLs as arguments.
-argument-hint: "<url1> [<url2> ...]"
-user-invocable: true
+description: Reverse-engineer and clone one or more websites in one shot — extracts assets, CSS, and content section-by-section and proactively dispatches parallel builder agents in worktrees as it goes. Use this whenever the user wants to clone, replicate, rebuild, reverse-engineer, or copy any website. Also triggers on phrases like "make a copy of this site", "rebuild this page", or "pixel-perfect clone". The request must include one or more target URLs.
 ---
 
 # Clone Website
 
-You are about to reverse-engineer and rebuild **$ARGUMENTS** as pixel-perfect clones.
+You are about to reverse-engineer and rebuild **the target URL or URLs in the user's request** as pixel-perfect clones.
 
 When multiple URLs are provided, preserve every pathname as a distinct route and isolate each target's research, screenshots, components, and assets. URLs that differ only by query string or fragment share a pathname, so resolve their route and state behavior explicitly in the output plan. Parallelize page work only after the shared foundation and output plan are fixed so concurrent builders cannot overwrite one another.
 
@@ -15,7 +13,7 @@ This is not a two-phase process (inspect then build). You are a **foreman walkin
 
 ## Scope Defaults
 
-The target is whatever page `$ARGUMENTS` resolves to. Clone exactly what's visible at that URL. Unless the user specifies otherwise, use these defaults:
+The target is whatever page the requested URL resolves to. Clone exactly what's visible at that URL. Unless the user specifies otherwise, use these defaults:
 
 - **Fidelity level:** Pixel-perfect — exact match in colors, spacing, typography, animations
 - **In scope:** Visual layout and styling, component structure and interactions, responsive design, mock data for demo purposes
@@ -53,12 +51,14 @@ Routing defaults:
 ## Pre-Flight
 
 1. **Browser automation is required.** Check for available browser MCP tools (Chrome MCP, Playwright MCP, Browserbase MCP, Puppeteer MCP, etc.). Use whichever is available — if multiple exist, prefer Chrome MCP. If none are detected, ask the user which browser tool they have and how to connect it. This skill cannot work without browser automation.
-2. Parse `$ARGUMENTS` as one or more URLs. Normalize and validate each URL; if any are invalid, ask the user to correct them before proceeding. For each valid URL, verify it is accessible via your browser MCP tool.
+2. Parse the target URL or URLs from the user's request. Normalize and validate each URL; if any are invalid, ask the user to correct them before proceeding. For each valid URL, verify it is accessible via your browser MCP tool.
 3. Verify the base project builds: `npm run build`. The Next.js + shadcn/ui + Tailwind v4 scaffold should already be in place. If not, tell the user to set it up first.
 4. Inventory existing routes (`src/app/**/page.tsx`), site component namespaces, research artifacts, screenshots, and public assets. Distinguish the untouched template scaffold from existing cloned or user-authored work.
 5. Write an output plan listing every target URL, `<app-root>`, `<site-key>`, `<page-key>`, destination route, artifact roots, and whether any shared foundation file must change. Resolve collisions across every planned output, same-path query/fragment behavior, and multi-origin layout decisions with the user before editing.
 6. Create only the planned per-page/per-site directories plus `scripts/` if needed. Use unique asset-download script names such as `scripts/download-assets-<site-key>-<page-key>.mjs`; do not overwrite another page's downloader.
 7. For multiple pages from one origin, build the shared foundation once, sequentially, before parallel page work. Optionally confirm whether to run page builders in parallel (recommended if resources allow) or sequentially to avoid overload.
+
+Before the inspection pass, read [references/inspection-guide.md](references/inspection-guide.md) for the reusable visual, component, layout, and technical audit checklist.
 
 ## Guiding Principles
 

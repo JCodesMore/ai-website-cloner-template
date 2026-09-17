@@ -6,7 +6,7 @@
 
 AI コーディングエージェントに URL を渡すだけで、ウェブサイトをクリーンな Next.js アプリとして再現できます。
 
-**最良の結果を得るには [Claude Code](https://docs.anthropic.com/en/docs/claude-code) + Opus 5 を推奨します。Codex、Cursor、Gemini などにも対応しています。**
+**最良の結果を得るには [Claude Code](https://docs.anthropic.com/en/docs/claude-code) + Opus 5 を推奨します。Codex、Cursor、OpenCode にも対応しています。**
 
 [![Use this template](https://img.shields.io/badge/Use_this_template-Create_your_copy-2ea44f?style=for-the-badge&logo=github&logoColor=white)](https://github.com/JCodesMore/ai-website-cloner-template/generate) [![Discord](https://img.shields.io/badge/Join_the_community-Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/hrTSX5yTpB)
 
@@ -57,13 +57,15 @@ AI コーディングエージェントに URL を渡すだけで、ウェブサ
    ```bash
    claude --chrome
    ```
-5. **スキルを実行する**：
-   ```
-   /clone-website <target-url1> [<target-url2> ...]
-   ```
+5. **各エージェントの方法でスキルを実行する**：
+
+   - Claude Code または Cursor：`/clone-website <target-url1> [<target-url2> ...]`
+   - Codex：`$clone-website <target-url1> [<target-url2> ...]`
+   - OpenCode：`clone-website スキルを使って <対象URL> をクローンして`
+
 6. **カスタマイズする**（任意）— 基本のクローンが構築された後、必要に応じて変更します
 
-> ほとんどの対応クライアントでは `/clone-website` を直接実行できます。自然言語による依頼でスキルを起動するクライアントでは、`clone-website ワークフローを使って <対象URL> をクローンして` と入力してください。プロジェクトの指示は `AGENTS.md` にあります。
+> ワークフローはテンプレートに含まれています。スキルの追加インストールや同期コマンドは不要です。プロジェクトの指示は `AGENTS.md` にあります。
 
 ## 対応プラットフォーム
 
@@ -72,16 +74,7 @@ AI コーディングエージェントに URL を渡すだけで、ウェブサ
 | [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | **推奨** — Opus 5     |
 | [Codex CLI](https://github.com/openai/codex)                  | 対応                  |
 | [OpenCode](https://opencode.ai/)                              | 対応                  |
-| [GitHub Copilot](https://github.com/features/copilot)         | 対応                  |
-| [Kiro](https://kiro.dev/)                                    | 対応                  |
 | [Cursor](https://cursor.com/)                                 | 対応                  |
-| [Windsurf](https://codeium.com/windsurf)                      | 対応                  |
-| [Gemini CLI](https://github.com/google-gemini/gemini-cli)     | 対応                  |
-| [Cline](https://github.com/cline/cline)                       | 対応                  |
-| [Roo Code](https://github.com/RooCodeInc/Roo-Code)            | 対応                  |
-| [Continue](https://continue.dev/)                             | 対応                  |
-| [Amazon Q](https://aws.amazon.com/q/developer/)               | 対応                  |
-| [Augment Code](https://www.augmentcode.com/)                  | 対応                  |
 
 ## 前提条件
 
@@ -145,16 +138,12 @@ public/
 docs/
   research/         # 調査結果とコンポーネント仕様
   design-references/ # スクリーンショット
-scripts/
-  sync-agent-rules.sh  # エージェント指示ファイルを再生成
-  sync-skills.mjs      # 全プラットフォーム向けに /clone-website を再生成
-.kiro/skills/          # 生成された Kiro ワークスペーススキル
-.cline/skills/         # 生成された Cline ワークスペーススキル
-.roo/skills/           # 生成された Roo Code ワークスペーススキル
-.roo/commands/         # 生成された Roo Code スラッシュコマンド
+.agents/skills/
+  clone-website/    # 正本スキルと検査リファレンス
+.claude/commands/
+  clone-website.md  # Claude Code 用の薄いブリッジ
 AGENTS.md           # エージェント指示（唯一の参照元）
 CLAUDE.md           # Claude Code 設定（AGENTS.md を読み込み）
-GEMINI.md           # Gemini CLI 設定（AGENTS.md を読み込み）
 ```
 
 ## コマンド
@@ -174,16 +163,11 @@ docker compose up app --build # アプリをビルドして起動
 docker compose up dev --build # ポート 3001 で開発モードを起動
 ```
 
-## 他のプラットフォーム向けの更新
+## エージェント対応
 
-すべてのプラットフォーム対応は、次の2つの正本ファイルを基盤としています。ソースを編集してから、同期スクリプトを実行してください。
+プロジェクトは `.agents/skills/clone-website/` に1つのポータブルな Agent Skill を保持します。Codex、Cursor、OpenCode はこれを直接読み取ります。Claude Code は `.claude/commands/clone-website.md` の小さなコマンドブリッジを使用するため、他のエージェントに重複したスキルを公開せずに `/clone-website` と引数を利用できます。
 
-| 対象                    | 唯一の参照元                             | 同期コマンド                       |
-| ----------------------- | ---------------------------------------- | ---------------------------------- |
-| プロジェクトの手順      | `AGENTS.md`                              | `bash scripts/sync-agent-rules.sh` |
-| `/clone-website` スキル | `.claude/skills/clone-website/SKILL.md`  | `node scripts/sync-skills.mjs`     |
-
-各スクリプトは、プラットフォーム固有のコピーを自動的に再生成します。ソースファイルを直接読み取るエージェントでは、再生成は不要です。
+変更は正本スキルに直接加えてください。プラットフォーム別の生成コピーや同期スクリプトはありません。
 
 ## Star History
 
