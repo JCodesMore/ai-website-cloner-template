@@ -158,5 +158,3 @@ Edit the canonical skill directly. There are no generated platform copies or syn
 ## License
 
 MIT
-
-<sub>Translations: <a href="README.ja.md">日本語</a> · <a href="README.zh-CN.md">Simplified Chinese</a></sub>

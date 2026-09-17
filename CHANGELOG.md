@@ -8,12 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
-- Simplified Quick Start across all READMEs with a copyable agent setup prompt, a template button, and one cloning command example
+- Simplified Quick Start with a copyable agent setup prompt, a template button, and one cloning command example
 - Consolidated Claude Code, Codex, Cursor, and OpenCode support around one canonical Agent Skill in `.agents/skills/clone-website/`
 - Reduced the Claude Code integration to a thin command bridge that forwards arguments to the canonical skill without creating a duplicate skill in other agents
 - Moved the website inspection guide into the canonical skill's on-demand references
 
 ### Removed
+- Japanese and Simplified Chinese READMEs; the English README is the single maintained entry point
 - Redundant workflow diagrams from the READMEs
 - Generated skill and instruction copies for unsupported or redundant agent platforms
 - The agent-rule and skill synchronization scripts and their generated-file CI gate
