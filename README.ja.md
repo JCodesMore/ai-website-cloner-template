@@ -28,44 +28,33 @@ AI コーディングエージェントに URL を渡すだけで、ウェブサ
 
 ## クイックスタート
 
-> **重要：** まず GitHub の **Use this template** ボタンを使用して、自分用のコピーを作成してください。ウェブサイトプロジェクトのためにこのテンプレートリポジトリを直接クローンしたり、生成したウェブサイトのプルリクエストをこのリポジトリに作成したりしないでください。
+### 1. プロジェクトを準備する
 
-1. **このテンプレートから自分のリポジトリを作成する**
+**おすすめ：エージェントに任せる。** Codex、Claude Code などのコーディングエージェントに、次の文章を貼り付けてください。
 
-   このプロジェクトの GitHub ページで **Use this template**、続いて **Create a new repository** をクリックします。
+```text
+https://github.com/JCodesMore/ai-website-cloner-template を
+PC の新しいフォルダーに独立したプロジェクトとして準備してください。
+保存先を確認してから、リポジトリをクローンし、origin リモートを削除し、
+依存関係をインストールして npm run check を実行してください。
+ウェブサイトのクローンを始められる状態にしておいてください。
+```
 
-   新しいリポジトリに名前を付け、公開または非公開を選択してから **Create repository** をクリックします。GitHub に **Include all branches** オプションが表示された場合は、オフのままでかまいません。
+**または、自分の GitHub リポジトリを作成する：**
 
-   これにより、独立した自分専用のプロジェクトが作成されるため、ウェブサイトへの変更はメインテンプレートに戻されず、自分のアカウント内に保持されます。
+[![Use this template](https://img.shields.io/badge/Use_this_template-Create_your_copy-2ea44f?style=for-the-badge&logo=github&logoColor=white)](https://github.com/JCodesMore/ai-website-cloner-template/generate)
 
-2. **新しいリポジトリを自分のコンピューターで開く**
+名前を付けて **Create repository** をクリックします。そのリポジトリのリンクをエージェントに渡し、PC へのクローン、依存関係のインストール、`npm run check` の実行を依頼してください。
 
-   GitHub がコピーを作成したら、その新しいリポジトリを開きます。**Code** をクリックし、好みのコーディングツールで新しいリポジトリを開くかクローンします。
+### 2. ウェブサイトをクローンする
 
-   ターミナルを使用する場合、コマンドは次のようになります。
+ブラウザー操作を有効にしたエージェントでプロジェクトを開きます。Claude Code または Cursor で、次のように実行してください。
 
-   ```bash
-   git clone https://github.com/YOUR-USERNAME/YOUR-NEW-REPOSITORY.git
-   cd YOUR-NEW-REPOSITORY
-   ```
+```text
+/clone-website https://example.com
+```
 
-3. **依存関係をインストールする**
-   ```bash
-   npm install
-   ```
-4. **AI エージェントを起動する** — Claude Code を推奨：
-   ```bash
-   claude --chrome
-   ```
-5. **各エージェントの方法でスキルを実行する**：
-
-   - Claude Code または Cursor：`/clone-website <target-url1> [<target-url2> ...]`
-   - Codex：`$clone-website <target-url1> [<target-url2> ...]`
-   - OpenCode：`clone-website スキルを使って <対象URL> をクローンして`
-
-6. **カスタマイズする**（任意）— 基本のクローンが構築された後、必要に応じて変更します
-
-> ワークフローはテンプレートに含まれています。スキルの追加インストールや同期コマンドは不要です。プロジェクトの指示は `AGENTS.md` にあります。
+URL を再現したいウェブサイトに置き換えてください。完成したら、必要な変更をエージェントに依頼できます。
 
 ## 対応プラットフォーム
 
@@ -91,14 +80,6 @@ AI コーディングエージェントに URL を渡すだけで、ウェブサ
 ## 仕組み
 
 `/clone-website` スキルは、複数フェーズのパイプラインを実行します。
-
-```mermaid
-flowchart LR
-    P1["1. 調査"] --> P2["2. 基盤構築"]
-    P2 --> P3["3. コンポーネント仕様"]
-    P3 --> P4["4. 並列ビルド"]
-    P4 --> P5["5. 統合と QA"]
-```
 
 1. **調査** — スクリーンショット、デザイントークンの抽出、インタラクションの網羅的な確認（スクロール、クリック、ホバー、レスポンシブ）
 2. **基盤構築** — フォント、色、グローバル設定を更新し、すべてのアセットをダウンロード

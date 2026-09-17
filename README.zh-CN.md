@@ -28,44 +28,33 @@
 
 ## 快速开始
 
-> **重要提示：** 请先使用 GitHub 的 **Use this template** 按钮创建自己的副本。不要直接克隆本模板仓库用于你的实际网站项目，也不要在此提交你生成的网站代码。
+### 1. 准备项目
 
-1. **从模板创建自己的仓库**
+**推荐：让代理帮你设置。** 将下面的提示词粘贴到 Codex、Claude Code 或其他编程代理中：
 
-   在本项目的 GitHub 页面点击 **Use this template**，然后点击 **Create a new repository**。
+```text
+请将 https://github.com/JCodesMore/ai-website-cloner-template
+作为独立项目设置在我电脑上的一个新文件夹中。
+先询问保存位置，再克隆仓库、移除 origin 远程地址、
+安装依赖并运行 npm run check。
+完成项目准备，留待我开始克隆网站。
+```
 
-   为新仓库命名，选择公开或私有，再点击 **Create repository**。如果出现 **Include all branches** 选项，可保持关闭。
+**或者，创建自己的 GitHub 仓库：**
 
-   这样你就能拥有一个独立的项目空间，你的网站修改会保留在你自己的账号下，而不会回到模板仓库。
+[![Use this template](https://img.shields.io/badge/Use_this_template-Create_your_copy-2ea44f?style=for-the-badge&logo=github&logoColor=white)](https://github.com/JCodesMore/ai-website-cloner-template/generate)
 
-2. **在本地打开新仓库**
+输入名称并点击 **Create repository**。然后将新仓库的链接发给代理，让它克隆到你的电脑、安装依赖并运行 `npm run check`。
 
-   GitHub 创建副本后，打开该仓库。点击 **Code**，用你喜欢的工具打开或克隆。
+### 2. 克隆网站
 
-   如果使用终端，命令大致如下：
+在已启用浏览器操作的代理中打开项目。在 Claude Code 或 Cursor 中运行：
 
-   ```bash
-   git clone https://github.com/YOUR-USERNAME/YOUR-NEW-REPOSITORY.git
-   cd YOUR-NEW-REPOSITORY
-   ```
+```text
+/clone-website https://example.com
+```
 
-3. **安装依赖**
-   ```bash
-   npm install
-   ```
-4. **启动你的 AI 代理** — 推荐使用 Claude Code：
-   ```bash
-   claude --chrome
-   ```
-5. **使用对应代理的原生方式运行技能**：
-
-   - Claude Code 或 Cursor：`/clone-website <目标网址1> [<目标网址2> ...]`
-   - Codex：`$clone-website <目标网址1> [<目标网址2> ...]`
-   - OpenCode：`使用 clone-website 技能克隆 <目标网址>`
-
-6. **按需定制**（可选） — 基础克隆完成后，可进一步修改。
-
-> 工作流已随模板提供，无需单独安装技能或运行同步命令。项目指令位于 `AGENTS.md`。
+将 URL 替换为你想重建的网站。完成后，可以让代理按你的需要继续修改。
 
 ## 支持的平台
 
@@ -91,14 +80,6 @@
 ## 工作原理
 
 `/clone-website` 指令会运行一个多阶段流水线：
-
-```mermaid
-flowchart LR
-    P1["1. 侦察"] --> P2["2. 基础搭建"]
-    P2 --> P3["3. 组件规格"]
-    P3 --> P4["4. 并行构建"]
-    P4 --> P5["5. 组装与 QA"]
-```
 
 1. **侦察（Reconnaissance）** — 截图、提取设计 token、扫描交互行为（滚动、点击、悬停、响应式）
 2. **基础搭建（Foundation）** — 更新字体、颜色、全局样式，下载全部资源
