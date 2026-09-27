@@ -6,7 +6,7 @@
 
 Give your AI coding agent a URL and watch it recreate the website as a clean Next.js app.
 
-**Best results with [Claude Code](https://docs.anthropic.com/en/docs/claude-code) + Opus 5. Also supports Codex, Cursor, and OpenCode.**
+**Best results with [Claude Code](https://docs.anthropic.com/en/docs/claude-code) + Opus 5.5. Also supports Codex, Cursor, and OpenCode.**
 
 [![Use this template](https://img.shields.io/badge/Use_this_template-Create_your_copy-2ea44f?style=for-the-badge&logo=github&logoColor=white)](https://github.com/JCodesMore/ai-website-cloner-template/generate) [![Discord](https://img.shields.io/badge/Join_the_community-Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/hrTSX5yTpB)
 
@@ -60,7 +60,7 @@ Replace the URL with the website you want to recreate. Once it's built, ask your
 
 | Agent                                                         | Status                     |
 | ------------------------------------------------------------- | -------------------------- |
-| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | **Recommended** — Opus 5   |
+| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | **Recommended** — Opus 5.5 |
 | [Codex CLI](https://github.com/openai/codex)                  | Supported                  |
 | [OpenCode](https://opencode.ai/)                              | Supported                  |
 | [Cursor](https://cursor.com/)                                 | Supported                  |
@@ -147,9 +147,6 @@ docker compose up dev --build # run the app in dev mode on port 3001
 ## Agent Support
 
 The project keeps one portable Agent Skill at `.agents/skills/clone-website/`. Codex, Cursor, and OpenCode read it directly. Claude Code uses the small command bridge at `.claude/commands/clone-website.md` so `/clone-website` and its arguments continue to work without exposing a duplicate skill to the other agents.
-
-Edit the canonical skill directly. There are no generated platform copies or synchronization scripts.
-
 
 ## Star History
 
