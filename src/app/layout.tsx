@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Website Clone",
-  description: "Pixel-perfect website clone",
+  title: "CSULBreach — CyberSecurity Club",
+  description: "CSULBreach CyberSecurity Club at CSULB",
 };
 
 export default function RootLayout({
