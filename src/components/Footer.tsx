@@ -2,7 +2,7 @@ const columns = [
   {
     title: "Club",
     links: [
-      { label: "Events", href: "#events" },
+      { label: "Events", href: "/events" },
       { label: "Members", href: "#members" },
       { label: "Social media", href: "#social" },
     ],
@@ -12,7 +12,7 @@ const columns = [
     links: [
       { label: "GitHub", href: "https://github.com" },
       { label: "Discord", href: "#" },
-      { label: "X (Twitter)", href: "#" },
+      { label: "Instagram", href: "#" },
     ],
   },
   {
@@ -30,11 +30,9 @@ export function Footer() {
       <div className="mx-auto max-w-7xl">
         <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
           <div className="col-span-2 sm:col-span-1">
-            <span className="text-base font-semibold tracking-tight">
-              CSULBreach
-            </span>
-            <p className="mt-2 max-w-[20ch] text-sm text-muted-foreground">
-              CyberSecurity Club
+            <p className="text-base tracking-tight">
+              <span className="font-semibold">CSULBreach</span>
+              <span className="text-muted-foreground">, Cybersecurity Club.</span>
             </p>
           </div>
           {columns.map((column) => (

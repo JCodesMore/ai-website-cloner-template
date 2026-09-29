@@ -7,7 +7,7 @@ export function BottomCta() {
         </h2>
         <div className="mt-8 flex justify-center">
           <a
-            href="#events"
+            href="/events"
             className="inline-flex h-11 items-center justify-center rounded-full bg-primary px-6 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/85"
           >
             See upcoming events
