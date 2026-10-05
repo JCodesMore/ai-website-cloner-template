@@ -30,7 +30,7 @@ Rebuild semantic components/data. Deployment scripts and minified wrappers are e
 
 Observe both directions and mobile. A pinned scene needs scroll distance and release behavior, not just sticky positioning. An animated visual may be a video: use actual media when available.
 
-Match measurable easing/duration. Clean up animation loops with component lifecycle. Use native scroll unless source smoothing behavior needs reproduction.
+Match measurable easing/duration. Clean up animation loops with component lifecycle. Framer's smooth scrolling is Lenis: a `lenis` class on `html` or a `window.lenis` global exposes the options to reproduce.
 
 ## Verify the experience
 
