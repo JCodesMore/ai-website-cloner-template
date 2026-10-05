@@ -73,21 +73,20 @@ Replace the URL with the website you want to recreate. Once it's built, ask your
 ## Tech Stack
 
 - **Next.js 16** — App Router, React 19, TypeScript strict
-- **shadcn/ui** — Radix primitives + Tailwind CSS v4
+- **shadcn/ui** — Base UI primitives + Tailwind CSS v4
 - **Tailwind CSS v4** — oklch design tokens
 - **Lucide React** — default icons (replaced by extracted SVGs during cloning)
 
 ## How It Works
 
-The `/clone-website` skill runs a multi-phase pipeline:
+The `/clone-website` skill follows four steps:
 
-1. **Reconnaissance** — screenshots, design token extraction, interaction sweep (scroll, click, hover, responsive)
-2. **Foundation** — updates fonts, colors, globals, downloads all assets
-3. **Component Specs** — writes detailed spec files (`docs/research/components/`) with exact computed CSS values, states, behaviors, and content
-4. **Parallel Build** — dispatches builder agents in git worktrees, one per section/component
-5. **Assembly & QA** — merges worktrees, wires up the page, runs visual diff against the original
+1. **Map** — map source URLs to local routes and preserve existing work.
+2. **Observe** — inspect desktop/mobile pages, extract real assets and fonts, and exercise alternate states.
+3. **Build** — implement editable components and working interactions; delegate independent sections when useful.
+4. **Compare** — review source and local pages at matched sizes/states, repair visible differences, and run the production check.
 
-Each builder agent receives the full component specification inline — exact `getComputedStyle()` values, interaction models, multi-state content, responsive breakpoints, and asset paths. No guessing.
+Framer pages and animated sites have focused inspection guidance for responsive variants, media, sticky scenes, and scroll/time-driven motion. Direct HTTP or asset tools handle extraction where practical; browser comparisons establish appearance and behavior. Deliverables include route mappings, run instructions, comparison screenshots, and any remaining gaps.
 
 ## Use Cases
 
@@ -108,16 +107,14 @@ src/
   app/              # Next.js routes
   components/       # React components
     ui/             # shadcn/ui primitives
-    icons.tsx       # Extracted SVG icons
+    sites/<site>/   # Source-specific components and extracted SVGs
   lib/utils.ts      # cn() utility
   types/            # TypeScript interfaces
   hooks/            # Custom React hooks
 public/
-  images/           # Downloaded images from target
-  videos/           # Downloaded videos from target
-  seo/              # Favicons, OG images
+  sites/<site>/     # Source-specific images, fonts, videos, and other assets
 docs/
-  research/         # Extraction output & component specs
+  research/<site>/  # Page brief, asset map, and inspection evidence
   design-references/ # Screenshots
 .agents/skills/
   clone-website/    # Canonical skill and inspection reference

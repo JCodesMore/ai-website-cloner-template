@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Simplify the shared website-cloning workflow, improve responsive and motion guidance, and align the project documentation.
+
 ## [0.5.1] - 2026-09-26
 
 ### Changed

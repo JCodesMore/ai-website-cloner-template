@@ -1,80 +1,39 @@
-# Website Inspection Guide
+# Inspect a source page
 
-## How to Reverse-Engineer Any Website
+Capture evidence that changes the build: layout, content, assets, and states. One page brief usually suffices.
 
-This guide outlines what to capture when inspecting a target website via Chrome MCP or browser DevTools.
+## Visual structure
 
-## Phase 1: Visual Audit
+Record section order, max-width, gutters, column proportions, and sticky/fixed layers. Measure heading/body family, weight, size, line height, and letter spacing. Match the actual font before adjusting widths to repair wrapping.
 
-### Screenshots to Capture
-- [ ] Every distinct page — desktop, tablet, mobile
-- [ ] Dark mode variants (if applicable)
-- [ ] Light mode variants (if applicable)
-- [ ] Key interaction states (hover, active, open menus, modals)
-- [ ] Loading/skeleton states
-- [ ] Empty states
-- [ ] Error states
+Inspect desktop/mobile, then narrow around observed layout transitions. Record stacking, navigation/menu changes, type reflow, and different crops/assets. A scaled desktop screenshot is not a mobile reference.
 
-### Design Tokens to Extract
-- [ ] **Colors** — background, text (primary/secondary/muted), accent, border, hover, error, success, warning
-- [ ] **Typography** — font family, sizes (h1-h6, body, caption, label), weights, line heights, letter spacing
-- [ ] **Spacing** — padding/margin patterns (look for a scale: 4px, 8px, 12px, 16px, 24px, 32px, etc.)
-- [ ] **Border radius** — buttons, cards, avatars, inputs
-- [ ] **Shadows/elevation** — card shadows, dropdown shadows, modal overlay
-- [ ] **Breakpoints** — when does the layout shift? (inspect with DevTools responsive mode)
-- [ ] **Icons** — which icon library? custom SVGs? sizes?
-- [ ] **Avatars** — sizes, shapes, fallback behavior
-- [ ] **Buttons** — all variants (primary, secondary, ghost, icon-only, danger)
-- [ ] **Inputs** — text fields, textareas, selects, checkboxes, toggles
+Capture whole-page evidence after visiting lazy/reveal sections, plus full-size hero and interaction views. Fonts or entry motion can make early screenshots misleading.
 
-## Phase 2: Component Inventory
+## Assets
 
-For each distinct UI component, document:
-1. **Name** — what would you call this component?
-2. **Structure** — what HTML elements / child components does it contain?
-3. **Variants** — does it have different sizes, colors, or states?
-4. **States** — default, hover, active, disabled, loading, error, empty
-5. **Responsive behavior** — how does it change at different breakpoints?
-6. **Interactions** — click, hover, focus, keyboard navigation
-7. **Animations** — transitions, entrance/exit animations, micro-interactions
+Use available browser asset inventory/download tools or DOM-backed URLs with direct downloads. Include:
 
-### Common Components to Look For
-- Navigation (top bar, sidebar, bottom bar)
-- Cards / list items
-- Buttons and links
-- Forms and inputs
-- Modals and dialogs
-- Dropdowns and menus
-- Tabs and segmented controls
-- Avatars and user badges
-- Loading skeletons
-- Toast notifications
-- Tooltips and popovers
+- Images: `currentSrc`, `srcset`, dimensions, `object-fit`, crop position, alt text.
+- Layers: visible images/backgrounds/SVGs and stacking/positioning.
+- Video: source, poster, autoplay/loop/mute behavior, aspect ratio, controls.
+- Fonts: actual loaded family/weights and files used by the page.
+- SVG: viewBox plus referenced gradients, masks, symbols, and filters.
 
-## Phase 3: Layout Architecture
+Save assets used by the cloned scope and their source URL → local path mapping. Distinguish repeated filenames. Check content type, dimensions, and browser rendering: HTTP success can return an error page; CDNs may change formats without changing URL extensions.
 
-- [ ] **Grid system** — CSS Grid? Flexbox? Fixed widths?
-- [ ] **Column layout** — how many columns at each breakpoint?
-- [ ] **Max-width** — main content area max-width
-- [ ] **Sticky elements** — header, sidebar, floating buttons
-- [ ] **Z-index layers** — navigation, modals, tooltips, overlays
-- [ ] **Scroll behavior** — infinite scroll, pagination, virtual scrolling
+If a browser bundle fails for a public font/image, download the observed URL directly. Keep unresolved assets explicit and preserve applicable attribution.
 
-## Phase 4: Technical Stack Analysis
+## State evidence
 
-- [ ] **Framework** — React? Vue? Angular? Check `__NEXT_DATA__`, `__NUXT__`, `ng-version`
-- [ ] **CSS approach** — Tailwind (utility classes), CSS Modules, Styled Components, Emotion, vanilla CSS
-- [ ] **State management** — Redux (check DevTools), React Query, Zustand, Pinia
-- [ ] **API patterns** — REST, GraphQL (check network tab for `/graphql` requests)
-- [ ] **Font loading** — Google Fonts, self-hosted, system fonts
-- [ ] **Image strategy** — CDN, lazy loading, srcset, WebP/AVIF
-- [ ] **Animation library** — Framer Motion, GSAP, CSS transitions only
+Record trigger → visible result. Scroll before clicking so pinned scenes are not mistaken for tabs. Inspect alternate content, selection, layout, and transition.
 
-## Phase 5: Documentation Output
+Measure important before/after styles using the browser's supported DOM evaluation. For a selector observed on the page, useful fields are textContent, getBoundingClientRect(), and computed font, letterSpacing, color, background, gap, padding, borderRadius, position, transform, and transition.
 
-After inspection, create these files in `docs/research/`:
-1. `DESIGN_TOKENS.md` — All extracted colors, typography, spacing
-2. `COMPONENT_INVENTORY.md` — Every component with structure notes
-3. `LAYOUT_ARCHITECTURE.md` — Page layouts, grid system, responsive behavior
-4. `INTERACTION_PATTERNS.md` — Animations, transitions, hover states
-5. `TECH_STACK_ANALYSIS.md` — What the site uses and our chosen equivalents
+Evaluation environments differ: read-only DOM snapshots may omit APIs such as `document.fonts`. Use asset metadata or developer inspection for missing measurements rather than inferring values from an unsupported API.
+
+## Handoff and comparison
+
+Provide screenshots, geometry/type, content, local asset paths, responsive changes, and trigger/state behavior. Establish shared navigation/styles before parallel page work.
+
+Keep comparison screenshots labeled by URL/route and viewport. Test controls and inspect their visible result. Check mobile overflow and failed assets separately from similarity.

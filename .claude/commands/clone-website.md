@@ -1,5 +1,5 @@
 ---
-description: Reverse-engineer and clone one or more websites as pixel-perfect Next.js replicas. Use when the user asks to clone, replicate, rebuild, reverse-engineer, or copy a website.
+description: Rebuild one or more websites as working Next.js pages matching their content, assets, responsive layout, and interactions. Use for website cloning, replication, or reverse engineering.
 argument-hint: "<url1> [<url2> ...]"
 ---
 
