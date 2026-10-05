@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Count the README token badge in CI so it reflects the current default branch instead of a stale hosted count.
+
 ## [0.6.1] - 2026-10-05
 
 ### Changed

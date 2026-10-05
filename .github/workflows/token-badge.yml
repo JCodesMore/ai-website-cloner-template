@@ -1,0 +1,71 @@
+name: Token badge
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: token-badge
+  cancel-in-progress: true
+
+jobs:
+  count:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    outputs:
+      badge: ${{ steps.count.outputs.badge }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          path: repo
+          persist-credentials: false
+
+      - name: Checkout gittokens
+        uses: actions/checkout@v7
+        with:
+          repository: rsamf/gittokens
+          ref: 9081a2f2cc17055ab6a442ee74d8b35b2bc1ff7d
+          path: gittokens
+          persist-credentials: false
+
+      - name: Setup Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install counter
+        run: pip install --quiet gitingest==0.3.1 tiktoken httpx
+
+      - name: Count tokens
+        id: count
+        env:
+          COUNT_PATH: repo
+          DRY_RUN: "true"
+        run: echo "badge=$(python gittokens/action/count_and_publish.py | jq -c .)" >> "$GITHUB_OUTPUT"
+
+  publish:
+    needs: count
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+
+    steps:
+      - name: Publish badge JSON to the badges branch
+        env:
+          BADGE: ${{ needs.count.outputs.badge }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test -n "$BADGE"
+          git init -q badge
+          cd badge
+          printf '%s\n' "$BADGE" > token-badge.json
+          git add token-badge.json
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -q -m "Update token badge"
+          git push --force "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:refs/heads/badges
