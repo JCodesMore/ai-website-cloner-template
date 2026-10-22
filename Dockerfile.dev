@@ -1,9 +1,9 @@
-FROM node:24-alpine
+FROM node:24.19.0-alpine
 
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm ci --no-audit --no-fund
 
 # Source files are mounted as a volume at runtime for hot reload
 

@@ -32,7 +32,16 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "check": "npm run lint && npm run typecheck && npm run build"
+    "pipeline:doctor": "node scripts/codex-pipeline.mjs doctor",
+    "pipeline:test": "node --test scripts/codex-pipeline.test.mjs",
+    "pipeline:quality": "node scripts/codex-pipeline.mjs quality",
+    "verify": "node scripts/codex-pipeline.mjs verify",
+    "check": "node scripts/codex-pipeline.mjs verify",
+    "codex:npm": "node scripts/codex-npm.mjs",
+    "research:day": "node scripts/codex-pipeline.mjs research:init",
+    "research:verify": "node scripts/codex-pipeline.mjs research:verify",
+    "evidence:init": "node scripts/codex-pipeline.mjs evidence:init",
+    "evidence:verify": "node scripts/codex-pipeline.mjs evidence:verify"
   },
   "dependencies": {
     "@base-ui/react": "^1.3.0",
