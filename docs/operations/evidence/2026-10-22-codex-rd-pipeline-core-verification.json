@@ -1,0 +1,127 @@
+{
+  "artifact_id": "artifact-codex-rd-pipeline-core-local-001",
+  "artifact_audit": {
+    "recorded_here": false,
+    "reason": "The artifact does not claim the byte audit of its own hash; audit output is recorded outside this hashed artifact."
+  },
+  "boundaries": {
+    "known_build_network_gap": "The protected src/app layout imports next/font/google, so a clean build can require Google's font endpoint.",
+    "no_claims": [
+      "visual regression",
+      "pixel parity",
+      "remote Linux CI execution",
+      "scientific correctness",
+      "production reliability",
+      "reviewer independence",
+      "npm audit remediation or causality"
+    ],
+    "protected_path_result": "No paths were returned by the recorded protected-path command.",
+    "scope": "One local Windows x64 worktree observation at base implementation commit e6d89d95f1406f286ed54a9c8d7e827f9f6d7a85."
+  },
+  "commands": [
+    {
+      "command": "C:\\Users\\12\\.codex\\toolchains\\node-v24.19.0-win-x64\\node.exe --test scripts/codex-pipeline.test.mjs",
+      "exit_code": 0,
+      "id": "unit",
+      "observation": { "cancelled": 0, "failed": 0, "passed": 46, "skipped": 0, "total": 46 }
+    },
+    {
+      "command": "C:\\Users\\12\\.codex\\toolchains\\node-v24.19.0-win-x64\\node.exe node_modules/eslint/bin/eslint.js .",
+      "exit_code": 0,
+      "id": "lint",
+      "observation": { "stdout": "" }
+    },
+    {
+      "command": "C:\\Users\\12\\.codex\\toolchains\\node-v24.19.0-win-x64\\node.exe node_modules/next/dist/bin/next typegen",
+      "exit_code": 0,
+      "id": "typegen",
+      "observation": { "stdout_summary": "Types generated successfully" }
+    },
+    {
+      "command": "C:\\Users\\12\\.codex\\toolchains\\node-v24.19.0-win-x64\\node.exe node_modules/typescript/bin/tsc --noEmit",
+      "exit_code": 0,
+      "id": "typecheck",
+      "observation": { "stdout": "" }
+    },
+    {
+      "command": "C:\\Users\\12\\.codex\\toolchains\\node-v24.19.0-win-x64\\node.exe node_modules/next/dist/bin/next build",
+      "exit_code": 0,
+      "id": "build",
+      "observation": { "framework": "Next.js 16.3.5", "routes": ["/", "/_not-found"], "stdout_summary": "Compiled successfully and generated 4/4 static pages" }
+    },
+    {
+      "command": "C:\\Users\\12\\.codex\\toolchains\\node-v24.19.0-win-x64\\node.exe scripts/codex-npm.mjs run test:e2e",
+      "exit_code": 0,
+      "id": "browser-smoke",
+      "observation": { "failed": 0, "passed": 2, "projects": ["desktop-chromium", "mobile-chromium"] }
+    },
+    {
+      "command": "git diff --check origin/master...HEAD",
+      "exit_code": 0,
+      "id": "base-diff-check",
+      "observation": { "stdout": "" }
+    },
+    {
+      "command": "git diff --name-only origin/master...HEAD -- src/app src/components/techmeme src/types/techmeme.ts public/techmeme scripts/download-techmeme-assets.mjs docs/design-references/techmeme docs/research",
+      "exit_code": 0,
+      "id": "base-protected-path-check",
+      "observation": { "paths": [] }
+    }
+  ],
+  "evidence_phase": {
+    "base_commit": "e6d89d95f1406f286ed54a9c8d7e827f9f6d7a85",
+    "classification": "OBSERVED_WORKTREE_BASE_COMMIT",
+    "git_status_before_documentation": "CLEAN",
+    "working_tree_note": "Commands were run before documentation creation while HEAD equaled the base commit. Generated ignored build outputs are not commit content."
+  },
+  "execution_environment": {
+    "CODEX_HOME": "C:\\Users\\12\\.codex",
+    "CODEX_NODE_HOME": "C:\\Users\\12\\.codex\\toolchains\\node-v24.19.0-win-x64",
+    "configuration_scope": "Per-command environment only; no persistent PATH edit.",
+    "node_executable": "C:\\Users\\12\\.codex\\toolchains\\node-v24.19.0-win-x64\\node.exe"
+  },
+  "final_commit_closeout": {
+    "classification": "LATER_EXACT_COMMIT_PHASE",
+    "recorded_here": false,
+    "reason": "The final documentation commit does not exist until after this artifact is hashed. Exact-commit replay belongs in the ignored task closeout report."
+  },
+  "npm_audit_observation": {
+    "command": "C:\\Users\\12\\.codex\\toolchains\\node-v24.19.0-win-x64\\node.exe scripts/codex-npm.mjs audit --json",
+    "exit_code": 1,
+    "findings": { "critical": 2, "high": 12, "info": 0, "low": 0, "moderate": 3, "total": 17 },
+    "interpretation": "Observed signal only; no remediation or causality claim."
+  },
+  "operating_system": {
+    "arch": "x64",
+    "node_platform": "win32",
+    "release": "10.0.26200",
+    "type": "Windows_NT",
+    "version": "Windows 11 Home"
+  },
+  "package_lifecycle": {
+    "scaffold_creation": {
+      "command": "C:\\Users\\12\\.codex\\toolchains\\node-v24.19.0-win-x64\\node.exe scripts/codex-pipeline.mjs evidence:init --output docs/operations/research/codex-rd-pipeline-core --title \"Codex R&D Pipeline Core Local Verification\" --mode COMPUTATIONAL --project-id project-codex-rd-pipeline-core --created-at 2026-10-22T09:00:00+08:00",
+      "exit_code": 0
+    },
+    "initial_scaffold_verify": { "command": "C:\\Users\\12\\.codex\\toolchains\\node-v24.19.0-win-x64\\node.exe scripts/codex-pipeline.mjs evidence:verify docs/operations/research/codex-rd-pipeline-core", "exit_code": 0, "valid": true },
+    "overwrite_refusal": {
+      "adapter_exit_code": 1,
+      "command": "Repeat scaffold_creation command against the existing target.",
+      "hashes_unchanged": true,
+      "inner_scaffold_exit_code": 2,
+      "message": "TARGET_EXISTS"
+    },
+    "populated_update_reverify": { "command": "C:\\Users\\12\\.codex\\toolchains\\node-v24.19.0-win-x64\\node.exe scripts/codex-pipeline.mjs evidence:verify docs/operations/research/codex-rd-pipeline-core", "exit_code": 0, "status": "PASS", "valid": true }
+  },
+  "schema_version": "codex-rd-pipeline-local-verification/v1",
+  "tool_versions": {
+    "eslint": "9.39.4",
+    "git": "2.54.0.windows.1",
+    "next": "16.3.5",
+    "node": "24.19.0",
+    "npm": "11.17.0",
+    "playwright": "1.64.1",
+    "python": "3.14.7",
+    "typescript": "5.9.3"
+  }
+}
