@@ -1377,6 +1377,69 @@ test("evidence:audit rejects malformed verifier adapter results before hashing",
   assert.equal(result.report.artifacts.status, "NOT_RUN");
 });
 
+test("evidence:audit rejects every contradictory successful verifier fact", async () => {
+  const { runEvidenceAudit } = await import("./lib/codex-pipeline.mjs");
+  const successFact = {
+    errors: [],
+    exit_code: 0,
+    failure_kind: null,
+    signal: null,
+    status: "PASS",
+    step: "evidence:verify",
+    valid: true,
+  };
+  const contradictions = [
+    { field: "step", value: "research:verify" },
+    { field: "exit_code", value: null },
+    { field: "failure_kind", value: "exit" },
+    { field: "signal", value: "SIGTERM" },
+    { field: "status", value: "ERROR" },
+    { field: "valid", value: false },
+    {
+      field: "errors",
+      value: [{ code: "UNEXPECTED", message: "success cannot contain errors" }],
+    },
+  ];
+
+  for (const fixture of contradictions) {
+    let artifactCalls = 0;
+    const result = await runEvidenceAudit({
+      async auditArtifacts() {
+        artifactCalls += 1;
+        return { status: "PASS" };
+      },
+      async verifyStructure() {
+        return {
+          fact: { ...successFact, [fixture.field]: fixture.value },
+          ok: true,
+        };
+      },
+    });
+
+    assert.equal(artifactCalls, 0, fixture.field);
+    assert.equal(result.exitCode, 1, fixture.field);
+    assert.deepEqual(
+      result.report.structure,
+      {
+        errors: [
+          {
+            code: "VERIFIER_OUTPUT_ERROR",
+            message: "structural verifier adapter returned an invalid result shape",
+          },
+        ],
+        exit_code: null,
+        failure_kind: "invalid_output",
+        signal: null,
+        status: "ERROR",
+        step: "evidence:verify",
+        valid: false,
+      },
+      fixture.field,
+    );
+    assert.equal(result.report.artifacts.status, "NOT_RUN", fixture.field);
+  }
+});
+
 test("evidence:audit never hashes artifacts after malformed verifier payloads", async () => {
   const { runEvidenceAudit, verifyEvidenceStructure } = await import(
     "./lib/codex-pipeline.mjs"

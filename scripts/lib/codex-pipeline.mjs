@@ -475,7 +475,7 @@ function hasStableStructureFact(result) {
     return false;
   }
   const fact = result.fact;
-  return (
+  const hasStableFields =
     fact !== null &&
     typeof fact === "object" &&
     !Array.isArray(fact) &&
@@ -485,7 +485,18 @@ function hasStableStructureFact(result) {
     (fact.exit_code === null || Number.isInteger(fact.exit_code)) &&
     typeof fact.status === "string" &&
     typeof fact.valid === "boolean" &&
-    Array.isArray(fact.errors)
+    Array.isArray(fact.errors);
+  if (!hasStableFields || !result.ok) {
+    return hasStableFields;
+  }
+  return (
+    fact.step === "evidence:verify" &&
+    fact.failure_kind === null &&
+    fact.signal === null &&
+    fact.exit_code === 0 &&
+    fact.status === "PASS" &&
+    fact.valid === true &&
+    fact.errors.length === 0
   );
 }
 
