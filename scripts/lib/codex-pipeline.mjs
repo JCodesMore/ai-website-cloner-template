@@ -427,6 +427,17 @@ export function buildEvidenceVerifyArgs({ packagePath }) {
 }
 
 export function prerequisitesForCommand(command) {
+  if (command === "doctor") {
+    return [
+      "node",
+      "localBinaries",
+      "packageManager",
+      "python",
+      "dailySkill",
+      "evidenceSkill",
+      "codexCli",
+    ];
+  }
   if (command === "quality" || command === "verify") {
     return ["node", "localBinaries"];
   }
@@ -436,8 +447,19 @@ export function prerequisitesForCommand(command) {
   if (command === "evidence:init" || command === "evidence:verify") {
     return ["python", "evidenceSkill"];
   }
-  if (command === "doctor") return [];
   throw new CliUsageError(`unknown command: ${command}`);
+}
+
+export function resolveCommandPrerequisites(command, resolvers) {
+  const prerequisites = {};
+  for (const name of prerequisitesForCommand(command)) {
+    const resolve = resolvers[name];
+    if (typeof resolve !== "function") {
+      throw new Error(`missing prerequisite resolver: ${name}`);
+    }
+    prerequisites[name] = resolve();
+  }
+  return prerequisites;
 }
 
 export function buildDoctorReport(prerequisites) {

@@ -14,6 +14,7 @@ import {
   buildResearchVerifyArgs,
   parseCli,
   qualitySteps,
+  resolveCommandPrerequisites,
   resolvePackageManager,
   resolvePython,
   resolveSkill,
@@ -58,25 +59,25 @@ function inspectLocalBinaries() {
   }
 }
 
-function collectPrerequisites() {
-  return {
-    node: resolveToolchain(),
-    localBinaries: inspectLocalBinaries(),
-    packageManager: resolvePackageManager(),
-    python: resolvePython(),
-    dailySkill: skillPrerequisite("daily-dev-experiment-pipeline", [
+function collectPrerequisites(command) {
+  return resolveCommandPrerequisites(command, {
+    node: () => resolveToolchain(),
+    localBinaries: () => inspectLocalBinaries(),
+    packageManager: () => resolvePackageManager(),
+    python: () => resolvePython(),
+    dailySkill: () => skillPrerequisite("daily-dev-experiment-pipeline", [
       "scaffold_day.py",
       "verify_day.py",
     ]),
-    evidenceSkill: skillPrerequisite("research-evidence-pipeline", [
+    evidenceSkill: () => skillPrerequisite("research-evidence-pipeline", [
       "scaffold_research.py",
       "verify_research.py",
     ]),
-    codexCli: {
+    codexCli: () => ({
       available: probeCommand("codex"),
       informational: true,
-    },
-  };
+    }),
+  });
 }
 
 function printDoctor(report, json) {
@@ -171,7 +172,7 @@ async function main() {
     return;
   }
 
-  const prerequisites = collectPrerequisites();
+  const prerequisites = collectPrerequisites(parsed.command);
   if (parsed.command === "doctor") {
     const report = buildDoctorReport(prerequisites);
     printDoctor(report, parsed.json);

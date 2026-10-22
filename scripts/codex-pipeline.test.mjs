@@ -19,10 +19,12 @@ import {
   parseCli,
   prerequisitesForCommand,
   qualitySteps,
+  resolveCommandPrerequisites,
   resolveLocalBinary,
   resolvePackageManager,
   resolvePython,
   resolveSkill,
+  resolveToolchain,
   runPackageManager,
   runSteps,
 } from "./lib/codex-pipeline.mjs";
@@ -265,6 +267,33 @@ test("resolveSkill uses CODEX_HOME before the home-directory fallback", async ()
   assert.equal(result.source, "CODEX_HOME");
 });
 
+test("resolveSkill fails closed when explicit CODEX_HOME is incomplete", async () => {
+  const explicitCodexHome = await temporaryDirectory();
+  const fallbackHome = await temporaryDirectory();
+  await touch(
+    path.join(
+      fallbackHome,
+      ".codex",
+      "skills",
+      "daily-dev-experiment-pipeline",
+      "scripts",
+      "scaffold_day.py",
+    ),
+  );
+
+  const result = resolveSkill("daily-dev-experiment-pipeline", {
+    env: { CODEX_HOME: explicitCodexHome },
+    homedir: fallbackHome,
+  });
+
+  assert.equal(result.available, false);
+  assert.equal(result.source, "CODEX_HOME");
+  assert.equal(
+    result.root,
+    path.join(explicitCodexHome, "skills", "daily-dev-experiment-pipeline"),
+  );
+});
+
 test("qualitySteps run direct local entrypoints in the required order", async () => {
   const root = await temporaryDirectory();
   const packages = [
@@ -439,6 +468,79 @@ test("prerequisitesForCommand isolates optional capabilities from core quality",
   ]);
 });
 
+test("resolveCommandPrerequisites invokes only resolvers selected for the command", () => {
+  const calls = [];
+  const resolvers = Object.fromEntries(
+    [
+      "node",
+      "localBinaries",
+      "packageManager",
+      "python",
+      "dailySkill",
+      "evidenceSkill",
+      "codexCli",
+    ].map((name) => [
+      name,
+      () => {
+        calls.push(name);
+        return { available: true, name };
+      },
+    ]),
+  );
+
+  assert.deepEqual(Object.keys(resolveCommandPrerequisites("quality", resolvers)), [
+    "node",
+    "localBinaries",
+  ]);
+  assert.deepEqual(calls.splice(0), ["node", "localBinaries"]);
+
+  assert.deepEqual(
+    Object.keys(resolveCommandPrerequisites("research:verify", resolvers)),
+    ["python", "dailySkill"],
+  );
+  assert.deepEqual(calls.splice(0), ["python", "dailySkill"]);
+
+  assert.deepEqual(
+    Object.keys(resolveCommandPrerequisites("evidence:init", resolvers)),
+    ["python", "evidenceSkill"],
+  );
+  assert.deepEqual(calls.splice(0), ["python", "evidenceSkill"]);
+
+  assert.deepEqual(Object.keys(resolveCommandPrerequisites("doctor", resolvers)), [
+    "node",
+    "localBinaries",
+    "packageManager",
+    "python",
+    "dailySkill",
+    "evidenceSkill",
+    "codexCli",
+  ]);
+  assert.deepEqual(calls, [
+    "node",
+    "localBinaries",
+    "packageManager",
+    "python",
+    "dailySkill",
+    "evidenceSkill",
+    "codexCli",
+  ]);
+});
+
+test("resolveToolchain supports Node 24+ and marks non-baseline versions inexact", () => {
+  assert.deepEqual(resolveToolchain({ execPath: "/node", nodeVersion: "24.20.0" }), {
+    available: true,
+    exact: false,
+    execPath: "/node",
+    version: "24.20.0",
+  });
+  assert.deepEqual(resolveToolchain({ execPath: "/node", nodeVersion: "25.1.0" }), {
+    available: true,
+    exact: false,
+    execPath: "/node",
+    version: "25.1.0",
+  });
+});
+
 test("buildDoctorReport distinguishes READY, READY_WITH_GAPS, and BLOCKED", () => {
   const base = {
     node: { available: true, version: "24.19.0", exact: true },
@@ -535,7 +637,7 @@ test("pipeline CLI emits a machine-readable doctor report", () => {
   assert.equal(result.status, 0, result.stderr);
   const report = JSON.parse(result.stdout);
   assert.match(report.status, /^(?:READY|READY_WITH_GAPS)$/);
-  assert.equal(report.prerequisites.node.version, "24.19.0");
+  assert.equal(report.prerequisites.node.version, process.versions.node);
   assert.equal(report.prerequisites.localBinaries.available, true);
 });
 
