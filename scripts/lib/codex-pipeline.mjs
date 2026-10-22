@@ -426,6 +426,74 @@ export function buildEvidenceVerifyArgs({ packagePath }) {
   return [nonblank(packagePath, "packagePath")];
 }
 
+export function buildEvidenceAuditArgs({ packagePath, artifactRoot }) {
+  return {
+    artifactRoot: nonblank(artifactRoot, "artifactRoot"),
+    packagePath: nonblank(packagePath, "packagePath"),
+  };
+}
+
+function artifactNotRunFact() {
+  return {
+    checked_record_count: 0,
+    record_count: 0,
+    records: [],
+    status: "NOT_RUN",
+    unique_file_count: 0,
+  };
+}
+
+export async function runEvidenceAudit({ verifyStructure, auditArtifacts }) {
+  let structural;
+  try {
+    structural = await verifyStructure();
+  } catch (error) {
+    structural = {
+      fact: {
+        errors: [{ code: "VERIFIER_ERROR", message: error.message }],
+        status: "ERROR",
+        valid: false,
+      },
+      ok: false,
+    };
+  }
+  if (!structural.ok) {
+    return {
+      exitCode: 1,
+      report: {
+        artifacts: artifactNotRunFact(),
+        scientific_claim_effect: "NONE",
+        status: "FINDINGS",
+        structure: structural.fact,
+      },
+    };
+  }
+
+  let artifacts;
+  try {
+    artifacts = await auditArtifacts();
+  } catch (error) {
+    artifacts = {
+      checked_record_count: 0,
+      findings: [{ status: "AUDIT_ERROR", message: error.message }],
+      record_count: 0,
+      records: [],
+      status: "ERROR",
+      unique_file_count: 0,
+    };
+  }
+  const passed = artifacts.status === "PASS";
+  return {
+    exitCode: passed ? 0 : 1,
+    report: {
+      artifacts,
+      scientific_claim_effect: "NONE",
+      status: passed ? "PASS" : "FINDINGS",
+      structure: structural.fact,
+    },
+  };
+}
+
 export function prerequisitesForCommand(command) {
   if (command === "doctor") {
     return [
@@ -444,7 +512,11 @@ export function prerequisitesForCommand(command) {
   if (command === "research:init" || command === "research:verify") {
     return ["python", "dailySkill"];
   }
-  if (command === "evidence:init" || command === "evidence:verify") {
+  if (
+    command === "evidence:init" ||
+    command === "evidence:verify" ||
+    command === "evidence:audit"
+  ) {
     return ["python", "evidenceSkill"];
   }
   throw new CliUsageError(`unknown command: ${command}`);
@@ -557,6 +629,18 @@ export function parseCli(argv) {
     }
     const values = { packagePath: args[0] };
     buildEvidenceVerifyArgs(values);
+    return { command, json: false, values };
+  }
+  if (command === "evidence:audit") {
+    if (args.length !== 3 || args[1] !== "--artifact-root") {
+      throw new CliUsageError(
+        "evidence:audit requires <package> --artifact-root <directory>",
+      );
+    }
+    const values = buildEvidenceAuditArgs({
+      artifactRoot: args[2],
+      packagePath: args[0],
+    });
     return { command, json: false, values };
   }
   throw new CliUsageError(`unknown command: ${command}`);

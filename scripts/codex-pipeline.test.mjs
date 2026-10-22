@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { EventEmitter } from "node:events";
-import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, symlink, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -41,6 +42,71 @@ async function temporaryDirectory() {
 async function touch(file) {
   await mkdir(path.dirname(file), { recursive: true });
   await writeFile(file, "", "utf8");
+}
+
+function sha256(content) {
+  return createHash("sha256").update(content).digest("hex");
+}
+
+async function evidenceFixture(records) {
+  const root = await temporaryDirectory();
+  const packagePath = path.join(root, "package");
+  const artifactRoot = path.join(root, "artifacts");
+  await mkdir(packagePath);
+  await mkdir(artifactRoot);
+  const documents = {
+    "PROJECT.json": {
+      active_headline_claim_id: null,
+      authority_boundary: {
+        external_actions: "EXPLICIT_TASK_AUTHORITY_REQUIRED",
+        scientific_outcomes: "NOT_AUTHORIZED_BY_SCAFFOLD",
+      },
+      created_at: "2026-10-22T01:00:00Z",
+      lifecycle_state: "IDEA",
+      mode: "COMPUTATIONAL",
+      project_id: "audit-fixture",
+      schema_version: "research-evidence-package/v1",
+      title: "Artifact audit fixture",
+    },
+    "CLAIMS.json": {
+      claims: [],
+      schema_version: "research-evidence-package/v1",
+    },
+  };
+  for (const [name, value] of Object.entries(documents)) {
+    await writeFile(path.join(packagePath, name), `${JSON.stringify(value)}\n`, "utf8");
+  }
+  for (const name of ["SOURCES.jsonl", "EXPERIMENTS.jsonl", "DECISIONS.jsonl"]) {
+    await writeFile(path.join(packagePath, name), "", "utf8");
+  }
+  await writeFile(
+    path.join(packagePath, "EVIDENCE.jsonl"),
+    records.map((record) => JSON.stringify(record)).join("\n") + (records.length ? "\n" : ""),
+    "utf8",
+  );
+  await writeFile(
+    path.join(packagePath, "REPORT.md"),
+    "# Supported\n\n# Unsupported\n\n# Blocked\n\n# Refuted\n\n# Next Decision\n",
+    "utf8",
+  );
+  return { artifactRoot, packagePath, root };
+}
+
+function evidenceRecord(evidenceId, artifact, expectedHash) {
+  return {
+    attempt_ids: [],
+    claim_ids: [],
+    evidence_id: evidenceId,
+    experiment_ids: [],
+    kind: "STATIC_CONTRACT",
+    provenance: {
+      artifact,
+      producer: "codex-test",
+      sha256: expectedHash,
+    },
+    source_ids: [],
+    summary: "Fixture artifact.",
+  };
 }
 
 function fakeSpawn(outcomes, calls = []) {
@@ -663,4 +729,261 @@ test("codex-npm CLI runs portable npm and preserves argv", () => {
 
   assert.equal(result.status, 0, result.stderr);
   assert.match(result.stdout.trim(), /^\d+\.\d+\.\d+$/);
+});
+
+test("evidence audit reports matching hashes and deterministic ordering", async () => {
+  const { auditEvidenceArtifacts } = await import("./lib/evidence-artifact-audit.mjs");
+  const alpha = "alpha artifact\n";
+  const zeta = "zeta artifact\n";
+  const fixture = await evidenceFixture([
+    evidenceRecord("evidence-zeta", "nested/zeta.txt", sha256(zeta)),
+    evidenceRecord("evidence-alpha", "alpha.txt", sha256(alpha)),
+  ]);
+  await mkdir(path.join(fixture.artifactRoot, "nested"));
+  await writeFile(path.join(fixture.artifactRoot, "nested", "zeta.txt"), zeta);
+  await writeFile(path.join(fixture.artifactRoot, "alpha.txt"), alpha);
+
+  const result = await auditEvidenceArtifacts(fixture);
+
+  assert.deepEqual(result, {
+    checked_record_count: 2,
+    findings: [],
+    record_count: 2,
+    records: [
+      {
+        actual_sha256: sha256(alpha),
+        artifact: "alpha.txt",
+        evidence_id: "evidence-alpha",
+        expected_sha256: sha256(alpha),
+        status: "MATCH",
+      },
+      {
+        actual_sha256: sha256(zeta),
+        artifact: "nested/zeta.txt",
+        evidence_id: "evidence-zeta",
+        expected_sha256: sha256(zeta),
+        status: "MATCH",
+      },
+    ],
+    status: "PASS",
+    unique_file_count: 2,
+  });
+});
+
+test("evidence audit reports hash mismatch, missing files, and directories", async () => {
+  const { auditEvidenceArtifacts } = await import("./lib/evidence-artifact-audit.mjs");
+  const fixture = await evidenceFixture([
+    evidenceRecord("evidence-directory", "directory", sha256("unused")),
+    evidenceRecord("evidence-mismatch", "changed.txt", sha256("original")),
+    evidenceRecord("evidence-missing", "missing.txt", sha256("missing")),
+  ]);
+  await mkdir(path.join(fixture.artifactRoot, "directory"));
+  await writeFile(path.join(fixture.artifactRoot, "changed.txt"), "changed");
+
+  const result = await auditEvidenceArtifacts(fixture);
+
+  assert.equal(result.status, "FINDINGS");
+  assert.equal(result.record_count, 3);
+  assert.equal(result.checked_record_count, 1);
+  assert.equal(result.unique_file_count, 1);
+  assert.deepEqual(
+    result.records.map(({ evidence_id, status }) => ({ evidence_id, status })),
+    [
+      { evidence_id: "evidence-directory", status: "NOT_REGULAR_FILE" },
+      { evidence_id: "evidence-mismatch", status: "HASH_MISMATCH" },
+      { evidence_id: "evidence-missing", status: "MISSING" },
+    ],
+  );
+});
+
+test("evidence audit rejects absolute, URI, and lexical escape locators", async () => {
+  const { auditEvidenceArtifacts } = await import("./lib/evidence-artifact-audit.mjs");
+  const fixture = await evidenceFixture([
+    evidenceRecord("evidence-absolute", path.resolve("outside.txt"), sha256("x")),
+    evidenceRecord("evidence-escape", "../outside.txt", sha256("x")),
+    evidenceRecord("evidence-uri", "file:artifact.txt", sha256("x")),
+  ]);
+
+  const result = await auditEvidenceArtifacts(fixture);
+
+  assert.deepEqual(
+    result.records.map(({ evidence_id, status }) => ({ evidence_id, status })),
+    [
+      {
+        evidence_id: "evidence-absolute",
+        status: "UNSUPPORTED_ABSOLUTE_LOCATOR",
+      },
+      { evidence_id: "evidence-escape", status: "LEXICAL_ESCAPE" },
+      { evidence_id: "evidence-uri", status: "UNSUPPORTED_URI_LOCATOR" },
+    ],
+  );
+  assert.equal(result.checked_record_count, 0);
+  assert.equal(result.unique_file_count, 0);
+});
+
+test("evidence audit rejects a realpath escape through a symlink", async (t) => {
+  const { auditEvidenceArtifacts } = await import("./lib/evidence-artifact-audit.mjs");
+  const fixture = await evidenceFixture([
+    evidenceRecord("evidence-symlink", "linked/outside.txt", sha256("outside\n")),
+  ]);
+  const outside = path.join(fixture.root, "outside");
+  await mkdir(outside);
+  await writeFile(path.join(outside, "outside.txt"), "outside\n");
+  try {
+    await symlink(
+      outside,
+      path.join(fixture.artifactRoot, "linked"),
+      process.platform === "win32" ? "junction" : "dir",
+    );
+  } catch (error) {
+    if (error.code === "EPERM" || error.code === "EACCES") {
+      t.skip(`symlink creation is unavailable: ${error.code}`);
+      return;
+    }
+    throw error;
+  }
+
+  const result = await auditEvidenceArtifacts(fixture);
+
+  assert.equal(result.records[0].status, "REALPATH_ESCAPE");
+  assert.equal(result.checked_record_count, 0);
+});
+
+test("evidence audit fails closed on malformed JSONL and duplicate evidence IDs", async () => {
+  const { auditEvidenceArtifacts } = await import("./lib/evidence-artifact-audit.mjs");
+  const malformed = await evidenceFixture([]);
+  await writeFile(path.join(malformed.packagePath, "EVIDENCE.jsonl"), "{not json}\n");
+
+  const malformedResult = await auditEvidenceArtifacts(malformed);
+
+  assert.deepEqual(malformedResult.findings, [
+    { line: 1, status: "MALFORMED_JSONL" },
+  ]);
+  assert.equal(malformedResult.status, "FINDINGS");
+  assert.equal(malformedResult.checked_record_count, 0);
+
+  const duplicate = await evidenceFixture([
+    evidenceRecord("evidence-duplicate", "first.txt", sha256("first")),
+    evidenceRecord("evidence-duplicate", "second.txt", sha256("second")),
+  ]);
+
+  const duplicateResult = await auditEvidenceArtifacts(duplicate);
+
+  assert.deepEqual(duplicateResult.findings, [
+    { evidence_id: "evidence-duplicate", status: "DUPLICATE_EVIDENCE_ID" },
+  ]);
+  assert.equal(duplicateResult.record_count, 2);
+  assert.equal(duplicateResult.checked_record_count, 0);
+  assert.deepEqual(duplicateResult.records, []);
+});
+
+test("evidence audit succeeds for empty EVIDENCE with explicit zero counts", async () => {
+  const { auditEvidenceArtifacts } = await import("./lib/evidence-artifact-audit.mjs");
+  const fixture = await evidenceFixture([]);
+
+  const result = await auditEvidenceArtifacts(fixture);
+
+  assert.deepEqual(result, {
+    checked_record_count: 0,
+    findings: [],
+    record_count: 0,
+    records: [],
+    status: "PASS",
+    unique_file_count: 0,
+  });
+});
+
+test("evidence:audit parser requires exactly one package and --artifact-root", () => {
+  const packagePath = "C:\\研究 包";
+  const artifactRoot = "C:\\研究 产物";
+  assert.deepEqual(
+    parseCli(["evidence:audit", packagePath, "--artifact-root", artifactRoot]),
+    {
+      command: "evidence:audit",
+      json: false,
+      values: { artifactRoot, packagePath },
+    },
+  );
+  assert.throws(
+    () => parseCli(["evidence:audit", packagePath]),
+    /evidence:audit requires <package> --artifact-root <directory>/,
+  );
+  assert.throws(
+    () => parseCli(["evidence:audit", packagePath, "--artifact-root", artifactRoot, "extra"]),
+    CliUsageError,
+  );
+});
+
+test("evidence:audit uses structural prerequisites and short-circuits artifact hashing", async () => {
+  assert.deepEqual(prerequisitesForCommand("evidence:audit"), [
+    "python",
+    "evidenceSkill",
+  ]);
+  const { runEvidenceAudit } = await import("./lib/codex-pipeline.mjs");
+  const calls = [];
+  const result = await runEvidenceAudit({
+    async auditArtifacts() {
+      calls.push("artifacts");
+      throw new Error("artifact audit must not run");
+    },
+    async verifyStructure() {
+      calls.push("structure");
+      return {
+        fact: {
+          errors: [{ code: "DUPLICATE_ID", message: "An identifier is duplicated." }],
+          status: "FINDINGS",
+          valid: false,
+        },
+        ok: false,
+      };
+    },
+  });
+
+  assert.deepEqual(calls, ["structure"]);
+  assert.equal(result.exitCode, 1);
+  assert.deepEqual(result.report.artifacts, {
+    checked_record_count: 0,
+    record_count: 0,
+    records: [],
+    status: "NOT_RUN",
+    unique_file_count: 0,
+  });
+  assert.equal(result.report.scientific_claim_effect, "NONE");
+});
+
+test("evidence:audit composite keeps structure and artifact facts separate", async () => {
+  const { runEvidenceAudit } = await import("./lib/codex-pipeline.mjs");
+  const result = await runEvidenceAudit({
+    async auditArtifacts() {
+      return {
+        checked_record_count: 1,
+        findings: [],
+        record_count: 1,
+        records: [{ evidence_id: "evidence-1", status: "MATCH" }],
+        status: "PASS",
+        unique_file_count: 1,
+      };
+    },
+    async verifyStructure() {
+      return {
+        fact: { errors: [], status: "PASS", valid: true },
+        ok: true,
+      };
+    },
+  });
+
+  assert.equal(result.exitCode, 0);
+  assert.deepEqual(result.report, {
+    artifacts: {
+      checked_record_count: 1,
+      findings: [],
+      record_count: 1,
+      records: [{ evidence_id: "evidence-1", status: "MATCH" }],
+      status: "PASS",
+      unique_file_count: 1,
+    },
+    scientific_claim_effect: "NONE",
+    status: "PASS",
+    structure: { errors: [], status: "PASS", valid: true },
+  });
 });
