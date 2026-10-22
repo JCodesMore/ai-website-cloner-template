@@ -7,13 +7,10 @@ function compareText(left, right) {
   return left < right ? -1 : left > right ? 1 : 0;
 }
 
-function containedBy(root, candidate) {
-  const relative = path.relative(root, candidate);
-  return (
-    relative !== ".." &&
-    !relative.startsWith(`..${path.sep}`) &&
-    !path.isAbsolute(relative)
-  );
+function containedBy(root, candidate, pathApi) {
+  if (candidate === root) return true;
+  const boundary = root.endsWith(pathApi.sep) ? root : `${root}${pathApi.sep}`;
+  return candidate.startsWith(boundary);
 }
 
 function emptyResult(overrides = {}) {
@@ -98,15 +95,20 @@ async function streamingSha256(file) {
   return hash.digest("hex");
 }
 
-function locatorFailure(locator, rootResolved) {
-  if (path.isAbsolute(locator) || path.win32.isAbsolute(locator) || path.posix.isAbsolute(locator)) {
+function locatorFailure(locator, canonicalRoot, pathApi) {
+  if (
+    pathApi.isAbsolute(locator) ||
+    path.win32.isAbsolute(locator) ||
+    path.posix.isAbsolute(locator)
+  ) {
     return "UNSUPPORTED_ABSOLUTE_LOCATOR";
   }
   if (/^[A-Za-z][A-Za-z0-9+.-]*:/.test(locator)) {
     return "UNSUPPORTED_URI_LOCATOR";
   }
-  const candidate = path.resolve(rootResolved, locator);
-  return containedBy(rootResolved, candidate) ? null : "LEXICAL_ESCAPE";
+  if (locator.includes(":")) return "UNSUPPORTED_COLON_LOCATOR";
+  const candidate = pathApi.resolve(canonicalRoot, locator);
+  return containedBy(canonicalRoot, candidate, pathApi) ? null : "LEXICAL_ESCAPE";
 }
 
 function auditRecordBase(record) {
@@ -117,7 +119,16 @@ function auditRecordBase(record) {
   };
 }
 
-export async function auditEvidenceArtifacts({ packagePath, artifactRoot }) {
+export async function auditEvidenceArtifacts({
+  packagePath,
+  artifactRoot,
+  dependencies: {
+    hashFile = streamingSha256,
+    pathApi = path,
+    realpath: resolveRealpath = realpath,
+    stat: getStat = stat,
+  } = {},
+}) {
   const parsed = await parseEvidence(packagePath);
   if (parsed.findings.length > 0) {
     return emptyResult({
@@ -128,11 +139,11 @@ export async function auditEvidenceArtifacts({ packagePath, artifactRoot }) {
   }
   if (parsed.records.length === 0) return emptyResult();
 
-  const rootResolved = path.resolve(artifactRoot);
+  const rootResolved = pathApi.resolve(artifactRoot);
   let rootReal;
   try {
-    rootReal = await realpath(rootResolved);
-    if (!(await stat(rootReal)).isDirectory()) {
+    rootReal = await resolveRealpath(rootResolved);
+    if (!(await getStat(rootReal)).isDirectory()) {
       return emptyResult({
         findings: [{ status: "ARTIFACT_ROOT_NOT_DIRECTORY" }],
         record_count: parsed.recordCount,
@@ -155,26 +166,30 @@ export async function auditEvidenceArtifacts({ packagePath, artifactRoot }) {
   );
   for (const record of ordered) {
     const base = auditRecordBase(record);
-    const locatorStatus = locatorFailure(record.provenance.artifact, rootResolved);
+    const locatorStatus = locatorFailure(
+      record.provenance.artifact,
+      rootReal,
+      pathApi,
+    );
     if (locatorStatus) {
       records.push({ ...base, status: locatorStatus });
       continue;
     }
 
-    const candidate = path.resolve(rootResolved, record.provenance.artifact);
+    const candidate = pathApi.resolve(rootReal, record.provenance.artifact);
     let candidateReal;
     try {
-      candidateReal = await realpath(candidate);
+      candidateReal = await resolveRealpath(candidate);
     } catch {
       records.push({ ...base, status: "MISSING" });
       continue;
     }
-    if (!containedBy(rootReal, candidateReal)) {
+    if (!containedBy(rootReal, candidateReal, pathApi)) {
       records.push({ ...base, status: "REALPATH_ESCAPE" });
       continue;
     }
     try {
-      if (!(await stat(candidateReal)).isFile()) {
+      if (!(await getStat(candidateReal)).isFile()) {
         records.push({ ...base, status: "NOT_REGULAR_FILE" });
         continue;
       }
@@ -183,11 +198,11 @@ export async function auditEvidenceArtifacts({ packagePath, artifactRoot }) {
       continue;
     }
 
-    const hashKey = process.platform === "win32" ? candidateReal.toLowerCase() : candidateReal;
+    const hashKey = candidateReal;
     let actual = hashes.get(hashKey);
     try {
       if (actual === undefined) {
-        actual = await streamingSha256(candidateReal);
+        actual = await hashFile(candidateReal);
         hashes.set(hashKey, actual);
       }
     } catch {

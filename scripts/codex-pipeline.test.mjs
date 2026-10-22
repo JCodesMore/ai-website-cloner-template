@@ -987,3 +987,171 @@ test("evidence:audit composite keeps structure and artifact facts separate", asy
     structure: { errors: [], status: "PASS", valid: true },
   });
 });
+
+test("evidence audit rejects a canonical realpath case-variant escape", async () => {
+  const { auditEvidenceArtifacts } = await import("./lib/evidence-artifact-audit.mjs");
+  const expectedHash = sha256("outside");
+  const fixture = await evidenceFixture([
+    evidenceRecord("evidence-case-escape", "escape.txt", expectedHash),
+  ]);
+  const canonicalRoot = "C:\\case-sensitive\\Artifacts";
+
+  const result = await auditEvidenceArtifacts({
+    ...fixture,
+    dependencies: {
+      async hashFile() {
+        throw new Error("escaped file must not be hashed");
+      },
+      pathApi: path.win32,
+      async realpath(candidate) {
+        return candidate === canonicalRoot
+          ? canonicalRoot
+          : "C:\\case-sensitive\\artifacts\\escape.txt";
+      },
+      async stat(candidate) {
+        return {
+          isDirectory: () => candidate === canonicalRoot,
+          isFile: () => candidate !== canonicalRoot,
+        };
+      },
+    },
+    artifactRoot: canonicalRoot,
+  });
+
+  assert.equal(result.records[0].status, "REALPATH_ESCAPE");
+  assert.equal(result.checked_record_count, 0);
+  assert.equal(result.unique_file_count, 0);
+});
+
+test("evidence audit preserves canonical case in unique-file cache keys", async () => {
+  const { auditEvidenceArtifacts } = await import("./lib/evidence-artifact-audit.mjs");
+  const upperHash = sha256("upper");
+  const lowerHash = sha256("lower");
+  const fixture = await evidenceFixture([
+    evidenceRecord("evidence-upper", "A.txt", upperHash),
+    evidenceRecord("evidence-lower", "a.txt", lowerHash),
+  ]);
+  const canonicalRoot = "C:\\case-sensitive\\Artifacts";
+  const hashCalls = [];
+
+  const result = await auditEvidenceArtifacts({
+    ...fixture,
+    dependencies: {
+      async hashFile(candidate) {
+        hashCalls.push(candidate);
+        return candidate.endsWith("\\A.txt") ? upperHash : lowerHash;
+      },
+      pathApi: path.win32,
+      async realpath(candidate) {
+        return candidate;
+      },
+      async stat(candidate) {
+        return {
+          isDirectory: () => candidate === canonicalRoot,
+          isFile: () => candidate !== canonicalRoot,
+        };
+      },
+    },
+    artifactRoot: canonicalRoot,
+  });
+
+  assert.equal(result.status, "PASS");
+  assert.equal(result.checked_record_count, 2);
+  assert.equal(result.unique_file_count, 2);
+  assert.deepEqual(hashCalls.sort(), [
+    "C:\\case-sensitive\\Artifacts\\A.txt",
+    "C:\\case-sensitive\\Artifacts\\a.txt",
+  ]);
+});
+
+test("evidence audit rejects an alternate-data-stream locator before hashing", async () => {
+  const { auditEvidenceArtifacts } = await import("./lib/evidence-artifact-audit.mjs");
+  const fixture = await evidenceFixture([
+    evidenceRecord("evidence-ads", "dir/file.txt:stream", sha256("stream")),
+  ]);
+  const canonicalRoot = "C:\\artifact-root";
+  let hashCalls = 0;
+
+  const result = await auditEvidenceArtifacts({
+    ...fixture,
+    dependencies: {
+      async hashFile() {
+        hashCalls += 1;
+        return sha256("stream");
+      },
+      pathApi: path.win32,
+      async realpath(candidate) {
+        return candidate;
+      },
+      async stat(candidate) {
+        return {
+          isDirectory: () => candidate === canonicalRoot,
+          isFile: () => candidate !== canonicalRoot,
+        };
+      },
+    },
+    artifactRoot: canonicalRoot,
+  });
+
+  assert.equal(result.records[0].status, "UNSUPPORTED_COLON_LOCATOR");
+  assert.equal(result.checked_record_count, 0);
+  assert.equal(hashCalls, 0);
+});
+
+test("evidence audit distinguishes case-sensitive NTFS files when supported", async (t) => {
+  if (process.platform !== "win32") {
+    t.skip("case-sensitive NTFS coverage requires Windows");
+    return;
+  }
+  const { auditEvidenceArtifacts } = await import("./lib/evidence-artifact-audit.mjs");
+  const upper = "upper-case file";
+  const lower = "lower-case file";
+  const fixture = await evidenceFixture([
+    evidenceRecord("evidence-upper", "A.txt", sha256(upper)),
+    evidenceRecord("evidence-lower", "a.txt", sha256(lower)),
+  ]);
+  const enabled = spawnSync(
+    "fsutil.exe",
+    ["file", "setCaseSensitiveInfo", fixture.artifactRoot, "enable"],
+    { encoding: "utf8", shell: false },
+  );
+  if (enabled.error || enabled.status !== 0) {
+    t.skip(
+      `case-sensitive NTFS unavailable: ${enabled.error?.code ?? `fsutil exit ${enabled.status}`}`,
+    );
+    return;
+  }
+  await writeFile(path.join(fixture.artifactRoot, "A.txt"), upper);
+  await writeFile(path.join(fixture.artifactRoot, "a.txt"), lower);
+
+  const result = await auditEvidenceArtifacts(fixture);
+
+  assert.equal(result.status, "PASS");
+  assert.equal(result.unique_file_count, 2);
+});
+
+test("evidence audit rejects a real NTFS alternate data stream when supported", async (t) => {
+  if (process.platform !== "win32") {
+    t.skip("NTFS alternate-data-stream coverage requires Windows");
+    return;
+  }
+  const { auditEvidenceArtifacts } = await import("./lib/evidence-artifact-audit.mjs");
+  const fixture = await evidenceFixture([
+    evidenceRecord("evidence-ads", "dir/carrier.txt:stream", sha256("stream")),
+  ]);
+  const directory = path.join(fixture.artifactRoot, "dir");
+  await mkdir(directory);
+  const carrier = path.join(directory, "carrier.txt");
+  await writeFile(carrier, "carrier");
+  try {
+    await writeFile(`${carrier}:stream`, "stream");
+  } catch (error) {
+    t.skip(`NTFS alternate data streams unavailable: ${error.code ?? error.message}`);
+    return;
+  }
+
+  const result = await auditEvidenceArtifacts(fixture);
+
+  assert.equal(result.records[0].status, "UNSUPPORTED_COLON_LOCATOR");
+  assert.equal(result.checked_record_count, 0);
+});
