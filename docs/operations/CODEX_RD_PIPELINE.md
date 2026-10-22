@@ -86,7 +86,7 @@ Maturity advances only with matching evidence:
 
 1. `STATIC_UNIT_VERIFIED`: control-plane unit/static checks passed.
 2. `LOCAL_WORKTREE_VERIFIED`: local quality and desktop/mobile smoke passed against current files.
-3. `CLEAN_COMMIT_VERIFIED`: lockfile restore, quality, smoke, structure, byte audit, diff checks, and protected-path checks passed on one clean exact local commit.
+3. `CLEAN_COMMIT_VERIFIED`: lockfile restore, `check` or `verify` (the unit suite plus every quality step), smoke, structure, byte audit, diff checks, and protected-path checks passed on one clean exact local commit.
 4. `REMOTE_SINGLE_PASS`: the configured GitHub Actions jobs passed on that same SHA.
 5. `REMOTE_REPEATED_PASS`: separate matching remote runs passed.
 

@@ -56,23 +56,31 @@
       "observation": { "failed": 0, "passed": 2, "projects": ["desktop-chromium", "mobile-chromium"] }
     },
     {
-      "command": "git diff --check origin/master...HEAD",
+      "command": "git diff --check ee3f5a2f31fd549b9593fa4f7cf6d2955ee593bb...e6d89d95f1406f286ed54a9c8d7e827f9f6d7a85",
+      "execution_phase": "DOCUMENTATION_FIX_IMMUTABLE_REPLAY",
       "exit_code": 0,
       "id": "base-diff-check",
-      "observation": { "stdout": "" }
+      "observation": { "stdout": "" },
+      "original_symbolic_command": "git diff --check origin/master...HEAD"
     },
     {
-      "command": "git diff --name-only origin/master...HEAD -- src/app src/components/techmeme src/types/techmeme.ts public/techmeme scripts/download-techmeme-assets.mjs docs/design-references/techmeme docs/research",
+      "command": "git diff --name-only ee3f5a2f31fd549b9593fa4f7cf6d2955ee593bb...e6d89d95f1406f286ed54a9c8d7e827f9f6d7a85 -- src/app src/components/techmeme src/types/techmeme.ts public/techmeme scripts/download-techmeme-assets.mjs docs/design-references/techmeme docs/research",
+      "execution_phase": "DOCUMENTATION_FIX_IMMUTABLE_REPLAY",
       "exit_code": 0,
       "id": "base-protected-path-check",
-      "observation": { "paths": [] }
+      "observation": { "paths": [] },
+      "original_symbolic_command": "git diff --name-only origin/master...HEAD -- src/app src/components/techmeme src/types/techmeme.ts public/techmeme scripts/download-techmeme-assets.mjs docs/design-references/techmeme docs/research"
     }
   ],
   "evidence_phase": {
     "base_commit": "e6d89d95f1406f286ed54a9c8d7e827f9f6d7a85",
     "classification": "OBSERVED_WORKTREE_BASE_COMMIT",
     "git_status_before_documentation": "CLEAN",
-    "working_tree_note": "Commands were run before documentation creation while HEAD equaled the base commit. Generated ignored build outputs are not commit content."
+    "immutable_range": "ee3f5a2f31fd549b9593fa4f7cf6d2955ee593bb...e6d89d95f1406f286ed54a9c8d7e827f9f6d7a85",
+    "merge_base_commit": "ee3f5a2f31fd549b9593fa4f7cf6d2955ee593bb",
+    "origin_master_resolution_command": "git rev-parse origin/master",
+    "resolved_origin_master_commit": "ee3f5a2f31fd549b9593fa4f7cf6d2955ee593bb",
+    "working_tree_note": "Engineering commands were run before documentation creation while HEAD equaled the base commit. The original symbolic diff commands were replayed during documentation fix validation with the recorded immutable range. Generated ignored build outputs are not commit content."
   },
   "execution_environment": {
     "CODEX_HOME": "C:\\Users\\12\\.codex",
@@ -80,10 +88,19 @@
     "configuration_scope": "Per-command environment only; no persistent PATH edit.",
     "node_executable": "C:\\Users\\12\\.codex\\toolchains\\node-v24.19.0-win-x64\\node.exe"
   },
+  "documentation_chronology": {
+    "base_implementation_evidence_commit": "e6d89d95f1406f286ed54a9c8d7e827f9f6d7a85",
+    "first_repository_publication_commit": "0520b945e0b270db65e89ad261e920c8b4aa892c",
+    "first_repository_publication_timestamp": "2026-10-22T18:10:52+08:00",
+    "fix_commit_recorded_here": false,
+    "fix_round": "TASK_4_REVIEW_FIX_ROUND_1",
+    "interpretation": "The timestamp is the author timestamp of the first repository publication of this documentation, not an experimental execution time.",
+    "provenance_command": "git show -s --format=%aI 0520b945e0b270db65e89ad261e920c8b4aa892c"
+  },
   "final_commit_closeout": {
     "classification": "LATER_EXACT_COMMIT_PHASE",
     "recorded_here": false,
-    "reason": "The final documentation commit does not exist until after this artifact is hashed. Exact-commit replay belongs in the ignored task closeout report."
+    "reason": "Exact-commit replay for the first publication and this later fix belongs in the ignored task closeout report. This artifact cannot embed the commit that contains its own final bytes."
   },
   "npm_audit_observation": {
     "command": "C:\\Users\\12\\.codex\\toolchains\\node-v24.19.0-win-x64\\node.exe scripts/codex-npm.mjs audit --json",
