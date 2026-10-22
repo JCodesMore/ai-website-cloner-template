@@ -281,6 +281,8 @@ test("runPackageManager prepends portable Node to the npm child PATH only", asyn
   const result = await runPackageManager(["--version"], {
     env,
     packageManager,
+    pathDelimiter: ";",
+    platform: "win32",
     spawn: fakeSpawn([{ code: 0 }], calls),
   });
 
@@ -289,9 +291,57 @@ test("runPackageManager prepends portable Node to the npm child PATH only", asyn
   assert.notEqual(calls[0].options.env, env);
   assert.deepEqual(calls[0].options.env, {
     ...env,
-    Path: `${portableRoot}${path.delimiter}${env.Path}`,
+    Path: `${portableRoot};${env.Path}`,
   });
   assert.equal(Object.hasOwn(calls[0].options.env, "PATH"), false);
+});
+
+test("runPackageManager uses exact PATH spelling and delimiter on POSIX", async () => {
+  const calls = [];
+  const packageManager = {
+    available: true,
+    nodePath: "/portable/node/bin/node",
+    npmCliPath: "/portable/node/lib/node_modules/npm/bin/npm-cli.js",
+  };
+  const env = {
+    CUSTOM_VALUE: "preserved",
+    Path: "/unrelated/mixed-case/path",
+  };
+  const originalEnv = { ...env };
+
+  await runPackageManager(["--version"], {
+    env,
+    packageManager,
+    platform: "linux",
+    spawn: fakeSpawn([{ code: 0 }], calls),
+  });
+
+  assert.deepEqual(env, originalEnv);
+  assert.deepEqual(calls[0].options.env, {
+    ...env,
+    PATH: "/portable/node/bin",
+  });
+});
+
+test("runPackageManager derives the PATH delimiter from the injected platform", async () => {
+  const calls = [];
+  const packageManager = {
+    available: true,
+    nodePath: "/portable/node/bin/node",
+    npmCliPath: "/portable/node/lib/node_modules/npm/bin/npm-cli.js",
+  };
+
+  await runPackageManager(["--version"], {
+    env: { PATH: "/usr/local/bin:/usr/bin" },
+    packageManager,
+    platform: "linux",
+    spawn: fakeSpawn([{ code: 0 }], calls),
+  });
+
+  assert.equal(
+    calls[0].options.env.PATH,
+    "/portable/node/bin:/usr/local/bin:/usr/bin",
+  );
 });
 
 test("runPackageManager creates a usable child PATH when it is absent or empty", async () => {
@@ -1145,6 +1195,222 @@ test("structural verifier facts preserve every process and payload outcome", asy
   }
 });
 
+test("structural verifier rejects malformed JSON payload shapes", async () => {
+  const { verifyEvidenceStructure } = await import("./lib/codex-pipeline.mjs");
+  const malformedPayloads = [
+    { name: "null root", payload: null },
+    { name: "array root", payload: [] },
+    { name: "non-boolean valid", payload: { errors: [], valid: "true" } },
+    { name: "non-array errors", payload: { errors: {}, valid: true } },
+  ];
+
+  for (const fixture of malformedPayloads) {
+    const actual = verifyEvidenceStructure("package", {
+      cwd: "project",
+      pythonCommand: "python",
+      spawnSync() {
+        return {
+          signal: null,
+          status: 0,
+          stdout: JSON.stringify(fixture.payload),
+        };
+      },
+      verifierPath: "verify_research.py",
+    });
+
+    assert.deepEqual(
+      actual,
+      {
+        fact: {
+          errors: [
+            {
+              code: "VERIFIER_OUTPUT_ERROR",
+              message:
+                "structural verifier JSON must be an object with boolean valid and array errors",
+            },
+          ],
+          exit_code: 0,
+          failure_kind: "invalid_output",
+          signal: null,
+          status: "ERROR",
+          step: "evidence:verify",
+          valid: false,
+        },
+        ok: false,
+      },
+      fixture.name,
+    );
+  }
+});
+
+test("structural verifier keeps process failures primary when output is malformed", async () => {
+  const { verifyEvidenceStructure } = await import("./lib/codex-pipeline.mjs");
+  const cases = [
+    {
+      expectedErrors: [
+        {
+          code: "VERIFIER_SIGNAL",
+          message: "structural verifier terminated by SIGTERM",
+        },
+        {
+          code: "VERIFIER_OUTPUT_ERROR",
+          message: "structural verifier did not emit valid JSON",
+        },
+      ],
+      expectedFailureKind: "signal",
+      name: "signal with invalid JSON",
+      result: { signal: "SIGTERM", status: null, stdout: "not JSON" },
+    },
+    {
+      expectedErrors: [
+        {
+          code: "VERIFIER_EXIT",
+          message: "structural verifier exited with code 7",
+        },
+        {
+          code: "VERIFIER_OUTPUT_ERROR",
+          message:
+            "structural verifier JSON must be an object with boolean valid and array errors",
+        },
+      ],
+      expectedFailureKind: "exit",
+      name: "nonzero exit with invalid shape",
+      result: { signal: null, status: 7, stdout: "null" },
+    },
+  ];
+
+  for (const fixture of cases) {
+    const actual = verifyEvidenceStructure("package", {
+      cwd: "project",
+      pythonCommand: "python",
+      spawnSync() {
+        return fixture.result;
+      },
+      verifierPath: "verify_research.py",
+    });
+
+    assert.deepEqual(
+      actual,
+      {
+        fact: {
+          errors: fixture.expectedErrors,
+          exit_code: fixture.result.status,
+          failure_kind: fixture.expectedFailureKind,
+          signal: fixture.result.signal,
+          status: "ERROR",
+          step: "evidence:verify",
+          valid: false,
+        },
+        ok: false,
+      },
+      fixture.name,
+    );
+  }
+});
+
+test("evidence:audit normalizes verifier rejection and skips artifact hashing", async () => {
+  const { runEvidenceAudit } = await import("./lib/codex-pipeline.mjs");
+  const calls = [];
+  const result = await runEvidenceAudit({
+    async auditArtifacts() {
+      calls.push("artifacts");
+      throw new Error("artifact audit must not run");
+    },
+    async verifyStructure() {
+      calls.push("structure");
+      throw "adapter rejected";
+    },
+  });
+
+  assert.deepEqual(calls, ["structure"]);
+  assert.equal(result.exitCode, 1);
+  assert.deepEqual(result.report.structure, {
+    errors: [{ code: "VERIFIER_ERROR", message: "adapter rejected" }],
+    exit_code: null,
+    failure_kind: "invalid_output",
+    signal: null,
+    status: "ERROR",
+    step: "evidence:verify",
+    valid: false,
+  });
+  assert.deepEqual(result.report.artifacts, {
+    checked_record_count: 0,
+    record_count: 0,
+    records: [],
+    status: "NOT_RUN",
+    unique_file_count: 0,
+  });
+});
+
+test("evidence:audit rejects malformed verifier adapter results before hashing", async () => {
+  const { runEvidenceAudit } = await import("./lib/codex-pipeline.mjs");
+  let artifactCalls = 0;
+  const result = await runEvidenceAudit({
+    async auditArtifacts() {
+      artifactCalls += 1;
+      return { status: "PASS" };
+    },
+    async verifyStructure() {
+      return {
+        fact: { errors: [], status: "PASS", valid: true },
+        ok: true,
+      };
+    },
+  });
+
+  assert.equal(artifactCalls, 0);
+  assert.equal(result.exitCode, 1);
+  assert.deepEqual(result.report.structure, {
+    errors: [
+      {
+        code: "VERIFIER_OUTPUT_ERROR",
+        message: "structural verifier adapter returned an invalid result shape",
+      },
+    ],
+    exit_code: null,
+    failure_kind: "invalid_output",
+    signal: null,
+    status: "ERROR",
+    step: "evidence:verify",
+    valid: false,
+  });
+  assert.equal(result.report.artifacts.status, "NOT_RUN");
+});
+
+test("evidence:audit never hashes artifacts after malformed verifier payloads", async () => {
+  const { runEvidenceAudit, verifyEvidenceStructure } = await import(
+    "./lib/codex-pipeline.mjs"
+  );
+
+  for (const payload of [null, [], { errors: {}, valid: true }]) {
+    let artifactCalls = 0;
+    const result = await runEvidenceAudit({
+      async auditArtifacts() {
+        artifactCalls += 1;
+        return { status: "PASS" };
+      },
+      async verifyStructure() {
+        return verifyEvidenceStructure("package", {
+          cwd: "project",
+          pythonCommand: "python",
+          spawnSync() {
+            return {
+              signal: null,
+              status: 0,
+              stdout: JSON.stringify(payload),
+            };
+          },
+          verifierPath: "verify_research.py",
+        });
+      },
+    });
+
+    assert.equal(artifactCalls, 0);
+    assert.equal(result.exitCode, 1);
+    assert.equal(result.report.artifacts.status, "NOT_RUN");
+  }
+});
+
 test("evidence:audit uses structural prerequisites and short-circuits artifact hashing", async () => {
   assert.deepEqual(prerequisitesForCommand("evidence:audit"), [
     "python",
@@ -1162,7 +1428,11 @@ test("evidence:audit uses structural prerequisites and short-circuits artifact h
       return {
         fact: {
           errors: [{ code: "DUPLICATE_ID", message: "An identifier is duplicated." }],
+          exit_code: 0,
+          failure_kind: "findings",
+          signal: null,
           status: "FINDINGS",
+          step: "evidence:verify",
           valid: false,
         },
         ok: false,
@@ -1197,7 +1467,15 @@ test("evidence:audit composite keeps structure and artifact facts separate", asy
     },
     async verifyStructure() {
       return {
-        fact: { errors: [], status: "PASS", valid: true },
+        fact: {
+          errors: [],
+          exit_code: 0,
+          failure_kind: null,
+          signal: null,
+          status: "PASS",
+          step: "evidence:verify",
+          valid: true,
+        },
         ok: true,
       };
     },
@@ -1215,7 +1493,15 @@ test("evidence:audit composite keeps structure and artifact facts separate", asy
     },
     scientific_claim_effect: "NONE",
     status: "PASS",
-    structure: { errors: [], status: "PASS", valid: true },
+    structure: {
+      errors: [],
+      exit_code: 0,
+      failure_kind: null,
+      signal: null,
+      status: "PASS",
+      step: "evidence:verify",
+      valid: true,
+    },
   });
 });
 

@@ -164,18 +164,30 @@ export function packageManagerInvocation(args, { packageManager } = {}) {
 
 export async function runPackageManager(
   args,
-  { packageManager, spawn = nodeSpawn, cwd, env, stdio = "inherit" } = {},
+  {
+    packageManager,
+    spawn = nodeSpawn,
+    cwd,
+    env,
+    platform = process.platform,
+    pathDelimiter = platform === "win32" ? ";" : ":",
+    stdio = "inherit",
+  } = {},
 ) {
   const resolved = packageManager ?? resolvePackageManager();
   const invocation = packageManagerInvocation(args, { packageManager: resolved });
   const childEnv = { ...(env ?? process.env) };
   const pathKey =
-    Object.keys(childEnv).find((name) => name.toLowerCase() === "path") ?? "PATH";
+    (platform === "win32"
+      ? Object.keys(childEnv).find((name) => name.toLowerCase() === "path")
+      : Object.hasOwn(childEnv, "PATH")
+        ? "PATH"
+        : undefined) ?? "PATH";
   const existingPath = childEnv[pathKey];
   const nodeDirectory = path.dirname(resolved.nodePath);
   childEnv[pathKey] =
     typeof existingPath === "string" && existingPath.length > 0
-      ? `${nodeDirectory}${path.delimiter}${existingPath}`
+      ? `${nodeDirectory}${pathDelimiter}${existingPath}`
       : nodeDirectory;
   return runProcess(invocation.command, invocation.args, {
     ...invocation.options,
@@ -453,6 +465,30 @@ function artifactNotRunFact() {
   };
 }
 
+function hasStableStructureFact(result) {
+  if (
+    result === null ||
+    typeof result !== "object" ||
+    Array.isArray(result) ||
+    typeof result.ok !== "boolean"
+  ) {
+    return false;
+  }
+  const fact = result.fact;
+  return (
+    fact !== null &&
+    typeof fact === "object" &&
+    !Array.isArray(fact) &&
+    typeof fact.step === "string" &&
+    (fact.failure_kind === null || typeof fact.failure_kind === "string") &&
+    (fact.signal === null || typeof fact.signal === "string") &&
+    (fact.exit_code === null || Number.isInteger(fact.exit_code)) &&
+    typeof fact.status === "string" &&
+    typeof fact.valid === "boolean" &&
+    Array.isArray(fact.errors)
+  );
+}
+
 export async function runEvidenceAudit({ verifyStructure, auditArtifacts }) {
   let structural;
   try {
@@ -460,8 +496,36 @@ export async function runEvidenceAudit({ verifyStructure, auditArtifacts }) {
   } catch (error) {
     structural = {
       fact: {
-        errors: [{ code: "VERIFIER_ERROR", message: error.message }],
+        errors: [
+          {
+            code: "VERIFIER_ERROR",
+            message: error instanceof Error ? error.message : String(error),
+          },
+        ],
+        exit_code: null,
+        failure_kind: "invalid_output",
+        signal: null,
         status: "ERROR",
+        step: "evidence:verify",
+        valid: false,
+      },
+      ok: false,
+    };
+  }
+  if (!hasStableStructureFact(structural)) {
+    structural = {
+      fact: {
+        errors: [
+          {
+            code: "VERIFIER_OUTPUT_ERROR",
+            message: "structural verifier adapter returned an invalid result shape",
+          },
+        ],
+        exit_code: null,
+        failure_kind: "invalid_output",
+        signal: null,
+        status: "ERROR",
+        step: "evidence:verify",
         valid: false,
       },
       ok: false,
@@ -543,29 +607,35 @@ export function verifyEvidenceStructure(
     : result.status !== 0
       ? "exit"
       : null;
+  const executionDiagnostic = executionFailure
+    ? executionFailure === "signal"
+      ? {
+          code: "VERIFIER_SIGNAL",
+          message: `structural verifier terminated by ${result.signal}`,
+        }
+      : {
+          code: "VERIFIER_EXIT",
+          message: `structural verifier exited with code ${result.status}`,
+        }
+    : null;
+  const invalidJsonDiagnostic = {
+    code: "VERIFIER_OUTPUT_ERROR",
+    message: "structural verifier did not emit valid JSON",
+  };
+  const invalidShapeDiagnostic = {
+    code: "VERIFIER_OUTPUT_ERROR",
+    message: "structural verifier JSON must be an object with boolean valid and array errors",
+  };
   let payload;
   try {
     payload = JSON.parse(result.stdout.trim());
   } catch {
     const failureKind = executionFailure ?? "invalid_output";
-    const diagnostic =
-      failureKind === "signal"
-        ? {
-            code: "VERIFIER_SIGNAL",
-            message: `structural verifier terminated by ${result.signal}`,
-          }
-        : failureKind === "exit"
-          ? {
-              code: "VERIFIER_EXIT",
-              message: `structural verifier exited with code ${result.status}`,
-            }
-          : {
-              code: "VERIFIER_OUTPUT_ERROR",
-              message: "structural verifier did not emit valid JSON",
-            };
     return {
       fact: {
-        errors: [diagnostic],
+        errors: executionDiagnostic
+          ? [executionDiagnostic, invalidJsonDiagnostic]
+          : [invalidJsonDiagnostic],
         ...processFact,
         failure_kind: failureKind,
         status: "ERROR",
@@ -575,21 +645,38 @@ export function verifyEvidenceStructure(
     };
   }
 
-  const errors = Array.isArray(payload.errors) ? payload.errors : [];
-  if (executionFailure) {
-    const diagnostic =
-      executionFailure === "signal"
-        ? {
-            code: "VERIFIER_SIGNAL",
-            message: `structural verifier terminated by ${result.signal}`,
-          }
-        : {
-            code: "VERIFIER_EXIT",
-            message: `structural verifier exited with code ${result.status}`,
-          };
+  const validPayloadShape =
+    payload !== null &&
+    typeof payload === "object" &&
+    !Array.isArray(payload) &&
+    typeof payload.valid === "boolean" &&
+    Array.isArray(payload.errors);
+  if (!validPayloadShape) {
+    const recoverableErrors =
+      payload !== null && typeof payload === "object" && Array.isArray(payload.errors)
+        ? payload.errors
+        : [];
     return {
       fact: {
-        errors: errors.length > 0 ? errors : [diagnostic],
+        errors: [
+          ...recoverableErrors,
+          ...(executionDiagnostic ? [executionDiagnostic] : []),
+          invalidShapeDiagnostic,
+        ],
+        ...processFact,
+        failure_kind: executionFailure ?? "invalid_output",
+        status: "ERROR",
+        valid: false,
+      },
+      ok: false,
+    };
+  }
+
+  const errors = payload.errors;
+  if (executionFailure) {
+    return {
+      fact: {
+        errors: errors.length > 0 ? errors : [executionDiagnostic],
         ...processFact,
         failure_kind: executionFailure,
         status: "ERROR",
