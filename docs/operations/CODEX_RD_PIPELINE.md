@@ -13,7 +13,7 @@ $node = Join-Path $env:CODEX_NODE_HOME 'node.exe'
 & $node scripts/codex-pipeline.mjs doctor --json
 ```
 
-`process.execPath` is authoritative for control-plane child processes. `CODEX_NODE_HOME` controls portable npm discovery. If it is absent, discovery uses the official distribution name below `CODEX_HOME/toolchains`; if `CODEX_HOME` is absent it uses the current user's `.codex` directory. An explicit incomplete `CODEX_NODE_HOME` fails closed. No command edits `PATH`.
+`process.execPath` is authoritative for control-plane child processes. `CODEX_NODE_HOME` controls portable npm discovery. If it is absent, discovery uses the official distribution name below `CODEX_HOME/toolchains`; if `CODEX_HOME` is absent it uses the current user's `.codex` directory. An explicit incomplete `CODEX_NODE_HOME` fails closed. For npm only, the wrapper copies the child environment and prepends the resolved portable Node directory to that child's existing `PATH`, preserving the existing key spelling, entries, and order after the new prefix. It does not mutate the caller's environment, `process.env`, or any persistent `PATH` setting.
 
 The recorded Windows archive provenance is `https://nodejs.org/dist/v24.19.0/node-v24.19.0-win-x64.zip`, SHA-256 `57f71ab3652e797d84acddc79c81cc9ff1c6ddb2a1974cdb83f00fee9bff4c73`. Finding the extracted `node.exe` and npm CLI does not revalidate that downloaded archive.
 
@@ -74,7 +74,7 @@ Persistent evidence commands require `skills/research-evidence-pipeline`:
 & $node scripts/codex-pipeline.mjs evidence:audit <package> --artifact-root .
 ```
 
-Equivalent npm aliases are `research:day`, `research:verify`, `evidence:init`, `evidence:verify`, and `evidence:audit`; pass adapter arguments after `--`. `evidence:init` creates a new exact-seven-file v1 package and refuses an existing target. It does not provide transactionality or crash/power-loss atomicity. The structural verifier checks package shape, values, and links without dereferencing artifacts. The audit first requires structural success, then accepts only normalized relative regular-file locators below the explicit artifact root and streams SHA-256. A passing byte audit proves file existence and byte equality at read time only.
+Equivalent npm aliases are `research:day`, `research:verify`, `evidence:init`, `evidence:verify`, and `evidence:audit`; pass adapter arguments after `--`. `evidence:init` creates a new exact-seven-file v1 package and refuses an existing target. It does not provide transactionality or crash/power-loss atomicity. The structural verifier checks package shape, values, and links without dereferencing artifacts. Its audit fact records the stable `evidence:verify` step, `failure_kind`, `signal`, and numeric `exit_code`; launch errors, signals, nonzero exits, invalid output, structural findings, and success remain distinct, and valid JSON payload errors are retained. The audit first requires structural success, then accepts only normalized relative regular-file locators below the explicit artifact root and streams SHA-256. A passing byte audit proves file existence and byte equality at read time only.
 
 Research adapters never substitute a local schema when a Skill or Python is missing. A missing optional capability leaves core `verify` usable and makes only the affected research command fail.
 

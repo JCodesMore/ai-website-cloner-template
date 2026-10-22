@@ -21,6 +21,7 @@ import {
   resolveToolchain,
   runEvidenceAudit,
   runSteps,
+  verifyEvidenceStructure,
   verifySteps,
 } from "./lib/codex-pipeline.mjs";
 import { auditEvidenceArtifacts } from "./lib/evidence-artifact-audit.mjs";
@@ -153,57 +154,6 @@ function evidenceStep(parsed, prerequisites) {
   };
 }
 
-function verifyEvidenceStructure(packagePath, prerequisites) {
-  const verifier = path.join(
-    prerequisites.evidenceSkill.root,
-    "scripts",
-    "verify_research.py",
-  );
-  const result = spawnSync(
-    prerequisites.python.command,
-    [verifier, packagePath],
-    { cwd: projectRoot, encoding: "utf8", shell: false },
-  );
-  if (result.error) {
-    return {
-      fact: {
-        errors: [{ code: "VERIFIER_LAUNCH_ERROR", message: result.error.message }],
-        status: "ERROR",
-        valid: false,
-      },
-      ok: false,
-    };
-  }
-
-  let payload;
-  try {
-    payload = JSON.parse(result.stdout.trim());
-  } catch {
-    return {
-      fact: {
-        errors: [
-          {
-            code: "VERIFIER_OUTPUT_ERROR",
-            message: "structural verifier did not emit valid JSON",
-          },
-        ],
-        status: "ERROR",
-        valid: false,
-      },
-      ok: false,
-    };
-  }
-  const ok = result.status === 0 && payload.valid === true;
-  return {
-    fact: {
-      errors: Array.isArray(payload.errors) ? payload.errors : [],
-      status: ok ? "PASS" : "FINDINGS",
-      valid: payload.valid === true,
-    },
-    ok,
-  };
-}
-
 function printFailure(result) {
   if (result.kind === "spawn-error") {
     console.error(`${result.step} failed to launch: ${result.error.message}`);
@@ -243,7 +193,15 @@ async function main() {
     const result = await runEvidenceAudit({
       auditArtifacts: () => auditEvidenceArtifacts(parsed.values),
       verifyStructure: () =>
-        verifyEvidenceStructure(parsed.values.packagePath, prerequisites),
+        verifyEvidenceStructure(parsed.values.packagePath, {
+          cwd: projectRoot,
+          pythonCommand: prerequisites.python.command,
+          verifierPath: path.join(
+            prerequisites.evidenceSkill.root,
+            "scripts",
+            "verify_research.py",
+          ),
+        }),
     });
     process.stdout.write(`${JSON.stringify(result.report)}\n`);
     process.exitCode = result.exitCode;

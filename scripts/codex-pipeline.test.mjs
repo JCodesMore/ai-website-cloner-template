@@ -264,6 +264,59 @@ test("runPackageManager exposes the child nonzero exit", async () => {
   assert.equal(calls[0].options.cwd, "/project");
 });
 
+test("runPackageManager prepends portable Node to the npm child PATH only", async () => {
+  const calls = [];
+  const portableRoot = path.join("C:\\", "portable tools", "node");
+  const packageManager = {
+    available: true,
+    nodePath: path.join(portableRoot, "node.exe"),
+    npmCliPath: path.join(portableRoot, "node_modules", "npm", "bin", "npm-cli.js"),
+  };
+  const env = {
+    CUSTOM_VALUE: "preserved",
+    Path: ["C:\\existing tools", "C:\\Windows"].join(path.delimiter),
+  };
+  const originalEnv = { ...env };
+
+  const result = await runPackageManager(["--version"], {
+    env,
+    packageManager,
+    spawn: fakeSpawn([{ code: 0 }], calls),
+  });
+
+  assert.equal(result.ok, true);
+  assert.deepEqual(env, originalEnv);
+  assert.notEqual(calls[0].options.env, env);
+  assert.deepEqual(calls[0].options.env, {
+    ...env,
+    Path: `${portableRoot}${path.delimiter}${env.Path}`,
+  });
+  assert.equal(Object.hasOwn(calls[0].options.env, "PATH"), false);
+});
+
+test("runPackageManager creates a usable child PATH when it is absent or empty", async () => {
+  const portableRoot = path.join("C:\\", "portable", "node");
+  const packageManager = {
+    available: true,
+    nodePath: path.join(portableRoot, "node.exe"),
+    npmCliPath: path.join(portableRoot, "node_modules", "npm", "bin", "npm-cli.js"),
+  };
+
+  for (const env of [{ CUSTOM_VALUE: "preserved" }, { PATH: "" }]) {
+    const calls = [];
+    const originalEnv = { ...env };
+    await runPackageManager(["--version"], {
+      env,
+      packageManager,
+      spawn: fakeSpawn([{ code: 0 }], calls),
+    });
+
+    assert.deepEqual(env, originalEnv);
+    assert.equal(calls[0].options.env.PATH, portableRoot);
+    assert.equal(calls[0].options.env.CUSTOM_VALUE, env.CUSTOM_VALUE);
+  }
+});
+
 test("resolveLocalBinary reads a package bin entry and rejects an absent entrypoint", async () => {
   const root = await temporaryDirectory();
   const packageRoot = path.join(root, "node_modules", "example-tool");
@@ -731,6 +784,44 @@ test("codex-npm CLI runs portable npm and preserves argv", () => {
   assert.match(result.stdout.trim(), /^\d+\.\d+\.\d+$/);
 });
 
+test("codex-npm CLI exposes portable Node to PATH-free npm lifecycle scripts", async () => {
+  const root = await temporaryDirectory();
+  await writeFile(
+    path.join(root, "package.json"),
+    `${JSON.stringify({
+      name: "path-free-portable-npm-probe",
+      private: true,
+      scripts: { probe: "node --version" },
+    })}\n`,
+    "utf8",
+  );
+  const npmNodePath = process.env.npm_node_execpath ?? process.execPath;
+  const nodeDistributionRoot =
+    process.platform === "win32"
+      ? path.dirname(npmNodePath)
+      : path.dirname(path.dirname(npmNodePath));
+  const env = Object.fromEntries(
+    Object.entries(process.env).filter(([name]) => name.toLowerCase() !== "path"),
+  );
+  env.PATH = "";
+  env.CODEX_NODE_HOME = nodeDistributionRoot;
+
+  const result = spawnSync(
+    process.execPath,
+    [path.join(projectRoot, "scripts", "codex-npm.mjs"), "run", "probe", "--silent"],
+    {
+      cwd: root,
+      encoding: "utf8",
+      env,
+      shell: false,
+    },
+  );
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(result.signal, null);
+  assert.equal(result.stdout.trim(), `v${process.versions.node}`);
+});
+
 test("evidence audit reports matching hashes and deterministic ordering", async () => {
   const { auditEvidenceArtifacts } = await import("./lib/evidence-artifact-audit.mjs");
   const alpha = "alpha artifact\n";
@@ -912,6 +1003,146 @@ test("evidence:audit parser requires exactly one package and --artifact-root", (
     () => parseCli(["evidence:audit", packagePath, "--artifact-root", artifactRoot, "extra"]),
     CliUsageError,
   );
+});
+
+test("structural verifier facts preserve every process and payload outcome", async () => {
+  const { verifyEvidenceStructure } = await import("./lib/codex-pipeline.mjs");
+  const payloadError = {
+    code: "PACKAGE_FINDING",
+    message: "The package is structurally invalid.",
+  };
+  const cases = [
+    {
+      name: "launch error",
+      result: {
+        error: Object.assign(new Error("spawn ENOENT"), { code: "ENOENT" }),
+        signal: null,
+        status: null,
+        stdout: "",
+      },
+      expected: {
+        errors: [{ code: "VERIFIER_LAUNCH_ERROR", message: "spawn ENOENT" }],
+        exit_code: null,
+        failure_kind: "launch_error",
+        signal: null,
+        status: "ERROR",
+        step: "evidence:verify",
+        valid: false,
+      },
+    },
+    {
+      name: "signal with valid payload",
+      result: {
+        signal: "SIGTERM",
+        status: null,
+        stdout: JSON.stringify({ errors: [payloadError], valid: false }),
+      },
+      expected: {
+        errors: [payloadError],
+        exit_code: null,
+        failure_kind: "signal",
+        signal: "SIGTERM",
+        status: "ERROR",
+        step: "evidence:verify",
+        valid: false,
+      },
+    },
+    {
+      name: "numeric exit with valid payload",
+      result: {
+        signal: null,
+        status: 7,
+        stdout: JSON.stringify({ errors: [payloadError], valid: false }),
+      },
+      expected: {
+        errors: [payloadError],
+        exit_code: 7,
+        failure_kind: "exit",
+        signal: null,
+        status: "ERROR",
+        step: "evidence:verify",
+        valid: false,
+      },
+    },
+    {
+      name: "invalid output",
+      result: { signal: null, status: 0, stdout: "not JSON" },
+      expected: {
+        errors: [
+          {
+            code: "VERIFIER_OUTPUT_ERROR",
+            message: "structural verifier did not emit valid JSON",
+          },
+        ],
+        exit_code: 0,
+        failure_kind: "invalid_output",
+        signal: null,
+        status: "ERROR",
+        step: "evidence:verify",
+        valid: false,
+      },
+    },
+    {
+      name: "structural findings",
+      result: {
+        signal: null,
+        status: 0,
+        stdout: JSON.stringify({ errors: [payloadError], valid: false }),
+      },
+      expected: {
+        errors: [payloadError],
+        exit_code: 0,
+        failure_kind: "findings",
+        signal: null,
+        status: "FINDINGS",
+        step: "evidence:verify",
+        valid: false,
+      },
+    },
+    {
+      name: "success",
+      result: {
+        signal: null,
+        status: 0,
+        stdout: JSON.stringify({ errors: [], valid: true }),
+      },
+      expected: {
+        errors: [],
+        exit_code: 0,
+        failure_kind: null,
+        signal: null,
+        status: "PASS",
+        step: "evidence:verify",
+        valid: true,
+      },
+    },
+  ];
+
+  for (const fixture of cases) {
+    const calls = [];
+    const actual = verifyEvidenceStructure("C:\\evidence package", {
+      cwd: "C:\\project",
+      pythonCommand: "C:\\Python\\python.exe",
+      spawnSync(command, args, options) {
+        calls.push({ command, args, options });
+        return fixture.result;
+      },
+      verifierPath: "C:\\skills\\verify_research.py",
+    });
+
+    assert.deepEqual(actual, { fact: fixture.expected, ok: fixture.name === "success" }, fixture.name);
+    assert.deepEqual(calls, [
+      {
+        command: "C:\\Python\\python.exe",
+        args: ["C:\\skills\\verify_research.py", "C:\\evidence package"],
+        options: {
+          cwd: "C:\\project",
+          encoding: "utf8",
+          shell: false,
+        },
+      },
+    ]);
+  }
 });
 
 test("evidence:audit uses structural prerequisites and short-circuits artifact hashing", async () => {

@@ -166,12 +166,22 @@ export async function runPackageManager(
   args,
   { packageManager, spawn = nodeSpawn, cwd, env, stdio = "inherit" } = {},
 ) {
-  const invocation = packageManagerInvocation(args, { packageManager });
+  const resolved = packageManager ?? resolvePackageManager();
+  const invocation = packageManagerInvocation(args, { packageManager: resolved });
+  const childEnv = { ...(env ?? process.env) };
+  const pathKey =
+    Object.keys(childEnv).find((name) => name.toLowerCase() === "path") ?? "PATH";
+  const existingPath = childEnv[pathKey];
+  const nodeDirectory = path.dirname(resolved.nodePath);
+  childEnv[pathKey] =
+    typeof existingPath === "string" && existingPath.length > 0
+      ? `${nodeDirectory}${path.delimiter}${existingPath}`
+      : nodeDirectory;
   return runProcess(invocation.command, invocation.args, {
     ...invocation.options,
     spawn,
     cwd,
-    env,
+    env: childEnv,
     stdio,
   });
 }
@@ -491,6 +501,114 @@ export async function runEvidenceAudit({ verifyStructure, auditArtifacts }) {
       status: passed ? "PASS" : "FINDINGS",
       structure: structural.fact,
     },
+  };
+}
+
+export function verifyEvidenceStructure(
+  packagePath,
+  {
+    cwd,
+    pythonCommand,
+    spawnSync: runSync = spawnSync,
+    verifierPath,
+  },
+) {
+  const result = runSync(pythonCommand, [verifierPath, packagePath], {
+    cwd,
+    encoding: "utf8",
+    shell: false,
+  });
+  const processFact = {
+    exit_code: Number.isInteger(result.status) ? result.status : null,
+    failure_kind: null,
+    signal: result.signal ?? null,
+    step: "evidence:verify",
+  };
+
+  if (result.error) {
+    return {
+      fact: {
+        errors: [{ code: "VERIFIER_LAUNCH_ERROR", message: result.error.message }],
+        ...processFact,
+        failure_kind: "launch_error",
+        status: "ERROR",
+        valid: false,
+      },
+      ok: false,
+    };
+  }
+
+  const executionFailure = result.signal
+    ? "signal"
+    : result.status !== 0
+      ? "exit"
+      : null;
+  let payload;
+  try {
+    payload = JSON.parse(result.stdout.trim());
+  } catch {
+    const failureKind = executionFailure ?? "invalid_output";
+    const diagnostic =
+      failureKind === "signal"
+        ? {
+            code: "VERIFIER_SIGNAL",
+            message: `structural verifier terminated by ${result.signal}`,
+          }
+        : failureKind === "exit"
+          ? {
+              code: "VERIFIER_EXIT",
+              message: `structural verifier exited with code ${result.status}`,
+            }
+          : {
+              code: "VERIFIER_OUTPUT_ERROR",
+              message: "structural verifier did not emit valid JSON",
+            };
+    return {
+      fact: {
+        errors: [diagnostic],
+        ...processFact,
+        failure_kind: failureKind,
+        status: "ERROR",
+        valid: false,
+      },
+      ok: false,
+    };
+  }
+
+  const errors = Array.isArray(payload.errors) ? payload.errors : [];
+  if (executionFailure) {
+    const diagnostic =
+      executionFailure === "signal"
+        ? {
+            code: "VERIFIER_SIGNAL",
+            message: `structural verifier terminated by ${result.signal}`,
+          }
+        : {
+            code: "VERIFIER_EXIT",
+            message: `structural verifier exited with code ${result.status}`,
+          };
+    return {
+      fact: {
+        errors: errors.length > 0 ? errors : [diagnostic],
+        ...processFact,
+        failure_kind: executionFailure,
+        status: "ERROR",
+        valid: payload.valid === true,
+      },
+      ok: false,
+    };
+  }
+
+  const ok = payload.valid === true;
+  return {
+    fact: {
+      errors,
+      ...processFact,
+      failure_kind: ok ? null : "findings",
+      status: ok ? "PASS" : "FINDINGS",
+      valid: ok,
+    },
+    ok,
   };
 }
 
