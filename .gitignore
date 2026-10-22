@@ -8,6 +8,8 @@ node_modules/
 out/
 build/
 dist/
+playwright-report/
+test-results/
 
 # Environment
 .env

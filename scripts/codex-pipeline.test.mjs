@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { EventEmitter } from "node:events";
-import { mkdir, mkdtemp, rm, symlink, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -1154,4 +1154,180 @@ test("evidence audit rejects a real NTFS alternate data stream when supported", 
 
   assert.equal(result.records[0].status, "UNSUPPORTED_COLON_LOCATOR");
   assert.equal(result.checked_record_count, 0);
+});
+
+test("resolveE2EPort defaults to 3100 and accepts the inclusive port range", async () => {
+  let playwrightServer;
+  try {
+    playwrightServer = await import("./lib/playwright-server.mjs");
+  } catch (error) {
+    assert.fail(`Playwright server module must load: ${error.message}`);
+  }
+
+  assert.equal(playwrightServer.resolveE2EPort(undefined), 3100);
+  assert.equal(playwrightServer.resolveE2EPort("1024"), 1024);
+  assert.equal(playwrightServer.resolveE2EPort("65535"), 65535);
+});
+
+test("resolveE2EPort rejects malformed and out-of-range values", async () => {
+  let playwrightServer;
+  try {
+    playwrightServer = await import("./lib/playwright-server.mjs");
+  } catch (error) {
+    assert.fail(`Playwright server module must load: ${error.message}`);
+  }
+
+  for (const value of ["", "1023", "65536", "3100.5", " 3100", "port"] ) {
+    assert.throws(
+      () => playwrightServer.resolveE2EPort(value),
+      /CODEX_E2E_PORT must be an integer from 1024 through 65535/,
+    );
+  }
+});
+
+test("prepareStandaloneAssets rejects incomplete standalone build output", async () => {
+  const { prepareStandaloneAssets } = await import("./lib/playwright-server.mjs");
+  const root = await temporaryDirectory();
+
+  await assert.rejects(
+    prepareStandaloneAssets({ projectRoot: root }),
+    /standalone server is missing/,
+  );
+  await touch(path.join(root, ".next", "standalone", "server.js"));
+  await assert.rejects(
+    prepareStandaloneAssets({ projectRoot: root }),
+    /static build output is missing/,
+  );
+});
+
+test("prepareStandaloneAssets replaces stale public and static assets only", async () => {
+  const { prepareStandaloneAssets } = await import("./lib/playwright-server.mjs");
+  const root = await temporaryDirectory();
+  const standalone = path.join(root, ".next", "standalone");
+
+  await touch(path.join(standalone, "server.js"));
+  await writeFile(path.join(standalone, "keep.txt"), "keep", "utf8");
+  await mkdir(path.join(root, "public", "nested"), { recursive: true });
+  await writeFile(path.join(root, "public", "nested", "current.txt"), "public-current", "utf8");
+  await mkdir(path.join(root, ".next", "static", "chunks"), { recursive: true });
+  await writeFile(path.join(root, ".next", "static", "chunks", "current.js"), "static-current", "utf8");
+  await mkdir(path.join(standalone, "public"), { recursive: true });
+  await writeFile(path.join(standalone, "public", "stale.txt"), "stale", "utf8");
+  await mkdir(path.join(standalone, ".next", "static"), { recursive: true });
+  await writeFile(path.join(standalone, ".next", "static", "stale.js"), "stale", "utf8");
+
+  const result = await prepareStandaloneAssets({ projectRoot: root });
+
+  assert.equal(result.serverPath, path.join(standalone, "server.js"));
+  assert.equal(
+    await readFile(path.join(standalone, "public", "nested", "current.txt"), "utf8"),
+    "public-current",
+  );
+  assert.equal(
+    await readFile(path.join(standalone, ".next", "static", "chunks", "current.js"), "utf8"),
+    "static-current",
+  );
+  await assert.rejects(readFile(path.join(standalone, "public", "stale.txt")), /ENOENT/);
+  await assert.rejects(readFile(path.join(standalone, ".next", "static", "stale.js")), /ENOENT/);
+  assert.equal(await readFile(path.join(standalone, "keep.txt"), "utf8"), "keep");
+});
+
+test("standalone server starts in-process with a forced production loopback endpoint", async () => {
+  const { startStandaloneServer } = await import("./lib/playwright-server.mjs");
+  const root = await temporaryDirectory();
+  const standalone = path.join(root, ".next", "standalone");
+  const serverPath = path.join(standalone, "server.js");
+  await touch(serverPath);
+  await mkdir(path.join(root, ".next", "static"), { recursive: true });
+  await mkdir(path.join(root, "public"), { recursive: true });
+  const env = {
+    CODEX_E2E_PORT: "4321",
+    HOSTNAME: "0.0.0.0",
+    NODE_ENV: "development",
+    NEXT_TELEMETRY_DISABLED: "0",
+    PORT: "9999",
+  };
+  const loads = [];
+
+  const result = await startStandaloneServer({
+    env,
+    async loadServer(candidate) {
+      loads.push({
+        candidate,
+        hostname: env.HOSTNAME,
+        nodeEnv: env.NODE_ENV,
+        port: env.PORT,
+        telemetry: env.NEXT_TELEMETRY_DISABLED,
+      });
+    },
+    projectRoot: root,
+  });
+
+  assert.deepEqual(loads, [{
+    candidate: serverPath,
+    hostname: "127.0.0.1",
+    nodeEnv: "production",
+    port: "4321",
+    telemetry: "1",
+  }]);
+  assert.deepEqual(result, {
+    port: 4321,
+    serverPath,
+    url: "http://127.0.0.1:4321",
+  });
+});
+
+test("Playwright config uses the selected loopback endpoint without server reuse", async () => {
+  const probe = spawnSync(
+    process.execPath,
+    [
+      "--disable-warning=MODULE_TYPELESS_PACKAGE_JSON",
+      "--input-type=module",
+      "--eval",
+      `
+        const { default: config } = await import("./playwright.config.ts?test=${Date.now()}");
+        console.log(JSON.stringify({
+          projects: config.projects,
+          retries: config.retries,
+          use: config.use,
+          webServer: config.webServer,
+          workers: config.workers,
+        }));
+      `,
+    ],
+    {
+      cwd: projectRoot,
+      encoding: "utf8",
+      env: { ...process.env, CI: "1", CODEX_E2E_PORT: "4123" },
+      shell: false,
+    },
+  );
+  assert.equal(probe.status, 0, probe.stderr);
+  assert.equal(probe.stderr, "");
+  const config = JSON.parse(probe.stdout);
+
+  assert.equal(config.use.baseURL, "http://127.0.0.1:4123");
+  assert.equal(config.webServer.url, "http://127.0.0.1:4123");
+  assert.equal(config.webServer.reuseExistingServer, false);
+  assert.equal(config.retries, 0);
+  assert.equal(config.workers, 1);
+  assert.deepEqual(
+    config.projects.map(({ name, use }) => ({
+      browserName: use.browserName,
+      name,
+      viewport: use.viewport,
+    })),
+    [
+      {
+        browserName: "chromium",
+        name: "desktop-chromium",
+        viewport: { height: 900, width: 1440 },
+      },
+      {
+        browserName: "chromium",
+        name: "mobile-chromium",
+        viewport: { height: 844, width: 390 },
+      },
+    ],
+  );
 });
