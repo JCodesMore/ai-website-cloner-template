@@ -3,29 +3,29 @@
 import { useState, type FormEvent } from "react";
 import { contactPage } from "./content/pages";
 import { DatePicker } from "./date-picker";
-
-const EMAIL = "showlankatours@gmail.com";
+import { EMAIL_RE, ENQUIRY_EMAIL, submitEnquiry } from "./enquiry";
 
 type Errors = Partial<Record<"name" | "email" | "departure", string>>;
 
 /**
- * Contact Form 7 layout from /contact. There is no WordPress backend in the clone, so a
- * valid submission opens the visitor's mail app with the enquiry addressed to Show Lanka.
+ * Contact Form 7 layout from /contact. Submitted through submitEnquiry().
  */
 export function ContactForm() {
   const [arrival, setArrival] = useState("");
   const [departure, setDeparture] = useState("");
   const [errors, setErrors] = useState<Errors>({});
-  const [status, setStatus] = useState<"" | "invalid" | "sent">("");
+  const [status, setStatus] = useState<"" | "invalid" | "sending" | "sent" | "mailto">("");
 
-  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
+    if (status === "sending") return;
+    const form = event.currentTarget;
+    const data = new FormData(form);
     const get = (k: string) => String(data.get(k) ?? "").trim();
     const next: Errors = {};
     if (!get("your-name")) next.name = "Please fill out this field.";
     if (!get("your-email")) next.email = "Please fill out this field.";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(get("your-email"))) next.email = "Please enter an email address.";
+    else if (!EMAIL_RE.test(get("your-email"))) next.email = "Please enter an email address.";
     // theme.js: the departure date must be after the arrival date
     if (arrival && departure && new Date(departure) <= new Date(arrival)) {
       next.departure = "Departure date must be after the arrival date.";
@@ -35,23 +35,37 @@ export function ContactForm() {
       setStatus("invalid");
       return;
     }
-    const lines = [
-      `Name: ${get("your-name")}`,
-      `Email: ${get("your-email")}`,
-      `Telephone: ${get("tel")}`,
-      `Country: ${get("country")}`,
-      `Arrival date: ${arrival}`,
-      `Departure date: ${departure}`,
-      `Adults: ${get("adults")}`,
-      `Children 0-6: ${get("children-0-6")}  6-12: ${get("children-6-12")}  12+: ${get("children-12")}`,
-      `Hotel category: ${get("hotel")}`,
-      "",
-      get("your-message"),
-    ];
-    window.location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(
-      `Tour enquiry from ${get("your-name")}`,
-    )}&body=${encodeURIComponent(lines.join("\n"))}`;
-    setStatus("sent");
+    const children = [
+      ["0-6", get("children-0-6")],
+      ["6-12", get("children-6-12")],
+      ["12+", get("children-12")],
+    ]
+      .filter(([, n]) => n)
+      .map(([age, n]) => `${n} aged ${age}`)
+      .join(", ");
+    const enquiry = {
+      name: get("your-name"),
+      email: get("your-email"),
+      telephone: get("tel"),
+      country: get("country"),
+      arrival,
+      departure,
+      adults: get("adults"),
+      children,
+      hotel: get("hotel"),
+      message: get("your-message"),
+      page: window.location.pathname,
+      website: get("website"),
+    };
+
+    setStatus("sending");
+    const result = await submitEnquiry(enquiry);
+    if (result === "sent") {
+      form.reset();
+      setArrival("");
+      setDeparture("");
+    }
+    setStatus(result);
   };
 
   const field = (label: string, name: string, type = "text", error?: string) => (
@@ -105,15 +119,21 @@ export function ContactForm() {
         <span className="label">Message </span>
         <textarea name="your-message" rows={10} maxLength={2000} aria-label="Message" />
       </p>
+      {/* Honeypot: hidden from people, filled in by spam bots */}
+      <p className="sr-only" aria-hidden="true">
+        <input type="text" name="website" tabIndex={-1} autoComplete="off" />
+      </p>
       <p>
-        <input className="wpcf7-submit" type="submit" value="Submit" />
+        <input className="wpcf7-submit" type="submit" value={status === "sending" ? "Sending…" : "Submit"} disabled={status === "sending"} />
       </p>
       <p className="required">* Required fields</p>
-      {status && (
+      {status && status !== "sending" && (
         <div className={`wpcf7-response-output${status === "invalid" ? " is-error" : ""}`} role="status" aria-live="polite">
           {status === "invalid"
             ? "One or more fields have an error. Please check and try again."
-            : `Your email app should now open with this enquiry addressed to ${EMAIL}.`}
+            : status === "sent"
+              ? "Thank you for your message. It has been sent — we will get back to you shortly."
+              : `Your email app should now open with this enquiry addressed to ${ENQUIRY_EMAIL}.`}
         </div>
       )}
     </form>

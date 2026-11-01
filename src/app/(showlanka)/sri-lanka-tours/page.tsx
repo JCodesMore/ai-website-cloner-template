@@ -4,10 +4,12 @@ import { BonanzaPopup } from "@/components/sites/showlanka/bonanza";
 import { toursPage } from "@/components/sites/showlanka/content/pages";
 import { SubPageHero } from "@/components/sites/showlanka/subpage-parts";
 import { ToursList } from "@/components/sites/showlanka/tours-list";
+import { getTours } from "@/lib/server/content";
 
 export const metadata: Metadata = { title: toursPage.seoTitle, description: toursPage.description };
 
-export default function ToursPage() {
+export default async function ToursPage() {
+  const tours = await getTours();
   return (
     <>
       <SubPageHero hero={toursPage.hero} />
@@ -18,7 +20,7 @@ export default function ToursPage() {
         </div>
       </section>
       <Suspense>
-        <ToursList />
+        <ToursList tours={tours} />
       </Suspense>
       <BonanzaPopup />
     </>

@@ -41,4 +41,6 @@ export type NewsItem = {
   video?: string;
   /** Short summary written for the clone; the original article is linked */
   summary: string[];
+  /** Written in the admin: `summary` is the whole article, so no link to showlanka.com */
+  standalone?: boolean;
 };

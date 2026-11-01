@@ -1,10 +1,10 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element */
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { heroImages, heroWords, tourRadarIframe } from "./data";
 import { DeferredIframe } from "./deferred-iframe";
+import { HeroEnquiryForm } from "./hero-enquiry-form";
 import { GoogleGIcon } from "./icons";
 import { TripadvisorBadge } from "./tripadvisor-badge";
 
@@ -58,34 +58,39 @@ export function HeroSection() {
               Custom Sri Lanka holiday packages with expert local guides — beaches, wildlife, culture &amp; adventure
               in one unforgettable trip.
             </p>
-            <Link className="btn common-btn" href="/contact">
+            {/* Phones: the hero is too short for the form, so this jumps to the copy below it */}
+            <a className="btn common-btn hero-enquiry-jump" href="#hero-enquiry">
               Send an Inquiry
-            </Link>
+            </a>
+            <HeroEnquiryForm className="hero-enquiry--overlay" />
           </div>
-          <div className="hero-tourradar-widget">
-            <DeferredIframe src={tourRadarIframe} width={240} height={280} scrolling="no" title="TourRadar Reviews" />
+          <div className="hero-bottom">
+            <div className="hero-review-badges">
+              <div className="hero-tripadvisor-widget">
+                <TripadvisorBadge />
+              </div>
+              <a
+                className="hero-google-widget"
+                href="https://www.google.com/maps?cid=3563717595747314560"
+                target="_blank"
+                rel="noopener"
+              >
+                <GoogleGIcon className="hero-google-widget__icon" />
+                <span className="hero-google-widget__text">
+                  <span className="hero-google-widget__rating">
+                    <strong>4.7</strong> <span className="hero-google-widget__stars">★★★★★</span>
+                  </span>
+                  <span className="hero-google-widget__count">37 Google Reviews</span>
+                </span>
+              </a>
+            </div>
+            <div className="hero-tourradar-widget">
+              <DeferredIframe src={tourRadarIframe} width={240} height={280} scrolling="no" title="TourRadar Reviews" />
+            </div>
           </div>
         </div>
       </section>
-      <div className="hero-review-badges">
-        <div className="hero-tripadvisor-widget">
-          <TripadvisorBadge />
-        </div>
-        <a
-          className="hero-google-widget"
-          href="https://www.google.com/maps?cid=3563717595747314560"
-          target="_blank"
-          rel="noopener"
-        >
-          <GoogleGIcon className="hero-google-widget__icon" />
-          <span className="hero-google-widget__text">
-            <span className="hero-google-widget__rating">
-              <strong>4.7</strong> <span className="hero-google-widget__stars">★★★★★</span>
-            </span>
-            <span className="hero-google-widget__count">37 Google Reviews</span>
-          </span>
-        </a>
-      </div>
+      <HeroEnquiryForm className="hero-enquiry--below" id="hero-enquiry" />
     </div>
   );
 }

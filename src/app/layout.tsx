@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { InlineScript } from "@/components/sites/showlanka/inline-script";
+import { preloaderScript } from "@/components/sites/showlanka/preloader-script";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -31,6 +33,7 @@ export default function RootLayout({
     >
       {/* Browser extensions (Grammarly, ColorZilla, …) add attributes to <body> before hydration. */}
       <body suppressHydrationWarning className="min-h-full flex flex-col">
+        <InlineScript id="sl-preloader" code={preloaderScript} />
         {children}
       </body>
     </html>

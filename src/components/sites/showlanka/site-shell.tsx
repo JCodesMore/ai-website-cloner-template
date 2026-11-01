@@ -1,6 +1,7 @@
 import "./showlanka.css";
 import "./showlanka-pages.css";
 import type { ReactNode } from "react";
+import { Analytics } from "./analytics";
 import { PageTransitions, Preloader } from "./page-effects";
 import { SiteFooter } from "./site-footer";
 import { SiteHeader } from "./site-header";
@@ -16,6 +17,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
         {children}
       </main>
       <SiteFooter />
+      <Analytics />
     </div>
   );
 }

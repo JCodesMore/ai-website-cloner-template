@@ -8,5 +8,5 @@ export function SiteLink({ href, ...props }: AnchorHTMLAttributes<HTMLAnchorElem
   return <a href={href} {...props} />;
 }
 
-/** Upload path → public URL of the locally mirrored file. */
-export const upload = (path: string) => `/sites/showlanka/uploads/${path}`;
+/** Upload path → public URL of the locally mirrored file. Admin uploads (/media/…) and full URLs pass through. */
+export const upload = (path: string) => (/^(\/|https?:)/.test(path) ? path : `/sites/showlanka/uploads/${path}`);

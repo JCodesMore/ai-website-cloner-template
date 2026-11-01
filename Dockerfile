@@ -95,6 +95,10 @@ COPY --from=builder --chown=node:node /app/public ./public
 RUN mkdir .next
 RUN chown node:node .next
 
+# Admin panel database and uploaded images (mount a volume here to keep them)
+RUN mkdir data && chown node:node data
+VOLUME /app/data
+
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=node:node /app/.next/standalone ./

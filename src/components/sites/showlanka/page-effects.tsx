@@ -3,14 +3,9 @@
 import { useEffect, useRef } from "react";
 import { ASSETS } from "./data";
 import { CompassIcon, EarthIcon, PlaneIcon } from "./icons";
+import { PRELOADER_STORAGE_KEY as STORAGE_KEY } from "./preloader-script";
 
-const STORAGE_KEY = "slPreloaderShown";
-
-// Runs while the HTML is parsed, like the source's inline scripts: skip the
-// preloader for returning visitors, otherwise pick one of three icons at random.
-const preloaderScript = `try{var d=document.documentElement;if(sessionStorage.getItem("${STORAGE_KEY}"))d.classList.add("sl-preloaded");else d.dataset.slPreloader=["compass","plane","globe"][Math.floor(Math.random()*3)]}catch(e){}`;
-
-/** First-visit preloader: fades out 400ms after window load. */
+/** First-visit preloader: fades out 400ms after window load. Its setup script is inlined by the root layout. */
 export function Preloader() {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -41,28 +36,25 @@ export function Preloader() {
   }, []);
 
   return (
-    <>
-      <script dangerouslySetInnerHTML={{ __html: preloaderScript }} />
-      <div ref={ref} className="sl-preloader" aria-hidden="true">
-        <div className="sl-preloader__inner">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={`${ASSETS}/images/logo.png`} alt="" className="sl-preloader__logo" />
-          <div className="sl-preloader__icon sl-preloader__compass" data-variant="compass">
-            <CompassIcon />
-          </div>
-          <div className="sl-preloader__icon sl-preloader__plane-track" data-variant="plane">
-            <PlaneIcon />
-          </div>
-          <div className="sl-preloader__icon sl-preloader__globe" data-variant="globe">
-            <EarthIcon />
-            <span className="sl-preloader__orbit">
-              <PlaneIcon />
-            </span>
-          </div>
-          <p className="sl-preloader__text">Preparing your Sri Lankan adventure&hellip;</p>
+    <div ref={ref} className="sl-preloader" aria-hidden="true">
+      <div className="sl-preloader__inner">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={`${ASSETS}/images/logo.png`} alt="" className="sl-preloader__logo" />
+        <div className="sl-preloader__icon sl-preloader__compass" data-variant="compass">
+          <CompassIcon />
         </div>
+        <div className="sl-preloader__icon sl-preloader__plane-track" data-variant="plane">
+          <PlaneIcon />
+        </div>
+        <div className="sl-preloader__icon sl-preloader__globe" data-variant="globe">
+          <EarthIcon />
+          <span className="sl-preloader__orbit">
+            <PlaneIcon />
+          </span>
+        </div>
+        <p className="sl-preloader__text">Preparing your Sri Lankan adventure&hellip;</p>
       </div>
-    </>
+    </div>
   );
 }
 

@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { news, newsHero } from "@/components/sites/showlanka/content/news";
+import { newsHero } from "@/components/sites/showlanka/content/news";
 import { PlayIcon } from "@/components/sites/showlanka/icons";
 import { upload } from "@/components/sites/showlanka/site-link";
 import { SubPageHero } from "@/components/sites/showlanka/subpage-parts";
+import { getNews } from "@/lib/server/content";
 
 export const metadata: Metadata = {
   title: "Budget tour operators - Latest Sri Lanka Tourism News",
   description: "Sri Lanka tourism news and travel updates from Show Lanka Tours.",
 };
 
-export default function NewsPage() {
+export default async function NewsPage() {
+  const news = await getNews();
   return (
     <>
       <SubPageHero hero={newsHero} />
@@ -31,7 +33,7 @@ export default function NewsPage() {
                         className="image-container"
                         role="img"
                         aria-label={item.title}
-                        style={item.card ? { backgroundImage: `url('${upload(item.card)}')` } : undefined}
+                        style={item.card || item.hero ? { backgroundImage: `url('${upload(item.card || item.hero)}')` } : undefined}
                       >
                         {item.video && (
                           <Link

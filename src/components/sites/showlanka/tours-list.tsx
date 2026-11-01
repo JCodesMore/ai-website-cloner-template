@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { months, toursPage } from "./content/pages";
-import { tours } from "./content/tours";
+import type { Tour } from "./content/types";
 import { PackageCard } from "./subpage-parts";
 
 /** filters.js: the bare query string (e.g. "?group") preselects the category. */
@@ -12,7 +12,7 @@ function categoryFromQuery(params: URLSearchParams) {
   return toursPage.categories.some((c) => c.value === key) ? key : "";
 }
 
-export function ToursList() {
+export function ToursList({ tours }: { tours: Tour[] }) {
   const params = useSearchParams();
   const [category, setCategory] = useState(() => categoryFromQuery(params));
   const [dayRange, setDayRange] = useState("");
@@ -24,7 +24,7 @@ export function ToursList() {
     setCategory(categoryFromQuery(params));
   }
 
-  const matches = (t: (typeof tours)[number]) => {
+  const matches = (t: Tour) => {
     if (category && !t.categories.includes(category)) return false;
     if (month && t.months.length && !t.months.includes(Number(month))) return false;
     if (dayRange) {

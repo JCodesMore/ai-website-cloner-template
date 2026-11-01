@@ -27,14 +27,17 @@ export function NewsDetail({ item }: { item: NewsItem }) {
               />
             </div>
           )}
-          {item.summary.map((p) => (
-            <p key={p}>{p}</p>
-          ))}
-          <p className="source-note">
-            <a href={`${SOURCE}/${item.slug}/`} target="_blank" rel="noopener">
-              Read the full article on showlanka.com
-            </a>
-          </p>
+          {item.summary.map((p, i) =>
+            // Admin-written posts mark sub-headings with a leading "## ".
+            p.startsWith("## ") ? <h3 key={i}>{p.slice(3)}</h3> : <p key={i}>{p}</p>,
+          )}
+          {!item.standalone && (
+            <p className="source-note">
+              <a href={`${SOURCE}/${item.slug}/`} target="_blank" rel="noopener">
+                Read the full article on showlanka.com
+              </a>
+            </p>
+          )}
         </div>
       </div>
     </article>
