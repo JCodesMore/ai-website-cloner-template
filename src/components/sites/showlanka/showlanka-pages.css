@@ -657,7 +657,36 @@
 .sl .wpcf7-form .children-wrapper { display: flex; flex-direction: column; }
 .sl .wpcf7-form .children-wrapper .label { font-weight: 600; }
 .sl .wpcf7-form .childAgeWrap { display: flex; flex-direction: column; }
-.sl .wpcf7-form .childAgeWrap input { margin: 0 0 8px; }
+.sl .wpcf7-form .childAgeWrap .count-input { margin: 0 0 8px; }
+.sl .wpcf7-form .count-input { position: relative; display: block; }
+.sl .wpcf7-form p .count-input input { padding-right: 44px; appearance: textfield; -moz-appearance: textfield; }
+.sl .wpcf7-form .count-input input::-webkit-outer-spin-button,
+.sl .wpcf7-form .count-input input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.sl .wpcf7-form .count-input input[aria-invalid="true"] { border-color: #dc3232; }
+.sl .wpcf7-form .count-input__buttons {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  bottom: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.sl .wpcf7-form .count-input__buttons button {
+  flex: 1;
+  width: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: #e8f2fc;
+  color: var(--sl-btn);
+  cursor: pointer;
+}
+.sl .wpcf7-form .count-input__buttons button:hover:not(:disabled) { background: var(--sl-btn); color: #fff; }
+.sl .wpcf7-form .count-input__buttons button:disabled { color: #b8c2cc; background: #f2f4f6; cursor: default; }
 .sl .wpcf7-form .wpcf7-submit {
   background: var(--sl-btn);
   padding: 8px 32px;

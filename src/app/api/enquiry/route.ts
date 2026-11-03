@@ -1,6 +1,6 @@
 import { after, type NextRequest } from "next/server";
 import { sessionOrigin } from "@/lib/server/analytics";
-import { createEnquiry, markEmailSent, sendEnquiryEmail, type EnquiryInput } from "@/lib/server/enquiries";
+import { createEnquiry, markEmailSent, sendEnquiryEmail, sendThankYouEmail, type EnquiryInput } from "@/lib/server/enquiries";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -70,7 +70,8 @@ export async function POST(request: NextRequest) {
     console.warn("[enquiry] database unavailable, email only:", err);
   }
   after(async () => {
-    if ((await sendEnquiryEmail(id, input)) && id !== null) markEmailSent(id);
+    const [sent] = await Promise.all([sendEnquiryEmail(id, input), sendThankYouEmail(input)]);
+    if (sent && id !== null) markEmailSent(id);
   });
   return Response.json({ ok: true });
 }
