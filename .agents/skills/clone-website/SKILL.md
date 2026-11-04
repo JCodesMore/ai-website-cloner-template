@@ -32,6 +32,15 @@ Save source screenshots labeled with viewport, scroll position, and interaction 
 
 Read [the inspection reference](references/inspection-guide.md) for extraction and state comparison. For **Framer-generated pages, sticky scenes, reveal animations, or animated media**, read [Framer and motion](references/framer-and-motion.md).
 
+**Recover the source code behind every non-trivial effect before building it** — read [animation source recovery](references/animation-source-recovery.md). In short:
+
+1. `scripts/fetch-source.mjs <url>` downloads raw HTML, CSS and every reachable JS (including lazily injected vendor scripts) and extracts shaders; reader/markdown fetches lose all of this.
+2. `scripts/capture.mjs <url> --outline --rem` records the DOM *after* JS runs (elements created by script, runtime canvases) and whether `rem` scales with the viewport.
+3. `scripts/find-code.mjs <files> "<class>"` reads the code that builds and animates each element: triggers, durations, eases, constants, library options, shaders.
+4. `scripts/css-pick.mjs <css> --base | --match "<selectors>"` ports source rules with their media queries.
+
+Port recovered algorithms, constants and shaders into clean modules using the same libraries; an approximation of a canvas/WebGL/GSAP effect is a last resort that must be disclosed.
+
 Use the source's real text and the files it actually loads: fonts, images, SVGs, and video. A same-named substitute from another provider or icon set has different metrics or shapes. Measure important geometry/computed styles. Inspect layered images and media elements before rebuilding a visual as HTML. Track source URL → local asset path and verify content type/dimensions: a `.png` URL may return AVIF.
 
 Finish when every section and meaningful state has enough evidence to build, with unavailable details identified. A large DOM dump does not replace looking at the page.
@@ -48,9 +57,9 @@ Run the appropriate project check after an integrated slice. Finish this pass wh
 
 ## 4. Compare, repair, repeat
 
-Open source/local pages at the **same viewport, scroll position, and state**. Let fonts, media, and reveal animations settle. Review the whole page wherever step 2 found a rule changing, plus a viewport wider than the design; judge scroll and pointer behavior with real input. A side-by-side montage locates drift; full-size sections establish detail.
+Open source/local pages at the **same viewport, scroll position, and state** — run `scripts/capture.mjs` with identical options on both (`--timeline` for time-driven scenes, `--progress <selector>` for sticky scroll scenes, `--click <selector>` for menus/tabs, `--scroll` for whole pages) and compare page heights. Let fonts, media, and reveal animations settle. Review the whole page wherever step 2 found a rule changing, plus a viewport wider than the design; judge scroll and pointer behavior with real input. A side-by-side montage locates drift; full-size sections establish detail.
 
-Fix the largest visible differences first: geometry, missing sections/layers, typography/wrapping, asset crop, then spacing and motion. Recheck affected views. Compare animated regions in initial, active, and settled states, including reverse scroll when relevant.
+Fix the largest visible differences first: geometry, missing sections/layers, typography/wrapping, asset crop, then spacing and motion. When a size or position is uncertain, measure it in the source with `getBoundingClientRect()` instead of estimating from a screenshot. Recheck affected views. Compare animated regions in initial, active, and settled states, including reverse scroll when relevant.
 
 Exercise the real local workflow: navigation between cloned routes, mobile menu, tab/accordion states, carousel boundaries, primary actions, media controls, and observed scroll-linked transitions. Check runtime errors, missing assets, and horizontal overflow. When adding pages, verify existing routes still work. Use a few browser checks at these boundaries rather than assertions about class names.
 
