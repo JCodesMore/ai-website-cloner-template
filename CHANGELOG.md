@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `npm run new-clone -- <name> [folder]` scaffolds a standalone app for one cloned site (default `clones/<name>`), so the template root stays clean and reusable across sites. The root app's lint, typecheck, Tailwind scan, and Docker context ignore `clones/`.
+
 ### Fixed
 - Count the README token badge in CI so it reflects the current default branch instead of a stale hosted count.
 

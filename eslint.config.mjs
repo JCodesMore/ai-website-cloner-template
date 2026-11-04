@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Standalone apps created by `npm run new-clone` lint themselves.
+    "clones/**",
   ]),
 ]);
 

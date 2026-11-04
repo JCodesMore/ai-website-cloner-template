@@ -39,6 +39,9 @@ CLAUDE.md
 docs
 scripts
 
+# Standalone clone apps (build each one from its own folder)
+clones
+
 # Docker files themselves (no need to copy into image)
 Dockerfile
 docker-compose.yml
