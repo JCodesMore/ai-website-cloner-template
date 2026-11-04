@@ -153,9 +153,30 @@ async function get(u) {
   return { status: res.status, type: res.headers.get("content-type") || "", buf };
 }
 
+const REASONS = {
+  ENOTFOUND: "the host does not resolve (check the domain for typos, or try www./another TLD)",
+  EAI_AGAIN: "DNS lookup failed (network or DNS problem)",
+  ECONNREFUSED: "the server refused the connection",
+  ECONNRESET: "the connection was reset",
+  ETIMEDOUT: "the connection timed out",
+  CERT_HAS_EXPIRED: "the TLS certificate has expired",
+};
+
 (async () => {
+  let page;
+  try {
+    page = await get(pageUrl);
+  } catch (e) {
+    const code = e.cause?.code || e.code;
+    console.error(`Could not load ${pageUrl}: ${REASONS[code] || code || e.message}.`);
+    console.error("Stop here and ask for a working URL or a saved copy; do not rebuild the site from its name.");
+    process.exit(1);
+  }
+  if (page.status !== 200 && !args.includes("--force")) {
+    console.error(`${pageUrl} returned HTTP ${page.status}. Inspect the response before cloning (bot challenge, sign-in, error page); rerun with --force to save it anyway.`);
+    process.exit(1);
+  }
   fs.mkdirSync(OUT, { recursive: true });
-  const page = await get(pageUrl);
   const html = page.buf.toString("utf8");
   const pageFile = localPath(pageUrl);
   fs.mkdirSync(path.dirname(pageFile), { recursive: true });
