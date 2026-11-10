@@ -1,9 +1,19 @@
+import { Navbar } from "@/components/Navbar";
+import { Hero } from "@/components/Hero";
+import { Sections } from "@/components/Sections";
+import { BottomCta } from "@/components/BottomCta";
+import { Footer } from "@/components/Footer";
+
 export default function Home() {
   return (
-    <main className="flex min-h-screen items-center justify-center">
-      <p className="text-muted-foreground">
-        Clone target not yet built. Run <code className="font-mono text-foreground">/clone-website</code> to start.
-      </p>
-    </main>
+    <>
+      <Navbar />
+      <main className="flex-1">
+        <Hero />
+        <Sections />
+        <BottomCta />
+      </main>
+      <Footer />
+    </>
   );
 }
