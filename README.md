@@ -16,6 +16,13 @@ Give your AI coding agent a URL and watch it recreate the website as a clean Nex
 
   <a href="https://trendshift.io/repositories/24302?utm_source=repository-badge&amp;utm_medium=badge&amp;utm_campaign=badge-repository-24302" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/repositories/24302" alt="JCodesMore%2Fai-website-cloner-template | Trendshift" width="250" height="55" /></a> <a href="https://www.star-history.com/jcodesmore/ai-website-cloner-template/"><picture><source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/badge?repo=JCodesMore/ai-website-cloner-template&amp;theme=dark" /><source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/badge?repo=JCodesMore/ai-website-cloner-template" /><img alt="Star History Global Rank" src="https://api.star-history.com/badge?repo=JCodesMore/ai-website-cloner-template" width="216" height="55" /></picture></a>
 
+<br />
+<sub><strong>SPONSORED BY</strong></sub>
+<br /><br />
+<a href="https://www.swiftproxy.net/?ref=JCodesMore"><img src="docs/assets/sponsors/swiftproxy-banner.webp" alt="Swiftproxy residential proxies for inspecting websites from 195+ locations" width="680" /></a>
+<br />
+<sub>Inspect and compare websites from any region with rotating or static residential IPs in 195+ locations, over HTTP(S) and SOCKS5. Free testing, plus 10% off with code <code>PROXY90</code>. <a href="https://www.swiftproxy.net/?ref=JCodesMore">Try&nbsp;Swiftproxy&nbsp;→</a></sub>
+
 </div>
 
 ---
