@@ -20,7 +20,7 @@ Use available browser asset inventory/download tools or DOM-backed URLs with dir
 - Fonts: actual loaded family/weights and files used by the page.
 - SVG: viewBox plus referenced gradients, masks, symbols, and filters.
 
-Save assets used by the cloned scope and their source URL → local path mapping. Distinguish repeated filenames. Check content type, dimensions, and browser rendering: HTTP success can return an error page; CDNs may change formats without changing URL extensions.
+Save assets used by the cloned scope and their source URL → local path mapping. Download each file once (the same file can sit at several URLs), at its largest rendered size, in the format the CDN returns for a modern `Accept` header. Distinguish repeated filenames. Check content type, dimensions, and browser rendering: HTTP success can return an error page; CDNs may change formats without changing URL extensions.
 
 If a browser bundle fails for a public font/image, download the observed URL directly. Keep unresolved assets explicit and preserve applicable attribution.
 

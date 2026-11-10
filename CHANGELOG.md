@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Extend the cloning guidance to online stores and site builders: identify what generated a page, capture the visitor's state behind overlays and actions, render repeated records from the source's own data, run server-backed behavior such as carts locally, request modern image formats once per file, and confirm ported CSS takes effect.
+- Hide the Next.js dev indicator so it stays out of comparison screenshots.
+
 ### Fixed
 - Count the README token badge in CI so it reflects the current default branch instead of a stale hosted count.
 

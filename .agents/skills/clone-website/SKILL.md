@@ -1,6 +1,6 @@
 ---
 name: clone-website
-description: Rebuild existing web pages as working local code, matching their real content, assets, responsive layout, and interactions. Use for website cloning, replication, or reverse engineering, including Framer sites and animated pages.
+description: Rebuild existing web pages as working local code, matching their real content, assets, responsive layout, and interactions. Use for website cloning, replication, or reverse engineering, including Framer sites, online stores, and animated pages.
 ---
 
 # Clone a website
@@ -15,6 +15,7 @@ Record a short source-to-local route map and the files each page owns. Follow th
 
 - A first root clone may replace the untouched template homepage.
 - Preserve source pathnames for multiple pages from one origin. Query/fragment variations usually represent states of the same route; reproduce those states.
+- A source template serving many URLs (products, posts, listings) maps to one dynamic route.
 - Preserve existing authored routes/assets. Update them when requested; resolve unrequested route collisions before replacing anything.
 - When adding pages to an existing clone, extend its layout and global styles without replacing the styles used by existing pages.
 - Use separate apps for different origins unless the user wants a combined app. Combined sites need distinct route prefixes and scoped fonts, styles, and layout.
@@ -28,7 +29,9 @@ Inspect the whole page at desktop and mobile widths. Scroll top to bottom to loa
 
 Treat each observation as one sample of a **rule**. Read declared values (computed styles, CSS variables, a library's live options) rather than inferring them from one rendering, and vary viewport width (including wider than the design), viewport height, input, and state until you know what drives each change. Drive the page with the inputs visitors use (wheel, touch, keyboard, pointer); scripted scrolling bypasses behavior attached to them, such as smooth scrolling.
 
-Save source screenshots labeled with viewport, scroll position, and interaction state. Capture alternate-state content/assets. Keep one compact page brief: section order, typography, layout measurements, asset mapping, and interactions. Add section briefs only when they help independent builders.
+Identify what generated the page (site builder, theme, framework): its conventions show where values, data, and behavior live. Port rules from every stylesheet and style block the page loads; one section's file can style another.
+
+Record the conditions each capture depends on (region, consent, signed-out session) and hold them fixed for comparison. Clear overlays first with the most privacy-preserving choice; each overlay is a state to clone or leave out. Save source screenshots labeled with viewport, scroll position, and interaction state. Capture alternate-state content/assets by performing the action that produces them, such as adding to cart. Keep one compact page brief: section order, typography, layout measurements, asset mapping, and interactions. Add section briefs only when they help independent builders.
 
 Read [the inspection reference](references/inspection-guide.md) for extraction and state comparison. For **Framer-generated pages, sticky scenes, reveal animations, or animated media**, read [Framer and motion](references/framer-and-motion.md).
 
@@ -38,11 +41,11 @@ Finish when every section and meaningful state has enough evidence to build, wit
 
 ## 3. Build a complete first pass
 
-Establish fonts, page width, colors, assets, routes, page-wide behavior, and shared components first. Build each shared component with every observed state (hover, focus, breakpoints) so builders reuse it as-is. Reuse fitting components. Prefer CSS for layout/simple motion and an animation library when source behavior needs it.
+Establish fonts, page width, colors, assets, routes, page-wide behavior, and shared components first. Build each shared component with every observed state (hover, focus, breakpoints) so builders reuse it as-is. Reuse fitting components. Render the repeated records the cloned pages reach (products, posts, listings) as typed data from the source's own feeds or embedded state. Confirm ported CSS wins: source classes named like framework utilities collide, and rem values follow the source's root font size. Prefer CSS for layout/simple motion and an animation library when source behavior needs it.
 
 Build coherent sections with real content. Delegate independent pages/sections after shared files have an owner. Give builders screenshots, relevant measurements/state notes, asset paths, destination files, and a concrete finish line. A concise brief with precise file references is enough; no fixed agent count or per-component paperwork is required.
 
-Recreate in-scope interactions. Preserve real outbound destinations. Rewrite links to local routes when those routes are included; leave out-of-scope destinations pointing to the source and disclose them. Visible controls must perform the behavior they promise.
+Recreate in-scope interactions. Preserve real outbound destinations. Rewrite links to local routes when those routes are included; leave out-of-scope destinations pointing to the source and disclose them. Visible controls must perform the behavior they promise. Server-backed behavior (cart, search, quick view) runs locally on extracted data in the source's response shape; actions only the source server can complete (checkout, sign-in, form submission) are out-of-scope destinations.
 
 Run the appropriate project check after an integrated slice. Finish this pass when every requested section/route renders with actual assets and important controls work.
 
