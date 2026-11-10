@@ -21,7 +21,7 @@ Give your AI coding agent a URL and watch it recreate the website as a clean Nex
 <br /><br />
 <a href="https://www.swiftproxy.net/?ref=JCodesMore"><img src="docs/assets/sponsors/swiftproxy-banner.webp" alt="Swiftproxy residential proxies for inspecting websites from 195+ locations" width="680" /></a>
 <br />
-<sub>Inspect and compare websites from any region with rotating or static residential IPs in 195+ locations, over HTTP(S) and SOCKS5. Free testing, plus 10% off with code <code>PROXY90</code>. <a href="https://www.swiftproxy.net/?ref=JCodesMore">Try Swiftproxy →</a></sub>
+<sub>Inspect and compare websites from any region with rotating or static residential IPs in 195+ locations, over HTTP(S) and SOCKS5. Free testing, plus 10% off with code <code>PROXY90</code>. <a href="https://www.swiftproxy.net/?ref=JCodesMore">Try&nbsp;Swiftproxy&nbsp;→</a></sub>
 
 </div>
 
