@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <title>Forms</title>
+  </head>
+  <body>
+    <!--
+      Netlify Forms skeleton: Netlify registers this form at deploy time, and
+      submitEnquiry() in src/components/sites/showlanka/enquiry.ts POSTs to this
+      file. Field names must match what that function sends.
+    -->
+    <form name="enquiry" data-netlify="true" netlify-honeypot="website" hidden>
+      <input type="hidden" name="form-name" value="enquiry" />
+      <input type="hidden" name="subject" />
+      <input type="text" name="name" />
+      <input type="email" name="email" />
+      <input type="text" name="telephone" />
+      <input type="text" name="country" />
+      <input type="text" name="arrival" />
+      <input type="text" name="departure" />
+      <input type="text" name="adults" />
+      <input type="text" name="children" />
+      <input type="text" name="hotel" />
+      <textarea name="message"></textarea>
+      <input type="text" name="page" />
+      <input type="text" name="website" />
+    </form>
+  </body>
+</html>

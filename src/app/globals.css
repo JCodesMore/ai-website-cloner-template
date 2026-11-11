@@ -128,3 +128,8 @@
     @apply font-sans;
   }
 }
+/* Admin panel chart tokens (single-series data viz: blue mark, soft blue for ranked-list bars) */
+.admin-root {
+  --series-1: #2a78d6;
+  --series-1-soft: rgb(42 120 214 / 0.12);
+}

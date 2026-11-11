@@ -1,5 +1,5 @@
 {
-  "name": "ai-website-clone-template",
+  "name": "showlanka-tours",
   "version": "0.6.1",
   "private": true,
   "description": "Clone any website into a clean, modern Next.js codebase using AI coding agents",
@@ -38,6 +38,10 @@
     "@base-ui/react": "^1.3.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "html2canvas-pro": "^2.4.5",
+    "jspdf": "^4.2.1",
+    "leaflet": "^1.9.4",
+    "leaflet-polylinedecorator": "^1.6.0",
     "lucide-react": "^1.6.0",
     "next": "16.3.5",
     "react": "19.2.4",
@@ -48,6 +52,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/leaflet": "^1.9.12",
     "@types/node": "^24",
     "@types/react": "^19",
     "@types/react-dom": "^19",

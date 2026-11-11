@@ -17,6 +17,9 @@ services:
         required: false
       - path: .env
         required: false
+    volumes:
+      # Admin database and uploaded images survive rebuilds and restarts
+      - showlanka-data:/app/data
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:3000/ || exit 1"]
       interval: 30s
@@ -51,3 +54,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 15s
+
+volumes:
+  showlanka-data:
