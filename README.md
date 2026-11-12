@@ -63,6 +63,17 @@ Open the project in your agent with browser access enabled. In Claude Code or Cu
 
 Replace the URL with the website you want to recreate. Once it's built, ask your agent for any changes you want.
 
+### Clone several sites from one checkout
+
+Ask your agent to put the clone in its own folder, or scaffold one yourself:
+
+```bash
+npm run new-clone -- stripe              # creates clones/stripe/
+npm run new-clone -- stripe my-sites     # creates my-sites/stripe/
+```
+
+Each folder is a standalone Next.js app built from the untouched scaffold: run `npm install` inside it and clone there. The template root stays clean for the next site.
+
 ## Supported Platforms
 
 | Agent                                                         | Status                     |
@@ -123,6 +134,7 @@ public/
 docs/
   research/<site>/  # Page brief, asset map, and inspection evidence
   design-references/ # Screenshots
+clones/<name>/      # Standalone clone apps from `npm run new-clone` (optional)
 .agents/skills/
   clone-website/    # Canonical skill and inspection reference
 .claude/commands/
@@ -139,6 +151,7 @@ npm run build  # Production build
 npm run lint   # ESLint check
 npm run typecheck # TypeScript check
 npm run check  # Run lint + typecheck + build
+npm run new-clone -- <name> [folder] # Scaffold a standalone app in clones/<name>
 ```
 
 ### If using docker

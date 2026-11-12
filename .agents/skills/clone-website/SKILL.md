@@ -18,6 +18,7 @@ Record a short source-to-local route map and the files each page owns. Follow th
 - Preserve existing authored routes/assets. Update them when requested; resolve unrequested route collisions before replacing anything.
 - When adding pages to an existing clone, extend its layout and global styles without replacing the styles used by existing pages.
 - Use separate apps for different origins unless the user wants a combined app. Combined sites need distinct route prefixes and scoped fonts, styles, and layout.
+- Keep the template root reusable when the user asks for an output folder or the root app already holds a clone: run `npm run new-clone -- <site> [folder]` (default folder `clones/`), install dependencies inside the new app, and run every path and command in this workflow from there.
 - Escape literal URL segments that conflict with framework syntax (`_`, `@`, brackets, parentheses) using its supported mechanism, then verify the actual requested URL.
 
 Existing clones are useful starting points: compare them with the current source and record what was reused. Finish when every requested URL has a destination and file ownership is clear.
