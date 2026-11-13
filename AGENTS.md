@@ -68,3 +68,4 @@ scripts/            # Asset download scripts
 ## Agent Workflow
 - Edit `.agents/skills/clone-website/` for cloning-workflow changes. It is the canonical skill used by Codex, Cursor, and OpenCode.
 - Keep `.claude/commands/clone-website.md` as a thin Claude Code bridge to the canonical skill; do not duplicate the workflow there.
+- Evidence tools live in `.agents/skills/clone-website/scripts/` (`fetch-source.mjs`, `capture.mjs`, `find-code.mjs`, `css-pick.mjs`). Recover a site's animation code with them before building motion; see `references/animation-source-recovery.md`.

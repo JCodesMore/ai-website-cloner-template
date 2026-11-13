@@ -2,6 +2,10 @@
 
 Capture evidence that changes the build: layout, content, assets, and states. One page brief usually suffices.
 
+## Raw source
+
+Fetch the real HTML, CSS and JS (`scripts/fetch-source.mjs`) and capture the rendered DOM (`scripts/capture.mjs --outline --rem`) before measuring by eye. Text/markdown fetches strip styles and scripts; SSR HTML lacks everything that scripts create. Details in [animation source recovery](animation-source-recovery.md).
+
 ## Visual structure
 
 Record section order, max-width, gutters, column proportions, and sticky/fixed layers. Measure heading/body family, weight, size, line height, and letter spacing. Match the actual font before adjusting widths to repair wrapping.

@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Source recovery tools in `.agents/skills/clone-website/scripts/`: `fetch-source.mjs` (raw HTML/CSS/JS including lazily injected scripts, library signals, extracted shaders), `capture.mjs` (rendered DOM outline and matched source/local screenshots by scroll, time, progress, and click), `find-code.mjs`, and `css-pick.mjs`. The skill now recovers a site's animation code before rebuilding canvas, WebGL, or GSAP effects.
+
 ### Fixed
 - Count the README token badge in CI so it reflects the current default branch instead of a stale hosted count.
 
