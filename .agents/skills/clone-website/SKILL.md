@@ -11,6 +11,8 @@ Recreate the supplied pages in the current app. Match the source before adding a
 
 Read project instructions, the actual framework/scripts, and existing routes. Open the source URLs with the available browser. Prefer direct HTTP, asset tools, or APIs for extraction when practical; use the browser to establish appearance and behavior.
 
+Confirm each source URL loads the site the user means before mapping it. The host must resolve, and the response must be the page itself: not an error status, browser error page, parked or expired domain, bot challenge, sign-in wall, or maintenance notice. When a URL fails, stop and report what was returned (DNS failure, status code, interstitial) and ask for a working URL, a nearby variant to confirm (`www.`, another TLD), or a saved copy of the page. Never rebuild a site from its name, search results, or memory: that produces a look-alike, not a clone.
+
 Record a short source-to-local route map and the files each page owns. Follow the app's conventions; in this template use `src/app/`, `src/components/sites/<site>/`, `public/sites/<site>/`, and `docs/research/<site>/`. Give origins, pages, and downloads distinct names; add a port or URL hash when readable names collide.
 
 - A first root clone may replace the untouched template homepage.

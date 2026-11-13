@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Count the README token badge in CI so it reflects the current default branch instead of a stale hosted count.
+- Stop the cloning workflow when a source URL cannot be loaded (DNS failure, error status, parked domain, bot challenge, sign-in wall) instead of rebuilding a look-alike from the site's name.
 
 ## [0.6.1] - 2026-10-05
 
