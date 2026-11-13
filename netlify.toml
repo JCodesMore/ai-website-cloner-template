@@ -1,0 +1,5 @@
+[build.environment]
+  # Neither value is secret, so secrets scanning would otherwise fail the build:
+  # - ENQUIRY_EMAIL_TO is the public contact address shown in the site footer.
+  # - ADMIN_TIMEZONE matches the "Asia/Colombo" default in src/lib/server/db.ts.
+  SECRETS_SCAN_OMIT_KEYS = "ENQUIRY_EMAIL_TO,ADMIN_TIMEZONE"
