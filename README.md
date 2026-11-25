@@ -154,7 +154,10 @@ The project keeps one portable Agent Skill at `.agents/skills/clone-website/`. C
 
 ## Star History
 
-![Star History Chart](docs/assets/star-history.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/JCodesMore/ai-website-cloner-template/charts/star-history-dark.svg" />
+  <img alt="Star History Chart" src="https://raw.githubusercontent.com/JCodesMore/ai-website-cloner-template/charts/star-history.svg" />
+</picture>
 
 ## License
 
