@@ -26,6 +26,7 @@ A reusable template for reverse-engineering any website into a clean, modern Nex
 - `npm run lint` — ESLint check
 - `npm run typecheck` — TypeScript check
 - `npm run check` — Run lint + typecheck + build
+- `npm run new-clone -- <name> [folder]` — Scaffold a standalone app in `clones/<name>` (or `<folder>/<name>`) for one cloned site
 
 ## Code Style
 - TypeScript strict mode, no `any`
@@ -56,7 +57,8 @@ public/
 docs/
   research/<site>/  # Page brief, asset map, and inspection evidence
   design-references/ # Screenshots and visual references
-scripts/            # Asset download scripts
+scripts/            # Asset download scripts; new-clone.mjs scaffolds clone apps
+clones/<name>/      # Optional standalone clone apps (own package.json, checks, and build)
 .agents/
   skills/
     clone-website/  # Canonical cross-agent cloning workflow
