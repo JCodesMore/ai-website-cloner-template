@@ -26,6 +26,8 @@ Existing clones are useful starting points: compare them with the current source
 
 Inspect the whole page at desktop and mobile widths. Scroll top to bottom to load lazy media and reveal sticky/pinned scenes. Then exercise menus, tabs, accordions, carousels, hover states, and primary links. Distinguish changes driven by **scroll, click, hover, or time**; a click imitation of a scroll-driven section is a different product.
 
+Before collecting evidence, confirm the loaded page is the requested site and route. If a URL is unavailable, blocked, or redirects to an unrelated site, do not replace it with a similar site, search result, or guessed design. Report the exact URL and failure, and ask for a reachable URL or supplied reference material. Continue with other requested URLs that are independently accessible; mark the unavailable route as incomplete.
+
 Treat each observation as one sample of a **rule**. Read declared values (computed styles, CSS variables, a library's live options) rather than inferring them from one rendering, and vary viewport width (including wider than the design), viewport height, input, and state until you know what drives each change. Drive the page with the inputs visitors use (wheel, touch, keyboard, pointer); scripted scrolling bypasses behavior attached to them, such as smooth scrolling.
 
 Save source screenshots labeled with viewport, scroll position, and interaction state. Capture alternate-state content/assets. Keep one compact page brief: section order, typography, layout measurements, asset mapping, and interactions. Add section briefs only when they help independent builders.
