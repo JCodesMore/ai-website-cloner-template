@@ -26,7 +26,7 @@ Rebuild semantic components/data. Deployment scripts and minified wrappers are e
 | Scroll reveal | entry boundary, start/end positions, reverse replay | IntersectionObserver + CSS |
 | Continuous scroll | progress, pin duration, layer speeds | scroll progress + CSS variables or library |
 | Click/hover | alternate content, transition, dismissal/navigation | React state + CSS |
-| Pointer/canvas | response, renderer/media identity | matched renderer or disclosed approximation |
+| Pointer/canvas | response, renderer/media identity, shader source | same renderer and shaders recovered from the source ([recovery](animation-source-recovery.md)); disclosed approximation only if code is unavailable |
 
 Observe both directions and mobile. A pinned scene needs scroll distance and release behavior, not just sticky positioning. An animated visual may be a video: use actual media when available.
 
