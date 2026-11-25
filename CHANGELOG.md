@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- Update Next.js to 16.4.6, React to 19.3.1 and the other dependencies within their ranges, clearing the critical and high `npm audit` advisories, including remote code execution in `next/og`.
 - Count the README token badge in CI so it reflects the current default branch instead of a stale hosted count.
 
 ## [0.6.1] - 2026-10-05
