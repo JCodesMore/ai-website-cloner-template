@@ -1,0 +1,49 @@
+name: Star history chart
+
+on:
+  schedule:
+    - cron: "23 7 * * *"
+  push:
+    branches:
+      - master
+    paths:
+      - .github/workflows/star-history.yml
+  workflow_dispatch:
+
+concurrency:
+  group: star-history
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+
+    steps:
+      - name: Fetch the light and dark charts
+        run: |
+          set -euo pipefail
+          mkdir chart
+          url="https://api.star-history.com/svg?repos=${GITHUB_REPOSITORY}&type=Date"
+          curl -fsSL --retry 3 --max-time 60 -o chart/star-history.svg "$url"
+          curl -fsSL --retry 3 --max-time 60 -o chart/star-history-dark.svg "$url&theme=dark"
+          # A failed lookup still returns a chart, with an empty line and no thousands on the axis.
+          # Publish only a chart of this repo with real data; otherwise the last good one stays up.
+          repo="${GITHUB_REPOSITORY,,}"
+          for f in chart/*.svg; do
+            head -c 100 "$f" | grep -q '^<svg' || { echo "::error::$f is not an SVG"; exit 1; }
+            grep -qi "$repo" "$f" || { echo "::error::$f does not chart $repo"; exit 1; }
+            grep -Eq '>[0-9]+K</text>' "$f" || { echo "::error::$f has no star data"; exit 1; }
+          done
+
+      - name: Publish to the charts branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd chart
+          git init -q
+          git add star-history.svg star-history-dark.svg
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -q -m "Update star history chart"
+          git push --force "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:refs/heads/charts
