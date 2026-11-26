@@ -7,9 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.2] - 2026-11-25
+
+### Security
+- Update Next.js to 16.4.6 and React to 19.3.1, along with the other dependencies, clearing every open `npm audit` and Dependabot advisory, including remote code execution in `next/og`.
+
+### Added
+- The README's Star History chart now refreshes daily, in light and dark versions.
+- Monthly grouped Dependabot updates for npm packages and GitHub Actions.
+
 ### Fixed
-- Update Next.js to 16.4.6, React to 19.3.1 and the other dependencies within their ranges, clearing the critical and high `npm audit` advisories, including remote code execution in `next/og`.
-- Count the README token badge in CI so it reflects the current default branch instead of a stale hosted count.
+- The Docker app container now reports healthy. Its healthcheck used `wget`, which the slim Node image doesn't include.
+- The README token badge is counted in CI, so it reflects the current default branch instead of a stale hosted count.
+
+### Removed
+- An unused Copilot setup file left over from the earlier multi-platform support.
 
 ## [0.6.1] - 2026-10-05
 
@@ -143,7 +155,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - MIT license
 - README with badges, demo section, quick start, and star history
 
-[Unreleased]: https://github.com/JCodesMore/ai-website-cloner-template/compare/v0.6.1...HEAD
+[Unreleased]: https://github.com/JCodesMore/ai-website-cloner-template/compare/v0.6.2...HEAD
+[0.6.2]: https://github.com/JCodesMore/ai-website-cloner-template/compare/v0.6.1...v0.6.2
 [0.6.1]: https://github.com/JCodesMore/ai-website-cloner-template/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/JCodesMore/ai-website-cloner-template/compare/v0.5.1...v0.6.0
 [0.5.1]: https://github.com/JCodesMore/ai-website-cloner-template/compare/v0.5.0...v0.5.1
